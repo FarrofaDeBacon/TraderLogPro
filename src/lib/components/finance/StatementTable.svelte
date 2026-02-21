@@ -22,6 +22,7 @@
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { Badge } from "$lib/components/ui/badge";
     import * as Dialog from "$lib/components/ui/dialog";
+    import * as Tooltip from "$lib/components/ui/tooltip";
     import { t, locale } from "svelte-i18n";
     import { toast } from "svelte-sonner";
     import { cn, getLocalDatePart } from "$lib/utils";
@@ -745,19 +746,59 @@
                                                                         />
                                                                     </Button>
                                                                 {/if}
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="icon"
-                                                                    class="h-7 w-7 text-red-500/50 hover:text-red-500 hover:bg-red-500/10"
-                                                                    onclick={() =>
-                                                                        requestDelete(
-                                                                            tx.id,
-                                                                        )}
-                                                                >
-                                                                    <Trash2
-                                                                        class="h-3.5 w-3.5"
-                                                                    />
-                                                                </Button>
+
+                                                                {#if tx.system_linked}
+                                                                    <Tooltip.Root
+                                                                    >
+                                                                        <Tooltip.Trigger
+                                                                        >
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="icon"
+                                                                                class="h-7 w-7 text-zinc-700 cursor-not-allowed opacity-50"
+                                                                                disabled
+                                                                            >
+                                                                                <Trash2
+                                                                                    class="h-3.5 w-3.5"
+                                                                                />
+                                                                            </Button>
+                                                                        </Tooltip.Trigger>
+                                                                        <Tooltip.Content
+                                                                            class="bg-zinc-950 border-zinc-800 text-[10px] max-w-[200px]"
+                                                                        >
+                                                                            Esta
+                                                                            transação
+                                                                            foi
+                                                                            gerada
+                                                                            pelo
+                                                                            sistema
+                                                                            e só
+                                                                            pode
+                                                                            ser
+                                                                            alterada
+                                                                            no
+                                                                            módulo
+                                                                            de
+                                                                            origem
+                                                                            (ex:
+                                                                            IRPF).
+                                                                        </Tooltip.Content>
+                                                                    </Tooltip.Root>
+                                                                {:else}
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        class="h-7 w-7 text-red-500/50 hover:text-red-500 hover:bg-red-500/10"
+                                                                        onclick={() =>
+                                                                            requestDelete(
+                                                                                tx.id,
+                                                                            )}
+                                                                    >
+                                                                        <Trash2
+                                                                            class="h-3.5 w-3.5"
+                                                                        />
+                                                                    </Button>
+                                                                {/if}
                                                             </div>
                                                         </Table.Cell>
                                                     </Table.Row>

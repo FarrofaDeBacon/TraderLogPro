@@ -104,37 +104,7 @@ pub async fn calculate_monthly_tax(db: State<'_, DbState>, month: u8, year: u16)
         sales_total: f64,
     }
     
-    // Helper: Find Tax Profile ID
-    let resolve_tax_profile = |t: &IrpfTrade| -> Option<String> {
-        // 1. Try via Asset ID
-        if let Some(ref aid) = t.asset_id {
-             if let Some(asset) = assets.iter().find(|a| a.id == *aid || a.id.ends_with(aid) || aid.ends_with(&a.id)) {
-                let at_clean = asset.asset_type_id.split(':').last().unwrap_or(&asset.asset_type_id);
-                if let Some(at) = asset_types.iter().find(|t| {
-                    let curr_t_id = t.id.split(':').last().unwrap_or(&t.id);
-                    curr_t_id == at_clean
-                }) {
-                    println!("[IRPF] Mapped via Asset {} -> Type {} -> Profile {:?}", asset.symbol, at.name, at.tax_profile_id);
-                    return at.tax_profile_id.clone();
-                }
-             }
-        }
-        
-        // 2. Try via Asset Type ID directly from Trade
-        if let Some(ref atid) = t.asset_type_id {
-            let at_clean = atid.split(':').last().unwrap_or(atid);
-            if let Some(at) = asset_types.iter().find(|t| {
-                let curr_t_id = t.id.split(':').last().unwrap_or(&t.id);
-                curr_t_id == at_clean
-            }) {
-                 println!("[IRPF] Mapped via Trade AssetType {} -> Profile {:?}", at.name, at.tax_profile_id);
-                 return at.tax_profile_id.clone();
-            }
-        }
-        
-        println!("[IRPF] Could not resolve Tax Profile for trade {}", t.id);
-        None
-    };
+    // NOTE: Tax Profile resolution logic is inlined in the trade processing loop below.
 
     // Helper: Find modality name for ID
     let get_modality_name = |mid: &str| -> Option<String> {
@@ -324,12 +294,26 @@ pub async fn calculate_monthly_tax(db: State<'_, DbState>, month: u8, year: u16)
         // tax_rate is stored as percentage (e.g. 15.0 = 15%), convert to decimal
         let rate_decimal = rule.tax_rate / 100.0;
         let tax_due = calculation_basis * rate_decimal;
-        // Withholding (Dedo-duro) - withholding_rate is already in decimal (e.g. 0.005 = 0.5%)
-        let withheld = if rule.withholding_rate > 0.0 && calculation_basis > 0.0 {
-             calculation_basis * rule.withholding_rate 
-        } else { 0.0 };
         
-        let tax_payable = tax_due - withheld;
+        // Withholding (Dedo-duro)
+        // Day Trade: withholding_rate (1.0%) on Profit
+        // Swing Trade: withholding_rate (0.005%) on SALES volume (bucket.sales_total)
+        let withheld_rate_decimal = rule.withholding_rate / 100.0;
+        let is_day_trade_rule = rule.name.to_lowercase().contains("day");
+        let withheld = if is_day_trade_rule {
+            if calculation_basis > 0.0 { calculation_basis * withheld_rate_decimal } else { 0.0 }
+        } else {
+            // Swing Trade withholding is on Sales, but only if there's a profit (simplified check) 
+            // and NOT exempt. If exempt, it might still have withheld tax that can be used as credit, 
+            // but for simplicity here we usually only subtract if calculation_basis > 0.
+            if bucket.sales_total > 0.0 && calculation_basis >= 0.0 { bucket.sales_total * withheld_rate_decimal } else { 0.0 }
+        };
+        
+        println!("[IRPF] Rule: {} | Rate: {}% | W.Rate: {}% | Base: {} | Due: {} | Withheld: {}", 
+                 rule.name, rule.tax_rate, rule.withholding_rate, calculation_basis, tax_due, withheld);
+
+        let mut tax_payable = tax_due - withheld;
+        if tax_payable < 0.0 { tax_payable = 0.0; } // Ensure it doesn't go negative for the DARF
 
         // 3.5 Accumulation Logic (< R$ 10)
         let trade_type_cat = if rule.name.to_lowercase().contains("day") { "DayTrade" } else { "SwingTrade" };
@@ -608,7 +592,11 @@ pub async fn get_accumulated_losses(db: State<'_, DbState>) -> Result<Vec<TaxLos
 pub async fn delete_appraisal(db: State<'_, DbState>, id: String) -> Result<(), String> {
     
     // 1. Fetch the appraisal to check if it generated a loss
-    let appraisal: Option<TaxAppraisal> = db.0.select(("tax_appraisal", &id))
+    let parts: Vec<&str> = id.split(':').collect();
+    let tb = if parts.len() > 1 { parts[0] } else { "tax_appraisal" };
+    let tid = if parts.len() > 1 { parts[1] } else { &id };
+
+    let appraisal: Option<TaxAppraisal> = db.0.select((tb, tid))
         .await
         .map_err(|e| e.to_string())?;
         
@@ -662,7 +650,11 @@ pub async fn delete_appraisal(db: State<'_, DbState>, id: String) -> Result<(), 
         }
 
         // 4. Delete the appraisal
-        let _: Option<TaxAppraisal> = db.0.delete(("tax_appraisal", &id)).await.map_err(|e| e.to_string())?;
+        let parts: Vec<&str> = id.split(':').collect();
+        let tb = if parts.len() > 1 { parts[0] } else { "tax_appraisal" };
+        let tid = if parts.len() > 1 { parts[1] } else { &id };
+
+        let _: Option<TaxAppraisal> = db.0.delete((tb, tid)).await.map_err(|e| e.to_string())?;
     }
     
     Ok(())
@@ -675,7 +667,11 @@ pub async fn generate_darf(db: State<'_, DbState>, appraisal_id: String) -> Resu
     println!("DEBUG: generate_darf called for appraisal_id: {}", appraisal_id);
     
     // Fetch appraisal
-    let appraisal_res: Option<TaxAppraisal> = db.0.select(("tax_appraisal", &appraisal_id))
+    let parts: Vec<&str> = appraisal_id.split(':').collect();
+    let tb = if parts.len() > 1 { parts[0] } else { "tax_appraisal" };
+    let tid = if parts.len() > 1 { parts[1] } else { &appraisal_id };
+
+    let appraisal_res: Option<TaxAppraisal> = db.0.select((tb, tid))
         .await
         .map_err(|e| {
             println!("DEBUG: Failed to fetch appraisal: {}", e);
@@ -796,7 +792,11 @@ pub async fn mark_darf_paid(
     transaction_id: String // New param
 ) -> Result<TaxDarf, String> {
     
-    let darf_res: Option<TaxDarf> = db.0.select(("tax_darf", &id))
+    let parts: Vec<&str> = id.split(':').collect();
+    let tb = if parts.len() > 1 { parts[0] } else { "tax_darf" };
+    let tid = if parts.len() > 1 { parts[1] } else { &id };
+
+    let darf_res: Option<TaxDarf> = db.0.select((tb, tid))
         .await
         .map_err(|e| e.to_string())?;
         
@@ -906,7 +906,9 @@ pub async fn mark_darf_paid(
         amount = $amount, 
         type = 'Withdraw', 
         description = $desc, 
-        account_id = type::thing($acc_tb, $acc_id)";
+        account_id = type::thing($acc_tb, $acc_id),
+        category = 'TaxPayment',
+        system_linked = true";
     
     match db.0.query(tx_query)
         .bind(("tx_tb", tx_tb))
@@ -942,7 +944,11 @@ pub async fn get_darf_by_transaction(db: State<'_, DbState>, transaction_id: Str
 #[tauri::command]
 pub async fn unpay_darf(db: State<'_, DbState>, id: String) -> Result<TaxDarf, String> {
     
-    let darf_res: Option<TaxDarf> = db.0.select(("tax_darf", &id))
+    let parts: Vec<&str> = id.split(':').collect();
+    let tb = if parts.len() > 1 { parts[0] } else { "tax_darf" };
+    let tid = if parts.len() > 1 { parts[1] } else { &id };
+
+    let darf_res: Option<TaxDarf> = db.0.select((tb, tid))
         .await
         .map_err(|e| e.to_string())?;
         
@@ -960,35 +966,47 @@ pub async fn unpay_darf(db: State<'_, DbState>, id: String) -> Result<TaxDarf, S
 
     if let (Some(acc_id), Some(trans_id)) = (linked_acc_id, linked_trans_id) {
         
-        // Refund Account Balance (atomic)
+        // 1. Create Refund Transaction (Estorno) instead of deleting
         let acc_parts: Vec<String> = acc_id.split(':').map(|s| s.to_string()).collect();
         let acc_tb = if acc_parts.len() > 1 { acc_parts[0].clone() } else { "account".to_string() };
         let acc_id_val = if acc_parts.len() > 1 { acc_parts[1].clone() } else { acc_id.clone() };
         
+        // Refund Account Balance (atomic)
         println!("[DARF UNPAY] Refunding {} to {}:{}", paid_value, acc_tb, acc_id_val);
-        let refund_query = "UPDATE type::thing($tb, $id) SET balance += $val";
-        match db.0.query(refund_query)
-            .bind(("tb", acc_tb))
-            .bind(("id", acc_id_val))
+        let refund_acc_query = "UPDATE type::thing($tb, $id) SET balance += $val";
+        match db.0.query(refund_acc_query)
+            .bind(("tb", acc_tb.clone()))
+            .bind(("id", acc_id_val.clone()))
             .bind(("val", paid_value))
             .await {
                 Ok(_) => println!("[DARF UNPAY] Account balance refunded successfully"),
                 Err(e) => println!("[DARF UNPAY] ERROR refunding account balance: {}", e),
             }
         
-        // Delete Transaction (atomic)
-        let t_parts: Vec<String> = trans_id.split(':').map(|s| s.to_string()).collect();
-        let t_tb = if t_parts.len() > 1 { t_parts[0].clone() } else { "cash_transaction".to_string() };
-        let t_id_val = if t_parts.len() > 1 { t_parts[1].clone() } else { trans_id.clone() };
-        
-        println!("[DARF UNPAY] Deleting {}:{}", t_tb, t_id_val);
-        let del_query = "DELETE type::thing($tb, $id)";
-        match db.0.query(del_query)
-            .bind(("tb", t_tb))
-            .bind(("id", t_id_val))
+        // Create a separate Deposit transaction for the refund (historical audit trail)
+        let refund_tx_id = format!("refund_{}", trans_id.split(':').last().unwrap_or(&trans_id));
+        let description = format!("Estorno - Pagamento DARF {} ({})", darf.period, darf.revenue_code);
+        let refund_date = chrono::Utc::now().to_rfc3339();
+
+        println!("[DARF UNPAY] Creating refund transaction cash_transaction:{}", refund_tx_id);
+        let refund_tx_query = "CREATE cash_transaction SET 
+            date = $date, 
+            amount = $amount, 
+            type = 'Deposit', 
+            description = $desc, 
+            account_id = type::thing($acc_tb, $acc_id),
+            category = 'TaxRefund',
+            system_linked = true";
+
+        match db.0.query(refund_tx_query)
+            .bind(("date", refund_date))
+            .bind(("amount", paid_value))
+            .bind(("desc", description))
+            .bind(("acc_tb", acc_tb))
+            .bind(("acc_id", acc_id_val))
             .await {
-                Ok(_) => println!("[DARF UNPAY] Transaction deleted successfully"),
-                Err(e) => println!("[DARF UNPAY] ERROR deleting transaction: {}", e),
+                Ok(_) => println!("[DARF UNPAY] Refund cash transaction created successfully"),
+                Err(e) => println!("[DARF UNPAY] ERROR creating refund transaction: {}", e),
             }
     }
     
@@ -1155,8 +1173,9 @@ pub async fn save_tax_rule(db: State<'_, DbState>, rule: TaxRule) -> Result<TaxR
 #[tauri::command]
 pub async fn delete_tax_rule(db: State<'_, DbState>, id: String) -> Result<(), String> {
     let clean_id = id.split(':').last().unwrap_or(&id);
-    let query = format!("DELETE tax_rule:{}", clean_id);
-    db.0.query(query).await.map_err(|e| e.to_string())?;
+    let _r: Option<crate::models::TaxRule> = db.0.delete(("tax_rule", clean_id))
+        .await
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -1220,10 +1239,15 @@ pub async fn save_tax_profile(db: State<'_, DbState>, profile: TaxProfile) -> Re
 #[tauri::command]
 pub async fn delete_tax_profile(db: State<'_, DbState>, id: String) -> Result<(), String> {
     let clean_id = id.split(':').last().unwrap_or(&id);
-    let query_p = format!("DELETE tax_profile:{}", clean_id);
-    db.0.query(query_p).await.map_err(|e| e.to_string())?;
+    
+    // Delete profile
+    let _r: Option<TaxProfile> = db.0.delete(("tax_profile", clean_id))
+        .await
+        .map_err(|e| e.to_string())?;
 
-    let query_e = format!("DELETE tax_profile_entry WHERE tax_profile_id = 'tax_profile:{}' OR tax_profile_id = '{}'", clean_id, clean_id);
+    // Delete related entries (raw query handles relations fine if we use type::thing properly or direct strings)
+    // Note: The related entries IDs aren't known, so we delete by condition, wrapping in tick marks to be safe
+    let query_e = format!("DELETE tax_profile_entry WHERE tax_profile_id = type::thing('tax_profile:{}') OR tax_profile_id = 'tax_profile:{}' OR tax_profile_id = '{}'", clean_id, clean_id, clean_id);
     let _ = db.0.query(query_e).await;
     Ok(())
 }
@@ -1264,7 +1288,8 @@ pub async fn save_tax_profile_entry(db: State<'_, DbState>, entry: TaxProfileEnt
 #[tauri::command]
 pub async fn delete_tax_profile_entry(db: State<'_, DbState>, id: String) -> Result<(), String> {
     let clean_id = id.split(':').last().unwrap_or(&id);
-    let query = format!("DELETE tax_profile_entry:{}", clean_id);
-    db.0.query(query).await.map_err(|e| e.to_string())?;
+    let _r: Option<TaxProfileEntry> = db.0.delete(("tax_profile_entry", clean_id))
+        .await
+        .map_err(|e| e.to_string())?;
     Ok(())
 }

@@ -634,10 +634,7 @@
                 <Plus class="w-4 h-4 mr-2" />
                 {$t("trades.actions.new_trade") || "Novo Trade"}
             </Button>
-            <Button size="sm" class="h-9">
-                <ArrowRightLeft class="w-4 h-4 mr-2" />
-                {$t("trades.actions.import")}
-            </Button>
+            <!-- Importar Trades button hidden for now -->
         </div>
     </div>
 

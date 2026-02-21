@@ -11,7 +11,6 @@
 
     let searchTerm = $state("");
     let selectedType = $state("all");
-    let currencyMode = $state<"original" | "main">("main");
 
     // Filter Logic
     let filteredStrategies = $derived(
@@ -66,26 +65,6 @@
             <Button variant="outline" size="icon">
                 <Filter class="w-4 h-4" />
             </Button>
-            <div class="flex items-center bg-muted/30 rounded-lg p-1 mr-2">
-                <Button
-                    variant={currencyMode === "original"
-                        ? "secondary"
-                        : "ghost"}
-                    size="sm"
-                    class="h-7 px-2 text-[10px] uppercase font-bold"
-                    onclick={() => (currencyMode = "original")}
-                >
-                    Original
-                </Button>
-                <Button
-                    variant={currencyMode === "main" ? "secondary" : "ghost"}
-                    size="sm"
-                    class="h-7 px-2 text-[10px] uppercase font-bold"
-                    onclick={() => (currencyMode = "main")}
-                >
-                    Principal
-                </Button>
-            </div>
             <Button href="/settings/strategies">
                 <Plus class="w-4 h-4 mr-2" />
                 {$t("strategy.list.new")}
@@ -108,7 +87,7 @@
                         settingsStore.accounts,
                         settingsStore.currencies,
                         settingsStore.userProfile,
-                        currencyMode,
+                        "main",
                     )}
                 />
             {/each}

@@ -537,6 +537,10 @@ pub struct CashTransaction {
     #[serde(deserialize_with = "crate::models::deserialize_id")]
     pub account_id: String,
     pub trade_ids: Option<Vec<String>>,
+    #[serde(default)]
+    pub category: Option<String>,
+    #[serde(default)]
+    pub system_linked: Option<bool>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

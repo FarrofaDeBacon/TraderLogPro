@@ -15,7 +15,7 @@ pub mod irpf;
 async fn upsert_record(db: &Surreal<Db>, table: &str, id: &str, data: serde_json::Value) -> Result<(), String> {
     // Utilize native Rust SurrealDB SDK which correctly serializes Things and saves to disk securely
     println!("[DB] Attempting SDK Upsert for {}:{}", table, id);
-    let result: Option<serde_json::Value> = db
+    let result: Option<surrealdb::sql::Value> = db
         .upsert((table, id))
         .content(data)
         .await
@@ -356,8 +356,20 @@ pub async fn save_cash_transaction(db: State<'_, DbState>, transaction: CashTran
 
 #[tauri::command]
 pub async fn delete_cash_transaction(db: State<'_, DbState>, id: String) -> Result<(), String> {
-    let clean_id = id.split(':').last().unwrap_or(&id);
-    delete_record(&db.0, "cash_transaction", clean_id).await
+    let clean_id = id.split(':').last().unwrap_or(&id).to_string();
+    
+    // 1. Check if linked to system logic
+    let mut res = db.0.query("SELECT system_linked FROM type::thing('cash_transaction', $id)")
+        .bind(("id", clean_id.clone()))
+        .await
+        .map_err(|e| e.to_string())?;
+    
+    let linked: Option<bool> = res.take(0).map_err(|e| e.to_string())?;
+    if linked == Some(true) {
+        return Err("Esta transação está vinculada ao sistema e não pode ser excluída manualmente.".into());
+    }
+
+    delete_record(&db.0, "cash_transaction", &clean_id).await
 }
 
 // --- Journal Entries ---

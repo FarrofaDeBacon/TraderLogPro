@@ -265,7 +265,7 @@
                 <AlertTriangle class="w-5 h-5 text-amber-500" />
                 Guias em Aberto
             </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
                 {#each pendingDarfs as item}
                     <Card.Root
                         class="bg-black/40 border-l-4 border-l-amber-500 border-y border-r border-white/10 glass relative overflow-hidden group hover:border-r-amber-500/30 transition-all"

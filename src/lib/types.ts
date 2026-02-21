@@ -238,6 +238,8 @@ export type CashTransaction = {
     description: string;
     account_id: string;
     trade_ids?: string[];
+    category?: string;
+    system_linked?: boolean;
 };
 
 export type Modality = {

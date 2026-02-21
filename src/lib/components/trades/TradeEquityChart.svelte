@@ -147,12 +147,12 @@
                     smooth: true,
                     showSymbol: true,
                     symbol: "circle",
-                    symbolSize: 6,
+                    symbolSize: 3,
                     z: 5,
                     animationDuration: 300,
                     data: equityCurve,
                     lineStyle: {
-                        width: 3,
+                        width: 1.5,
                         color: "#10b981",
                     },
                     areaStyle: {

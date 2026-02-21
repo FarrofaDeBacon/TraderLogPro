@@ -4,6 +4,14 @@ use surrealdb::engine::local::Db;
 use crate::models::{TaxRule, TaxProfile, TaxProfileEntry};
 
 pub async fn seed_tax_rules(db: &Surreal<Db>) -> Result<(), String> {
+    // Prevent overriding if user has already customized rules
+    let mut check_res = db.query("SELECT count() FROM tax_rule GROUP ALL").await.map_err(|e| e.to_string())?;
+    let count: Vec<serde_json::Value> = check_res.take(0).unwrap_or_default();
+    if !count.is_empty() {
+        println!("[SEED] Regras Tributárias já configuradas. Ignorando seed para não sobrescrever.");
+        return Ok(());
+    }
+
     println!("[SEED] Criando Regras e Perfis Tributários (B3)...");
 
     // 1. Tax Rules

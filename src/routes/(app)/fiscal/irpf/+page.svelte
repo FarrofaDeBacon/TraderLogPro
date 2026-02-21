@@ -683,14 +683,31 @@
                 >
                     <div class="space-y-2 w-full md:w-48">
                         <Label>Mês</Label>
-                        <select
+                        <Select.Root
                             bind:value={appraisalMonth}
-                            class="flex h-10 w-full rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white focus:border-primary/50"
+                            selected={{
+                                value: appraisalMonth,
+                                label:
+                                    months.find((m) => m.val === appraisalMonth)
+                                        ?.label || "Selecione",
+                            }}
+                            onSelectedChange={(s) => {
+                                if (s) appraisalMonth = s.value as string;
+                            }}
                         >
-                            {#each months as m}
-                                <option value={m.val}>{m.label}</option>
-                            {/each}
-                        </select>
+                            <Select.Trigger
+                                class="h-10 w-full bg-black/20 border-white/10 text-white"
+                            >
+                                <Select.Value placeholder="Mês" />
+                            </Select.Trigger>
+                            <Select.Content>
+                                {#each months as m}
+                                    <Select.Item value={m.val} label={m.label}
+                                        >{m.label}</Select.Item
+                                    >
+                                {/each}
+                            </Select.Content>
+                        </Select.Root>
                     </div>
                     <div class="space-y-2 w-full md:w-40">
                         <Label>Ano</Label>

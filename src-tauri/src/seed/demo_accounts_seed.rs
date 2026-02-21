@@ -58,6 +58,8 @@ pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Res
                 description: "Initial Balance".into(),
                 account_id: id_part.clone(),
                 trade_ids: None,
+                category: None,
+                system_linked: None,
             };
             let mut tx_json = serde_json::to_value(&cash_tx).unwrap();
             if let Some(obj) = tx_json.as_object_mut() { obj.remove("id"); }
