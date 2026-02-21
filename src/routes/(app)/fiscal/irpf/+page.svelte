@@ -16,6 +16,7 @@
         Eye,
         Trash2,
         AlertTriangle,
+        RefreshCw,
         ArrowRight,
         ChevronLeft,
         ChevronRight,
@@ -35,9 +36,8 @@
     let isDeleteModalOpen = $state(false);
     let appraisalToDelete = $state<any>(null);
 
-    // Appraisal Modal State
     let isAppraisalModalOpen = $state(false);
-    let appraisalMonth = $state(new Date().getMonth() + 1);
+    let appraisalMonth = $state(String(new Date().getMonth() + 1));
     let appraisalYear = $state(new Date().getFullYear());
     let appraisalResults = $state<any[]>([]);
 
@@ -664,60 +664,57 @@
                 <div
                     class="flex flex-col md:flex-row gap-4 items-end bg-black/20 p-4 rounded-lg border border-white/5"
                 >
-                    <div class="space-y-2 w-full md:w-48">
+                    <div class="space-y-2 w-full md:w-32">
                         <Label>Mês</Label>
-                        <Select.Root
-                            bind:value={appraisalMonth}
-                            selected={{
-                                value: appraisalMonth,
-                                label:
-                                    months.find((m) => m.val === appraisalMonth)
-                                        ?.label || "Selecione",
-                            }}
-                            onSelectedChange={(s) => {
-                                if (s) appraisalMonth = s.value as string;
-                            }}
-                        >
+                        <Select.Root type="single" bind:value={appraisalMonth}>
                             <Select.Trigger
                                 class="h-10 w-full bg-black/20 border-white/10 text-white"
                             >
-                                <Select.Value placeholder="Mês" />
+                                {months.find(
+                                    (m) => String(m.val) === appraisalMonth,
+                                )?.label || "Mês"}
                             </Select.Trigger>
                             <Select.Content>
                                 {#each months as m}
-                                    <Select.Item value={m.val} label={m.label}
-                                        >{m.label}</Select.Item
+                                    <Select.Item
+                                        value={String(m.val)}
+                                        label={m.label}>{m.label}</Select.Item
                                     >
                                 {/each}
                             </Select.Content>
                         </Select.Root>
                     </div>
-                    <div class="space-y-2 w-full md:w-40">
+                    <div class="space-y-2 w-full md:w-32">
                         <Label>Ano</Label>
-                        <div class="flex items-center gap-1">
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                type="button"
-                                class="h-10 w-10 shrink-0 bg-black/20"
-                                onclick={() => appraisalYear--}
-                            >
-                                <ChevronLeft class="w-4 h-4 p-0 m-0" />
-                            </Button>
+                        <div class="relative w-full">
                             <Input
                                 type="number"
                                 bind:value={appraisalYear}
-                                class="bg-black/20 border-white/10 text-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                class="h-10 bg-black/20 border-white/10 text-white text-left pl-3 pr-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                type="button"
-                                class="h-10 w-10 shrink-0 bg-black/20"
-                                onclick={() => appraisalYear++}
+                            <div
+                                class="absolute inset-y-0 right-0 flex flex-col border-l border-white/10 w-8"
                             >
-                                <ChevronRight class="w-4 h-4 p-0 m-0" />
-                            </Button>
+                                <button
+                                    type="button"
+                                    class="flex-1 flex items-center justify-center hover:bg-white/5 transition-colors"
+                                    onclick={() => appraisalYear++}
+                                >
+                                    <ChevronLeft
+                                        class="w-3 h-3 text-white/70 rotate-90"
+                                    />
+                                </button>
+                                <div class="h-px w-full bg-white/10"></div>
+                                <button
+                                    type="button"
+                                    class="flex-1 flex items-center justify-center hover:bg-white/5 transition-colors"
+                                    onclick={() => appraisalYear--}
+                                >
+                                    <ChevronRight
+                                        class="w-3 h-3 text-white/70 rotate-90"
+                                    />
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <Button
