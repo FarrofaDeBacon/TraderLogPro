@@ -319,7 +319,7 @@ pub async fn calculate_monthly_tax(db: State<'_, DbState>, month: u8, year: u16)
         let trade_type_cat = if rule.name.to_lowercase().contains("day") { "DayTrade" } else { "SwingTrade" };
         
         // Find latest pending appraisal for this category that was below 10
-        let accum_query = "SELECT * FROM tax_appraisal WHERE trade_type = $type AND status = 'Pending' AND total_payable < 10.0 AND (period_year < $year OR (period_year = $year AND period_month < $month)) ORDER BY period_year DESC, period_month DESC LIMIT 1";
+        let accum_query = "SELECT *, type::string(id) as id FROM tax_appraisal WHERE trade_type = $type AND status = 'Pending' AND total_payable < 10.0 AND (period_year < $year OR (period_year = $year AND period_month < $month)) ORDER BY period_year DESC, period_month DESC LIMIT 1";
         println!("DEBUG: Running accumulation query: {}", accum_query);
             
         let mut accum_res = db.0.query(accum_query)
@@ -407,7 +407,7 @@ pub async fn save_appraisal(db: State<'_, DbState>, data: TaxAppraisal) -> Resul
         let mut remaining_compensation = data.compensated_loss;
         
         // Fetch accumulated losses for this trade type, oldest first
-        let loss_query = "SELECT * FROM tax_loss WHERE balance > 0 AND trade_type = $type ORDER BY origin_date ASC";
+        let loss_query = "SELECT *, type::string(id) as id FROM tax_loss WHERE balance > 0 AND trade_type = $type ORDER BY origin_date ASC";
         let mut loss_result = db.0.query(loss_query)
             .bind(("type", data.trade_type.clone()))
             .await
