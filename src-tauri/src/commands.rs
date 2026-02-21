@@ -15,7 +15,7 @@ pub mod irpf;
 async fn upsert_record(db: &Surreal<Db>, table: &str, id: &str, data: serde_json::Value) -> Result<(), String> {
     // Utilize native Rust SurrealDB SDK which correctly serializes Things and saves to disk securely
     println!("[DB] Attempting SDK Upsert for {}:{}", table, id);
-    let result: Option<surrealdb::sql::Value> = db
+    let result: Option<serde_json::Value> = db
         .upsert((table, id))
         .content(data)
         .await
