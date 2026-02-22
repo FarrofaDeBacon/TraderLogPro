@@ -28,27 +28,23 @@ pub async fn seed_fees(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Result<
             if !f.contains(&id.to_string()) { continue; }
         }
 
-        let mut res = db.query(format!("SELECT *, type::string(id) as id FROM fee_profile:{}", id)).await.map_err(|e| e.to_string())?;
-        let existing: Option<FeeProfile> = res.take(0).map_err(|e| e.to_string())?;
-        
-        if existing.is_none() {
-            let data = FeeProfile {
-                id: id.into(), name: name.into(), broker: broker.into(),
-                fixed_fee: fixed, percentage_fee: percent, exchange_fee: exchange,
-                iss: iss, currency_spread: spread, withholding_tax: withholding, income_tax_rate: tax_rate,
-                custom_items: vec![], tax_rule_id: None, notes: notes.into()
-            };
-            let mut json = serde_json::to_value(&data).unwrap();
-            if let Some(obj) = json.as_object_mut() { obj.remove("id"); }
+        let data = FeeProfile {
+            id: id.into(), name: name.into(), broker: broker.into(),
+            fixed_fee: fixed, percentage_fee: percent, exchange_fee: exchange,
+            iss: iss, currency_spread: spread, withholding_tax: withholding, income_tax_rate: tax_rate,
+            custom_items: vec![], tax_rule_id: None, notes: notes.into()
+        };
+        let mut json = serde_json::to_value(&data).unwrap();
+        if let Some(obj) = json.as_object_mut() { obj.remove("id"); }
 
-            db.query(format!("CREATE fee_profile:{} CONTENT $data", id))
-                .bind(("data", json))
-                .await
-                .map_err(|e| e.to_string())?;
-            println!("  ✓ {} (Criado)", name);
-        } else {
-            println!("  ✓ {} (Já existe)", name);
-        }
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('fee_profile', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", json))
+            .await
+            .map_err(|e| e.to_string())?;
+            
+        println!("  ✓ {}", name);
     }
 
     Ok(())

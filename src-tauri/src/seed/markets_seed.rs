@@ -14,30 +14,29 @@ pub async fn seed_markets(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Resu
         if let Some(ref f) = filter {
             if !f.contains(&id.to_string()) { continue; }
         }
-        let create_sql = format!("CREATE market:{} CONTENT $data", id);
         let market_data = Market {
-                id: id.into(), code: code.into(), name: name.into(),
-                timezone: timezone.into(), trading_days: trading_days.clone(),
-                trading_sessions: vec![TradingSession {
-                    start_time: start.into(), end_time: end.into()
-                }]
-            };
-        let mut json_data = serde_json::to_value(&market_data).unwrap();
-        if let Some(obj) = json_data.as_object_mut() { obj.remove("id"); }
-
-        if let Err(_) = db.query(&create_sql)
-            .bind(("data", json_data.clone())) // Bind clone for create
-            .await 
-        {
-            let update_sql = format!("UPDATE market:{} CONTENT $data", id);
-             db.query(&update_sql)
-                .bind(("data", json_data))
-                .await
-                .map_err(|e| e.to_string())?;
-            println!("  ✓ {} (Atualizado)", name);
-        } else {
-             println!("  ✓ {} (Criado)", name);
+            id: id.into(), code: code.into(), name: name.into(),
+            timezone: timezone.into(), trading_days: trading_days.clone(),
+            trading_sessions: vec![TradingSession {
+                start_time: start.into(), end_time: end.into()
+            }]
+        };
+        let mut market_json = serde_json::to_value(&market_data).unwrap();
+        if let Some(obj) = market_json.as_object_mut() {
+            obj.remove("id");
         }
+
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('market', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", market_json))
+            .await
+            .map_err(|e| {
+                println!("[SEED_ERROR] Failed to seed market {}: {}", name, e);
+                e.to_string()
+            })?;
+        
+        println!("  ✓ {}", name);
     }
 
     Ok(())

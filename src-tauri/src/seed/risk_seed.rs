@@ -17,28 +17,24 @@ pub async fn seed_risk_profiles(db: &Surreal<Db>, filter: Option<Vec<String>>) -
             if !f.contains(&id.to_string()) { continue; }
         }
 
-        let mut res = db.query(format!("SELECT *, type::string(id) as id FROM risk_profile:{}", id)).await.map_err(|e| e.to_string())?;
-        let existing: Option<RiskProfile> = res.take(0).map_err(|e| e.to_string())?;
-        
-        if existing.is_none() {
-            let data = RiskProfile {
-                id: id.into(), name: name.into(),
-                max_daily_loss: max_loss, daily_target: target, max_risk_per_trade_percent: risk_per_trade,
-                max_trades_per_day: max_trades, min_risk_reward: min_rr, lock_on_loss: lock,
-                account_type_applicability: account_type.into(), growth_plan_enabled: growth_enabled,
-                current_phase_index: 0, growth_phases: vec![]
-            };
-            let mut json = serde_json::to_value(&data).unwrap();
-            if let Some(obj) = json.as_object_mut() { obj.remove("id"); }
+        let data = RiskProfile {
+            id: id.into(), name: name.into(),
+            max_daily_loss: max_loss, daily_target: target, max_risk_per_trade_percent: risk_per_trade,
+            max_trades_per_day: max_trades, min_risk_reward: min_rr, lock_on_loss: lock,
+            account_type_applicability: account_type.into(), growth_plan_enabled: growth_enabled,
+            current_phase_index: 0, growth_phases: vec![]
+        };
+        let mut json = serde_json::to_value(&data).unwrap();
+        if let Some(obj) = json.as_object_mut() { obj.remove("id"); }
 
-            db.query(format!("CREATE risk_profile:{} CONTENT $data", id))
-                .bind(("data", json))
-                .await
-                .map_err(|e| e.to_string())?;
-            println!("  ✓ {} (Criado)", name);
-        } else {
-            println!("  ✓ {} (Já existe)", name);
-        }
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('risk_profile', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", json))
+            .await
+            .map_err(|e| e.to_string())?;
+        
+        println!("  ✓ {}", name);
     }
 
     Ok(())

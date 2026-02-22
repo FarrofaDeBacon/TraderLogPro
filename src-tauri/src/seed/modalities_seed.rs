@@ -15,29 +15,25 @@ pub async fn seed_modalities(db: &Surreal<Db>, filter: Option<Vec<String>>) -> R
         if let Some(ref f) = filter {
             if !f.contains(&id.to_string()) { continue; }
         }
-        let create_sql = format!("CREATE modality:{} CONTENT $data", id);
         let modality_data = Modality {
             id: id.into(), name: name.into(), description: description.into()
         };
-
-        if let Ok(mut json_data) = serde_json::to_value(&modality_data) {
-             if let Some(obj) = json_data.as_object_mut() {
-                obj.remove("id");
-            }
-            if let Err(_) = db.query(&create_sql)
-                .bind(("data", json_data.clone()))
-                .await 
-            {
-                let update_sql = format!("UPDATE modality:{} CONTENT $data", id);
-                db.query(&update_sql)
-                    .bind(("data", json_data))
-                    .await
-                    .map_err(|e| e.to_string())?;
-                 println!("  ✓ {} (Atualizado)", name);
-            } else {
-                 println!("  ✓ {} (Criado)", name);
-            }
+        let mut modality_json = serde_json::to_value(&modality_data).unwrap();
+        if let Some(obj) = modality_json.as_object_mut() {
+            obj.remove("id");
         }
+
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('modality', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", modality_json))
+            .await
+            .map_err(|e| {
+                println!("[SEED_ERROR] Failed to seed modality {}: {}", name, e);
+                e.to_string()
+            })?;
+        
+        println!("  ✓ {}", name);
     }
 
     Ok(())

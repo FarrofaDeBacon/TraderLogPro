@@ -40,44 +40,17 @@ pub async fn seed_emotional_states(db: &Surreal<Db>, filter: Option<Vec<String>>
             obj.remove("id");
         }
 
-        // 1. Tentar selecionar por ID para ver se já existe
-        let mut result = db.query(format!("SELECT *, type::string(id) as id FROM emotional_state:{}", id))
-            .await.map_err(|e| e.to_string())?;
-        let existing: Option<EmotionalState> = result.take(0).map_err(|e| e.to_string())?;
-
-        if let Some(_) = existing {
-            // Existe por ID, atualiza
-            db.query(format!("UPDATE emotional_state:{} CONTENT $data", id))
-                .bind(("data", es_data))
-                .await
-                .map_err(|e| e.to_string())?;
-            println!("  ✓ {} (Atualizado por ID)", name);
-        } else {
-            // Não existe por ID, tentar por Nome
-            let mut result = db.query("SELECT *, type::string(id) as id FROM emotional_state WHERE name = $name")
-                .bind(("name", name))
-                .await
-                .map_err(|e| e.to_string())?;
-            
-            let found_by_name: Vec<EmotionalState> = result.take(0).map_err(|e| e.to_string())?;
-
-            if let Some(existing_by_name) = found_by_name.first() {
-                // Existe por nome, atualiza esse registro específico usando o ID encontrado
-                db.query("UPDATE $id CONTENT $data")
-                    .bind(("id", existing_by_name.id.clone()))
-                    .bind(("data", es_data))
-                    .await
-                    .map_err(|e| e.to_string())?;
-                println!("  ✓ {} (Atualizado por Nome)", name);
-            } else {
-                // Não existe de forma alguma, cria novo com o ID pretendido
-                db.query(format!("CREATE emotional_state:{} CONTENT $data", id))
-                    .bind(("data", es_data))
-                    .await
-                    .map_err(|e| e.to_string())?;
-                println!("  ✓ {} (Criado Novo)", name);
-            }
-        }
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('emotional_state', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", es_data))
+            .await
+            .map_err(|e| {
+                println!("[SEED_ERROR] Failed to seed emotional state {}: {}", name, e);
+                e.to_string()
+            })?;
+        
+        println!("  ✓ {}", name);
     }
 
     Ok(())

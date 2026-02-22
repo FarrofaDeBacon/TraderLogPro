@@ -6,7 +6,9 @@ export interface TaxAppraisal {
     id?: string;
     period_month: number;
     period_year: number;
-    trade_type: "DayTrade" | "SwingTrade";
+    trade_type: "DayTrade" | "SwingTrade" | string;
+    tax_rule_id: string; // Link specific rule
+    revenue_code: string; // "6015" or "3317"
     gross_profit: number;
     loss: number;
     net_profit: number;

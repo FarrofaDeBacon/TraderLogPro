@@ -13,7 +13,9 @@ pub struct TaxAppraisal {
     pub period_month: u8,
     #[serde(rename = "period_year", alias = "year", alias = "appraisal_year")]
     pub period_year: u16,
-    pub trade_type: String, // "DayTrade" or "SwingTrade"
+    pub trade_type: String,   // "DayTrade" or "SwingTrade" (Category)
+    pub tax_rule_id: String,  // Link to the specific rule used
+    pub revenue_code: String, // "6015" or "3317"
     pub gross_profit: f64,
     pub loss: f64,
     pub net_profit: f64,
@@ -31,6 +33,8 @@ pub struct TaxAppraisal {
     pub calculation_date: String,
     #[serde(default = "default_status")]
     pub status: String,
+    #[serde(default)]
+    pub trade_ids: Vec<String>,
 }
 
 fn default_status() -> String {

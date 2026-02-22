@@ -32,28 +32,22 @@ pub async fn seed_tags(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Result<
         if let Some(ref f) = filter {
             if !f.contains(&id.to_string()) { continue; }
         }
-        // Fix: Use query with type::string(id) to match struct string ID
-        let sql_check = format!("SELECT *, type::string(id) as id FROM tag:{}", id);
-        let mut result = db.query(&sql_check).await.map_err(|e| e.to_string())?;
-        let existing: Option<Tag> = result.take(0).map_err(|e| e.to_string())?;
+        let tag_data = Tag {
+            id: id.into(),
+            name: name.into(),
+            color: color.into(),
+        };
+        let mut json_data = serde_json::to_value(&tag_data).unwrap();
+        if let Some(obj) = json_data.as_object_mut() { obj.remove("id"); }
 
-        if existing.is_none() {
-            let tag_data = Tag {
-                    id: id.into(),
-                    name: name.into(),
-                    color: color.into(),
-                };
-            let mut json_data = serde_json::to_value(&tag_data).unwrap();
-            if let Some(obj) = json_data.as_object_mut() { obj.remove("id"); }
-
-            db.query(format!("CREATE tag:{} CONTENT $data", id))
-                .bind(("data", json_data))
-                .await
-                .map_err(|e| e.to_string())?;
-            println!("  ✓ {} (Criado)", name);
-        } else {
-             println!("  ✓ {} (Já existe)", name);
-        }
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('tag', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", json_data))
+            .await
+            .map_err(|e| e.to_string())?;
+            
+        println!("  ✓ {}", name);
     }
 
     Ok(())

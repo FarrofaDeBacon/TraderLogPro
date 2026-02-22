@@ -29,28 +29,23 @@ pub async fn seed_chart_types(db: &Surreal<Db>, filter: Option<Vec<String>>) -> 
         if let Some(ref f) = filter {
             if !f.contains(&id.to_string()) { continue; }
         }
-        let sql_check = format!("SELECT *, type::string(id) as id FROM chart_type:{}", id);
-        let mut result = db.query(&sql_check).await.map_err(|e| e.to_string())?;
-        let existing: Option<ChartType> = result.take(0).map_err(|e| e.to_string())?;
+        let chart_data = ChartType {
+            id: id.into(),
+            name: name.into(),
+            base_type: base_type.into(),
+            parameter: parameter.into(),
+        };
+        let mut json_data = serde_json::to_value(&chart_data).unwrap();
+        if let Some(obj) = json_data.as_object_mut() { obj.remove("id"); }
 
-        if existing.is_none() {
-            let chart_data = ChartType {
-                    id: id.into(),
-                    name: name.into(),
-                    base_type: base_type.into(),
-                    parameter: parameter.into(),
-                };
-            let mut json_data = serde_json::to_value(&chart_data).unwrap();
-            if let Some(obj) = json_data.as_object_mut() { obj.remove("id"); }
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('chart_type', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", json_data))
+            .await
+            .map_err(|e| e.to_string())?;
 
-            db.query(format!("CREATE chart_type:{} CONTENT $data", id))
-                .bind(("data", json_data))
-                .await
-                .map_err(|e| e.to_string())?;
-            println!("  ✓ {} (Criado)", name);
-        } else {
-             println!("  ✓ {} (Já existe)", name);
-        }
+        println!("  ✓ {}", name);
     }
 
     Ok(())

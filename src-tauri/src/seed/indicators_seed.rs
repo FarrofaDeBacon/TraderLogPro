@@ -29,31 +29,27 @@ pub async fn seed_indicators(db: &Surreal<Db>, filter: Option<Vec<String>>) -> R
         if let Some(ref f) = filter {
             if !f.contains(&id.to_string()) { continue; }
         }
-        let sql_check = format!("SELECT *, type::string(id) as id FROM indicator:{}", id);
-        let mut result = db.query(&sql_check).await.map_err(|e| e.to_string())?;
-        let existing: Option<Indicator> = result.take(0).map_err(|e| e.to_string())?;
+        
+        let indicator_data = Indicator {
+            id: id.into(),
+            name: name.into(),
+            category: category.into(),
+            plot_type: plot_type.into(),
+            default_color: color.into(),
+            usage_description: description.into(),
+            parameters: vec![],
+        };
+        let mut json_data = serde_json::to_value(&indicator_data).unwrap();
+        if let Some(obj) = json_data.as_object_mut() { obj.remove("id"); }
 
-        if existing.is_none() {
-            let indicator_data = Indicator {
-                    id: id.into(),
-                    name: name.into(),
-                    category: category.into(),
-                    plot_type: plot_type.into(),
-                    default_color: color.into(),
-                    usage_description: description.into(),
-                    parameters: vec![],
-                };
-            let mut json_data = serde_json::to_value(&indicator_data).unwrap();
-            if let Some(obj) = json_data.as_object_mut() { obj.remove("id"); }
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('indicator', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", json_data))
+            .await
+            .map_err(|e| e.to_string())?;
 
-            db.query(format!("CREATE indicator:{} CONTENT $data", id))
-                .bind(("data", json_data))
-                .await
-                .map_err(|e| e.to_string())?;
-            println!("  ✓ {} (Criado)", name);
-        } else {
-            println!("  ✓ {} (Já existe)", name);
-        }
+        println!("  ✓ {}", name);
     }
 
     Ok(())

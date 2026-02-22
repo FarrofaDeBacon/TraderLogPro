@@ -16,8 +16,11 @@ pub async fn seed_all_demo_trades(db: &Surreal<Db>, _filter: Option<Vec<String>>
     println!("[SEED] Gerados {} trades + {} fechamentos diários. Inserindo...", total_trades, total_closings);
 
     // Insert trades
-    for (i, sql) in trade_sqls.iter().enumerate() {
-        if let Err(e) = db.query(sql.as_str()).await {
+    for (i, (sql, id_str, content)) in trade_sqls.into_iter().enumerate() {
+        if let Err(e) = db.query(&sql)
+            .bind(("id", id_str))
+            .bind(("data", content))
+            .await {
             println!("[SEED] ⚠️ Error trade {}: {}", i + 1, e);
         }
         if (i + 1) % 100 == 0 {
@@ -26,8 +29,11 @@ pub async fn seed_all_demo_trades(db: &Surreal<Db>, _filter: Option<Vec<String>>
     }
 
     // Insert daily closings
-    for (i, sql) in closing_sqls.iter().enumerate() {
-        if let Err(e) = db.query(sql.as_str()).await {
+    for (i, (sql, id_str, content)) in closing_sqls.into_iter().enumerate() {
+        if let Err(e) = db.query(&sql)
+            .bind(("id", id_str))
+            .bind(("data", content))
+            .await {
             println!("[SEED] ⚠️ Error closing {}: {}", i + 1, e);
         }
     }
@@ -37,7 +43,7 @@ pub async fn seed_all_demo_trades(db: &Surreal<Db>, _filter: Option<Vec<String>>
 }
 
 /// Generates all trade + closing SQL strings synchronously
-fn generate_all_sqls() -> (Vec<String>, Vec<String>) {
+fn generate_all_sqls() -> (Vec<(String, String, serde_json::Value)>, Vec<(String, String, serde_json::Value)>) {
     let strategies = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11"];
     let emotionals = ["e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "e10", "e11", "e12"];
     let timeframes = ["1m", "5m", "15m", "60m"];
@@ -144,71 +150,43 @@ fn generate_all_sqls() -> (Vec<String>, Vec<String>) {
             let intensity = rng.gen_range(3..=9) as f64;
             let mod_id = if is_day_trade { "mod1" } else { "mod2" };
 
-            let trade_id = format!("trade:{}", trade_count);
+            let trade_id_str = trade_count.to_string();
+            let sql = "CREATE type::thing('trade', $id) CONTENT $data";
+            
+            let mut trade_map = std::collections::HashMap::new();
+            trade_map.insert("date", serde_json::to_value(date_str).unwrap());
+            trade_map.insert("asset_symbol", serde_json::to_value(symbol).unwrap());
+            trade_map.insert("asset_type_id", serde_json::json!({"String": "at2"}));
+            trade_map.insert("strategy_id", serde_json::json!({"String": strategy}));
+            trade_map.insert("account_id", serde_json::json!({"String": "demo_b3_futuros"}));
+            trade_map.insert("result", serde_json::to_value(result).unwrap());
+            trade_map.insert("quantity", serde_json::to_value(quantity).unwrap());
+            trade_map.insert("direction", serde_json::to_value(direction).unwrap());
+            trade_map.insert("entry_price", serde_json::to_value(entry_price).unwrap());
+            trade_map.insert("exit_price", serde_json::to_value(exit_price).unwrap());
+            trade_map.insert("exit_date", serde_json::to_value(exit_date_str).unwrap());
+            trade_map.insert("fee_total", serde_json::to_value(fee_total).unwrap());
+            trade_map.insert("notes", serde_json::to_value("").unwrap());
+            trade_map.insert("timeframe", serde_json::to_value(timeframe).unwrap());
+            trade_map.insert("volatility", serde_json::to_value(volatility).unwrap());
+            trade_map.insert("modality_id", serde_json::json!({"String": mod_id}));
+            trade_map.insert("stop_loss", serde_json::to_value(stop_loss).unwrap());
+            trade_map.insert("take_profit", serde_json::to_value(take_profit).unwrap());
+            trade_map.insert("intensity", serde_json::to_value(intensity).unwrap());
+            trade_map.insert("entry_emotional_state_id", serde_json::json!({"String": entry_emo}));
+            trade_map.insert("exit_emotional_state_id", serde_json::json!({"String": exit_emo}));
+            trade_map.insert("entry_rationale", serde_json::to_value(signal).unwrap());
+            trade_map.insert("confirmation_signals", serde_json::to_value(signal).unwrap());
+            trade_map.insert("market_context", serde_json::to_value(context).unwrap());
+            trade_map.insert("relevant_news", serde_json::to_value("").unwrap());
+            trade_map.insert("followed_plan", serde_json::to_value(followed).unwrap());
+            trade_map.insert("what_worked", serde_json::to_value("").unwrap());
+            trade_map.insert("mistakes_improvements", serde_json::to_value("").unwrap());
+            trade_map.insert("lessons_learned", serde_json::to_value("").unwrap());
+            trade_map.insert("images", serde_json::json!([]));
+            trade_map.insert("partial_exits", serde_json::json!([]));
 
-            // Track daily results for closing entries
-            let entry = daily_results.entry(trade_date).or_insert((0.0, Vec::new()));
-            entry.0 += result;
-            entry.1.push(trade_id.clone());
-
-            let sql = format!(
-                "CREATE trade:{} SET \
-                    date = '{date}', \
-                    asset_symbol = '{symbol}', \
-                    asset_type_id = type::thing('asset_type', 'at2'), \
-                    strategy_id = type::thing('strategy', '{strategy}'), \
-                    account_id = type::thing('account', 'demo_b3_futuros'), \
-                    result = {result}, \
-                    quantity = {qty}, \
-                    direction = '{direction}', \
-                    entry_price = {entry_p}, \
-                    exit_price = {exit_p}, \
-                    exit_date = '{exit_date}', \
-                    fee_total = {fee}, \
-                    notes = '', \
-                    timeframe = '{tf}', \
-                    volatility = '{vol}', \
-                    modality_id = type::thing('modality', '{mod_id}'), \
-                    stop_loss = {sl}, \
-                    take_profit = {tp}, \
-                    intensity = {intensity}, \
-                    entry_emotional_state_id = type::thing('emotional_state', '{entry_emo}'), \
-                    exit_emotional_state_id = type::thing('emotional_state', '{exit_emo}'), \
-                    entry_rationale = '{signal}', \
-                    confirmation_signals = '{signal}', \
-                    market_context = '{context}', \
-                    relevant_news = '', \
-                    followed_plan = {followed}, \
-                    what_worked = '', \
-                    mistakes_improvements = '', \
-                    lessons_learned = '', \
-                    images = [], \
-                    partial_exits = []",
-                trade_count,
-                date = date_str,
-                symbol = symbol,
-                strategy = strategy,
-                result = result,
-                qty = quantity,
-                direction = direction,
-                entry_p = entry_price,
-                exit_p = exit_price,
-                exit_date = exit_date_str,
-                fee = fee_total,
-                tf = timeframe,
-                vol = volatility,
-                mod_id = mod_id,
-                sl = stop_loss,
-                tp = take_profit,
-                intensity = intensity,
-                entry_emo = entry_emo,
-                exit_emo = exit_emo,
-                signal = signal,
-                context = context,
-                followed = followed,
-            );
-
-            trade_sqls.push(sql);
+            trade_sqls.push((sql.to_string(), trade_id_str, serde_json::to_value(trade_map).unwrap()));
         }
 
         week_start = week_start + Duration::weeks(1);
@@ -226,29 +204,17 @@ fn generate_all_sqls() -> (Vec<String>, Vec<String>) {
         let desc = format!("Fechamento Diario {}", date.format("%d/%m/%Y"));
         let num_trades = trade_ids.len();
 
-        // Amount: positive for deposit, use (0 - X) for negative to avoid SQL parse error
-        let amount_expr = if rounded_result >= 0.0 {
-            format!("{}", rounded_result)
-        } else {
-            format!("(0 - {})", rounded_result.abs())
-        };
+        let closing_id_str = format!("daily_closing_{}", closing_count);
+        let sql = "CREATE type::thing('cash_transaction', $id) CONTENT $data";
 
-        let sql = format!(
-            "CREATE cash_transaction:daily_closing_{} SET \
-                date = '{date}', \
-                amount = {amount}, \
-                type = '{tx_type}', \
-                description = '{desc} - {count} trades', \
-                account_id = 'account:demo_b3_futuros'",
-            closing_count,
-            date = date_str,
-            amount = amount_expr,
-            tx_type = tx_type,
-            desc = desc,
-            count = num_trades,
-        );
-
-        closing_sqls.push(sql);
+        let mut tx_map = std::collections::HashMap::new();
+        tx_map.insert("date", serde_json::to_value(date_str).unwrap());
+        tx_map.insert("amount", serde_json::to_value(rounded_result).unwrap());
+        tx_map.insert("type", serde_json::to_value(tx_type).unwrap());
+        tx_map.insert("description", serde_json::to_value(format!("{} - {} trades", desc, num_trades)).unwrap());
+        tx_map.insert("account_id", serde_json::json!({"String": "demo_b3_futuros"}));
+        
+        closing_sqls.push((sql.to_string(), closing_id_str, serde_json::to_value(tx_map).unwrap()));
     }
 
     (trade_sqls, closing_sqls)

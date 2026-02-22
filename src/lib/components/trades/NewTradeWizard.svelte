@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
     import { t, locale } from "svelte-i18n";
     import { invoke } from "@tauri-apps/api/core";
     import { toast } from "svelte-sonner";
@@ -602,11 +602,17 @@
     }
 
     async function handleSubmit() {
+        const submissionId = trade?.id;
         console.log(
             "[NewTradeWizard] Submitting form. Mode:",
-            trade?.id ? "Edit" : "New",
+            submissionId ? "Edit" : "New",
+            "Target ID:",
+            submissionId,
         );
-        console.log("[NewTradeWizard] Form Data:", $state.snapshot(formData));
+        console.log(
+            "[NewTradeWizard] Form Data Snapshot:",
+            $state.snapshot(formData),
+        );
 
         // CRITICAL: Ensure asset_type_id is set before saving
         if (!selectedAssetTypeId && formData.asset) {
@@ -640,7 +646,6 @@
 
         isSubmitting = true;
         try {
-            alert("Montando objeto TradeData...");
             const tradeData: any = {
                 // Save as ISO string to preserve time for editing later
                 date: (formData.entry_date as string)?.includes("T")

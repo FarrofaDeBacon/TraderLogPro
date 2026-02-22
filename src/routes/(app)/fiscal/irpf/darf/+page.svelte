@@ -487,17 +487,34 @@
                     <div class="space-y-2">
                         <Label>Conta de Origem</Label>
                         <div class="flex flex-col gap-2">
-                            <select
+                            <Select.Root
+                                type="single"
                                 bind:value={paymentData.accountId}
-                                class="flex h-10 w-full rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-black"
                             >
-                                <option value="">Selecione uma conta...</option>
-                                {#each settingsStore.accounts as acc}
-                                    <option value={acc.id}
-                                        >{acc.nickname} ({acc.currency})</option
-                                    >
-                                {/each}
-                            </select>
+                                <Select.Trigger
+                                    class="w-full bg-black/20 border-white/10 text-white"
+                                >
+                                    {settingsStore.accounts.find(
+                                        (a) => a.id === paymentData.accountId,
+                                    )?.nickname || "Selecione uma conta..."}
+                                </Select.Trigger>
+                                <Select.Content
+                                    class="bg-zinc-950 border-zinc-800"
+                                >
+                                    <Select.Group>
+                                        {#each settingsStore.accounts as acc}
+                                            <Select.Item
+                                                value={acc.id}
+                                                label="{acc.nickname} ({acc.currency})"
+                                                class="text-white hover:bg-zinc-800 focus:bg-zinc-800"
+                                            >
+                                                {acc.nickname} ({acc.currency})
+                                            </Select.Item>
+                                        {/each}
+                                    </Select.Group>
+                                </Select.Content>
+                            </Select.Root>
+
                             {#if !paymentData.accountId}
                                 <span class="text-xs text-red-400"
                                     >Selecione uma conta para debitar.</span

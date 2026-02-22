@@ -184,7 +184,7 @@
 
                 months[monthKey].days.push({
                     date,
-                    transactions: dayGroups[date].reverse(),
+                    transactions: dayGroups[date],
                     pnl,
                 });
             });

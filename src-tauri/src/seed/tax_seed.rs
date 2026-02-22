@@ -36,7 +36,15 @@ pub async fn seed_tax_rules(db: &Surreal<Db>) -> Result<(), String> {
         
         let mut data = serde_json::to_value(&rule).unwrap();
         if let Some(obj) = data.as_object_mut() { obj.remove("id"); }
-        let _ = db.query(format!("UPSERT tax_rule:{} MERGE $data", id)).bind(("data", data)).await;
+        
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('tax_rule', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", data))
+            .await
+            .map_err(|e| e.to_string())?;
+        
+        println!("  ✓ Rule: {}", name);
     }
 
     // 2. Tax Profiles
@@ -53,11 +61,18 @@ pub async fn seed_tax_rules(db: &Surreal<Db>) -> Result<(), String> {
         };
         let mut data = serde_json::to_value(&profile).unwrap();
         if let Some(obj) = data.as_object_mut() { obj.remove("id"); }
-        let _ = db.query(format!("UPSERT tax_profile:{} MERGE $data", id)).bind(("data", data)).await;
+        
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('tax_profile', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", data))
+            .await
+            .map_err(|e| e.to_string())?;
+            
+        println!("  ✓ Profile: {}", name);
     }
 
     // 3. Tax Profile Entries (Linking Profile -> Modality -> Rule)
-    // Modalities IDs: 'mod1' (Day Trade) and 'mod2' (Swing Trade) — from modalities_seed.rs
     let entries = vec![
         ("tpe_acoes_swing", "tax_profile:tp_acoes", "modality:mod2", "tax_rule:rule_swing_acoes"),
         ("tpe_acoes_day", "tax_profile:tp_acoes", "modality:mod1", "tax_rule:rule_day_acoes"),
@@ -75,7 +90,15 @@ pub async fn seed_tax_rules(db: &Surreal<Db>) -> Result<(), String> {
         };
         let mut data = serde_json::to_value(&entry).unwrap();
         if let Some(obj) = data.as_object_mut() { obj.remove("id"); }
-        let _ = db.query(format!("UPSERT tax_profile_entry:{} MERGE $data", id)).bind(("data", data)).await;
+        
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('tax_profile_entry', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", data))
+            .await
+            .map_err(|e| e.to_string())?;
+            
+        println!("  ✓ Entry: {}", id);
     }
 
     Ok(())

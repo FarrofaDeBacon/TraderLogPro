@@ -38,14 +38,16 @@ pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Res
             custom_logo: None,
         };
 
-        let create_sql = format!("CREATE {} CONTENT $data", id_part);
         let mut account_json = serde_json::to_value(&account).unwrap();
         if let Some(obj) = account_json.as_object_mut() { obj.remove("id"); }
+        let clean_id = id_suffix;
 
-        let response = db.query(&create_sql).bind(("data", account_json.clone())).await.map_err(|e| e.to_string())?;
-        if let Err(_) = response.check() {
-            let _ = db.query(format!("UPDATE {} CONTENT $data", id_part)).bind(("data", account_json)).await;
-        }
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('account', $id) CONTENT $data")
+            .bind(("id", id_suffix))
+            .bind(("data", account_json))
+            .await
+            .map_err(|e| e.to_string())?;
 
         if balance > 0.0 {
              let tx_id = format!("cash_transaction:initial_{}", id_suffix);
@@ -63,14 +65,24 @@ pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Res
             };
             let mut tx_json = serde_json::to_value(&cash_tx).unwrap();
             if let Some(obj) = tx_json.as_object_mut() { obj.remove("id"); }
-            let _ = db.query(format!("CREATE {} CONTENT $data", tx_id)).bind(("data", tx_json.clone())).await;
+            
+            let tx_parts: Vec<&str> = tx_id.split(':').collect();
+            let tx_clean_id = (if tx_parts.len() > 1 { tx_parts[1] } else { &tx_id }).to_string();
+
+            db.query("UPSERT type::thing('cash_transaction', $id) CONTENT $data")
+                .bind(("id", tx_clean_id))
+                .bind(("data", tx_json))
+                .await
+                .map_err(|e| e.to_string())?;
         }
     }
     Ok(())
 }
 
 pub async fn delete_demo_account_data(db: &Surreal<Db>, account_id: &str) -> Result<(), String> {
-    let _ = db.query(format!("DELETE trade WHERE account_id = '{}'", account_id)).await;
+    let _ = db.query("DELETE trade WHERE account_id = type::thing('account', $id)")
+        .bind(("id", account_id.split(':').last().unwrap_or(account_id).to_string()))
+        .await;
     Ok(())
 }
 

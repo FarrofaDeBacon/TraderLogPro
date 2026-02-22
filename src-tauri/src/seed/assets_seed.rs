@@ -36,8 +36,14 @@ pub async fn seed_assets(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Resul
         let mut json_data = serde_json::to_value(&asset_data).unwrap();
         if let Some(obj) = json_data.as_object_mut() { obj.remove("id"); }
 
-        let upsert_sql = format!("UPSERT {} MERGE $data", record_id);
-        let _ = db.query(&upsert_sql).bind(("data", json_data)).await;
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('asset', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", json_data))
+            .await
+            .map_err(|e| e.to_string())?;
+            
+        println!("  ✓ {}", name);
     }
     Ok(())
 }

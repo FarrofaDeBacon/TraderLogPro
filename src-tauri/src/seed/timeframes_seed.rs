@@ -29,25 +29,22 @@ pub async fn seed_timeframes(db: &Surreal<Db>, filter: Option<Vec<String>>) -> R
                 id: id.into(), name: name.into(), value: value.into()
             };
 
-        if let Ok(mut json_data) = serde_json::to_value(&tf_data) {
-             if let Some(obj) = json_data.as_object_mut() {
-                obj.remove("id");
-            }
-
-            if let Err(_) = db.query(&create_sql)
-                .bind(("data", json_data.clone()))
-                .await 
-            {
-                let update_sql = format!("UPDATE timeframe:{} CONTENT $data", id);
-                db.query(&update_sql)
-                    .bind(("data", json_data))
-                    .await
-                    .map_err(|e| e.to_string())?;
-                 println!("  ✓ {} (Atualizado)", name);
-            } else {
-                 println!("  ✓ {} (Criado)", name);
-            }
+        let mut tf_json = serde_json::to_value(&tf_data).unwrap();
+        if let Some(obj) = tf_json.as_object_mut() {
+            obj.remove("id");
         }
+
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('timeframe', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", tf_json))
+            .await
+            .map_err(|e| {
+                println!("[SEED_ERROR] Failed to seed timeframe {}: {}", name, e);
+                e.to_string()
+            })?;
+        
+        println!("  ✓ {}", name);
     }
 
     Ok(())

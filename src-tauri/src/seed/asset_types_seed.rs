@@ -31,9 +31,9 @@ pub async fn seed_asset_types(db: &Surreal<Db>, filter: Option<Vec<String>>) -> 
         let mut json_data = serde_json::to_value(&asset_type_data).unwrap();
         if let Some(obj) = json_data.as_object_mut() { obj.remove("id"); }
 
-        // Use UPSERT with MERGE to avoid overwriting existing user configurations
-        let upsert_sql = format!("UPSERT {} MERGE $data", record_id);
-        let _ = db.query(&upsert_sql).bind(("data", json_data)).await;
+
+        
+        println!("  ✓ {}", name);
     }
     Ok(())
 }

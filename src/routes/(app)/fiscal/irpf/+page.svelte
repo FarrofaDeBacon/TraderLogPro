@@ -27,6 +27,7 @@
     import TaxEvolutionChart from "$lib/components/dashboard/TaxEvolutionChart.svelte";
     import * as Select from "$lib/components/ui/select";
     import * as Tabs from "$lib/components/ui/tabs";
+    import * as Tooltip from "$lib/components/ui/tooltip";
 
     // View Modal State
     let isViewModalOpen = $state(false);
@@ -576,13 +577,9 @@
                                                         irpfStore.getId(
                                                             d.appraisal_id,
                                                         ) ===
-                                                            irpfStore.getId(
-                                                                item.id,
-                                                            ) ||
-                                                        (d.period ===
-                                                            period_cat &&
-                                                            d.revenue_code ===
-                                                                revenueCode_cat),
+                                                        irpfStore.getId(
+                                                            item.id,
+                                                        ),
                                                 )}
                                             {#if existingDarf_row}
                                                 <Button
@@ -631,16 +628,40 @@
                                                 class="w-4 h-4 text-blue-400"
                                             />
                                         </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onclick={() =>
-                                                deleteAppraisal(item)}
-                                        >
-                                            <Trash2
-                                                class="w-4 h-4 text-red-400"
-                                            />
-                                        </Button>
+                                        {#if item.status === "Paid" || item.status === "Ok"}
+                                            <Tooltip.Root>
+                                                <Tooltip.Trigger>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        class="opacity-50 cursor-not-allowed"
+                                                        disabled
+                                                    >
+                                                        <Trash2
+                                                            class="w-4 h-4 text-zinc-500"
+                                                        />
+                                                    </Button>
+                                                </Tooltip.Trigger>
+                                                <Tooltip.Content
+                                                    class="bg-zinc-950 text-white border-zinc-800 text-xs"
+                                                >
+                                                    Apurações pagas ou
+                                                    concluídas não podem ser
+                                                    excluídas.
+                                                </Tooltip.Content>
+                                            </Tooltip.Root>
+                                        {:else}
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onclick={() =>
+                                                    deleteAppraisal(item)}
+                                            >
+                                                <Trash2
+                                                    class="w-4 h-4 text-red-400"
+                                                />
+                                            </Button>
+                                        {/if}
                                     </td>
                                 </tr>
                             {/each}
@@ -831,9 +852,7 @@
                                                         >Alíquota:</span
                                                     >
                                                     <span class="font-mono"
-                                                        >{(
-                                                            item.tax_rate * 100
-                                                        ).toFixed(0)}%</span
+                                                        >{item.tax_rate}%</span
                                                     >
                                                 </div>
                                                 <div

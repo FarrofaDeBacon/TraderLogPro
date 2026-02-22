@@ -13,25 +13,19 @@ pub mod irpf;
 
 /// Helper: CREATE if new, UPDATE if exists. Same pattern as seeds (proven to persist in SurrealKV).
 async fn upsert_record(db: &Surreal<Db>, table: &str, id: &str, data: serde_json::Value) -> Result<(), String> {
-    // Utilize native Rust SurrealDB SDK which correctly serializes Things and saves to disk securely
-    println!("[DB] Attempting SDK Upsert for {}:{}", table, id);
-    // Convert serde_json::Value to surrealdb::sql::Value if needed, or rely on .content()
-    // The previous fail was due to .content() attempting to parse the result back into an incompatible type.
-    // If we request a generic Option<surrealdb::sql::Value> it fails on the input JSON being an object instead of enum variant Thing.
-    // Let's use raw query for 'upsert' to bypass the rigid .content() deserializer constraints.
-
-    let query_str = format!("UPSERT {}:`{}` CONTENT $data;", table, id);
-    let parsed_val = surrealdb::sql::json(&data.to_string()).map_err(|e| e.to_string())?;
-
-    let _ = db.query(&query_str)
-        .bind(("data", parsed_val))
+    println!("[DB] Standard Upsert for {}:{}", table, id);
+    
+    // Use raw query to avoid SDK high-level serialization conflicts with Things in results
+    db.query("UPSERT type::thing($table, $id) CONTENT $data")
+        .bind(("table", table.to_string()))
+        .bind(("id", id.to_string()))
+        .bind(("data", data))
         .await
         .map_err(|e| {
             println!("[DB] SDK Upsert ERROR for {}:{}. Error: {}", table, id, e);
             e.to_string()
         })?;
-        
-    println!("[DB] SDK Upsert SUCCESS for {}:{}", table, id);
+
     Ok(())
 }
 
@@ -311,17 +305,21 @@ pub async fn get_trades(db: State<'_, DbState>) -> Result<Vec<Trade>, String> {
 
 #[tauri::command]
 pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), String> {
-    println!("[COMMAND] save_trade START for ID: {}", trade.id);
-    let clean_id = trade.id.split(':').last().unwrap_or(&trade.id);
+    println!("[COMMAND] save_trade (v2-logging) START for ID: {}", trade.id);
+    let clean_id = trade.id.split(':').last().unwrap_or(&trade.id).to_string();
+    println!("[DEBUG] save_trade simplified clean_id: '{}' (original extracted from '{}')", clean_id, trade.id);
+    
     let mut data = serde_json::to_value(&trade).map_err(|e| e.to_string())?;
-    if let Some(obj) = data.as_object_mut() { obj.remove("id"); }
+    if let Some(obj) = data.as_object_mut() { 
+        obj.remove("id"); 
+    }
     
     // First, standard upsert
-    upsert_record(&db.0, "trade", clean_id, data).await?;
+    upsert_record(&db.0, "trade", &clean_id, data).await?;
     
     // Then explicit updates for relational fields
-    let sql = format!("
-        UPDATE trade:{} SET 
+    let sql = "
+        UPDATE type::thing('trade', $id) SET 
             account_id = type::thing(account_id),
             asset_type_id = type::thing(asset_type_id),
             strategy_id = type::thing(strategy_id),
@@ -330,8 +328,8 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
             modality_id = IF modality_id != NONE AND modality_id != '' THEN type::thing(modality_id) ELSE NONE END,
             asset_id = IF asset_id != NONE AND asset_id != '' THEN type::thing(asset_id) ELSE NONE END
         ;
-    ", clean_id);
-    db.0.query(&sql).await.map_err(|e| e.to_string())?;
+    ";
+    db.0.query(sql).bind(("id", clean_id.clone())).await.map_err(|e| e.to_string())?;
     
     println!("[COMMAND] save_trade SUCCESS for trade:{}", clean_id);
     Ok(())
@@ -347,7 +345,9 @@ pub async fn delete_trade(db: State<'_, DbState>, id: String) -> Result<(), Stri
 
 #[tauri::command]
 pub async fn get_cash_transactions(db: State<'_, DbState>) -> Result<Vec<CashTransaction>, String> {
-    let mut result = db.0.query("SELECT *, type::string(id) as id FROM cash_transaction").await.map_err(|e| e.to_string())?;
+    // Order by date DESC (primary) and ID DESC (stable creation proxy in SurrealDB)
+    let sql = "SELECT *, type::string(id) as id FROM cash_transaction ORDER BY date DESC, id DESC";
+    let mut result = db.0.query(sql).await.map_err(|e| e.to_string())?;
     let transactions: Vec<CashTransaction> = result.take(0).map_err(|e| e.to_string())?;
     Ok(transactions)
 }

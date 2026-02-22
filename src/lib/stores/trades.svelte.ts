@@ -44,7 +44,8 @@ class TradesStore {
             const updatedTrade = { ...existing, ...trade };
             await invoke("save_trade", { trade: $state.snapshot(updatedTrade) });
 
-            this.trades = this.trades.map(t => t.id === id ? updatedTrade : t);
+            // CRITICAL: Re-fetch to ensure we have the DB's true state (prevents duplication/desync)
+            await this.loadTrades();
             return { success: true };
         } catch (e: any) {
             console.error("[TradesStore] Error updating trade:", e);
