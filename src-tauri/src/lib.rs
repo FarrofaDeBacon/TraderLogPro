@@ -262,7 +262,8 @@ pub fn run() {
             commands::irpf::get_tax_profile_entries,
             commands::irpf::save_tax_profile_entry,
             commands::irpf::delete_tax_profile_entry,
-            commands::diagnostic_dump_trades,
+            commands::irpf::diagnostic_dump_darfs,
+            commands::irpf::get_appraisal_by_id,
             commands::diagnostic_dump_users,
 
         ])

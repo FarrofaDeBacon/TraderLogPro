@@ -18,7 +18,9 @@
     let { transactionId = "", open = $bindable(false) } = $props();
 
     let darf = $state<TaxDarf | null>(null);
+    let appraisal = $state<any>(null);
     let loading = $state(false);
+    let isComplementary = $state(false);
 
     $effect(() => {
         if (open && transactionId) {
@@ -28,8 +30,42 @@
 
     async function loadDarf() {
         loading = true;
-        darf = await irpfStore.getDarfByTransaction(transactionId);
-        loading = false;
+        try {
+            console.log(
+                "[DARF DIALOG] Loading for transactionId:",
+                transactionId,
+            );
+            darf = await irpfStore.getDarfByTransaction(transactionId);
+
+            if (darf) {
+                console.log("[DARF DIALOG] DARF found:", darf);
+                // Load appraisal
+                if (darf.appraisal_id) {
+                    appraisal = await irpfStore.getAppraisalById(
+                        darf.appraisal_id,
+                    );
+                }
+
+                // Check for complementary (search other darfs for same period and code)
+                // We access the store's darf list (which should be loaded for the year)
+                const otherDarfs = irpfStore.darfs.filter(
+                    (d) =>
+                        d.period === darf?.period &&
+                        d.revenue_code === darf?.revenue_code &&
+                        irpfStore.getId(d.id) !== irpfStore.getId(darf?.id),
+                );
+                isComplementary = otherDarfs.length > 0;
+            } else {
+                console.warn(
+                    "[DARF DIALOG] No DARF found for transactionId:",
+                    transactionId,
+                );
+            }
+        } catch (e) {
+            console.error("[DARF DIALOG] Error loading DARF/Appraisal:", e);
+        } finally {
+            loading = false;
+        }
     }
 
     function formatCurrency(value: number) {
@@ -77,13 +113,23 @@
                             >
                         </div>
                     </div>
-                    <Badge
-                        variant="outline"
-                        class="bg-green-500/10 text-green-500 border-green-500/20 px-3 py-1"
-                    >
-                        <CheckCircle2 class="w-3.5 h-3.5 mr-1.5" />
-                        Pago
-                    </Badge>
+                    <div class="flex flex-col items-end gap-2">
+                        <Badge
+                            variant="outline"
+                            class="bg-green-500/10 text-green-500 border-green-500/20 px-3 py-1"
+                        >
+                            <CheckCircle2 class="w-3.5 h-3.5 mr-1.5" />
+                            Pago
+                        </Badge>
+                        {#if isComplementary}
+                            <Badge
+                                variant="outline"
+                                class="bg-blue-500/10 text-blue-400 border-blue-500/20 px-2 py-0.5 text-[10px]"
+                            >
+                                DARF Complementar
+                            </Badge>
+                        {/if}
+                    </div>
                 </div>
 
                 <Separator class="bg-zinc-800" />
@@ -111,6 +157,69 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- NEW: Calculation Details Section -->
+                {#if appraisal}
+                    <div class="space-y-3">
+                        <h4
+                            class="text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2"
+                        >
+                            <Info class="w-3.5 h-3.5" />
+                            Detalhamento da Base de Cálculo
+                        </h4>
+                        <div
+                            class="bg-zinc-900/40 border border-zinc-800/60 rounded-xl p-4 grid grid-cols-2 gap-y-4 gap-x-6"
+                        >
+                            <div class="space-y-1">
+                                <span
+                                    class="text-[10px] text-zinc-500 uppercase"
+                                    >Resultado Bruto</span
+                                >
+                                <p
+                                    class="text-sm font-semibold {appraisal.gross_profit >=
+                                    0
+                                        ? 'text-emerald-400'
+                                        : 'text-red-400'}"
+                                >
+                                    {formatCurrency(appraisal.gross_profit)}
+                                </p>
+                            </div>
+                            <div class="space-y-1">
+                                <span
+                                    class="text-[10px] text-zinc-500 uppercase"
+                                    >Prejuízos Compensados</span
+                                >
+                                <p
+                                    class="text-sm font-semibold text-amber-500/80"
+                                >
+                                    {formatCurrency(
+                                        appraisal.compensated_loss || 0,
+                                    )}
+                                </p>
+                            </div>
+                            <div class="space-y-1">
+                                <span
+                                    class="text-[10px] text-zinc-500 uppercase"
+                                    >Base de Cálculo</span
+                                >
+                                <p class="text-sm font-semibold text-zinc-200">
+                                    {formatCurrency(
+                                        appraisal.calculation_basis,
+                                    )}
+                                </p>
+                            </div>
+                            <div class="space-y-1">
+                                <span
+                                    class="text-[10px] text-zinc-500 uppercase"
+                                    >Aliquota Aplicada</span
+                                >
+                                <p class="text-sm font-semibold text-zinc-200">
+                                    {appraisal.tax_rate * 100}%
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
 
                 <!-- Values Breakdown -->
                 <div

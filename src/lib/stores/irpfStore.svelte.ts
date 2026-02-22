@@ -219,6 +219,24 @@ class IrpfStore {
         }
     }
 
+    async getAppraisalById(id: string): Promise<TaxAppraisal | null> {
+        try {
+            return await invoke<TaxAppraisal | null>("get_appraisal_by_id", { id });
+        } catch (error) {
+            console.error("Failed to fetch appraisal by ID:", error);
+            return null;
+        }
+    }
+
+    async diagnosticDumpDarfs() {
+        try {
+            await invoke("diagnostic_dump_darfs");
+            console.log("[DIAGNOSTIC] Command sent. Check backend terminal for output.");
+        } catch (error) {
+            console.error("Diagnostic command failed:", error);
+        }
+    }
+
     async deleteDarf(id: string) {
         try {
             await invoke("delete_darf", { id });

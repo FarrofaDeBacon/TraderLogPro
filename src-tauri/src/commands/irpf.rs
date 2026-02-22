@@ -855,9 +855,10 @@ pub async fn mark_darf_paid(
     
     // --- UPDATE RECORDS FIRST ---
     // 1. Update DARF record
+    let clean_id = id.split(':').last().unwrap_or(&id).to_string();
     let update_query = "UPDATE type::thing('tax_darf', $id) MERGE $content";
     let mut update_result = db.0.query(update_query)
-        .bind(("id", id.clone())) 
+        .bind(("id", clean_id)) 
         .bind(("content", darf_content))
         .await
         .map_err(|e| e.to_string())?;
@@ -955,18 +956,82 @@ pub async fn mark_darf_paid(
 }
 
 #[tauri::command]
-pub async fn get_darf_by_transaction(db: State<'_, DbState>, transaction_id: String) -> Result<Option<TaxDarf>, String> {
-    // Clean ID to skip "cash_transaction:" prefix if present
-    let clean_id = transaction_id.split(':').last().unwrap_or(&transaction_id).to_string();
-    
-    let query = "SELECT *, type::string(id) as id FROM tax_darf WHERE transaction_id = $tid LIMIT 1";
-    let mut result = db.0.query(query)
-        .bind(("tid", clean_id))
+pub async fn diagnostic_dump_darfs(db: State<'_, DbState>) -> Result<(), String> {
+    println!("[DIAGNOSTIC] Dumping all TAX_DARF records...");
+    let mut result = db.0.query("SELECT *, type::string(id) as id, type::string(transaction_id) as tx_id_str FROM tax_darf").await.map_err(|e| e.to_string())?;
+    let darfs: Vec<serde_json::Value> = result.take(0).map_err(|e| e.to_string())?;
+    println!("[DIAGNOSTIC] Total DARFs found: {}", darfs.len());
+    for d in darfs {
+        println!("[DIAGNOSTIC] DARF: {}", serde_json::to_string(&d).unwrap_or_default());
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn get_appraisal_by_id(db: State<'_, DbState>, id: String) -> Result<Option<TaxAppraisal>, String> {
+    let clean_id = id.split(':').last().unwrap_or(&id).to_string();
+    let appraisal: Option<TaxAppraisal> = db.0.select(("tax_appraisal", &clean_id))
         .await
         .map_err(|e| e.to_string())?;
+    Ok(appraisal)
+}
 
-    let darf: Option<TaxDarf> = result.take(0).map_err(|e| e.to_string())?;
-    Ok(darf)
+#[tauri::command]
+pub async fn get_darf_by_transaction(db: State<'_, DbState>, transaction_id: String) -> Result<Option<TaxDarf>, String> {
+    println!("[DARF LOOKUP] Looking for DARF with transaction_id: {}", transaction_id);
+    
+    // 1. Try Direct Lookup (Normal way)
+    let clean_id = transaction_id.split(':').last().unwrap_or(&transaction_id).to_string();
+    let prefixed_id = format!("cash_transaction:{}", clean_id);
+    
+    let query = "SELECT *, type::string(id) as id FROM tax_darf WHERE type::string(transaction_id) = $clean OR type::string(transaction_id) = $prefixed LIMIT 1";
+    let mut result = db.0.query(query)
+        .bind(("clean", clean_id.clone()))
+        .bind(("prefixed", prefixed_id))
+        .await
+        .map_err(|e| e.to_string())?;
+        
+    if let Ok(Some(darf)) = result.take::<Option<TaxDarf>>(0) {
+        println!("[DARF LOOKUP] Found via direct ID lookup");
+        return Ok(Some(darf));
+    }
+
+    // 2. Fallback: Search by description parsing (For historical or unlinked records)
+    // We need to fetch the transaction first to get its description
+    let tx_res: Option<serde_json::Value> = db.0.select(("cash_transaction", &clean_id))
+        .await
+        .map_err(|e| e.to_string())?;
+        
+    if let Some(tx) = tx_res {
+        if let Some(desc) = tx.get("description").and_then(|v| v.as_str()) {
+            println!("[DARF LOOKUP] Fallback: Parsing description '{}'", desc);
+            // Expected format: "Pagamento DARF MM/YYYY (CODE)"
+            if desc.contains("Pagamento DARF") {
+                let parts: Vec<&str> = desc.split_whitespace().collect();
+                // parts[0]="Pagamento", parts[1]="DARF", parts[2]="MM/YYYY", parts[3]="(CODE)"
+                if parts.len() >= 4 {
+                    let period = parts[2].to_string();
+                    let code = parts[3].trim_matches('(').trim_matches(')').to_string();
+                    
+                    println!("[DARF LOOKUP] Fallback: Searching for period={} code={}", period, code);
+                    let fallback_query = "SELECT *, type::string(id) as id FROM tax_darf WHERE period = $period AND revenue_code = $code LIMIT 1";
+                    let mut fb_result = db.0.query(fallback_query)
+                        .bind(("period", period))
+                        .bind(("code", code))
+                        .await
+                        .map_err(|e| e.to_string())?;
+                        
+                    if let Ok(Some(darf)) = fb_result.take::<Option<TaxDarf>>(0) {
+                        println!("[DARF LOOKUP] Found via description fallback!");
+                        return Ok(Some(darf));
+                    }
+                }
+            }
+        }
+    }
+
+    println!("[DARF LOOKUP] Not found after all attempts");
+    Ok(None)
 }
 
 /// Reverses a DARF payment (Unpay)
@@ -1013,12 +1078,15 @@ pub async fn unpay_darf(db: State<'_, DbState>, id: String) -> Result<TaxDarf, S
             }
         
         // Create a separate Deposit transaction for the refund (historical audit trail)
-        let refund_tx_id = format!("refund_{}", trans_id.split(':').last().unwrap_or(&trans_id));
+        let raw_tid = trans_id.split(':').last().unwrap_or(&trans_id);
+        let refund_tx_id = format!("refund_{}", raw_tid);
         let description = format!("Estorno - Pagamento DARF {} ({})", darf.period, darf.revenue_code);
-        let refund_date = chrono::Utc::now().to_rfc3339();
+        
+        // Use YYYY-MM-DD for consistency with statement filters
+        let refund_date = chrono::Local::now().format("%Y-%m-%d").to_string();
 
         println!("[DARF UNPAY] Creating refund transaction cash_transaction:{}", refund_tx_id);
-        let refund_tx_query = "CREATE cash_transaction SET 
+        let refund_tx_query = "CREATE type::thing('cash_transaction', $id) SET 
             date = $date, 
             amount = $amount, 
             type = 'Deposit', 
@@ -1028,6 +1096,7 @@ pub async fn unpay_darf(db: State<'_, DbState>, id: String) -> Result<TaxDarf, S
             system_linked = true";
 
         match db.0.query(refund_tx_query)
+            .bind(("id", refund_tx_id))
             .bind(("date", refund_date))
             .bind(("amount", paid_value))
             .bind(("desc", description))
@@ -1035,7 +1104,10 @@ pub async fn unpay_darf(db: State<'_, DbState>, id: String) -> Result<TaxDarf, S
             .bind(("acc_id", acc_id_val))
             .await {
                 Ok(_) => println!("[DARF UNPAY] Refund cash transaction created successfully"),
-                Err(e) => println!("[DARF UNPAY] ERROR creating refund transaction: {}", e),
+                Err(e) => {
+                    println!("[DARF UNPAY] ERROR creating refund transaction: {}", e);
+                    return Err(format!("Erro ao criar transação de estorno: {}", e));
+                }
             }
     }
     
@@ -1052,8 +1124,9 @@ pub async fn unpay_darf(db: State<'_, DbState>, id: String) -> Result<TaxDarf, S
     let mut darf_content = darf.clone();
     darf_content.id = None;
 
+    let clean_id = id.split(':').last().unwrap_or(&id).to_string();
     let updated: Option<TaxDarf> = db.0
-        .update(("tax_darf", id.clone()))
+        .update(("tax_darf", clean_id))
         .content(darf_content)
         .await
         .map_err(|e| e.to_string())?;
