@@ -113,6 +113,11 @@ fn generate_all_sqls() -> (Vec<(String, String, serde_json::Value)>, Vec<(String
             let fee_total = (quantity * 1.50 + 0.50).round();
             let result = ((gross_result - fee_total) * 100.0).round() / 100.0;
 
+            // Update daily results for cash transactions
+            let entry = daily_results.entry(trade_date).or_insert((0.0, Vec::new()));
+            entry.0 += result;
+            entry.1.push(trade_count.to_string());
+
             let entry_hour = rng.gen_range(9..=16);
             let entry_min = rng.gen_range(0..=59);
             let date_str = format!("{}T{:02}:{:02}:00Z", trade_date, entry_hour, entry_min);
@@ -156,9 +161,16 @@ fn generate_all_sqls() -> (Vec<(String, String, serde_json::Value)>, Vec<(String
             let mut trade_map = std::collections::HashMap::new();
             trade_map.insert("date", serde_json::to_value(date_str).unwrap());
             trade_map.insert("asset_symbol", serde_json::to_value(symbol).unwrap());
-            trade_map.insert("asset_type_id", serde_json::json!({"String": "at2"}));
-            trade_map.insert("strategy_id", serde_json::json!({"String": strategy}));
-            trade_map.insert("account_id", serde_json::json!({"String": "demo_b3_futuros"}));
+            trade_map.insert("asset_type_id", serde_json::to_value("asset_type:at2").unwrap());
+            trade_map.insert("strategy_id", serde_json::to_value(format!("strategy:{}", strategy)).unwrap());
+            trade_map.insert("account_id", serde_json::to_value("account:demo_b3_futuros").unwrap());
+            let asset_id = match symbol {
+                "WIN" => "a5",
+                "WDO" => "a6",
+                _ => "a5",
+            };
+
+            trade_map.insert("asset_id", serde_json::to_value(format!("asset:{}", asset_id)).unwrap());
             trade_map.insert("result", serde_json::to_value(result).unwrap());
             trade_map.insert("quantity", serde_json::to_value(quantity).unwrap());
             trade_map.insert("direction", serde_json::to_value(direction).unwrap());
@@ -169,12 +181,12 @@ fn generate_all_sqls() -> (Vec<(String, String, serde_json::Value)>, Vec<(String
             trade_map.insert("notes", serde_json::to_value("").unwrap());
             trade_map.insert("timeframe", serde_json::to_value(timeframe).unwrap());
             trade_map.insert("volatility", serde_json::to_value(volatility).unwrap());
-            trade_map.insert("modality_id", serde_json::json!({"String": mod_id}));
+            trade_map.insert("modality_id", serde_json::to_value(format!("modality:{}", mod_id)).unwrap());
             trade_map.insert("stop_loss", serde_json::to_value(stop_loss).unwrap());
             trade_map.insert("take_profit", serde_json::to_value(take_profit).unwrap());
             trade_map.insert("intensity", serde_json::to_value(intensity).unwrap());
-            trade_map.insert("entry_emotional_state_id", serde_json::json!({"String": entry_emo}));
-            trade_map.insert("exit_emotional_state_id", serde_json::json!({"String": exit_emo}));
+            trade_map.insert("entry_emotional_state_id", serde_json::to_value(format!("emotional_state:{}", entry_emo)).unwrap());
+            trade_map.insert("exit_emotional_state_id", serde_json::to_value(format!("emotional_state:{}", exit_emo)).unwrap());
             trade_map.insert("entry_rationale", serde_json::to_value(signal).unwrap());
             trade_map.insert("confirmation_signals", serde_json::to_value(signal).unwrap());
             trade_map.insert("market_context", serde_json::to_value(context).unwrap());
@@ -204,7 +216,8 @@ fn generate_all_sqls() -> (Vec<(String, String, serde_json::Value)>, Vec<(String
         let desc = format!("Fechamento Diario {}", date.format("%d/%m/%Y"));
         let num_trades = trade_ids.len();
 
-        let closing_id_str = format!("daily_closing_{}", closing_count);
+        let account_id_clean = "demo_b3_futuros";
+        let closing_id_str = format!("daily_closure_account_{}_{}", account_id_clean, date.format("%Y_%m_%d"));
         let sql = "CREATE type::thing('cash_transaction', $id) CONTENT $data";
 
         let mut tx_map = std::collections::HashMap::new();
@@ -212,7 +225,7 @@ fn generate_all_sqls() -> (Vec<(String, String, serde_json::Value)>, Vec<(String
         tx_map.insert("amount", serde_json::to_value(rounded_result).unwrap());
         tx_map.insert("type", serde_json::to_value(tx_type).unwrap());
         tx_map.insert("description", serde_json::to_value(format!("{} - {} trades", desc, num_trades)).unwrap());
-        tx_map.insert("account_id", serde_json::json!({"String": "demo_b3_futuros"}));
+        tx_map.insert("account_id", serde_json::to_value("account:demo_b3_futuros").unwrap());
         
         closing_sqls.push((sql.to_string(), closing_id_str, serde_json::to_value(tx_map).unwrap()));
     }

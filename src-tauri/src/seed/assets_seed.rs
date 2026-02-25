@@ -30,7 +30,8 @@ pub async fn seed_assets(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Resul
             name: name.into(),
             asset_type_id: type_id.into(),
             point_value,
-            default_fee_id: None
+            default_fee_id: None,
+            tax_profile_id: None
         };
 
         let mut json_data = serde_json::to_value(&asset_data).unwrap();

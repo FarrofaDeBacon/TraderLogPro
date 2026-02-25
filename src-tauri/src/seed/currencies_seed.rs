@@ -25,8 +25,12 @@ pub async fn seed_currencies(db: &Surreal<Db>) -> Result<(), String> {
         let mut json_data = serde_json::to_value(&currency_data).unwrap();
         if let Some(obj) = json_data.as_object_mut() { obj.remove("id"); }
 
-
-        
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('currency', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", json_data))
+            .await
+            .map_err(|e| e.to_string())?;
         println!("  ✓ {}", name);
     }
 

@@ -31,8 +31,13 @@ pub async fn seed_asset_types(db: &Surreal<Db>, filter: Option<Vec<String>>) -> 
         let mut json_data = serde_json::to_value(&asset_type_data).unwrap();
         if let Some(obj) = json_data.as_object_mut() { obj.remove("id"); }
 
+        // Use raw query for robust serialization
+        db.query("UPSERT type::thing('asset_type', $id) CONTENT $data")
+            .bind(("id", id))
+            .bind(("data", json_data))
+            .await
+            .map_err(|e| e.to_string())?;
 
-        
         println!("  ✓ {}", name);
     }
     Ok(())

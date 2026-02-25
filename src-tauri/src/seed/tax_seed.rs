@@ -2,28 +2,22 @@
 use surrealdb::Surreal;
 use surrealdb::engine::local::Db;
 use crate::models::{TaxRule, TaxProfile, TaxProfileEntry};
+use crate::models::irpf::{TaxAppraisal, TaxDarf};
+use chrono::{Utc, Datelike};
 
 pub async fn seed_tax_rules(db: &Surreal<Db>) -> Result<(), String> {
-    // Prevent overriding if user has already customized rules
-    let mut check_res = db.query("SELECT count() FROM tax_rule GROUP ALL").await.map_err(|e| e.to_string())?;
-    let count: Vec<serde_json::Value> = check_res.take(0).unwrap_or_default();
-    if !count.is_empty() {
-        println!("[SEED] Regras Tributárias já configuradas. Ignorando seed para não sobrescrever.");
-        return Ok(());
-    }
-
-    println!("[SEED] Criando Regras e Perfis Tributários (B3)...");
+    println!("[SEED] Verificando Regras e Perfis Tributários (B3)...");
 
     // 1. Tax Rules
     let rules = vec![
-        ("rule_swing_acoes", "Swing Trade Ações (15%)", 15.0, 0.005, 20000.0, "NetProfit", true),
-        ("rule_day_acoes", "Day Trade Ações (20%)", 20.0, 1.0, 0.0, "NetProfit", true),
-        ("rule_swing_futuros", "Swing Trade Futuros (15%)", 15.0, 0.005, 0.0, "NetProfit", true),
-        ("rule_day_futuros", "Day Trade Futuros (20%)", 20.0, 1.0, 0.0, "NetProfit", true),
-        ("rule_fiis", "FIIs (20%)", 20.0, 0.0, 0.0, "NetProfit", true),
+        ("rule_swing_acoes", "Swing Trade Ações (15%)", 15.0, 0.005, 20000.0, "NetProfit", true, "SwingTrade", "SalesVolume", "6015"),
+        ("rule_day_acoes", "Day Trade Ações (20%)", 20.0, 1.0, 0.0, "NetProfit", true, "DayTrade", "Profit", "6015"),
+        ("rule_swing_futuros", "Swing Trade Futuros (15%)", 15.0, 0.005, 0.0, "NetProfit", true, "SwingTrade", "Profit", "6015"),
+        ("rule_day_futuros", "Day Trade Futuros (20%)", 20.0, 1.0, 0.0, "NetProfit", true, "DayTrade", "Profit", "6015"),
+        ("rule_fiis", "FIIs (20%)", 20.0, 0.0, 0.0, "NetProfit", true, "SwingTrade", "Profit", "6015"),
     ];
 
-    for (id, name, rate, w_rate, exemption, basis, cumulative) in rules {
+    for (id, name, rate, w_rate, exemption, basis, cumulative, t_type, w_basis, rev_code) in rules {
         let rule = TaxRule {
             id: id.into(),
             name: name.into(),
@@ -32,6 +26,9 @@ pub async fn seed_tax_rules(db: &Surreal<Db>) -> Result<(), String> {
             exemption_threshold: exemption,
             basis: basis.into(),
             cumulative_losses: cumulative,
+            trade_type: t_type.into(),
+            withholding_basis: w_basis.into(),
+            revenue_code: rev_code.into(),
         };
         
         let mut data = serde_json::to_value(&rule).unwrap();
@@ -101,5 +98,99 @@ pub async fn seed_tax_rules(db: &Surreal<Db>) -> Result<(), String> {
         println!("  ✓ Entry: {}", id);
     }
 
+    println!("[SEED] ✅ Regras e Perfis Tributários sincronizados.");
+    
+    // Seed initial records for demonstration
+    seed_initial_tax_records(db).await?;
+
+    Ok(())
+}
+
+async fn seed_initial_tax_records(db: &Surreal<Db>) -> Result<(), String> {
+    println!("[SEED] Gerando Registros de Impostos de Demonstração...");
+
+    let now = Utc::now();
+    let current_year = now.year() as u16;
+    let current_month = now.month() as u8;
+
+    // 1. Tax Appraisals (Jan 2026 - Assuming current year is 2026 in demo)
+    let appraisals = vec![
+        (1, 2026, "SwingTrade", "Swing Trade Ações (15%)", "6015", 5000.0, 0.0, 5000.0, 0.0, 5000.0, 15.0, 750.0, 25.0, 725.0, "tax_rule:rule_swing_acoes"),
+        (1, 2026, "DayTrade", "Day Trade Futuros (20%)", "6015", 2500.0, 500.0, 2000.0, 0.0, 2000.0, 20.0, 400.0, 10.0, 390.0, "tax_rule:rule_day_futuros"),
+        (12, 2025, "SwingTrade", "Swing Trade Ações (15%)", "6015", 3000.0, 0.0, 3000.0, 0.0, 3000.0, 15.0, 450.0, 15.0, 435.0, "tax_rule:rule_swing_acoes"),
+    ];
+
+    for (m, y, t_type, r_name, r_code, gross, loss, net, comp, basis, rate, due, withheld, payable, rule_id) in appraisals {
+        let id = format!("tax_appraisal:demo_{}_{}_{}", y, m, t_type.to_lowercase());
+        
+        let appraisal = TaxAppraisal {
+            id: Some(id.clone()),
+            period_month: m,
+            period_year: y,
+            trade_type: t_type.into(),
+            tax_rule_id: rule_id.into(),
+            revenue_code: r_code.into(),
+            gross_profit: gross,
+            loss,
+            net_profit: net,
+            compensated_loss: comp,
+            calculation_basis: basis,
+            tax_rate: rate,
+            tax_due: due,
+            withheld_tax: withheld,
+            withholding_credit_used: 0.0,
+            withholding_credit_remaining: 0.0,
+            tax_payable: payable,
+            tax_accumulated: 0.0,
+            total_payable: payable,
+            is_exempt: false,
+            calculation_date: Utc::now().to_rfc3339(),
+            status: if y < current_year || (y == current_year && m < current_month) { "Paid".into() } else { "Pending".into() },
+            trade_ids: vec![],
+        };
+
+        let mut data = serde_json::to_value(&appraisal).unwrap();
+        if let Some(obj) = data.as_object_mut() { obj.remove("id"); }
+        
+        db.query("UPSERT type::thing('tax_appraisal', $id) CONTENT $data")
+            .bind(("id", id.split(':').last().unwrap().to_string()))
+            .bind(("data", data))
+            .await
+            .map_err(|e| e.to_string())?;
+
+        // 2. DARF (if payable > 0 and Status is Paid or Pending)
+        if payable > 0.0 {
+            let darf_id = format!("tax_darf:demo_{}_{}_{}", y, m, t_type.to_lowercase());
+            let due_date = format!("{}-{:02}-28T23:59:59Z", if m == 12 { y + 1 } else { y }, if m == 12 { 1 } else { m + 1 });
+            
+            let darf = TaxDarf {
+                id: Some(darf_id.clone()),
+                appraisal_id: id.clone(),
+                revenue_code: r_code.into(),
+                period: format!("{:02}/{}", m, y),
+                principal_value: payable,
+                fine: 0.0,
+                interest: 0.0,
+                total_value: payable,
+                due_date,
+                payment_date: if y < current_year || (y == current_year && m < current_month) { Some(Utc::now().to_rfc3339()) } else { None },
+                status: if y < current_year || (y == current_year && m < current_month) { "Paid".into() } else { "Pending".into() },
+                darf_number: Some(format!("{:010}", 1234567890 + m as i64)),
+                account_id: Some("account:demo_b3_futuros".into()),
+                transaction_id: None,
+            };
+
+            let mut darf_data = serde_json::to_value(&darf).unwrap();
+            if let Some(obj) = darf_data.as_object_mut() { obj.remove("id"); }
+
+            db.query("UPSERT type::thing('tax_darf', $id) CONTENT $data")
+                .bind(("id", darf_id.split(':').last().unwrap().to_string()))
+                .bind(("data", darf_data))
+                .await
+                .map_err(|e| e.to_string())?;
+        }
+    }
+
+    println!("  ✓ Registros de impostos de demonstração criados.");
     Ok(())
 }

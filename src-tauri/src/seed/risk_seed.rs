@@ -22,7 +22,16 @@ pub async fn seed_risk_profiles(db: &Surreal<Db>, filter: Option<Vec<String>>) -
             max_daily_loss: max_loss, daily_target: target, max_risk_per_trade_percent: risk_per_trade,
             max_trades_per_day: max_trades, min_risk_reward: min_rr, lock_on_loss: lock,
             account_type_applicability: account_type.into(), growth_plan_enabled: growth_enabled,
-            current_phase_index: 0, growth_phases: vec![]
+            current_phase_index: 0, growth_phases: vec![],
+            psychological_coupling_enabled: false,
+            outlier_regression_enabled: false,
+            sniper_mode_enabled: false,
+            sniper_mode_selectivity: 3,
+            psychological_lookback_count: 10,
+            outlier_lookback_count: 20,
+            psychological_threshold: -2,
+            lot_reduction_multiplier: 0.5,
+            psychological_search_strategy: "Strict".to_string(),
         };
         let mut json = serde_json::to_value(&data).unwrap();
         if let Some(obj) = json.as_object_mut() { obj.remove("id"); }
