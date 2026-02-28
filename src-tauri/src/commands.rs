@@ -821,7 +821,10 @@ pub async fn factory_reset(db: State<'_, DbState>) -> Result<(), String> {
 
 #[tauri::command]
 pub async fn ensure_defaults(db: State<'_, DbState>) -> Result<(), String> {
-    crate::seed::run_all_seeds(&db.0).await
+    crate::seed::run_base_seeds(&db.0).await?;
+    // Ensure at least an empty Real account exists for new users (no trades)
+    crate::seed::demo_accounts_seed::seed_accounts(&db.0, Some(vec!["account:real".to_string()])).await?;
+    Ok(())
 }
 
 #[tauri::command]

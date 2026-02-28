@@ -132,8 +132,10 @@ pub async fn force_reseed_all(db: &Surreal<Db>) -> Result<(), String> {
 
     println!("[SEED] Iniciando reseeding...\n");
 
-    // Executa seeding completo
-    run_all_seeds(db).await?;
+    // Executa seeding de configurações base
+    run_base_seeds(db).await?;
+    // Adiciona apenas a conta real
+    demo_accounts_seed::seed_accounts(db, Some(vec!["account:real".to_string()])).await?;
 
     println!("\n[SEED] ✅ Force reseed concluído com sucesso!\n");
 

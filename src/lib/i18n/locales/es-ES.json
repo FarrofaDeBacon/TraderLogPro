@@ -1924,12 +1924,12 @@
       "tradeQty": "Trade Qty"
     },
     "kpis": {
-      "discipline": "Discipline",
-      "maxDrawdown": "Max Drawdown",
-      "netResult": "Net Result",
+      "netResult": "Resultado Neto",
+      "winRate": "Tasa de Acierto",
+      "profitFactor": "Factor de Beneficio",
+      "discipline": "Disciplina",
       "payoff": "Payoff",
-      "profitFactor": "Profit Factor",
-      "winRate": "Win Rate"
+      "maxDrawdown": "Drawdown Máximo"
     },
     "newTrade": "New Trade",
     "quant": {
@@ -1942,14 +1942,14 @@
       "waitingData": "Waiting Data"
     },
     "schedule": {
-      "afternoon": "Afternoon",
-      "morning": "Morning",
-      "title": "Title",
-      "basedOn": "Baseado nos últimos {count} dias úteis"
+      "afternoon": "Tarde",
+      "morning": "Mañana",
+      "title": "Horario de Trading",
+      "basedOn": "Basado en los últimos {count} días hábiles"
     },
-    "subtitle": "Subtitle",
+    "subtitle": "Resumen de la cuenta operativa.",
     "terminalHub": "Terminal Hub",
-    "title": "Title",
+    "title": "Panel de Control",
     "survivor": {
       "title": "Survivor Hub & Monitoring",
       "activePlan": "Plan Activo:",
@@ -2142,7 +2142,7 @@
       },
       "welcome": {
         "description": "Description",
-        "title": "Title"
+        "title": "Bienvenido a TraderLog Pro"
       }
     }
   },

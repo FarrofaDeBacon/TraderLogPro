@@ -1942,12 +1942,12 @@
       "waitingData": "Waiting Data"
     },
     "schedule": {
-      "title": "Horários de Maior Eficiência",
+      "title": "Horários de Operação",
       "morning": "Manhã",
       "afternoon": "Tarde",
       "basedOn": "Baseado nos últimos {count} dias úteis"
     },
-    "subtitle": "Visão geral de desempenho.",
+    "subtitle": "Resumo da conta operacional.",
     "terminalHub": "Terminal Hub",
     "title": "Dashboard",
     "survivor": {
@@ -2142,7 +2142,7 @@
       },
       "welcome": {
         "description": "Description",
-        "title": "Title"
+        "title": "Bem-vindo ao TraderLog Pro"
       }
     }
   },
