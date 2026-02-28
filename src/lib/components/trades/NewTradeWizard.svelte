@@ -657,12 +657,17 @@
     }
 
     async function handleSubmit() {
-        const submissionId = trade?.id;
+        // CRITICAL: Use lastSyncedTradeId (stable local state) instead of trade?.id (reactive prop).
+        // trade?.id can become null during Svelte reactivity cycles (e.g., store reload after loadTrades()),
+        // which would cause a duplicate trade creation instead of an update.
+        const submissionId = lastSyncedTradeId;
         console.log(
             "[NewTradeWizard] Submitting form. Mode:",
             submissionId ? "Edit" : "New",
-            "Target ID:",
+            "Target ID (lastSyncedTradeId):",
             submissionId,
+            "trade?.id at submit time:",
+            trade?.id,
         );
         console.log(
             "[NewTradeWizard] Form Data Snapshot:",
@@ -754,13 +759,13 @@
                 JSON.stringify(tradeData, null, 2),
             );
 
-            if (trade?.id) {
+            if (submissionId) {
                 console.log(
                     "[NewTradeWizard] Calling updateTrade for ID:",
-                    trade.id,
+                    submissionId,
                 );
                 const result = await tradesStore.updateTrade(
-                    trade.id,
+                    submissionId,
                     tradeData,
                 );
                 if (result.success) {

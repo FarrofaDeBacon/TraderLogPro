@@ -43,8 +43,16 @@ class TradesStore {
 
     async updateTrade(id: string, trade: Partial<Trade>) {
         try {
-            const existing = this.trades.find(t => t.id === id);
-            if (!existing) throw new Error("Trade not found");
+            // Normalize: accept both "trade:UUID" and plain "UUID" formats
+            const existing = this.trades.find(t =>
+                t.id === id ||
+                t.id === `trade:${id}` ||
+                t.id.split(':').pop() === id.split(':').pop()
+            );
+            if (!existing) {
+                console.error("[TradesStore] updateTrade: Trade not found for id:", id, "Store has:", this.trades.map(t => t.id));
+                throw new Error(`Trade not found: ${id}`);
+            }
 
             const updatedTrade = { ...existing, ...trade };
             await invoke("save_trade", { trade: $state.snapshot(updatedTrade) });
