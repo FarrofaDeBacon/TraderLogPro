@@ -255,54 +255,54 @@
         "invalidCredentials": "Credenciais inválidas."
       },
       "recovery": {
-        "back": "Back",
-        "confirm": "Confirm",
-        "description": "Description",
+        "back": "Voltar ao Login",
+        "confirm": "Confirmar Senha",
+        "description": "Digite sua chave de recuperação e defina uma nova senha.",
         "error": {
-          "fillAll": "Fill All",
-          "generic": "Generic",
-          "invalidKey": "Invalid Key",
-          "mismatch": "Mismatch"
+          "fillAll": "Preencha todos os campos.",
+          "generic": "Erro ao redefinir senha.",
+          "invalidKey": "Chave de recuperação inválida.",
+          "mismatch": "As senhas não coincidem."
         },
-        "keyLabel": "Key Label",
-        "loading": "Loading",
-        "newPassword": "New Password",
-        "submit": "Submit",
-        "success": "Success",
-        "title": "Title"
+        "keyLabel": "Chave de Recuperação",
+        "loading": "Redefinindo...",
+        "newPassword": "Nova Senha",
+        "submit": "Redefinir Senha",
+        "success": "Senha redefinida com sucesso!",
+        "title": "Recuperar Acesso"
       },
-      "signup": "Signup",
-      "social": "Social"
+      "signup": "Cadastrar",
+      "social": "Redes Sociais"
     },
     "register": {
-      "alreadyHaveAccount": "Already Have Account",
-      "birthDate": "Birth Date",
-      "confirmPassword": "Confirm Password",
-      "cpf": "Cpf",
-      "description": "Description",
+      "alreadyHaveAccount": "Já tem uma conta?",
+      "birthDate": "Data de Nascimento",
+      "confirmPassword": "Confirmar Senha",
+      "cpf": "CPF",
+      "description": "Crie sua conta no TraderLog Pro.",
       "email": "Email",
       "error": {
-        "fillAll": "Fill All",
-        "passwordsMismatch": "Passwords Mismatch"
+        "fillAll": "Preencha todos os campos.",
+        "passwordsMismatch": "As senhas não coincidem."
       },
-      "loading": "Loading",
-      "login": "Login",
-      "name": "Name",
-      "password": "Password",
+      "loading": "Criando conta...",
+      "login": "Entrar",
+      "name": "Nome Completo",
+      "password": "Senha",
       "recoveryKey": {
-        "confirm": "Confirm",
-        "copyPrompt": "Copy Prompt",
-        "description": "Description",
-        "keepSecure": "Keep Secure",
-        "label": "Label",
-        "successCopy": "Success Copy",
-        "title": "Title",
-        "warning": "Warning"
+        "confirm": "Entendi, guardei minha chave!",
+        "copyPrompt": "Copiar Chave",
+        "description": "Esta é sua chave de recuperação. Guarde em local seguro — sem ela, não será possível recuperar o acesso.",
+        "keepSecure": "Guarde em local seguro!",
+        "label": "Sua Chave de Recuperação",
+        "successCopy": "Chave copiada!",
+        "title": "Chave de Recuperação Gerada",
+        "warning": "Não compartilhe esta chave com ninguém."
       },
-      "submit": "Submit",
-      "success": "Success",
-      "terms": "Terms",
-      "title": "Title"
+      "submit": "Criar Conta",
+      "success": "Conta criada com sucesso!",
+      "terms": "Termos de Uso",
+      "title": "Criar Conta"
     }
   },
   "home": {
@@ -1788,6 +1788,21 @@
         "button": "Resetar Banco de Dados (Completo)",
         "resetting": "Resetando...",
         "confirm": "ATENÇÃO: Isso apagará TODOS os dados (Trades, Contas, Configurações) e recriará o banco do zero com dados de exemplo. Tem certeza absoluta?"
+      },
+      "backup": {
+        "title": "Backup e Restauração",
+        "description": "Exporte todos os seus dados para um arquivo JSON e recupere-os quando precisar reinstalar o aplicativo.",
+        "export": "Exportar Backup",
+        "exporting": "Exportando...",
+        "import": "Restaurar Backup",
+        "importing": "Restaurando...",
+        "saveTitle": "Salvar Backup",
+        "openTitle": "Selecionar Arquivo de Backup",
+        "successExport": "Backup exportado com sucesso!",
+        "successImport": "{count} registros restaurados com sucesso!",
+        "errorExport": "Erro ao exportar backup",
+        "errorImport": "Erro ao restaurar backup",
+        "hint": "O backup inclui: Trades, Contas, Configurações, Diario, Fiscal e todos os dados personalizados."
       }
     },
     "markets": {

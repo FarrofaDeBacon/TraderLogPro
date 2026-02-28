@@ -255,54 +255,54 @@
         "invalidCredentials": "Credenciales inválidas."
       },
       "recovery": {
-        "back": "Back",
-        "confirm": "Confirm",
-        "description": "Description",
+        "back": "Volver al inicio de sesión",
+        "confirm": "Confirmar contraseña",
+        "description": "Ingrese su clave de recuperación y establezca una nueva contraseña.",
         "error": {
-          "fillAll": "Fill All",
-          "generic": "Generic",
-          "invalidKey": "Invalid Key",
-          "mismatch": "Mismatch"
+          "fillAll": "Por favor, complete todos los campos.",
+          "generic": "Error al restablecer la contraseña.",
+          "invalidKey": "Clave de recuperación inválida.",
+          "mismatch": "Las contraseñas no coinciden."
         },
-        "keyLabel": "Key Label",
-        "loading": "Loading",
-        "newPassword": "New Password",
-        "submit": "Submit",
-        "success": "Success",
-        "title": "Title"
+        "keyLabel": "Clave de Recuperación",
+        "loading": "Restableciendo...",
+        "newPassword": "Nueva Contraseña",
+        "submit": "Restablecer Contraseña",
+        "success": "¡Contraseña restablecida con éxito!",
+        "title": "Recuperar Acceso"
       },
-      "signup": "Signup",
-      "social": "Social"
+      "signup": "Registrarse",
+      "social": "Redes Sociales"
     },
     "register": {
-      "alreadyHaveAccount": "Already Have Account",
-      "birthDate": "Birth Date",
-      "confirmPassword": "Confirm Password",
-      "cpf": "Cpf",
-      "description": "Description",
-      "email": "Email",
+      "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+      "birthDate": "Fecha de Nacimiento",
+      "confirmPassword": "Confirmar Contraseña",
+      "cpf": "CPF",
+      "description": "Crea tu cuenta en TraderLog Pro.",
+      "email": "Correo electrónico",
       "error": {
-        "fillAll": "Fill All",
-        "passwordsMismatch": "Passwords Mismatch"
+        "fillAll": "Por favor, complete todos los campos.",
+        "passwordsMismatch": "Las contraseñas no coinciden."
       },
-      "loading": "Loading",
-      "login": "Login",
-      "name": "Name",
-      "password": "Password",
+      "loading": "Creando cuenta...",
+      "login": "Iniciar sesión",
+      "name": "Nombre completo",
+      "password": "Contraseña",
       "recoveryKey": {
-        "confirm": "Confirm",
-        "copyPrompt": "Copy Prompt",
-        "description": "Description",
-        "keepSecure": "Keep Secure",
-        "label": "Label",
-        "successCopy": "Success Copy",
-        "title": "Title",
-        "warning": "Warning"
+        "confirm": "¡Entendido, guardé mi clave!",
+        "copyPrompt": "Copiar Clave",
+        "description": "Esta es tu clave de recuperación. Guárdala en un lugar seguro — sin ella, no podrás recuperar el acceso.",
+        "keepSecure": "¡Guárdala en un lugar seguro!",
+        "label": "Tu Clave de Recuperación",
+        "successCopy": "¡Clave copiada!",
+        "title": "Clave de Recuperación Generada",
+        "warning": "No compartas esta clave con nadie."
       },
-      "submit": "Submit",
-      "success": "Success",
-      "terms": "Terms",
-      "title": "Title"
+      "submit": "Crear Cuenta",
+      "success": "¡Cuenta creada con éxito!",
+      "terms": "Términos de Uso",
+      "title": "Crear Cuenta"
     }
   },
   "home": {
@@ -1788,6 +1788,21 @@
         "button": "Reiniciar Base de Datos (Completo)",
         "resetting": "Reiniciando...",
         "confirm": "ATENCIÓN: Esto borrará TODOS los datos (Trades, Cuentas, Configuraciones) e recreará la base de datos con datos de ejemplo. ¿Está absolutamente seguro?"
+      },
+      "backup": {
+        "title": "Copia de Seguridad y Restauración",
+        "description": "Exporte todos sus datos a un archivo JSON y recúperelos cuando necesite reinstalar la aplicación.",
+        "export": "Exportar Copia de Seguridad",
+        "exporting": "Exportando...",
+        "import": "Restaurar Copia de Seguridad",
+        "importing": "Restaurando...",
+        "saveTitle": "Guardar Copia de Seguridad",
+        "openTitle": "Seleccionar Archivo de Copia de Seguridad",
+        "successExport": "¡Copia de seguridad exportada con éxito!",
+        "successImport": "¡{count} registros restaurados con éxito!",
+        "errorExport": "Error al exportar copia de seguridad",
+        "errorImport": "Error al restaurar copia de seguridad",
+        "hint": "La copia de seguridad incluye: Trades, Cuentas, Configuración, Diario, Fiscal y todos los datos personalizados."
       }
     },
     "markets": {

@@ -255,54 +255,54 @@
         "invalidCredentials": "Identifiants invalides."
       },
       "recovery": {
-        "back": "Back",
-        "confirm": "Confirm",
-        "description": "Description",
+        "back": "Retour à la connexion",
+        "confirm": "Confirmer le mot de passe",
+        "description": "Entrez votre clé de récupération et définissez un nouveau mot de passe.",
         "error": {
-          "fillAll": "Fill All",
-          "generic": "Generic",
-          "invalidKey": "Invalid Key",
-          "mismatch": "Mismatch"
+          "fillAll": "Veuillez remplir tous les champs.",
+          "generic": "Échec de la réinitialisation du mot de passe.",
+          "invalidKey": "Clé de récupération invalide.",
+          "mismatch": "Les mots de passe ne correspondent pas."
         },
-        "keyLabel": "Key Label",
-        "loading": "Loading",
-        "newPassword": "New Password",
-        "submit": "Submit",
-        "success": "Success",
-        "title": "Title"
+        "keyLabel": "Clé de Récupération",
+        "loading": "Réinitialisation...",
+        "newPassword": "Nouveau Mot de Passe",
+        "submit": "Réinitialiser le Mot de Passe",
+        "success": "Mot de passe réinitialisé avec succès!",
+        "title": "Récupérer l'Accès"
       },
-      "signup": "Signup",
-      "social": "Social"
+      "signup": "S'inscrire",
+      "social": "Réseaux Sociaux"
     },
     "register": {
-      "alreadyHaveAccount": "Already Have Account",
-      "birthDate": "Birth Date",
-      "confirmPassword": "Confirm Password",
-      "cpf": "Cpf",
-      "description": "Description",
-      "email": "Email",
+      "alreadyHaveAccount": "Vous avez déjà un compte?",
+      "birthDate": "Date de Naissance",
+      "confirmPassword": "Confirmer le Mot de Passe",
+      "cpf": "CPF",
+      "description": "Créez votre compte TraderLog Pro.",
+      "email": "E-mail",
       "error": {
-        "fillAll": "Fill All",
-        "passwordsMismatch": "Passwords Mismatch"
+        "fillAll": "Veuillez remplir tous les champs.",
+        "passwordsMismatch": "Les mots de passe ne correspondent pas."
       },
-      "loading": "Loading",
-      "login": "Login",
-      "name": "Name",
-      "password": "Password",
+      "loading": "Création du compte...",
+      "login": "Se connecter",
+      "name": "Nom complet",
+      "password": "Mot de passe",
       "recoveryKey": {
-        "confirm": "Confirm",
-        "copyPrompt": "Copy Prompt",
-        "description": "Description",
-        "keepSecure": "Keep Secure",
-        "label": "Label",
-        "successCopy": "Success Copy",
-        "title": "Title",
-        "warning": "Warning"
+        "confirm": "J'ai compris, j'ai sauvegardé ma clé!",
+        "copyPrompt": "Copier la Clé",
+        "description": "Voici votre clé de récupération. Gardez-la dans un endroit sûr — sans elle, vous ne pourrez pas récupérer l'accès.",
+        "keepSecure": "Gardez-la en lieu sûr!",
+        "label": "Votre Clé de Récupération",
+        "successCopy": "Clé copiée!",
+        "title": "Clé de Récupération Générée",
+        "warning": "Ne partagez cette clé avec personne."
       },
-      "submit": "Submit",
-      "success": "Success",
-      "terms": "Terms",
-      "title": "Title"
+      "submit": "Créer un Compte",
+      "success": "Compte créé avec succès!",
+      "terms": "Conditions d'utilisation",
+      "title": "Créer un Compte"
     }
   },
   "home": {
@@ -1788,6 +1788,21 @@
         "button": "Réinitialiser la Base de Données (Complet)",
         "resetting": "Réinitialisation...",
         "confirm": "ATTENTION : Cela effacera TOUTES les données (Trades, Comptes, Paramètres) et recréera la base de données avec des données d'exemple. Êtes-vous absolument sûr ?"
+      },
+      "backup": {
+        "title": "Sauvegarde et Restauration",
+        "description": "Exportez toutes vos données dans un fichier JSON et récupérez-les lors de la réinstallation de l'application.",
+        "export": "Exporter la sauvegarde",
+        "exporting": "Exportation en cours...",
+        "import": "Restaurer la sauvegarde",
+        "importing": "Restauration en cours...",
+        "saveTitle": "Enregistrer la sauvegarde",
+        "openTitle": "Sélectionner le fichier de sauvegarde",
+        "successExport": "Sauvegarde exportée avec succès!",
+        "successImport": "{count} enregistrements restaurés avec succès!",
+        "errorExport": "Erreur lors de l'exportation",
+        "errorImport": "Erreur lors de la restauration",
+        "hint": "La sauvegarde inclut : Trades, Comptes, Paramètres, Journal, Fiscal et toutes les données personnalisées."
       }
     },
     "markets": {

@@ -255,54 +255,54 @@
         "invalidCredentials": "Invalid credentials."
       },
       "recovery": {
-        "back": "Back",
-        "confirm": "Confirm",
-        "description": "Description",
+        "back": "Back to Login",
+        "confirm": "Confirm Password",
+        "description": "Enter your recovery key and set a new password.",
         "error": {
-          "fillAll": "Fill All",
-          "generic": "Generic",
-          "invalidKey": "Invalid Key",
-          "mismatch": "Mismatch"
+          "fillAll": "Please fill in all fields.",
+          "generic": "Failed to reset password.",
+          "invalidKey": "Invalid recovery key.",
+          "mismatch": "Passwords do not match."
         },
-        "keyLabel": "Key Label",
-        "loading": "Loading",
+        "keyLabel": "Recovery Key",
+        "loading": "Resetting...",
         "newPassword": "New Password",
-        "submit": "Submit",
-        "success": "Success",
-        "title": "Title"
+        "submit": "Reset Password",
+        "success": "Password reset successfully!",
+        "title": "Recover Access"
       },
-      "signup": "Signup",
-      "social": "Social"
+      "signup": "Sign Up",
+      "social": "Social Networks"
     },
     "register": {
-      "alreadyHaveAccount": "Already Have Account",
-      "birthDate": "Birth Date",
+      "alreadyHaveAccount": "Already have an account?",
+      "birthDate": "Date of Birth",
       "confirmPassword": "Confirm Password",
-      "cpf": "Cpf",
-      "description": "Description",
+      "cpf": "CPF",
+      "description": "Create your TraderLog Pro account.",
       "email": "Email",
       "error": {
-        "fillAll": "Fill All",
-        "passwordsMismatch": "Passwords Mismatch"
+        "fillAll": "Please fill in all fields.",
+        "passwordsMismatch": "Passwords do not match."
       },
-      "loading": "Loading",
-      "login": "Login",
-      "name": "Name",
+      "loading": "Creating account...",
+      "login": "Log In",
+      "name": "Full Name",
       "password": "Password",
       "recoveryKey": {
-        "confirm": "Confirm",
-        "copyPrompt": "Copy Prompt",
-        "description": "Description",
-        "keepSecure": "Keep Secure",
-        "label": "Label",
-        "successCopy": "Success Copy",
-        "title": "Title",
-        "warning": "Warning"
+        "confirm": "I understand, I have saved my key!",
+        "copyPrompt": "Copy Key",
+        "description": "This is your recovery key. Store it in a safe place — without it, you won't be able to recover access.",
+        "keepSecure": "Keep it in a safe place!",
+        "label": "Your Recovery Key",
+        "successCopy": "Key copied!",
+        "title": "Recovery Key Generated",
+        "warning": "Do not share this key with anyone."
       },
-      "submit": "Submit",
-      "success": "Success",
-      "terms": "Terms",
-      "title": "Title"
+      "submit": "Create Account",
+      "success": "Account created successfully!",
+      "terms": "Terms of Use",
+      "title": "Create Account"
     }
   },
   "home": {
@@ -1788,6 +1788,21 @@
         "button": "Reset Database (Full)",
         "resetting": "Resetting...",
         "confirm": "WARNING: This will erase ALL data (Trades, Accounts, Settings) and recreate the database with initial sample data. Are you absolutely sure?"
+      },
+      "backup": {
+        "title": "Backup & Restore",
+        "description": "Export all your data to a JSON file and recover it when you need to reinstall the app.",
+        "export": "Export Backup",
+        "exporting": "Exporting...",
+        "import": "Restore Backup",
+        "importing": "Restoring...",
+        "saveTitle": "Save Backup",
+        "openTitle": "Select Backup File",
+        "successExport": "Backup exported successfully!",
+        "successImport": "{count} records restored successfully!",
+        "errorExport": "Error exporting backup",
+        "errorImport": "Error restoring backup",
+        "hint": "The backup includes: Trades, Accounts, Settings, Journal, Fiscal, and all custom data."
       }
     },
     "markets": {

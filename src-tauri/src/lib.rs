@@ -236,6 +236,8 @@ pub fn run() {
             commands::get_onboarding_meta,
             commands::get_machine_id_cmd,
             commands::factory_reset,
+            commands::backup_database,
+            commands::restore_database,
             // Fiscal / IRPF
             commands::irpf::calculate_monthly_tax,
             commands::irpf::get_appraisals,

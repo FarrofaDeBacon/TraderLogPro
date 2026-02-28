@@ -158,9 +158,33 @@ pub async fn verify_recovery_key(db: State<'_, DbState>, key: String) -> Result<
 pub async fn reset_password(db: State<'_, DbState>, recovery_key: String, new_password: String) -> Result<bool, String> {
     println!("[COMMAND] reset_password called");
     
-    // 1. Verify key
-    let is_key_valid = verify_recovery_key(db.clone(), recovery_key).await?;
+    // 1. Inline recovery key verification (avoid db.clone() which causes serialization issues)
+    let mut result = db.0.query("SELECT recovery_hash FROM user_profile:main")
+        .await
+        .map_err(|e| e.to_string())?;
+    
+    let profiles: Vec<serde_json::Value> = result.take(0).map_err(|e| e.to_string())?;
+    
+    let is_key_valid = if let Some(profile_data) = profiles.first() {
+        if let Some(hash_val) = profile_data.get("recovery_hash") {
+            if let Some(stored_hash) = hash_val.as_str() {
+                if stored_hash.is_empty() {
+                    false
+                } else {
+                    verify(&recovery_key, stored_hash).unwrap_or(false)
+                }
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+    } else {
+        false
+    };
+
     if !is_key_valid {
+        println!("[COMMAND] reset_password: invalid recovery key");
         return Ok(false);
     }
     
@@ -959,7 +983,109 @@ pub async fn seed_emotional_states(db: tauri::State<'_, crate::db::DbState>) -> 
     crate::seed::emotional_states_seed::seed_emotional_states(&db.0, None).await
 }
 
+
 #[tauri::command]
 pub fn get_machine_id_cmd() -> String {
     crate::hardware::get_machine_id()
+}
+
+// --- Backup & Restore ---
+
+/// Export all user data to a JSON file. Returns the path of the saved file.
+#[tauri::command]
+pub async fn backup_database(db: State<'_, DbState>, path: String) -> Result<String, String> {
+    println!("[COMMAND] backup_database to: {}", path);
+
+    // Tables to export (in order)
+    let tables = vec![
+        "user_profile", "account", "currency", "market", "asset_type", "asset",
+        "strategy", "emotional_state", "modality", "tag", "timeframe", "chart_type",
+        "indicator", "fee_profile", "risk_profile", "api_config",
+        "trade", "cash_transaction", "journal_entry",
+        "tax_rule", "tax_profile", "tax_profile_entry", "tax_mapping",
+        "tax_appraisal", "tax_darf", "tax_loss",
+    ];
+
+    let mut backup = serde_json::json!({
+        "version": 1,
+        "created_at": chrono::Utc::now().to_rfc3339(),
+        "tables": {}
+    });
+
+    for table in &tables {
+        let sql = format!("SELECT * FROM {}", table);
+        match db.0.query(&sql).await {
+            Ok(mut res) => {
+                match res.take::<Vec<serde_json::Value>>(0) {
+                    Ok(rows) => {
+                        backup["tables"][table] = serde_json::json!(rows);
+                        println!("[BACKUP] Table {}: {} rows", table, rows.len());
+                    }
+                    Err(e) => {
+                        println!("[BACKUP] Warning: failed to read {}: {}", table, e);
+                        backup["tables"][table] = serde_json::json!([]);
+                    }
+                }
+            }
+            Err(e) => {
+                println!("[BACKUP] Warning: query failed for {}: {}", table, e);
+                backup["tables"][table] = serde_json::json!([]);
+            }
+        }
+    }
+
+    let json_str = serde_json::to_string_pretty(&backup).map_err(|e| e.to_string())?;
+    tokio::fs::write(&path, &json_str).await.map_err(|e| format!("Failed to write file: {}", e))?;
+    
+    println!("[COMMAND] backup_database SUCCESS: {}", path);
+    Ok(path)
+}
+
+/// Import user data from a JSON backup file. Restores all tables via UPSERT.
+#[tauri::command]
+pub async fn restore_database(db: State<'_, DbState>, path: String) -> Result<usize, String> {
+    println!("[COMMAND] restore_database from: {}", path);
+
+    let content = tokio::fs::read_to_string(&path).await
+        .map_err(|e| format!("Failed to read file: {}", e))?;
+    
+    let backup: serde_json::Value = serde_json::from_str(&content)
+        .map_err(|e| format!("Invalid backup file: {}", e))?;
+
+    let tables = backup["tables"].as_object()
+        .ok_or_else(|| "Invalid backup format: missing 'tables'".to_string())?;
+
+    let mut total_restored = 0usize;
+
+    for (table, rows) in tables {
+        let rows_arr = match rows.as_array() {
+            Some(r) => r,
+            None => continue,
+        };
+        
+        for row in rows_arr {
+            // Extract the SurrealDB ID
+            let raw_id = row.get("id")
+                .and_then(|v| v.as_str())
+                .ok_or_else(|| format!("Row in '{}' is missing 'id' field", table))?;
+            
+            // Extract clean id (after colon if table:id format)
+            let clean_id = raw_id.split(':').last().unwrap_or(raw_id);
+            
+            // Remove 'id' from data, since we pass it via type::thing
+            let mut data = row.clone();
+            if let Some(obj) = data.as_object_mut() {
+                obj.remove("id");
+            }
+
+            if let Err(e) = upsert_record(&db.0, table, clean_id, data).await {
+                println!("[RESTORE] Warning: failed to restore {}:{} - {}", table, clean_id, e);
+            } else {
+                total_restored += 1;
+            }
+        }
+    }
+
+    println!("[COMMAND] restore_database SUCCESS: {} records restored", total_restored);
+    Ok(total_restored)
 }

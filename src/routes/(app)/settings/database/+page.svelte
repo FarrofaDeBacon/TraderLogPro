@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api/core";
+    import { save, open } from "@tauri-apps/plugin-dialog";
     import { Button } from "$lib/components/ui/button";
     import * as Card from "$lib/components/ui/card";
     import * as AlertDialog from "$lib/components/ui/alert-dialog";
@@ -9,6 +10,9 @@
         Database,
         Trash2,
         AlertCircle,
+        Download,
+        Upload,
+        HardDrive,
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
     import { t } from "svelte-i18n";
@@ -50,6 +54,75 @@
             toast.error((e as Error).message);
         } finally {
             isRestoring = false;
+        }
+    }
+
+    // --- Backup & Restore ---
+    let isBackingUp = $state(false);
+    let isRestoringBackup = $state(false);
+
+    async function handleBackup() {
+        isBackingUp = true;
+        try {
+            const now = new Date();
+            const ts = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}_${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
+            const defaultName = `traderlog_backup_${ts}.json`;
+
+            const path = await save({
+                title: $t("settings.database.backup.saveTitle"),
+                defaultPath: defaultName,
+                filters: [{ name: "JSON Backup", extensions: ["json"] }],
+            });
+
+            if (!path) {
+                isBackingUp = false;
+                return; // user cancelled
+            }
+
+            await invoke("backup_database", { path });
+            toast.success($t("settings.database.backup.successExport"));
+        } catch (e) {
+            const errorMsg = typeof e === "string" ? e : String(e);
+            console.error("Backup failed:", e);
+            toast.error(
+                $t("settings.database.backup.errorExport") + ": " + errorMsg,
+            );
+        } finally {
+            isBackingUp = false;
+        }
+    }
+
+    async function handleRestore() {
+        isRestoringBackup = true;
+        try {
+            const path = await open({
+                title: $t("settings.database.backup.openTitle"),
+                filters: [{ name: "JSON Backup", extensions: ["json"] }],
+                multiple: false,
+                directory: false,
+            });
+
+            if (!path || Array.isArray(path)) {
+                isRestoringBackup = false;
+                return; // user cancelled
+            }
+
+            const count = await invoke<number>("restore_database", { path });
+            toast.success(
+                $t("settings.database.backup.successImport").replace(
+                    "{count}",
+                    String(count),
+                ),
+            );
+            setTimeout(() => window.location.reload(), 1500);
+        } catch (e) {
+            const errorMsg = typeof e === "string" ? e : String(e);
+            console.error("Restore failed:", e);
+            toast.error(
+                $t("settings.database.backup.errorImport") + ": " + errorMsg,
+            );
+        } finally {
+            isRestoringBackup = false;
         }
     }
 
@@ -99,7 +172,7 @@
         }
     }
 
-    let isResetting = $state(false);
+    let isResetReseed = $state(false);
     let isResetModalOpen = $state(false);
 
     function triggerForceReseed() {
@@ -107,7 +180,7 @@
     }
 
     async function executeForceReseed() {
-        isResetting = true;
+        isResetReseed = true;
         try {
             await invoke("force_reseed");
             toast.success("Reset complete");
@@ -115,7 +188,7 @@
         } catch (e) {
             toast.error((e as Error).message);
         } finally {
-            isResetting = false;
+            isResetReseed = false;
         }
     }
 </script>
@@ -276,6 +349,56 @@
         </Card.Content>
     </Card.Root>
 
+    <!-- Backup & Restore -->
+    <Card.Root class="border-emerald-500/20">
+        <Card.Header>
+            <div class="flex items-center gap-2">
+                <HardDrive class="w-5 h-5 text-emerald-500" />
+                <Card.Title>{$t("settings.database.backup.title")}</Card.Title>
+            </div>
+            <Card.Description>
+                {$t("settings.database.backup.description")}
+            </Card.Description>
+        </Card.Header>
+        <Card.Content>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <!-- Export -->
+                <Button
+                    onclick={handleBackup}
+                    disabled={isBackingUp}
+                    class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                    {#if isBackingUp}
+                        <RefreshCw class="w-4 h-4 mr-2 animate-spin" />
+                        {$t("settings.database.backup.exporting")}
+                    {:else}
+                        <Download class="w-4 h-4 mr-2" />
+                        {$t("settings.database.backup.export")}
+                    {/if}
+                </Button>
+
+                <!-- Import/Restore -->
+                <Button
+                    onclick={handleRestore}
+                    disabled={isRestoringBackup}
+                    variant="outline"
+                    class="flex-1 border-emerald-500/40 text-emerald-600 hover:bg-emerald-500/10"
+                >
+                    {#if isRestoringBackup}
+                        <RefreshCw class="w-4 h-4 mr-2 animate-spin" />
+                        {$t("settings.database.backup.importing")}
+                    {:else}
+                        <Upload class="w-4 h-4 mr-2" />
+                        {$t("settings.database.backup.import")}
+                    {/if}
+                </Button>
+            </div>
+            <p class="text-[11px] text-muted-foreground mt-3">
+                {$t("settings.database.backup.hint")}
+            </p>
+        </Card.Content>
+    </Card.Root>
+
     <!-- Danger Zone -->
     <Card.Root class="border-destructive/30 bg-destructive/5 backdrop-blur-sm">
         <Card.Header>
@@ -297,11 +420,11 @@
             </p>
             <Button
                 onclick={triggerForceReseed}
-                disabled={isResetting}
+                disabled={isResetReseed}
                 variant="destructive"
                 class="w-full font-bold"
             >
-                {#if isResetting}
+                {#if isResetReseed}
                     <RefreshCw class="w-4 h-4 mr-2 animate-spin" />
                     {$t("settings.database.danger.resetting")}
                 {:else}
