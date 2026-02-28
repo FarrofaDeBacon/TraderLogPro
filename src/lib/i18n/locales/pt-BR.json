@@ -49,7 +49,17 @@
             "months": "meses",
             "year": "ano",
             "years": "anos"
-        }
+        },
+        "currency": "Currency",
+        "custom": "Custom",
+        "edit": "Edit",
+        "name": "Name",
+        "no": "No",
+        "noData": "No Data",
+        "of": "Of",
+        "reload": "Reload",
+        "weeks_upper": "Weeks_upper",
+        "yes": "Yes"
     },
     "filters": {
         "date": {
@@ -94,7 +104,8 @@
                     "news": "Notícias: Verifiquei o Calendário Econômico do dia?",
                     "risk_limit": "Risco: Defini meu Stop Loss máximo para hoje?",
                     "mindset": "Mental: Estou calmo e focado para operar?"
-                }
+                },
+                "economicCalendar": "Economic Calendar"
             },
             "summary": {
                 "title": "Resumo do Dia",
@@ -213,7 +224,13 @@
         "fiscalDashboard": "Visão Geral",
         "fiscalRules": "Regras Fiscais",
         "quant": "Tela Quant",
-        "settings": "Configurações"
+        "settings": "Configurações",
+        "categories": {
+            "analysis": "Analysis",
+            "fiscal": "Fiscal",
+            "workspace": "Workspace"
+        },
+        "darfs": "Darfs"
     },
     "auth": {
         "login": {
@@ -231,7 +248,56 @@
             "error": {
                 "fillAll": "Preencha todos os campos.",
                 "invalidCredentials": "Credenciais inválidas."
-            }
+            },
+            "recovery": {
+                "back": "Back",
+                "confirm": "Confirm",
+                "description": "Description",
+                "error": {
+                    "fillAll": "Fill All",
+                    "generic": "Generic",
+                    "invalidKey": "Invalid Key",
+                    "mismatch": "Mismatch"
+                },
+                "keyLabel": "Key Label",
+                "loading": "Loading",
+                "newPassword": "New Password",
+                "submit": "Submit",
+                "success": "Success",
+                "title": "Title"
+            },
+            "signup": "Signup",
+            "social": "Social"
+        },
+        "register": {
+            "alreadyHaveAccount": "Already Have Account",
+            "birthDate": "Birth Date",
+            "confirmPassword": "Confirm Password",
+            "cpf": "Cpf",
+            "description": "Description",
+            "email": "Email",
+            "error": {
+                "fillAll": "Fill All",
+                "passwordsMismatch": "Passwords Mismatch"
+            },
+            "loading": "Loading",
+            "login": "Login",
+            "name": "Name",
+            "password": "Password",
+            "recoveryKey": {
+                "confirm": "Confirm",
+                "copyPrompt": "Copy Prompt",
+                "description": "Description",
+                "keepSecure": "Keep Secure",
+                "label": "Label",
+                "successCopy": "Success Copy",
+                "title": "Title",
+                "warning": "Warning"
+            },
+            "submit": "Submit",
+            "success": "Success",
+            "terms": "Terms",
+            "title": "Title"
         }
     },
     "home": {
@@ -281,7 +347,8 @@
             "market": "Mercado",
             "assetType": "Tipo de Ativo",
             "period": "Período",
-            "title": "Filtros"
+            "title": "Filtros",
+            "currency": "Currency"
         },
         "messages": {
             "delete_success": "Operação excluída com sucesso."
@@ -554,6 +621,9 @@
                 "title": "Aderência ao Plano",
                 "yes_msg": "Operação executada conforme a estratégia.",
                 "no_msg": "Houve desvio nas regras do setup."
+            },
+            "risk": {
+                "toast_lot_adjusted": "Toast_lot_adjusted"
             }
         }
     },
@@ -565,7 +635,11 @@
         "quickStats": {
             "totalBalance": "Saldo Total (Est.)",
             "activeAccounts": "Contas Ativas",
-            "monthlyResult": "Resultado do Mês"
+            "monthlyResult": "Resultado do Mês",
+            "consolidated": "Consolidated",
+            "monthlyResultDesc": "Monthly Result Desc",
+            "totalEquity": "Total Equity",
+            "viewBreakdown": "View Breakdown"
         },
         "statement": {
             "title": "Extrato de Movimentações",
@@ -597,8 +671,10 @@
                 "periodEntries": "Lançamentos do Período"
             },
             "messages": {
-                "systemLinked": "Esta transação foi gerada pelo sistema e só pode ser alterada no módulo de origem (ex: IRPF)."
-            }
+                "systemLinked": "Esta transação foi gerada pelo sistema e só pode ser alterada no módulo de origem (ex: IRPF).",
+                "deleteError": "Delete Error"
+            },
+            "noNumber": "No Number"
         },
         "details": {
             "title": "Detalhes da Transação",
@@ -627,7 +703,8 @@
             "success": "Transferência realizada com sucesso!",
             "errorDifferentAccounts": "As contas de origem e destino devem ser diferentes.",
             "errorPositiveValue": "O valor deve ser maior que zero.",
-            "finalAmountHint": "Valor após taxas e conversão cambial"
+            "finalAmountHint": "Valor após taxas e conversão cambial",
+            "errorSave": "Error Save"
         },
         "closureWizard": {
             "title": "Fechamento Diário",
@@ -659,7 +736,9 @@
                 "successTitle": "Fechamento Concluído!",
                 "successDescription": "Os valores foram lançados no extrato das contas selecionadas.",
                 "finish": "Concluir"
-            }
+            },
+            "error": "Error",
+            "success": "Success"
         },
         "transactionDialog": {
             "title": "Novo Lancamento",
@@ -699,7 +778,35 @@
                 "amountWithCurrency": "Valor ({currency})",
                 "entryWithCurrency": "Entrada ({currency})",
                 "feePercent": "Taxa (%)"
-            }
+            },
+            "fxRate": "Fx Rate"
+        },
+        "charts": {
+            "evolution": "Evolution"
+        },
+        "darfDetails": {
+            "calculationInfo": "Calculation Info",
+            "complementaryBadge": "Complementary Badge",
+            "dateNotAvailable": "Date Not Available",
+            "description": "Description",
+            "dueDate": "Due Date",
+            "errorMessage": "Error Message",
+            "fine": "Fine",
+            "interest": "Interest",
+            "loading": "Loading",
+            "paidAt": "Paid At",
+            "period": "Period",
+            "principalValue": "Principal Value",
+            "revenueCode": "Revenue Code",
+            "statusPaid": "Status Paid",
+            "statusPending": "Status Pending",
+            "taxRate": "Tax Rate",
+            "title": "Title",
+            "totalPaid": "Total Paid",
+            "unpayAction": "Unpay Action",
+            "unpayCancel": "Unpay Cancel",
+            "unpayConfirm": "Unpay Confirm",
+            "unpayTitle": "Unpay Title"
         }
     },
     "psychology": {
@@ -714,11 +821,18 @@
             "tiltCost": "Custo do Descontrole",
             "tiltDescription": "Em {count} trades com emoções negativas",
             "unregistered": "Trades sem Registro",
-            "unregisteredDescription": "Operações sem estado emocional"
+            "unregisteredDescription": "Operações sem estado emocional",
+            "accumulatedLoss": "Accumulated Loss",
+            "consolidated": "Consolidated",
+            "records": "Records",
+            "recordsDescription": "Records Description"
         },
         "charts": {
             "winRateTitle": "Taxa de Acerto por Emoção (%)",
-            "resultTitle": "Resultado Financeiro por Emoção (R$)"
+            "resultTitle": "Resultado Financeiro por Emoção (R$)",
+            "correlation": "Correlation",
+            "pnlByEmotion": "Pnl By Emotion",
+            "winRate": "Win Rate"
         },
         "list": {
             "title": "Últimos Trades Registrados",
@@ -758,6 +872,22 @@
             "description": "Tem certeza que deseja excluir este registro emocional? Esta ação não pode ser desfeita.",
             "confirm": "Excluir",
             "cancel": "Cancelar"
+        },
+        "analysis": {
+            "hierarchy": "Hierarchy",
+            "title": "Title"
+        },
+        "insight": {
+            "formulaTitle": "Formula Title",
+            "opScore": "Op Score",
+            "title": "Title"
+        },
+        "journal": {
+            "entryStateShort": "Entry State Short",
+            "exitStateShort": "Exit State Short",
+            "intensityShort": "Intensity Short",
+            "score": "Score",
+            "title": "Title"
         }
     },
     "settings": {
@@ -767,7 +897,9 @@
                 "registration": "Cadastro",
                 "operational": "Operacional",
                 "analysis": "Análise",
-                "system": "Sistema"
+                "system": "Sistema",
+                "fiscal": "Fiscal",
+                "integrations": "Integrations"
             },
             "profile": "Meu Perfil",
             "accounts": "Contas",
@@ -784,7 +916,14 @@
             "indicators": "Indicadores",
             "timeframes": "Timeframes",
             "chartTypes": "Tipos de Gráfico",
-            "integrations": "API & Integrações"
+            "integrations": "API & Integrações",
+            "database": "Database",
+            "fiscal": {
+                "assignments": "Assignments",
+                "profiles": "Profiles",
+                "rules": "Rules"
+            },
+            "license": "License"
         },
         "general": {
             "title": "Geral",
@@ -797,85 +936,101 @@
             "description": "Gerencie suas informações pessoais e preferências do sistema.",
             "save": "Salvar Alterações",
             "personalInfo": {
-                "title": "Informações Pessoais",
+                "title": "INFORMAÇÕES PESSOAIS",
                 "avatar": "Foto de Perfil",
                 "avatarHint": "Clique para alterar sua foto.",
-                "removePhoto": "Remover foto",
+                "removePhoto": "Remover Foto",
                 "fullName": "Nome Completo",
                 "cpf": "CPF",
                 "email": "Email",
-                "phone": "Telefone"
+                "phone": "Telefone",
+                "cpfPlaceholder": "000.000.000-00",
+                "birthDate": "Data de Nascimento"
             },
             "security": {
-                "title": "Segurança e Acesso",
+                "title": "SEGURANÇA E ACESSO",
                 "logout": "Sair da Conta",
-                "confirmLogout": "Deseja realmente sair?",
-                "loggingOut": "Saindo do sistema...",
+                "confirmLogout": "Tem certeza que deseja sair?",
+                "loggingOut": "Saindo...",
                 "currentPassword": "Senha Atual",
                 "newPassword": "Nova Senha",
                 "confirmPassword": "Confirmar Nova Senha",
                 "changePassword": "Alterar Senha",
                 "error": {
-                    "minChars": "A nova senha deve ter no mínimo 6 caracteres.",
-                    "mismatch": "As novas senhas não conferem."
+                    "minChars": "A senha deve ter pelo menos 6 caracteres.",
+                    "mismatch": "As senhas não coincidem."
                 },
-                "success": "Senha alterada com sucesso! (Simulação)"
+                "success": "Senha alterada com sucesso.",
+                "currentPasswordPlaceholder": "Insira a senha atual",
+                "newPasswordPlaceholder": "Insira a nova senha",
+                "confirmPasswordPlaceholder": "Confirme a nova senha"
             },
             "preferences": {
-                "title": "Configurações",
+                "title": "CONFIGURAÇÕES",
                 "theme": "Tema",
                 "themeDark": "Escuro",
                 "themeLight": "Claro",
                 "language": "Idioma",
                 "timezone": "Fuso Horário",
                 "mainCurrency": "Moeda Principal",
-                "convertAll": "Converter todos os saldos para a moeda principal"
+                "convertAll": "Converter todos os saldos para a moeda principal",
+                "langPT": "Português (PT-BR)",
+                "langEN": "Inglês (EN-US)",
+                "langES": "Espanhol (ES-ES)",
+                "langFR": "Francês (FR-FR)",
+                "utcOffset": "Fuso Horário",
+                "region": "Região"
             },
             "license": {
-                "title": "Licença do Produto",
+                "title": "LICENÇA DO PRODUTO",
                 "lifetime": "TraderLog Pro - Vitalício",
                 "keyStatus": "Status da Chave",
-                "active": "ATIVA E VERIFICADA"
+                "active": "Ativo",
+                "prompt": "Complete seu perfil com seus dados reais para habilitar e visualizar seu PIN de acesso.",
+                "status": "Status",
+                "trial": "Licença Trial",
+                "viewDetails": "View Details",
+                "expired": "Expirado"
             },
             "success": "Perfil atualizado com sucesso!"
         },
         "api": {
             "form": {
-                "editTitle": "Editar Chave",
-                "newTitle": "Novo Item",
-                "description": "Configure o acesso ao provedor externo.",
+                "editTitle": "Editar Configuração de API",
+                "newTitle": "Nova Configuração de API",
+                "description": "Configure uma nova chave de API para habilitar integrações no TraderLog Pro.",
                 "provider": "Provedor",
-                "apiKey": "Chave da API",
-                "apiKeyPlaceholder": "Sua chave de API",
-                "test": "Testar",
-                "dailyLimit": "Limite Diário de Requisições",
-                "dailyLimitHint": "Número máximo de chamadas à API por dia",
-                "enabled": "API Ativa",
-                "enabledHint": "Habilitar/desabilitar o uso desta API",
-                "noteTitle": "Nota sobre Limites:",
-                "noteBody": "Verifique o limite gratuito do seu provedor para evitar bloqueios.",
-                "save": "Salvar Configuração",
+                "apiKey": "Chave de API",
+                "apiKeyPlaceholder": "sk-...",
+                "test": "Testar Chave",
+                "dailyLimit": "Limite Diário (Avisos)",
+                "dailyLimitHint": "Notifica quando o uso atingir este limite.",
+                "enabled": "Habilitar esta API",
+                "enabledHint": "APIs desabilitadas não farão requisições.",
+                "noteTitle": "Mantenha suas chaves seguras.",
+                "noteBody": "As chaves de API são armazenadas localmente no seu dispositivo. Nunca as compartilhe.",
+                "save": "Salvar",
                 "cancel": "Cancelar",
-                "testInfo": "Testando chave... (Simulação)",
-                "testSuccess": "Chave Validada com sucesso!",
-                "enterKeyError": "Insira uma chave para testar.",
-                "viewOpenAIPrices": "Ver preços da OpenAI",
-                "viewPolygonPlans": "Ver planos da Polygon",
+                "testInfo": "Testando chave de API...",
+                "testSuccess": "Chave de API testada com sucesso!",
+                "enterKeyError": "Por favor, insira uma chave de API primeiro.",
+                "viewOpenAIPrices": "Ver preços OpenAI",
+                "viewPolygonPlans": "Ver planos Polygon",
                 "providerCustom": "Personalizado",
                 "providers": {
                     "exchangerate-api": "ExchangeRate-API (Câmbio)",
-                    "polygon": "Polygon.io (Mercado)",
-                    "openai": "OpenAI (GPT-4 / GPT-3.5)",
-                    "google_gemini": "Google Gemini (Flash/Pro)",
-                    "anthropic": "Anthropic (Claude)",
-                    "alpha_vantage": "Alpha Vantage (Dados de Mercado)",
+                    "polygon": "Polygon.io",
+                    "openai": "OpenAI",
+                    "google_gemini": "Google Gemini",
+                    "anthropic": "Anthropic Claude",
+                    "alpha_vantage": "Alpha Vantage",
                     "mock": "Simulação (Mock)",
                     "profit": "Profit Chart (RTD)",
                     "custom": "Personalizado"
                 },
-                "getGeminiApiKey": "Obter chave do Gemini",
-                "getOpenAIApiKey": "Obter chave da OpenAI",
-                "getPolygonApiKey": "Obter chave da Polygon.io",
+                "getGeminiApiKey": "Obter chave Gemini",
+                "getOpenAIApiKey": "Obter chave OpenAI",
+                "getPolygonApiKey": "Obter chave Polygon",
                 "errors": {
                     "keyRequired": "Chave API obrigatória",
                     "enterKeyFirst": "Informe a chave primeiro.",
@@ -935,6 +1090,21 @@
                     "allAssetsSupport": "Suporte a qualquer ativo B3 (PETR4, VALE3, etc)",
                     "requirementTitle": "Configuração no Excel",
                     "requirementDesc": "O arquivo deve conter as abas: DADOS, BOOK [ATIVO], PLAYERS. O Profit deve estar exportando para este arquivo."
+                },
+                "currency": {
+                    "error": "Error",
+                    "success": "Success",
+                    "syncNow": "Sincronizar Agora",
+                    "syncing": "Sincronizando...",
+                    "title": "Serviço de Câmbio (Moedas)",
+                    "tag": "Público & Gratuito",
+                    "description": "Utilizado para converter seus saldos e resultados para BRL no Hub Financeiro. Usamos a AwesomeAPI por padrão.",
+                    "endpointLabel": "Endereço da API (Endpoint)",
+                    "saveUrl": "Salvar URL",
+                    "hint": "Se o endereço mudar no futuro, você pode atualizá-lo aqui sem mexer no código.",
+                    "successSave": "URL de Câmbio salva com sucesso!",
+                    "successSync": "Câmbio atualizado! {count} moedas sincronizadas.",
+                    "errorSync": "Erro ao sincronizar moedas."
                 }
             }
         },
@@ -960,7 +1130,8 @@
             "empty": "Nenhum ativo encontrado",
             "labels": {
                 "pointValue": "VALOR PONTO",
-                "invalid": "Inválido"
+                "invalid": "Inválido",
+                "unknown": "Unknown"
             },
             "form": {
                 "symbol": "Símbolo",
@@ -973,7 +1144,12 @@
                 "specificFee": "Taxa Específica",
                 "specificFeePlaceholder": "Usar do Tipo de Ativo",
                 "useTypeDefault": "Usar do Tipo de Ativo",
-                "save": "Salvar"
+                "save": "Salvar",
+                "brokerageProfile": "Brokerage Profile",
+                "fiscalProfile": "Fiscal Profile"
+            },
+            "groups": {
+                "others": "Others"
             }
         },
         "assetTypes": {
@@ -994,6 +1170,12 @@
                 "defaultFeePlaceholder": "Selecione (Opcional)",
                 "none": "Nenhum",
                 "save": "Salvar"
+            },
+            "labels": {
+                "brokerageProfile": "Brokerage Profile",
+                "fiscalProfile": "Fiscal Profile",
+                "noneDefault": "None Default",
+                "noneExempt": "None Exempt"
             }
         },
         "accounts": {
@@ -1008,22 +1190,31 @@
                 "Demo": "Simuladores / Demo"
             },
             "form": {
-                "titleNew": "Nova Conta",
+                "titleNew": "Criar Conta",
                 "titleEdit": "Editar Conta",
-                "icon": "Ícone da Conta",
+                "icon": "Ícone",
                 "addIcon": "Adicionar Ícone",
-                "iconHint": "PNG, JPG ou SVG. Máximo 500KB.",
-                "nickname": "Apelido da Conta*",
+                "iconHint": "Clique para selecionar",
+                "nickname": "Apelido (Nickname)",
                 "nicknamePlaceholder": "Ex: Conta Principal",
-                "type": "Tipo de Conta",
-                "broker": "Corretora / Mesa*",
+                "type": "Tipo",
+                "broker": "Corretora",
                 "brokerPlaceholder": "Ex: Binance, XP...",
                 "number": "Número da Conta",
                 "numberPlaceholder": "Ex: 12345-6",
-                "currency": "Moeda Base*",
+                "currency": "Moeda",
                 "balance": "Saldo Inicial",
-                "save": "Salvar"
-            }
+                "save": "Salvar Conta",
+                "saving": "Salvando...",
+                "balanceLabel": "Saldo Atual"
+            },
+            "confirmDeduplicate": "Deseja realmente remover configurações duplicadas?",
+            "errorDeduplicate": "Erro ao remover duplicatas.",
+            "groups": {
+                "others": "Simuladores / Demo"
+            },
+            "removeDuplicates": "Remover Duplicatas",
+            "successDeduplicate": "Duplicatas removidas com sucesso."
         },
         "currencies": {
             "title": "Moedas",
@@ -1069,8 +1260,15 @@
                     "exemption": "Limite de Isenção",
                     "exemptionHint": "Vendas mensais abaixo deste valor isentam o IR sobre lucros.",
                     "cumulative": "Compensa Prejuízos",
-                    "save": "Salvar Regra"
-                }
+                    "save": "Salvar Regra",
+                    "basisHint": "Basis Hint",
+                    "cumulativeHint": "Cumulative Hint",
+                    "errorSave": "Error Save",
+                    "nameRequired": "Name Required",
+                    "successSave": "Success Save"
+                },
+                "description": "Description",
+                "title": "Title"
             },
             "mappings": {
                 "description": "Associe cada Tipo de Ativo e Modalidade a uma Regra Fiscal.",
@@ -1078,6 +1276,53 @@
                 "modality": "Modalidade",
                 "rule": "Regra Aplicável",
                 "noRule": "Sem Regra (Isento/Ignorado)"
+            },
+            "assignments": {
+                "description": "Description",
+                "goToAssetTypes": "Go To Asset Types",
+                "table": {
+                    "assetType": "Asset Type",
+                    "empty": "Empty",
+                    "market": "Market"
+                },
+                "tip": {
+                    "text": "Text",
+                    "title": "Title"
+                },
+                "title": "Title"
+            },
+            "profiles": {
+                "create": "Create",
+                "description": "Description",
+                "empty": "Empty",
+                "error": {
+                    "duplicateModality": "Duplicate Modality",
+                    "errorAddEntry": "Error Add Entry",
+                    "nameRequired": "Name Required",
+                    "saveError": "Save Error",
+                    "selectRequired": "Select Required"
+                },
+                "form": {
+                    "description": "Description",
+                    "name": "Name",
+                    "save": "Save",
+                    "saving": "Saving",
+                    "titleEdit": "Title Edit",
+                    "titleNew": "Title New",
+                    "update": "Update"
+                },
+                "linkedRules": "Linked Rules",
+                "new": "New",
+                "noLinkedRules": "No Linked Rules",
+                "success": {
+                    "create": "Create",
+                    "ruleAdded": "Rule Added",
+                    "ruleAddedDraft": "Rule Added Draft",
+                    "ruleRemoved": "Rule Removed",
+                    "ruleRemovedDraft": "Rule Removed Draft",
+                    "update": "Update"
+                },
+                "title": "Title"
             }
         },
         "fees": {
@@ -1133,7 +1378,8 @@
                 "noCustomItems": "Nenhum item personalizado.",
                 "itemNamePlaceholder": "Nome do custo/imposto",
                 "fixed": "Fixo ($)",
-                "percentage": "Porcentagem (%)"
+                "percentage": "Porcentagem (%)",
+                "select": "Select"
             }
         },
         "risk": {
@@ -1162,7 +1408,66 @@
                 "All": "Todas as Contas",
                 "Prop": "Mesa Proprietária",
                 "Real": "Conta Real",
-                "Demo": "Conta Demo"
+                "Demo": "Conta Demo",
+                "Specific": "Specific"
+            },
+            "engine": {
+                "outlier": {
+                    "description": "Description",
+                    "title": "Title"
+                },
+                "psychological": {
+                    "title": "Title"
+                },
+                "sniper": {
+                    "description": "Description",
+                    "title": "Title"
+                }
+            },
+            "form": {
+                "accounts": {
+                    "title": "Title"
+                },
+                "presets": {
+                    "aggressive": "Aggressive",
+                    "conservative": "Conservative",
+                    "moderate": "Moderate",
+                    "title": "Title"
+                },
+                "tabs": {
+                    "engine": "Engine",
+                    "general": "General",
+                    "growth": "Growth"
+                }
+            },
+            "growthPlan": {
+                "actions": {
+                    "demote": "Demote",
+                    "promote": "Promote"
+                },
+                "activeStatus": "Active Status",
+                "addPhase": "Add Phase",
+                "dailyLossLabel": "Daily Loss Label",
+                "enable": "Enable",
+                "enableDesc": "Enable Desc",
+                "lossLabel": "Loss Label",
+                "maxLotLabel": "Max Lot Label",
+                "maxLotsLabel": "Max Lots Label",
+                "noPhases": "No Phases",
+                "phases": "Phases",
+                "phasesTitle": "Phases Title",
+                "status": {
+                    "approved": "Approved",
+                    "regression": "Regression",
+                    "title": "Title"
+                },
+                "title": "Title"
+            },
+            "platformLock": "Platform Lock",
+            "profiles": {
+                "activate": "Activate",
+                "dailyLoss": "Daily Loss",
+                "dailyTarget": "Daily Target"
             }
         },
         "modalities": {
@@ -1406,7 +1711,342 @@
                 "start": "Início",
                 "end": "Fim",
                 "addSession": "Adicionar Sessão",
-                "save": "Salvar Mercado"
+                "save": "Salvar Mercado",
+                "name": "Name",
+                "namePlaceholder": "Name Placeholder",
+                "until": "Until"
+            },
+            "empty": "Empty"
+        },
+        "appearance": {
+            "compactDescription": "Compact Description",
+            "compactLabel": "Compact Label",
+            "description": "Description",
+            "themeDescription": "Theme Description",
+            "themeLabel": "Theme Label",
+            "title": "Title"
+        },
+        "backup": {
+            "clearButton": "Clear Button",
+            "confirmReset": "Confirm Reset",
+            "dangerDescription": "Danger Description",
+            "dangerZone": "Danger Zone",
+            "description": "Description",
+            "exportButton": "Export Button",
+            "exportDescription": "Export Description",
+            "exportTitle": "Export Title",
+            "title": "Title"
+        },
+        "defaults": {
+            "autoCalcLabel": "Auto Calc Label",
+            "description": "Description",
+            "riskHint": "Risk Hint",
+            "riskLabel": "Risk Label",
+            "strategyHint": "Strategy Hint",
+            "strategyLabel": "Strategy Label",
+            "strategyPlaceholder": "Strategy Placeholder",
+            "title": "Title"
+        },
+        "header": {
+            "description": "Description",
+            "title": "Title"
+        },
+        "license": {
+            "management": {
+                "title": "Gerenciamento de Licenças",
+                "subtitle": "Gere e gerencie licenças baseadas em identidade para proteger sua venda.",
+                "activeBadge": "Assinatura {plan} Ativa",
+                "trialBadge": "Versão Trial ({days} dias)",
+                "expiredBadge": "Expirada",
+                "removeBtn": "Remover Licença",
+                "removeConfirm": "Tem certeza que deseja remover esta licença? Você voltará para o período trial ou ficará sem acesso se ele já tiver expirado.",
+                "removeSuccess": "Licença removida com sucesso.",
+                "typeLabel": "Tipo de Licença",
+                "durationLabel": "Duração Contratada",
+                "durationLifetime": "Vitalícia",
+                "durationDays": "{days} dias",
+                "remainingLabel": "Restante",
+                "remainingDays": "{days} dias",
+                "step1": {
+                    "title": "Gerar PIN de Solicitação",
+                    "desc": "Certifique-se de que seus dados no Perfil estão corretos.",
+                    "pinLabel": "Seu PIN Único (Vinculado a esta máquina)",
+                    "incomplete": "DADOS INCOMPLETOS",
+                    "copyBtn": "Copiar",
+                    "copySuccess": "PIN copiado!",
+                    "hint": "Envie este PIN para o suporte para receber seu arquivo de licença <code>.lic</code>.",
+                    "footer": "* O PIN é gerado a partir do seu CPF e da identificação de hardware (BIOS)."
+                },
+                "step2": {
+                    "title": "Ativar por Arquivo",
+                    "desc": "Carregue o arquivo recebido para desbloquear o sistema.",
+                    "noFile": "Nenhum arquivo selecionado",
+                    "format": "Formato aceito: .lic",
+                    "uploadBtn": "Carregar Arquivo .lic",
+                    "activating": "Ativando...",
+                    "successMsg": "Licença {plan} ativada com sucesso!",
+                    "invalidMsg": "Arquivo de licença inválido para esta máquina.",
+                    "errorLoad": "Erro ao carregar arquivo de licença.",
+                    "fileSelected": "Licença selecionada com sucesso."
+                },
+                "benefits": {
+                    "title": "Vantagens da Licença Vitalícia",
+                    "benefit1": "Acesso ilimitado a todas as ferramentas de diário e backtest.",
+                    "benefit2": "Sincronização automática de cotações e ativos.",
+                    "benefit3": "Relatórios psicológicos e estatísticos detalhados.",
+                    "local_first": {
+                        "title": "Local First",
+                        "desc": "Validação 100% offline via criptografia Ed25519."
+                    },
+                    "identity_lock": {
+                        "title": "Travamento por Identidade",
+                        "desc": "Amarrado ao Nome e CPF. Impossível compartilhar."
+                    },
+                    "hardware_lock": {
+                        "title": "Amarrado ao Dispositivo e CPF",
+                        "desc": "Anti-pirataria extremo baseado na máquina e documentos."
+                    }
+                },
+                "steps": {
+                    "1": {
+                        "title": "Coletar Dados",
+                        "desc": "O cliente informa Nome, CPF e Data de Nascimento no onboard."
+                    },
+                    "2": {
+                        "title": "Gerar Licença",
+                        "desc": "Você usa a chave privada para gerar a licença oficial."
+                    },
+                    "3": {
+                        "title": "Validar Offline",
+                        "desc": "O app valida a assinatura contra a chave pública embutida sem internet."
+                    }
+                },
+                "new_license": {
+                    "button": "Cadastrar Nova Licença",
+                    "modalTitle": "Criar Nova Licença",
+                    "modalDesc": "Insira os dados do cliente para gerar uma nova chave.",
+                    "name": "Nome Completo",
+                    "cpf": "CPF (Sem pontuação)",
+                    "birthDate": "Data de Nascimento",
+                    "customerEmail": "Email do Cliente (Opcional)"
+                },
+                "table": {
+                    "client": "Cliente",
+                    "key": "Chave de Licença",
+                    "status": "Status",
+                    "expires": "Expira em",
+                    "actions": "Ações",
+                    "empty": "Nenhuma licença cadastrada."
+                },
+                "status": {
+                    "active": "Ativa",
+                    "expired": "Expirada",
+                    "revoked": "Revogada"
+                },
+                "actions": {
+                    "copy": "Copiar Chave",
+                    "revoke": "Revogar",
+                    "delete": "Excluir"
+                },
+                "delete": {
+                    "title": "Excluir Licença",
+                    "desc": "Tem certeza que deseja excluir permanentemente esta licença do banco de dados? O cliente perderá acesso na próxima validação online (se houver)."
+                },
+                "toasts": {
+                    "created": "Licença criada com sucesso!",
+                    "deleted": "Licença excluída com sucesso!",
+                    "copied": "Licença copiada para a área de transferência!",
+                    "revoked": "Licença revogada com sucesso."
+                }
+            }
+        }
+    },
+    "$lib/stores/settings": {
+        "svelte": "Svelte"
+    },
+    "(": "(",
+    "-": "-",
+    "": {
+        "/locales/en-US": {
+            "json": "Json"
+        },
+        "/locales/es-ES": {
+            "json": "Json"
+        },
+        "/locales/fr-FR": {
+            "json": "Json"
+        },
+        "/locales/pt-BR": {
+            "json": "Json"
+        }
+    },
+    "/": "/",
+    "2023-12-25": "2023-12-25",
+    "2023-12-25T10:00:00": {
+        "000Z": "000Z"
+    },
+    ":": ":",
+    ";": ";",
+    "String:": "String:",
+    "T": "T",
+    "\\n": "\\n",
+    "dashboard": {
+        "charts": {
+            "consistency": "Consistency",
+            "equity": "Equity",
+            "equitySubtitle": "Equity Subtitle"
+        },
+        "dailyDetail": {
+            "asset": "Asset",
+            "buy": "Buy",
+            "direction": "Direction",
+            "efficiency": "Efficiency",
+            "noTrades": "No Trades",
+            "operationsList": "Operations List",
+            "result": "Result",
+            "sell": "Sell",
+            "subtitle": "Subtitle",
+            "summary": "Summary",
+            "title": "Title",
+            "tradeQty": "Trade Qty"
+        },
+        "kpis": {
+            "discipline": "Discipline",
+            "maxDrawdown": "Max Drawdown",
+            "netResult": "Net Result",
+            "payoff": "Payoff",
+            "profitFactor": "Profit Factor",
+            "winRate": "Win Rate"
+        },
+        "newTrade": "New Trade",
+        "quant": {
+            "dollar": "Dollar",
+            "index": "Index",
+            "intention": "Intention",
+            "ranking": "Ranking",
+            "subtitle": "Subtitle",
+            "title": "Title",
+            "waitingData": "Waiting Data"
+        },
+        "schedule": {
+            "afternoon": "Afternoon",
+            "morning": "Morning",
+            "title": "Title"
+        },
+        "subtitle": "Subtitle",
+        "terminalHub": "Terminal Hub",
+        "title": "Title"
+    },
+    "fiscal": {
+        "darf": {
+            "accountError": "Account Error",
+            "active": "Active",
+            "description": "Description",
+            "fineInterest": "Fine Interest",
+            "principalValue": "Principal Value",
+            "registerPayment": "Register Payment",
+            "revenueCode": "Revenue Code",
+            "selectAccount": "Select Account",
+            "sourceAccount": "Source Account",
+            "title": "Title",
+            "totalPaid": "Total Paid"
+        },
+        "irpf": {
+            "calculate": "Calculate",
+            "calculating": "Calculating",
+            "description": "Description",
+            "evolution": "Evolution",
+            "history": "History",
+            "kpis": {
+                "dueYearHint": "Due Year Hint",
+                "losses": "Losses",
+                "paidYearHint": "Paid Year Hint",
+                "pending": "Pending",
+                "totalDue": "Total Due",
+                "totalPaid": "Total Paid"
+            },
+            "manageDarfs": "Manage Darfs",
+            "modal": {
+                "description": "Description",
+                "month": "Month",
+                "title": "Title",
+                "year": "Year"
+            },
+            "newAppraisal": "New Appraisal",
+            "periodFilter": "Period Filter",
+            "saveBeforeDarf": "Save Before Darf",
+            "table": {
+                "actions": "Actions",
+                "compensated": "Compensated",
+                "netProfit": "Net Profit",
+                "paid": "Paid",
+                "period": "Period",
+                "status": "Status",
+                "toPay": "To Pay",
+                "type": "Type"
+            },
+            "title": "Title"
+        }
+    },
+    "header": {
+        "searchPlaceholder": "Search Placeholder",
+        "toggleUserMenu": "Toggle User Menu",
+        "userMenu": {
+            "logout": "Logout",
+            "myAccount": "My Account",
+            "settings": "Settings",
+            "support": "Support"
+        }
+    },
+    "license": {
+        "banner": {
+            "activateNow": "Ativar Agora",
+            "expired": "Licença Expirada",
+            "getLicenseNow": "Obter Licença Agora",
+            "getLicensePrompt": "Você precisa de uma licença ativa."
+        }
+    },
+    "setup": {
+        "splash": {
+            "tagline": "Tagline"
+        },
+        "wizard": {
+            "accounts": {
+                "add_more_prompt": "Add_more_prompt",
+                "description_intro": "Description_intro",
+                "market_title": "Market_title",
+                "personalize": "Personalize",
+                "skip": "Skip",
+                "standard_title": "Standard_title",
+                "title": "Title"
+            },
+            "data": {
+                "custom": {
+                    "desc": "Desc",
+                    "title": "Title"
+                },
+                "description": "Description",
+                "standard": {
+                    "desc": "Desc",
+                    "title": "Title"
+                },
+                "title": "Title"
+            },
+            "profile": {
+                "description": "Description",
+                "nameLabel": "Name Label",
+                "title": "Title"
+            },
+            "style": {
+                "currency": "Currency",
+                "description": "Description",
+                "language": "Language",
+                "theme": "Theme",
+                "title": "Title"
+            },
+            "welcome": {
+                "description": "Description",
+                "title": "Title"
             }
         }
     }

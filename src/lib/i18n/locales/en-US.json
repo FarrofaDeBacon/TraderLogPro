@@ -49,7 +49,17 @@
             "months": "months",
             "year": "year",
             "years": "years"
-        }
+        },
+        "currency": "Currency",
+        "custom": "Custom",
+        "edit": "Edit",
+        "name": "Name",
+        "no": "No",
+        "noData": "No Data",
+        "of": "Of",
+        "reload": "Reload",
+        "weeks_upper": "Weeks_upper",
+        "yes": "Yes"
     },
     "filters": {
         "date": {
@@ -94,7 +104,8 @@
                     "news": "News: Checked Economic Calendar?",
                     "risk_limit": "Risk: Defined max Stop Loss for today?",
                     "mindset": "Mental: Am I calm and focused?"
-                }
+                },
+                "economicCalendar": "Economic Calendar"
             },
             "summary": {
                 "title": "Daily Summary",
@@ -213,7 +224,13 @@
         "fiscalDashboard": "Overview",
         "fiscalRules": "Fiscal Rules",
         "quant": "Quant Screen",
-        "settings": "Settings"
+        "settings": "Settings",
+        "categories": {
+            "analysis": "Analysis",
+            "fiscal": "Fiscal",
+            "workspace": "Workspace"
+        },
+        "darfs": "Darfs"
     },
     "auth": {
         "login": {
@@ -231,7 +248,56 @@
             "error": {
                 "fillAll": "Please fill in all fields.",
                 "invalidCredentials": "Invalid credentials."
-            }
+            },
+            "recovery": {
+                "back": "Back",
+                "confirm": "Confirm",
+                "description": "Description",
+                "error": {
+                    "fillAll": "Fill All",
+                    "generic": "Generic",
+                    "invalidKey": "Invalid Key",
+                    "mismatch": "Mismatch"
+                },
+                "keyLabel": "Key Label",
+                "loading": "Loading",
+                "newPassword": "New Password",
+                "submit": "Submit",
+                "success": "Success",
+                "title": "Title"
+            },
+            "signup": "Signup",
+            "social": "Social"
+        },
+        "register": {
+            "alreadyHaveAccount": "Already Have Account",
+            "birthDate": "Birth Date",
+            "confirmPassword": "Confirm Password",
+            "cpf": "Cpf",
+            "description": "Description",
+            "email": "Email",
+            "error": {
+                "fillAll": "Fill All",
+                "passwordsMismatch": "Passwords Mismatch"
+            },
+            "loading": "Loading",
+            "login": "Login",
+            "name": "Name",
+            "password": "Password",
+            "recoveryKey": {
+                "confirm": "Confirm",
+                "copyPrompt": "Copy Prompt",
+                "description": "Description",
+                "keepSecure": "Keep Secure",
+                "label": "Label",
+                "successCopy": "Success Copy",
+                "title": "Title",
+                "warning": "Warning"
+            },
+            "submit": "Submit",
+            "success": "Success",
+            "terms": "Terms",
+            "title": "Title"
         }
     },
     "home": {
@@ -281,7 +347,8 @@
             "market": "Market",
             "assetType": "Asset Type",
             "period": "Period",
-            "title": "Filters"
+            "title": "Filters",
+            "currency": "Currency"
         },
         "messages": {
             "delete_success": "Trade deleted successfully."
@@ -554,6 +621,9 @@
                 "title": "Plan Adherence",
                 "yes_msg": "Trade executed according to strategy.",
                 "no_msg": "Rules of setup were violated."
+            },
+            "risk": {
+                "toast_lot_adjusted": "Toast_lot_adjusted"
             }
         }
     },
@@ -565,7 +635,11 @@
         "quickStats": {
             "totalBalance": "Total Balance (Est.)",
             "activeAccounts": "Active Accounts",
-            "monthlyResult": "Monthly Result"
+            "monthlyResult": "Monthly Result",
+            "consolidated": "Consolidated",
+            "monthlyResultDesc": "Monthly Result Desc",
+            "totalEquity": "Total Equity",
+            "viewBreakdown": "View Breakdown"
         },
         "statement": {
             "title": "Cash Statement",
@@ -597,8 +671,10 @@
                 "periodEntries": "Period Entries"
             },
             "messages": {
-                "systemLinked": "This transaction was system-generated and can only be modified in the source module (e.g., IRPF)."
-            }
+                "systemLinked": "This transaction was system-generated and can only be modified in the source module (e.g., IRPF).",
+                "deleteError": "Delete Error"
+            },
+            "noNumber": "No Number"
         },
         "details": {
             "title": "Transaction Details",
@@ -627,7 +703,8 @@
             "success": "Transfer successful!",
             "errorDifferentAccounts": "Origin and destination accounts must be different.",
             "errorPositiveValue": "The value must be greater than zero.",
-            "finalAmountHint": "Value after fees and currency conversion"
+            "finalAmountHint": "Value after fees and currency conversion",
+            "errorSave": "Error Save"
         },
         "closureWizard": {
             "title": "Daily Closure",
@@ -659,7 +736,9 @@
                 "successTitle": "Closure Completed!",
                 "successDescription": "The values have been posted to the selected account statements.",
                 "finish": "Finish"
-            }
+            },
+            "error": "Error",
+            "success": "Success"
         },
         "transactionDialog": {
             "title": "New Posting",
@@ -699,7 +778,35 @@
                 "amountWithCurrency": "Amount ({currency})",
                 "entryWithCurrency": "Entry ({currency})",
                 "feePercent": "Fee (%)"
-            }
+            },
+            "fxRate": "Fx Rate"
+        },
+        "charts": {
+            "evolution": "Evolution"
+        },
+        "darfDetails": {
+            "calculationInfo": "Calculation Info",
+            "complementaryBadge": "Complementary Badge",
+            "dateNotAvailable": "Date Not Available",
+            "description": "Description",
+            "dueDate": "Due Date",
+            "errorMessage": "Error Message",
+            "fine": "Fine",
+            "interest": "Interest",
+            "loading": "Loading",
+            "paidAt": "Paid At",
+            "period": "Period",
+            "principalValue": "Principal Value",
+            "revenueCode": "Revenue Code",
+            "statusPaid": "Status Paid",
+            "statusPending": "Status Pending",
+            "taxRate": "Tax Rate",
+            "title": "Title",
+            "totalPaid": "Total Paid",
+            "unpayAction": "Unpay Action",
+            "unpayCancel": "Unpay Cancel",
+            "unpayConfirm": "Unpay Confirm",
+            "unpayTitle": "Unpay Title"
         }
     },
     "psychology": {
@@ -714,11 +821,18 @@
             "tiltCost": "Tilt Cost",
             "tiltDescription": "In {count} trades with negative emotions",
             "unregistered": "Unregistered Trades",
-            "unregisteredDescription": "Operations without emotional state"
+            "unregisteredDescription": "Operations without emotional state",
+            "accumulatedLoss": "Accumulated Loss",
+            "consolidated": "Consolidated",
+            "records": "Records",
+            "recordsDescription": "Records Description"
         },
         "charts": {
             "winRateTitle": "Win Rate by Emotion (%)",
-            "resultTitle": "Financial Result by Emotion"
+            "resultTitle": "Financial Result by Emotion",
+            "correlation": "Correlation",
+            "pnlByEmotion": "Pnl By Emotion",
+            "winRate": "Win Rate"
         },
         "list": {
             "title": "Last Recorded Trades",
@@ -758,6 +872,22 @@
             "description": "Are you sure you want to delete this emotional entry? This action cannot be undone.",
             "confirm": "Delete",
             "cancel": "Cancel"
+        },
+        "analysis": {
+            "hierarchy": "Hierarchy",
+            "title": "Title"
+        },
+        "insight": {
+            "formulaTitle": "Formula Title",
+            "opScore": "Op Score",
+            "title": "Title"
+        },
+        "journal": {
+            "entryStateShort": "Entry State Short",
+            "exitStateShort": "Exit State Short",
+            "intensityShort": "Intensity Short",
+            "score": "Score",
+            "title": "Title"
         }
     },
     "settings": {
@@ -767,7 +897,9 @@
                 "registration": "Registration",
                 "operational": "Operational",
                 "analysis": "Analysis",
-                "system": "System"
+                "system": "System",
+                "fiscal": "Fiscal",
+                "integrations": "Integrations"
             },
             "profile": "My Profile",
             "accounts": "Accounts",
@@ -784,7 +916,14 @@
             "indicators": "Indicators",
             "timeframes": "Timeframes",
             "chartTypes": "Chart Types",
-            "integrations": "API & Integrations"
+            "integrations": "API & Integrations",
+            "database": "Database",
+            "fiscal": {
+                "assignments": "Assignments",
+                "profiles": "Profiles",
+                "rules": "Rules"
+            },
+            "license": "License"
         },
         "general": {
             "title": "General",
@@ -800,26 +939,31 @@
                 "title": "Personal Information",
                 "avatar": "Profile Picture",
                 "avatarHint": "Click to change your photo.",
-                "removePhoto": "Remove photo",
+                "removePhoto": "Remove Photo",
                 "fullName": "Full Name",
-                "cpf": "ID / Tax ID",
+                "cpf": "SSN / Tax ID",
                 "email": "Email",
-                "phone": "Phone"
+                "phone": "Phone",
+                "cpfPlaceholder": "000.000.000-00",
+                "birthDate": "Birth Date"
             },
             "security": {
                 "title": "Security & Access",
-                "logout": "Logout",
-                "confirmLogout": "Are you sure you want to logout?",
-                "loggingOut": "Logging out...",
+                "logout": "Sign Out",
+                "confirmLogout": "Are you sure you want to sign out?",
+                "loggingOut": "Signing out...",
                 "currentPassword": "Current Password",
                 "newPassword": "New Password",
                 "confirmPassword": "Confirm New Password",
                 "changePassword": "Change Password",
                 "error": {
-                    "minChars": "New password must be at least 6 characters.",
-                    "mismatch": "New passwords do not match."
+                    "minChars": "Password must be at least 6 characters.",
+                    "mismatch": "Passwords do not match."
                 },
-                "success": "Password changed successfully! (Simulation)"
+                "success": "Password changed successfully.",
+                "currentPasswordPlaceholder": "Enter current password",
+                "newPasswordPlaceholder": "Enter new password",
+                "confirmPasswordPlaceholder": "Confirm new password"
             },
             "preferences": {
                 "title": "Preferences",
@@ -829,53 +973,64 @@
                 "language": "Language",
                 "timezone": "Timezone",
                 "mainCurrency": "Main Currency",
-                "convertAll": "Convert all balances to main currency"
+                "convertAll": "Convert all balances to main currency",
+                "langPT": "Portuguese (PT-BR)",
+                "langEN": "English (EN-US)",
+                "langES": "Spanish (ES-ES)",
+                "langFR": "French (FR-FR)",
+                "utcOffset": "Timezone",
+                "region": "Region"
             },
             "license": {
                 "title": "Product License",
                 "lifetime": "TraderLog Pro - Lifetime",
                 "keyStatus": "Key Status",
-                "active": "ACTIVE AND VERIFIED"
+                "active": "Active",
+                "prompt": "Complete your profile to generate your unique PIN.",
+                "status": "Status",
+                "trial": "Trial",
+                "viewDetails": "View Details",
+                "expired": "Expired"
             },
             "success": "Profile updated successfully!"
         },
         "api": {
             "form": {
-                "editTitle": "Edit Key",
-                "newTitle": "New Item",
-                "description": "Configure access to external provider.",
+                "editTitle": "Edit API Configuration",
+                "newTitle": "New API Configuration",
+                "description": "Configure a new API key to enable integrations in TraderLog Pro.",
                 "provider": "Provider",
                 "apiKey": "API Key",
-                "apiKeyPlaceholder": "Your API Key",
-                "test": "Test",
-                "dailyLimit": "Daily Request Limit",
-                "dailyLimitHint": "Maximum number of API calls per day",
-                "enabled": "API Enabled",
-                "enabledHint": "Enable/disable this API usage",
-                "noteTitle": "Note on Limits:",
-                "noteBody": "Check your provider's free tier limits to avoid blocks.",
-                "save": "Save Config",
+                "apiKeyPlaceholder": "sk-...",
+                "test": "Test Key",
+                "dailyLimit": "Daily Limit (Warnings)",
+                "dailyLimitHint": "Notifies you when usage reaches this limit.",
+                "enabled": "Enable this API",
+                "enabledHint": "Disabled APIs will not make requests.",
+                "noteTitle": "Keep your keys secure.",
+                "noteBody": "API keys are stored locally on your device. Never share them.",
+                "save": "Save",
                 "cancel": "Cancel",
-                "testInfo": "Testing key... (Simulation)",
-                "testSuccess": "Key Validated successfully!",
-                "enterKeyError": "Please enter a key to test.",
+                "testInfo": "Testing API key...",
+                "testSuccess": "API key tested successfully!",
+                "enterKeyError": "Please enter an API key first.",
                 "viewOpenAIPrices": "View OpenAI pricing",
-                "viewPolygonPlans": "View Polygon Plans",
+                "viewPolygonPlans": "View Polygon plans",
                 "providerCustom": "Custom",
                 "providers": {
                     "exchangerate-api": "ExchangeRate-API (Rates)",
-                    "polygon": "Polygon.io (Market)",
-                    "openai": "OpenAI (GPT-4 / GPT-3.5)",
-                    "google_gemini": "Google Gemini (Flash/Pro)",
-                    "anthropic": "Anthropic (Claude)",
-                    "alpha_vantage": "Alpha Vantage (Market Data)",
+                    "polygon": "Polygon.io",
+                    "openai": "OpenAI",
+                    "google_gemini": "Google Gemini",
+                    "anthropic": "Anthropic Claude",
+                    "alpha_vantage": "Alpha Vantage",
                     "mock": "Simulation (Mock)",
                     "profit": "Profit Chart (RTD)",
                     "custom": "Custom"
                 },
-                "getGeminiApiKey": "Get Gemini API Key",
-                "getOpenAIApiKey": "Get OpenAI API Key",
-                "getPolygonApiKey": "Get Polygon.io API Key",
+                "getGeminiApiKey": "Get Gemini key",
+                "getOpenAIApiKey": "Get OpenAI key",
+                "getPolygonApiKey": "Get Polygon key",
                 "errors": {
                     "keyRequired": "API Key is required",
                     "enterKeyFirst": "Enter the key first.",
@@ -935,6 +1090,21 @@
                     "allAssetsSupport": "Supports any B3 asset (PETR4, VALE3, etc)",
                     "requirementTitle": "Excel Configuration",
                     "requirementDesc": "The file must contain sheets: DADOS, BOOK [ASSET], PLAYERS. Profit must be exporting to this file."
+                },
+                "currency": {
+                    "error": "Error",
+                    "success": "Success",
+                    "syncNow": "Sync Now",
+                    "syncing": "Syncing...",
+                    "title": "Currency Service",
+                    "tag": "Public & Free",
+                    "description": "Used to convert your balances and results to BRL in the Financial Hub. We use AwesomeAPI by default.",
+                    "endpointLabel": "API Address (Endpoint)",
+                    "saveUrl": "Save URL",
+                    "hint": "If the address changes in the future, you can update it here without touching the code.",
+                    "successSave": "Currency URL saved successfully!",
+                    "successSync": "Exchange updated! {count} currencies synced.",
+                    "errorSync": "Error syncing currencies."
                 }
             }
         },
@@ -960,7 +1130,8 @@
             "empty": "No assets found",
             "labels": {
                 "pointValue": "POINT VALUE",
-                "invalid": "Invalid"
+                "invalid": "Invalid",
+                "unknown": "Unknown"
             },
             "form": {
                 "symbol": "Symbol",
@@ -973,7 +1144,12 @@
                 "specificFee": "Specific Fee",
                 "specificFeePlaceholder": "Use Asset Type Default",
                 "useTypeDefault": "Use Asset Type Default",
-                "save": "Save"
+                "save": "Save",
+                "brokerageProfile": "Brokerage Profile",
+                "fiscalProfile": "Fiscal Profile"
+            },
+            "groups": {
+                "others": "Others"
             }
         },
         "assetTypes": {
@@ -994,6 +1170,12 @@
                 "defaultFeePlaceholder": "Select (Optional)",
                 "none": "None",
                 "save": "Save"
+            },
+            "labels": {
+                "brokerageProfile": "Brokerage Profile",
+                "fiscalProfile": "Fiscal Profile",
+                "noneDefault": "None Default",
+                "noneExempt": "None Exempt"
             }
         },
         "accounts": {
@@ -1008,22 +1190,31 @@
                 "Demo": "Simulators / Demo"
             },
             "form": {
-                "titleNew": "New Account",
+                "titleNew": "Create Account",
                 "titleEdit": "Edit Account",
-                "icon": "Account Icon",
+                "icon": "Icon",
                 "addIcon": "Add Icon",
-                "iconHint": "PNG, JPG or SVG. Max 500KB.",
-                "nickname": "Account Nickname*",
+                "iconHint": "Click to select",
+                "nickname": "Nickname",
                 "nicknamePlaceholder": "Ex: Main Account",
-                "type": "Account Type",
-                "broker": "Broker / Firm*",
+                "type": "Type",
+                "broker": "Broker",
                 "brokerPlaceholder": "Ex: Binance, XP...",
                 "number": "Account Number",
                 "numberPlaceholder": "Ex: 12345-6",
-                "currency": "Base Currency*",
+                "currency": "Currency",
                 "balance": "Initial Balance",
-                "save": "Save"
-            }
+                "save": "Save Account",
+                "saving": "Saving...",
+                "balanceLabel": "Balance"
+            },
+            "confirmDeduplicate": "Are you sure you want to remove duplicate settings?",
+            "errorDeduplicate": "Error removing duplicates.",
+            "groups": {
+                "others": "Simulators / Demo"
+            },
+            "removeDuplicates": "Remove Duplicates",
+            "successDeduplicate": "Duplicates removed successfully."
         },
         "currencies": {
             "title": "Currencies",
@@ -1069,8 +1260,15 @@
                     "exemption": "Exemption Limit",
                     "exemptionHint": "Monthly sales below this value exempt IR on profits.",
                     "cumulative": "Offset Losses",
-                    "save": "Save Rule"
-                }
+                    "save": "Save Rule",
+                    "basisHint": "Basis Hint",
+                    "cumulativeHint": "Cumulative Hint",
+                    "errorSave": "Error Save",
+                    "nameRequired": "Name Required",
+                    "successSave": "Success Save"
+                },
+                "description": "Description",
+                "title": "Title"
             },
             "mappings": {
                 "description": "Associate each Asset Type and Modality with a Tax Rule.",
@@ -1078,6 +1276,53 @@
                 "modality": "Modality",
                 "rule": "Applicable Rule",
                 "noRule": "No Rule (Exempt/Ignored)"
+            },
+            "assignments": {
+                "description": "Description",
+                "goToAssetTypes": "Go To Asset Types",
+                "table": {
+                    "assetType": "Asset Type",
+                    "empty": "Empty",
+                    "market": "Market"
+                },
+                "tip": {
+                    "text": "Text",
+                    "title": "Title"
+                },
+                "title": "Title"
+            },
+            "profiles": {
+                "create": "Create",
+                "description": "Description",
+                "empty": "Empty",
+                "error": {
+                    "duplicateModality": "Duplicate Modality",
+                    "errorAddEntry": "Error Add Entry",
+                    "nameRequired": "Name Required",
+                    "saveError": "Save Error",
+                    "selectRequired": "Select Required"
+                },
+                "form": {
+                    "description": "Description",
+                    "name": "Name",
+                    "save": "Save",
+                    "saving": "Saving",
+                    "titleEdit": "Title Edit",
+                    "titleNew": "Title New",
+                    "update": "Update"
+                },
+                "linkedRules": "Linked Rules",
+                "new": "New",
+                "noLinkedRules": "No Linked Rules",
+                "success": {
+                    "create": "Create",
+                    "ruleAdded": "Rule Added",
+                    "ruleAddedDraft": "Rule Added Draft",
+                    "ruleRemoved": "Rule Removed",
+                    "ruleRemovedDraft": "Rule Removed Draft",
+                    "update": "Update"
+                },
+                "title": "Title"
             }
         },
         "fees": {
@@ -1133,7 +1378,8 @@
                 "noCustomItems": "No custom items.",
                 "itemNamePlaceholder": "Item name",
                 "fixed": "Fixed ($)",
-                "percentage": "Percentage (%)"
+                "percentage": "Percentage (%)",
+                "select": "Select"
             }
         },
         "risk": {
@@ -1162,7 +1408,66 @@
                 "All": "All Accounts",
                 "Prop": "Prop Firm",
                 "Real": "Real Account",
-                "Demo": "Demo Account"
+                "Demo": "Demo Account",
+                "Specific": "Specific"
+            },
+            "engine": {
+                "outlier": {
+                    "description": "Description",
+                    "title": "Title"
+                },
+                "psychological": {
+                    "title": "Title"
+                },
+                "sniper": {
+                    "description": "Description",
+                    "title": "Title"
+                }
+            },
+            "form": {
+                "accounts": {
+                    "title": "Title"
+                },
+                "presets": {
+                    "aggressive": "Aggressive",
+                    "conservative": "Conservative",
+                    "moderate": "Moderate",
+                    "title": "Title"
+                },
+                "tabs": {
+                    "engine": "Engine",
+                    "general": "General",
+                    "growth": "Growth"
+                }
+            },
+            "growthPlan": {
+                "actions": {
+                    "demote": "Demote",
+                    "promote": "Promote"
+                },
+                "activeStatus": "Active Status",
+                "addPhase": "Add Phase",
+                "dailyLossLabel": "Daily Loss Label",
+                "enable": "Enable",
+                "enableDesc": "Enable Desc",
+                "lossLabel": "Loss Label",
+                "maxLotLabel": "Max Lot Label",
+                "maxLotsLabel": "Max Lots Label",
+                "noPhases": "No Phases",
+                "phases": "Phases",
+                "phasesTitle": "Phases Title",
+                "status": {
+                    "approved": "Approved",
+                    "regression": "Regression",
+                    "title": "Title"
+                },
+                "title": "Title"
+            },
+            "platformLock": "Platform Lock",
+            "profiles": {
+                "activate": "Activate",
+                "dailyLoss": "Daily Loss",
+                "dailyTarget": "Daily Target"
             }
         },
         "modalities": {
@@ -1406,7 +1711,342 @@
                 "start": "Start",
                 "end": "End",
                 "addSession": "Add Session",
-                "save": "Save Market"
+                "save": "Save Market",
+                "name": "Name",
+                "namePlaceholder": "Name Placeholder",
+                "until": "Until"
+            },
+            "empty": "Empty"
+        },
+        "appearance": {
+            "compactDescription": "Compact Description",
+            "compactLabel": "Compact Label",
+            "description": "Description",
+            "themeDescription": "Theme Description",
+            "themeLabel": "Theme Label",
+            "title": "Title"
+        },
+        "backup": {
+            "clearButton": "Clear Button",
+            "confirmReset": "Confirm Reset",
+            "dangerDescription": "Danger Description",
+            "dangerZone": "Danger Zone",
+            "description": "Description",
+            "exportButton": "Export Button",
+            "exportDescription": "Export Description",
+            "exportTitle": "Export Title",
+            "title": "Title"
+        },
+        "defaults": {
+            "autoCalcLabel": "Auto Calc Label",
+            "description": "Description",
+            "riskHint": "Risk Hint",
+            "riskLabel": "Risk Label",
+            "strategyHint": "Strategy Hint",
+            "strategyLabel": "Strategy Label",
+            "strategyPlaceholder": "Strategy Placeholder",
+            "title": "Title"
+        },
+        "header": {
+            "description": "Description",
+            "title": "Title"
+        },
+        "license": {
+            "management": {
+                "title": "License Management",
+                "subtitle": "Generate and manage identity-based licenses to protect your sales.",
+                "activeBadge": "Active {plan} Subscription",
+                "trialBadge": "Trial Version ({days} days)",
+                "expiredBadge": "Expired",
+                "removeBtn": "Remove License",
+                "removeConfirm": "Are you sure you want to remove this license? You will return to the trial period or lose access if it has already expired.",
+                "removeSuccess": "License removed successfully.",
+                "typeLabel": "License Type",
+                "durationLabel": "Contracted Duration",
+                "durationLifetime": "Lifetime",
+                "durationDays": "{days} days",
+                "remainingLabel": "Remaining",
+                "remainingDays": "{days} days",
+                "step1": {
+                    "title": "Generate Request PIN",
+                    "desc": "Make sure your Profile data is correct.",
+                    "pinLabel": "Your Unique PIN (Linked to this machine)",
+                    "incomplete": "INCOMPLETE DATA",
+                    "copyBtn": "Copy",
+                    "copySuccess": "PIN copied!",
+                    "hint": "Send this PIN to support to receive your <code>.lic</code> license file.",
+                    "footer": "* The PIN is generated from your SSN/Tax ID and hardware identification (BIOS)."
+                },
+                "step2": {
+                    "title": "Activate from File",
+                    "desc": "Load the received file to unlock the system.",
+                    "noFile": "No file selected",
+                    "format": "Accepted format: .lic",
+                    "uploadBtn": "Load .lic File",
+                    "activating": "Activating...",
+                    "successMsg": "{plan} License activated successfully!",
+                    "invalidMsg": "Invalid license file for this machine.",
+                    "errorLoad": "Error loading license file.",
+                    "fileSelected": "License selected successfully."
+                },
+                "benefits": {
+                    "title": "Lifetime License Benefits",
+                    "benefit1": "Unlimited access to all journal and backtest tools.",
+                    "benefit2": "Automatic sync of quotes and assets.",
+                    "benefit3": "Detailed psychological and statistical reports.",
+                    "local_first": {
+                        "title": "Local First",
+                        "desc": "100% offline validation via Ed25519 cryptography."
+                    },
+                    "identity_lock": {
+                        "title": "Identity Lock",
+                        "desc": "Bound to Name and ID. Impossible to share."
+                    },
+                    "hardware_lock": {
+                        "title": "Tied to Device and ID",
+                        "desc": "Extreme anti-piracy based on machine and documents."
+                    }
+                },
+                "steps": {
+                    "1": {
+                        "title": "Collect Data",
+                        "desc": "The client provides Name, ID, and Birth Date in onboarding."
+                    },
+                    "2": {
+                        "title": "Generate License",
+                        "desc": "You use the private key to generate the official license."
+                    },
+                    "3": {
+                        "title": "Validate Offline",
+                        "desc": "The app validates the signature against the built-in public key without internet."
+                    }
+                },
+                "new_license": {
+                    "button": "Register New License",
+                    "modalTitle": "Create New License",
+                    "modalDesc": "Enter customer data to generate a new key.",
+                    "name": "Full Name",
+                    "cpf": "National ID (CPF)",
+                    "birthDate": "Birth Date",
+                    "customerEmail": "Customer Email (Optional)"
+                },
+                "table": {
+                    "client": "Client",
+                    "key": "License Key",
+                    "status": "Status",
+                    "expires": "Expires On",
+                    "actions": "Actions",
+                    "empty": "No licenses registered."
+                },
+                "status": {
+                    "active": "Active",
+                    "expired": "Expired",
+                    "revoked": "Revoked"
+                },
+                "actions": {
+                    "copy": "Copy Key",
+                    "revoke": "Revoke",
+                    "delete": "Delete"
+                },
+                "delete": {
+                    "title": "Delete License",
+                    "desc": "Are you sure you want to permanently delete this license from the database? The client will lose access on the next online validation."
+                },
+                "toasts": {
+                    "created": "License successfully created!",
+                    "deleted": "License successfully deleted!",
+                    "copied": "License copied to clipboard!",
+                    "revoked": "License successfully revoked."
+                }
+            }
+        }
+    },
+    "$lib/stores/settings": {
+        "svelte": "Svelte"
+    },
+    "(": "(",
+    "-": "-",
+    "": {
+        "/locales/en-US": {
+            "json": "Json"
+        },
+        "/locales/es-ES": {
+            "json": "Json"
+        },
+        "/locales/fr-FR": {
+            "json": "Json"
+        },
+        "/locales/pt-BR": {
+            "json": "Json"
+        }
+    },
+    "/": "/",
+    "2023-12-25": "2023-12-25",
+    "2023-12-25T10:00:00": {
+        "000Z": "000Z"
+    },
+    ":": ":",
+    ";": ";",
+    "String:": "String:",
+    "T": "T",
+    "\\n": "\\n",
+    "dashboard": {
+        "charts": {
+            "consistency": "Consistency",
+            "equity": "Equity",
+            "equitySubtitle": "Equity Subtitle"
+        },
+        "dailyDetail": {
+            "asset": "Asset",
+            "buy": "Buy",
+            "direction": "Direction",
+            "efficiency": "Efficiency",
+            "noTrades": "No Trades",
+            "operationsList": "Operations List",
+            "result": "Result",
+            "sell": "Sell",
+            "subtitle": "Subtitle",
+            "summary": "Summary",
+            "title": "Title",
+            "tradeQty": "Trade Qty"
+        },
+        "kpis": {
+            "discipline": "Discipline",
+            "maxDrawdown": "Max Drawdown",
+            "netResult": "Net Result",
+            "payoff": "Payoff",
+            "profitFactor": "Profit Factor",
+            "winRate": "Win Rate"
+        },
+        "newTrade": "New Trade",
+        "quant": {
+            "dollar": "Dollar",
+            "index": "Index",
+            "intention": "Intention",
+            "ranking": "Ranking",
+            "subtitle": "Subtitle",
+            "title": "Title",
+            "waitingData": "Waiting Data"
+        },
+        "schedule": {
+            "afternoon": "Afternoon",
+            "morning": "Morning",
+            "title": "Title"
+        },
+        "subtitle": "Subtitle",
+        "terminalHub": "Terminal Hub",
+        "title": "Title"
+    },
+    "fiscal": {
+        "darf": {
+            "accountError": "Account Error",
+            "active": "Active",
+            "description": "Description",
+            "fineInterest": "Fine Interest",
+            "principalValue": "Principal Value",
+            "registerPayment": "Register Payment",
+            "revenueCode": "Revenue Code",
+            "selectAccount": "Select Account",
+            "sourceAccount": "Source Account",
+            "title": "Title",
+            "totalPaid": "Total Paid"
+        },
+        "irpf": {
+            "calculate": "Calculate",
+            "calculating": "Calculating",
+            "description": "Description",
+            "evolution": "Evolution",
+            "history": "History",
+            "kpis": {
+                "dueYearHint": "Due Year Hint",
+                "losses": "Losses",
+                "paidYearHint": "Paid Year Hint",
+                "pending": "Pending",
+                "totalDue": "Total Due",
+                "totalPaid": "Total Paid"
+            },
+            "manageDarfs": "Manage Darfs",
+            "modal": {
+                "description": "Description",
+                "month": "Month",
+                "title": "Title",
+                "year": "Year"
+            },
+            "newAppraisal": "New Appraisal",
+            "periodFilter": "Period Filter",
+            "saveBeforeDarf": "Save Before Darf",
+            "table": {
+                "actions": "Actions",
+                "compensated": "Compensated",
+                "netProfit": "Net Profit",
+                "paid": "Paid",
+                "period": "Period",
+                "status": "Status",
+                "toPay": "To Pay",
+                "type": "Type"
+            },
+            "title": "Title"
+        }
+    },
+    "header": {
+        "searchPlaceholder": "Search Placeholder",
+        "toggleUserMenu": "Toggle User Menu",
+        "userMenu": {
+            "logout": "Logout",
+            "myAccount": "My Account",
+            "settings": "Settings",
+            "support": "Support"
+        }
+    },
+    "license": {
+        "banner": {
+            "activateNow": "Activate Now",
+            "expired": "License Expired",
+            "getLicenseNow": "Get License Now",
+            "getLicensePrompt": "You need an active license to continue."
+        }
+    },
+    "setup": {
+        "splash": {
+            "tagline": "Tagline"
+        },
+        "wizard": {
+            "accounts": {
+                "add_more_prompt": "Add_more_prompt",
+                "description_intro": "Description_intro",
+                "market_title": "Market_title",
+                "personalize": "Personalize",
+                "skip": "Skip",
+                "standard_title": "Standard_title",
+                "title": "Title"
+            },
+            "data": {
+                "custom": {
+                    "desc": "Desc",
+                    "title": "Title"
+                },
+                "description": "Description",
+                "standard": {
+                    "desc": "Desc",
+                    "title": "Title"
+                },
+                "title": "Title"
+            },
+            "profile": {
+                "description": "Description",
+                "nameLabel": "Name Label",
+                "title": "Title"
+            },
+            "style": {
+                "currency": "Currency",
+                "description": "Description",
+                "language": "Language",
+                "theme": "Theme",
+                "title": "Title"
+            },
+            "welcome": {
+                "description": "Description",
+                "title": "Title"
             }
         }
     }
