@@ -2036,7 +2036,8 @@
           "descriptionLine2": "to the source account.",
           "descriptionLine3": "The outgoing transaction will be removed from the Finance Hub."
         }
-      }
+      },
+      "emptyHistory": "No se encontraron DARFs."
     },
     "irpf": {
       "title": "IRPF Hub",

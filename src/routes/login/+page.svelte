@@ -171,47 +171,7 @@
                         </div>
                     {/if}
                 </Button>
-
-                <div class="relative my-4">
-                    <div class="absolute inset-0 flex items-center">
-                        <span class="w-full border-t border-zinc-800"></span>
-                    </div>
-                    <div
-                        class="relative flex justify-center text-xs uppercase text-zinc-500"
-                    >
-                        {$t("auth.login.social")}
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <Button
-                        variant="outline"
-                        class="w-full bg-zinc-950/50 border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                    >
-                        <Github class="mr-2 h-4 w-4" />
-                        Github
-                    </Button>
-                    <Button
-                        variant="outline"
-                        class="w-full bg-zinc-950/50 border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                    >
-                        <Chrome class="mr-2 h-4 w-4" />
-                        Google
-                    </Button>
-                </div>
             </Card.Content>
-            <Card.Footer
-                class="flex flex-col space-y-4 text-center text-sm text-zinc-500 pb-8 border-t border-zinc-800/50 pt-6"
-            >
-                <p>
-                    {$t("auth.login.noAccount")}
-                    <a
-                        href="/signup"
-                        class="text-primary hover:underline font-medium"
-                        >{$t("auth.login.signup")}</a
-                    >
-                </p>
-            </Card.Footer>
         </Card.Root>
     {:else}
         <Card.Root

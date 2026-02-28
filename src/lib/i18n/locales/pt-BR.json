@@ -2036,7 +2036,8 @@
           "descriptionLine2": "para a conta de origem.",
           "descriptionLine3": "A transação de saída será removida do Hub Financeiro."
         }
-      }
+      },
+      "emptyHistory": "Nenhum DARF encontrado."
     },
     "irpf": {
       "title": "Central de IRPF",

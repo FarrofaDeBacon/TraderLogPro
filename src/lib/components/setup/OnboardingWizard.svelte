@@ -26,15 +26,30 @@
     let { onComplete } = $props();
 
     let step = $state(1);
-    let totalSteps = 4;
+    let totalSteps = 5;
     let loading = $state(false);
     let progress = $state(0);
 
     let formData = $state({
         name: settingsStore.userProfile.name || "",
         email: settingsStore.userProfile.email || "",
+        password: "",
+        confirmPassword: "",
         licenseKey: "",
     });
+
+    let recoveryKey = $state("");
+
+    function generateKey() {
+        // Simple grouped alphanumeric key
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        let result = "";
+        for (let i = 0; i < 16; i++) {
+            if (i > 0 && i % 4 === 0) result += "-";
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
 
     // We keep a flag to determine if it's the test account
     let isTestAccount = $derived(
@@ -107,9 +122,16 @@
                     main_currency: "BRL",
                     language: "pt-BR",
                     theme: "dark",
+                    password_hash: formData.password, // Plaintext to backend which hashes it
+                    recovery_hash: recoveryKey, // Plaintext to backend which hashes it
                     license_key: formData.licenseKey || null,
                 },
             });
+            progress = 30;
+
+            // Log in the user in the frontend store
+            localStorage.setItem("isLoggedIn", "true");
+            settingsStore.isLoggedIn = true;
             progress = 30;
 
             // Update store immediately
@@ -161,12 +183,27 @@
 
     function nextStep() {
         // Validation check for Step 2
-        if (step === 2 && !formData.name.trim()) {
-            toast.error("Por favor, informe seu nome.");
-            return;
+        if (step === 2) {
+            if (!formData.name.trim()) {
+                toast.error("Por favor, informe seu nome.");
+                return;
+            }
+            if (!isTestAccount) {
+                if (!formData.password) {
+                    toast.error("Por favor, defina uma senha de acesso.");
+                    return;
+                }
+                if (formData.password !== formData.confirmPassword) {
+                    toast.error("As senhas não coincidem.");
+                    return;
+                }
+                if (!recoveryKey) {
+                    recoveryKey = generateKey();
+                }
+            }
         }
 
-        // At Step 3, if they didn't upload a license but clicked next, we can allow it as "Trial"
+        // At Step 4 (License), if they didn't upload a license but clicked next, we can allow it as "Trial"
         // provided we want to allow trial mode.
         // For simplicity, we just move forward (settingsStore handles Trial assignment anyway).
 
@@ -299,8 +336,100 @@
                             {/if}
                         </div>
                     </div>
+
+                    <!-- Password Configuration for App Security -->
+                    <div class="space-y-4 pt-4 border-t border-zinc-800">
+                        <div class="space-y-2">
+                            <Label
+                                for="password"
+                                class="font-bold text-emerald-400"
+                                >Senha de Acesso do App</Label
+                            >
+                            <Input
+                                id="password"
+                                type="password"
+                                bind:value={formData.password}
+                                placeholder="Crie uma senha forte"
+                                class="h-12 text-lg focus-visible:ring-primary"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <Label
+                                for="confirmPassword"
+                                class="font-bold text-emerald-400"
+                                >Confirmar Senha</Label
+                            >
+                            <Input
+                                id="confirmPassword"
+                                type="password"
+                                bind:value={formData.confirmPassword}
+                                placeholder="Repita a senha"
+                                class="h-12 text-lg focus-visible:ring-primary"
+                            />
+                        </div>
+                    </div>
                 </div>
             {:else if step === 3}
+                <!-- RECOVERY KEY STEP -->
+                <div
+                    in:fly={{ y: 20, duration: 500 }}
+                    out:fade={{ duration: 200 }}
+                    class="space-y-6"
+                >
+                    <div class="space-y-2">
+                        <h2
+                            class="text-2xl font-black tracking-tight flex items-center gap-2 text-rose-500"
+                        >
+                            <AlertCircle class="w-6 h-6 text-rose-500" />
+                            Sua Chave de Recuperação
+                        </h2>
+                        <p class="text-muted-foreground text-sm">
+                            Esta é a <strong>única forma</strong> de recuperar sua
+                            conta caso você esqueça a senha. Como o aplicativo é
+                            offline por segurança, nós não temos como recuperar via
+                            e-mail.
+                        </p>
+                    </div>
+
+                    <div
+                        class="p-6 border border-rose-500/30 rounded-2xl bg-rose-500/5 flex flex-col items-center text-center space-y-4 mt-4 cursor-pointer hover:border-rose-500/60 transition-colors"
+                        onclick={() => {
+                            navigator.clipboard.writeText(recoveryKey);
+                            toast.success(
+                                "Chave de recuperação copiada para a área de transferência!",
+                            );
+                        }}
+                    >
+                        <p
+                            class="text-xs font-black uppercase tracking-widest text-rose-400 mb-2"
+                        >
+                            Chave de Segurança
+                        </p>
+                        <div
+                            class="text-2xl font-mono font-black tracking-widest text-white selection:bg-rose-500"
+                        >
+                            {recoveryKey || "GERANDO..."}
+                        </div>
+                        <p class="text-xs text-rose-400 mt-2">
+                            Clique para copiar
+                        </p>
+                    </div>
+
+                    <div
+                        class="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl mt-4"
+                    >
+                        <p class="text-xs text-zinc-400 font-bold flex gap-2">
+                            <span
+                                class="text-rose-500 text-lg leading-none mt-[-2px]"
+                                >!</span
+                            >
+                            Guarde essa chave em um local muito seguro. Se você perder
+                            a senha e esta chave, seus dados ficarão permanentemente
+                            inacessíveis.
+                        </p>
+                    </div>
+                </div>
+            {:else if step === 4}
                 <!-- LICENSE STEP -->
                 <div
                     in:fly={{ y: 20, duration: 500 }}
@@ -361,7 +490,7 @@
                         {/if}
                     </div>
                 </div>
-            {:else if step === 4}
+            {:else if step === 5}
                 <!-- FINISH STEP -->
                 <div
                     in:fly={{ y: 20, duration: 500 }}
@@ -474,7 +603,7 @@
                         onclick={nextStep}
                         class="px-8 font-black uppercase tracking-widest bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
                     >
-                        {#if step === 3 && !licenseUploaded}
+                        {#if step === 4 && !licenseUploaded}
                             Pular Trial
                         {:else}
                             Próximo
