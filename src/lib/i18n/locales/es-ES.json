@@ -2103,50 +2103,6 @@
       "trialActive": "Te quedan {days} días de prueba."
     }
   },
-  "setup": {
-    "splash": {
-      "tagline": "Tagline"
-    },
-    "wizard": {
-      "accounts": {
-        "add_more_prompt": "Add_more_prompt",
-        "description_intro": "Description_intro",
-        "market_title": "Market_title",
-        "personalize": "Personalize",
-        "skip": "Skip",
-        "standard_title": "Standard_title",
-        "title": "Title"
-      },
-      "data": {
-        "custom": {
-          "desc": "Desc",
-          "title": "Title"
-        },
-        "description": "Description",
-        "standard": {
-          "desc": "Desc",
-          "title": "Title"
-        },
-        "title": "Title"
-      },
-      "profile": {
-        "description": "Description",
-        "nameLabel": "Name Label",
-        "title": "Title"
-      },
-      "style": {
-        "currency": "Currency",
-        "description": "Description",
-        "language": "Language",
-        "theme": "Theme",
-        "title": "Title"
-      },
-      "welcome": {
-        "description": "Description",
-        "title": "Bienvenido a TraderLog Pro"
-      }
-    }
-  },
   "calendar": {
     "monthly": "Mensual",
     "monthlyShort": "M",
@@ -2177,5 +2133,91 @@
     "october": "Octubre",
     "november": "Noviembre",
     "december": "Diciembre"
+  },
+  "setup": {
+    "splash": {
+      "tagline": "La evolución de tu diario de trading."
+    },
+    "wizard": {
+      "step": "Paso",
+      "welcome": {
+        "title": "Bienvenido a TraderLog Pro",
+        "description": "Estamos configurando tu espacio de trabajo."
+      },
+      "profile": {
+        "title": "Nos gustaría conocerte",
+        "description": "Ingresa tu información básica de perfil.",
+        "nameLabel": "¿Cómo debemos llamarte?",
+        "namePlaceholder": "Tu nombre completo",
+        "emailLabel": "E-mail o Clave de Acceso",
+        "emailHint": "Usado para recuperación o vinculación de licencia especial.",
+        "testAccount": "Cuenta de prueba reconocida. Se inyectarán datos de demostración.",
+        "passwordLabel": "Contraseña de Acceso de la App",
+        "passwordPlaceholder": "Crea una contraseña segura",
+        "confirmPasswordLabel": "Confirmar Contraseña",
+        "confirmPasswordPlaceholder": "Repite la contraseña"
+      },
+      "recovery": {
+        "title": "Tu Clave de Recuperación",
+        "description": "Esta es la única forma de recuperar tu cuenta si olvidas la contraseña. Como la app es offline, no podemos recuperar por e-mail.",
+        "keyLabel": "Clave de Seguridad",
+        "clickToCopy": "Haz clic para copiar",
+        "copied": "¡Clave copiada al portapapeles!",
+        "warning": "Guarda esta clave en un lugar muy seguro. Si pierdes la contraseña y esta clave, tus datos serán permanentemente inaccesibles."
+      },
+      "license": {
+        "title": "Activación de Licencia",
+        "description": "Si tienes una Licencia TraderLog Pro, selecciona el archivo .lic ahora.",
+        "optional": "Opcional: Puedes omitir este paso para usar la versión Trial gratuita.",
+        "import": "Importar Licencia",
+        "activated": "¡Licencia Activada!",
+        "planDetected": "Plan detectado",
+        "verifying": "Verificando...",
+        "selectFile": "Seleccionar Archivo .lic"
+      },
+      "finish": {
+        "ready": "Todo listo",
+        "description": "Haz clic en el botón de abajo para completar la configuración.",
+        "startNow": "Empezar Ahora",
+        "savingProfile": "Guardando Perfil...",
+        "startingPlatform": "Iniciando Plataforma...",
+        "generatingDemo": "Generando Trades de Prueba...",
+        "configuringDb": "Configurando Base de Datos...",
+        "finalizing": "Finalizando todo..."
+      },
+      "nav": {
+        "back": "Volver",
+        "next": "Siguiente",
+        "skipTrial": "Omitir (Trial)"
+      },
+      "accounts": {
+        "add_more_prompt": "Add_more_prompt",
+        "description_intro": "Description_intro",
+        "market_title": "Market_title",
+        "personalize": "Personalizar",
+        "skip": "Omitir",
+        "standard_title": "Standard_title",
+        "title": "Title"
+      },
+      "data": {
+        "custom": {
+          "desc": "Desc",
+          "title": "Title"
+        },
+        "description": "Description",
+        "standard": {
+          "desc": "Desc",
+          "title": "Title"
+        },
+        "title": "Title"
+      },
+      "style": {
+        "currency": "Moneda",
+        "description": "Description",
+        "language": "Idioma",
+        "theme": "Tema",
+        "title": "Title"
+      }
+    }
   }
 }

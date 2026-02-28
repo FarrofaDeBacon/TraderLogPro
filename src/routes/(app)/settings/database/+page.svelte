@@ -12,6 +12,7 @@
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
     import { t } from "svelte-i18n";
+    import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
 
     let isChecking = $state(false);
     let statusMessage = $state("");
@@ -33,9 +34,13 @@
     }
 
     let isRestoring = $state(false);
-    async function handleRestoreDefaults() {
-        if (!confirm($t("settings.database.defaults.confirm"))) return;
+    let isRestoreModalOpen = $state(false);
 
+    function triggerRestoreDefaults() {
+        isRestoreModalOpen = true;
+    }
+
+    async function executeRestoreDefaults() {
         isRestoring = true;
         try {
             await invoke("ensure_defaults");
@@ -60,9 +65,13 @@
     let isGenerating = $state(false);
     let isCleaning = $state(false);
 
-    async function handleCleanAll() {
-        if (!confirm($t("settings.database.demo.confirmDeleteDescription")))
-            return;
+    let isCleanModalOpen = $state(false);
+
+    function triggerCleanAll() {
+        isCleanModalOpen = true;
+    }
+
+    async function executeCleanAll() {
         isCleaning = true;
         try {
             await invoke("delete_all_demo_trades");
@@ -91,9 +100,13 @@
     }
 
     let isResetting = $state(false);
-    async function handleForceReseed() {
-        if (!confirm($t("settings.database.danger.confirm"))) return;
+    let isResetModalOpen = $state(false);
 
+    function triggerForceReseed() {
+        isResetModalOpen = true;
+    }
+
+    async function executeForceReseed() {
         isResetting = true;
         try {
             await invoke("force_reseed");
@@ -106,6 +119,27 @@
         }
     }
 </script>
+
+<DeleteConfirmationModal
+    bind:open={isRestoreModalOpen}
+    onConfirm={executeRestoreDefaults}
+    title={$t("settings.database.defaults.title")}
+    description={$t("settings.database.defaults.confirm")}
+/>
+
+<DeleteConfirmationModal
+    bind:open={isCleanModalOpen}
+    onConfirm={executeCleanAll}
+    title={$t("settings.database.demo.confirmDeleteTitle")}
+    description={$t("settings.database.demo.confirmDeleteDescription")}
+/>
+
+<DeleteConfirmationModal
+    bind:open={isResetModalOpen}
+    onConfirm={executeForceReseed}
+    title={$t("settings.database.danger.title")}
+    description={$t("settings.database.danger.confirm")}
+/>
 
 <div
     class="container max-w-4xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-500"
@@ -181,7 +215,7 @@
                     {$t("settings.database.defaults.warning")}
                 </div>
                 <Button
-                    onclick={handleRestoreDefaults}
+                    onclick={triggerRestoreDefaults}
                     disabled={isRestoring}
                     class="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
@@ -225,7 +259,7 @@
                 </Button>
 
                 <Button
-                    onclick={handleCleanAll}
+                    onclick={triggerCleanAll}
                     disabled={isCleaning}
                     variant="outline"
                     class="flex-1 border-purple-500/30 text-purple-500 hover:bg-purple-500/10"
@@ -262,7 +296,7 @@
                 {$t("settings.database.danger.warning")}
             </p>
             <Button
-                onclick={handleForceReseed}
+                onclick={triggerForceReseed}
                 disabled={isResetting}
                 variant="destructive"
                 class="w-full font-bold"

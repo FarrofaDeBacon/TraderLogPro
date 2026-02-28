@@ -2103,50 +2103,6 @@
       "trialActive": "Il vous reste {days} jours d'essai."
     }
   },
-  "setup": {
-    "splash": {
-      "tagline": "Tagline"
-    },
-    "wizard": {
-      "accounts": {
-        "add_more_prompt": "Add_more_prompt",
-        "description_intro": "Description_intro",
-        "market_title": "Market_title",
-        "personalize": "Personalize",
-        "skip": "Skip",
-        "standard_title": "Standard_title",
-        "title": "Title"
-      },
-      "data": {
-        "custom": {
-          "desc": "Desc",
-          "title": "Title"
-        },
-        "description": "Description",
-        "standard": {
-          "desc": "Desc",
-          "title": "Title"
-        },
-        "title": "Title"
-      },
-      "profile": {
-        "description": "Description",
-        "nameLabel": "Name Label",
-        "title": "Title"
-      },
-      "style": {
-        "currency": "Currency",
-        "description": "Description",
-        "language": "Language",
-        "theme": "Theme",
-        "title": "Title"
-      },
-      "welcome": {
-        "description": "Description",
-        "title": "Bienvenue sur TraderLog Pro"
-      }
-    }
-  },
   "calendar": {
     "monthly": "Mensuel",
     "monthlyShort": "M",
@@ -2177,5 +2133,91 @@
     "october": "Octobre",
     "november": "Novembre",
     "december": "Décembre"
+  },
+  "setup": {
+    "splash": {
+      "tagline": "L'évolution de votre journal de trading."
+    },
+    "wizard": {
+      "step": "Étape",
+      "welcome": {
+        "title": "Bienvenue sur TraderLog Pro",
+        "description": "Nous configurons votre espace de travail."
+      },
+      "profile": {
+        "title": "Faisons connaissance",
+        "description": "Saisissez vos informations de profil de base.",
+        "nameLabel": "Comment devons-nous vous appeler ?",
+        "namePlaceholder": "Votre nom complet",
+        "emailLabel": "E-mail ou Clé d'Accès",
+        "emailHint": "Utilisé pour la récupération ou la liaison de licence spéciale.",
+        "testAccount": "Compte de test reconnu. Les données de démonstration seront injectées.",
+        "passwordLabel": "Mot de passe d'accès à l'App",
+        "passwordPlaceholder": "Créez un mot de passe fort",
+        "confirmPasswordLabel": "Confirmer le mot de passe",
+        "confirmPasswordPlaceholder": "Répétez le mot de passe"
+      },
+      "recovery": {
+        "title": "Votre Clé de Récupération",
+        "description": "C'est le seul moyen de récupérer votre compte si vous oubliez votre mot de passe. L'application étant hors ligne, nous ne pouvons pas récupérer par e-mail.",
+        "keyLabel": "Clé de Sécurité",
+        "clickToCopy": "Cliquez pour copier",
+        "copied": "Clé copiée dans le presse-papiers !",
+        "warning": "Conservez cette clé dans un endroit très sûr. Si vous perdez votre mot de passe et cette clé, vos données seront définitivement inaccessibles."
+      },
+      "license": {
+        "title": "Activation de la Licence",
+        "description": "Si vous possédez une Licence TraderLog Pro, sélectionnez le fichier .lic maintenant.",
+        "optional": "Optionnel : Vous pouvez ignorer cette étape pour utiliser la version Trial gratuite.",
+        "import": "Importer la Licence",
+        "activated": "Licence Activée !",
+        "planDetected": "Plan détecté",
+        "verifying": "Vérification...",
+        "selectFile": "Sélectionner Fichier .lic"
+      },
+      "finish": {
+        "ready": "Tout est prêt",
+        "description": "Cliquez sur le bouton ci-dessous pour terminer la configuration.",
+        "startNow": "Commencer Maintenant",
+        "savingProfile": "Enregistrement du Profil...",
+        "startingPlatform": "Démarrage de la Plateforme...",
+        "generatingDemo": "Génération des Trades de Démonstration...",
+        "configuringDb": "Configuration de la Base de Données...",
+        "finalizing": "Finalisation en cours..."
+      },
+      "nav": {
+        "back": "Retour",
+        "next": "Suivant",
+        "skipTrial": "Ignorer (Trial)"
+      },
+      "accounts": {
+        "add_more_prompt": "Add_more_prompt",
+        "description_intro": "Description_intro",
+        "market_title": "Market_title",
+        "personalize": "Personnaliser",
+        "skip": "Ignorer",
+        "standard_title": "Standard_title",
+        "title": "Title"
+      },
+      "data": {
+        "custom": {
+          "desc": "Desc",
+          "title": "Title"
+        },
+        "description": "Description",
+        "standard": {
+          "desc": "Desc",
+          "title": "Title"
+        },
+        "title": "Title"
+      },
+      "style": {
+        "currency": "Devise",
+        "description": "Description",
+        "language": "Langue",
+        "theme": "Thème",
+        "title": "Title"
+      }
+    }
   }
 }

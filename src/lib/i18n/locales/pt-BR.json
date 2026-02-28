@@ -2108,6 +2108,57 @@
       "tagline": "Tagline"
     },
     "wizard": {
+      "step": "Passo",
+      "welcome": {
+        "description": "Estamos configurando o seu espaço de trabalho.",
+        "title": "Bem-vindo ao TraderLog Pro"
+      },
+      "profile": {
+        "title": "Gostaríamos de te conhecer",
+        "description": "Insira suas informações básicas para o perfil.",
+        "nameLabel": "Como devemos te chamar?",
+        "namePlaceholder": "Seu nome completo",
+        "emailLabel": "E-mail ou Chave de Acesso",
+        "emailHint": "Usado para recuperação ou vínculo de licença especial.",
+        "testAccount": "Conta de Teste reconhecida. Dados de demonstração serão injetados.",
+        "passwordLabel": "Senha de Acesso do App",
+        "passwordPlaceholder": "Crie uma senha forte",
+        "confirmPasswordLabel": "Confirmar Senha",
+        "confirmPasswordPlaceholder": "Repita a senha"
+      },
+      "recovery": {
+        "title": "Sua Chave de Recuperação",
+        "description": "Esta é a única forma de recuperar sua conta caso você esqueça a senha. Como o aplicativo é offline, não temos como recuperar via e-mail.",
+        "keyLabel": "Chave de Segurança",
+        "clickToCopy": "Clique para copiar",
+        "copied": "Chave copiada para a área de transferência!",
+        "warning": "Guarde essa chave em local seguro. Se você perder a senha e esta chave, seus dados ficarão permanentemente inacessíveis."
+      },
+      "license": {
+        "title": "Ativação de Licença",
+        "description": "Se você possui uma Licença TraderLog Pro, selecione o arquivo .lic agora.",
+        "optional": "Opcional: Você pode pular este passo para usar a versão Trial gratuita.",
+        "import": "Importar Licença",
+        "activated": "Licença Ativada!",
+        "planDetected": "Plano detectado",
+        "verifying": "Verificando...",
+        "selectFile": "Selecionar Arquivo .lic"
+      },
+      "finish": {
+        "ready": "Tudo pronto",
+        "description": "Clique no botão abaixo para concluir a inicialização.",
+        "startNow": "Começar Agora",
+        "savingProfile": "Salvando Perfil...",
+        "startingPlatform": "Iniciando Plataforma...",
+        "generatingDemo": "Gerando Trades de Teste...",
+        "configuringDb": "Configurando Banco de Dados...",
+        "finalizing": "Finalizando tudo..."
+      },
+      "nav": {
+        "back": "Voltar",
+        "next": "Próximo",
+        "skipTrial": "Pular (Trial)"
+      },
       "accounts": {
         "add_more_prompt": "Add_more_prompt",
         "description_intro": "Description_intro",
@@ -2129,21 +2180,12 @@
         },
         "title": "Title"
       },
-      "profile": {
-        "description": "Description",
-        "nameLabel": "Name Label",
-        "title": "Title"
-      },
       "style": {
         "currency": "Currency",
         "description": "Description",
-        "language": "Language",
-        "theme": "Theme",
+        "language": "Idioma",
+        "theme": "Tema",
         "title": "Title"
-      },
-      "welcome": {
-        "description": "Description",
-        "title": "Bem-vindo ao TraderLog Pro"
       }
     }
   },
