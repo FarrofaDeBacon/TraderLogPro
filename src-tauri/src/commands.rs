@@ -7,6 +7,7 @@ use crate::models::{
 use tauri::State;
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
+use bcrypt::{hash, verify, DEFAULT_COST};
 
 
 pub mod irpf;
@@ -57,8 +58,31 @@ pub async fn get_user_profile(db: State<'_, DbState>) -> Result<Option<UserProfi
 }
 
 #[tauri::command]
-pub async fn save_user_profile(db: State<'_, DbState>, profile: UserProfile) -> Result<(), String> {
+pub async fn save_user_profile(db: State<'_, DbState>, mut profile: UserProfile) -> Result<(), String> {
     println!("[COMMAND] save_user_profile called: {:?}", profile.name);
+    
+    // Hash new password if provided and not already hashed (bcrypt hashes start with $2)
+    if let Some(pwd) = &profile.password_hash {
+        if !pwd.is_empty() && !pwd.starts_with("$2") {
+            println!("[DEBUG] Hashing new password for user...");
+            match hash(pwd, DEFAULT_COST) {
+                Ok(hashed) => profile.password_hash = Some(hashed),
+                Err(e) => return Err(format!("Falha ao processar senha: {}", e)),
+            }
+        }
+    }
+
+    // Hash new recovery key if provided and not already hashed
+    if let Some(rk) = &profile.recovery_hash {
+        if !rk.is_empty() && !rk.starts_with("$2") {
+            println!("[DEBUG] Hashing new recovery key for user...");
+            match hash(rk, DEFAULT_COST) {
+                Ok(hashed) => profile.recovery_hash = Some(hashed),
+                Err(e) => return Err(format!("Falha ao processar chave de recuperação: {}", e)),
+            }
+        }
+    }
+
     let mut profile_json = serde_json::to_value(&profile).map_err(|e| e.to_string())?;
     println!("[DEBUG] Incoming Profile JSON to Save: {:?}", profile_json);
     
@@ -74,6 +98,83 @@ pub async fn save_user_profile(db: State<'_, DbState>, profile: UserProfile) -> 
     
     println!("[COMMAND] save_user_profile SUCCESS");
     Ok(())
+}
+
+#[tauri::command]
+pub async fn verify_password(db: State<'_, DbState>, password: String) -> Result<bool, String> {
+    println!("[COMMAND] verify_password called");
+    
+    // Fetch current user profile to get the stored hash
+    let mut result = db.0.query("SELECT password_hash FROM user_profile:main")
+        .await
+        .map_err(|e| e.to_string())?;
+        
+    let profiles: Vec<serde_json::Value> = result.take(0).map_err(|e| e.to_string())?;
+    
+    if let Some(profile_data) = profiles.first() {
+        if let Some(hash_val) = profile_data.get("password_hash") {
+            if let Some(stored_hash) = hash_val.as_str() {
+                if stored_hash.is_empty() {
+                    println!("[DEBUG] No password set for user, allowing access.");
+                    return Ok(true); // No password set
+                }
+                
+                // Perform bcrypt verification
+                let is_valid = verify(&password, stored_hash).unwrap_or(false);
+                println!("[DEBUG] Password verification match: {}", is_valid);
+                return Ok(is_valid);
+            }
+        }
+    }
+    
+    // If no profile exists or no password field exists, consider it valid (first run / no password set)
+    println!("[DEBUG] No profile or password hash found, allowing access by default.");
+    Ok(true)
+}
+
+#[tauri::command]
+pub async fn verify_recovery_key(db: State<'_, DbState>, key: String) -> Result<bool, String> {
+    println!("[COMMAND] verify_recovery_key called");
+    
+    let mut result = db.0.query("SELECT * FROM user_profile:main").await.map_err(|e| e.to_string())?;
+    let profiles: Vec<serde_json::Value> = result.take(0).map_err(|e| e.to_string())?;
+    
+    if let Some(profile_data) = profiles.first() {
+        if let Some(hash_val) = profile_data.get("recovery_hash") {
+            if let Some(stored_hash) = hash_val.as_str() {
+                if stored_hash.is_empty() {
+                    return Ok(false);
+                }
+                let is_valid = verify(&key, stored_hash).unwrap_or(false);
+                return Ok(is_valid);
+            }
+        }
+    }
+    
+    Ok(false)
+}
+
+#[tauri::command]
+pub async fn reset_password(db: State<'_, DbState>, recovery_key: String, new_password: String) -> Result<bool, String> {
+    println!("[COMMAND] reset_password called");
+    
+    // 1. Verify key
+    let is_key_valid = verify_recovery_key(db.clone(), recovery_key).await?;
+    if !is_key_valid {
+        return Ok(false);
+    }
+    
+    // 2. Hash new password
+    let hashed_password = hash(new_password, DEFAULT_COST).map_err(|e| e.to_string())?;
+    
+    // 3. Update only the password_hash field
+    db.0.query("UPDATE user_profile:main SET password_hash = $pwd")
+        .bind(("pwd", hashed_password))
+        .await
+        .map_err(|e| e.to_string())?;
+        
+    println!("[COMMAND] reset_password SUCCESS");
+    Ok(true)
 }
 
 #[tauri::command]
@@ -350,6 +451,14 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
 #[tauri::command]
 pub async fn delete_trade(db: State<'_, DbState>, id: String) -> Result<(), String> {
     let clean_id = id.split(':').last().unwrap_or(&id);
+    let full_id = format!("trade:{}", clean_id);
+
+    // 1. Delete associated daily closures (cash_transactions) that contain this trade
+    let sql = "DELETE cash_transaction WHERE type::string($trade_id) IN type::array(trade_ids) AND system_linked = true";
+    let _ = db.0.query(sql).bind(("trade_id", clean_id.clone())).await;
+    let _ = db.0.query(sql).bind(("trade_id", full_id)).await;
+
+    // 2. Delete the trade itself
     delete_record(&db.0, "trade", clean_id).await
 }
 
@@ -437,7 +546,7 @@ pub async fn delete_cash_transaction(db: State<'_, DbState>, id: String) -> Resu
         .map_err(|e| e.to_string())?;
     
     let linked: Option<bool> = res.take(0).map_err(|e| e.to_string())?;
-    if linked == Some(true) {
+    if linked == Some(true) && !clean_id.starts_with("daily_closure_") {
         return Err("Esta transação está vinculada ao sistema e não pode ser excluída manualmente.".into());
     }
 

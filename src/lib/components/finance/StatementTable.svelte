@@ -149,7 +149,7 @@
 
         // 1.5 Sort transactions within each day by date descending (strict chronological order)
         // Tie-breaker: id descending
-        Object.values(dayGroups).forEach((group) => {
+        Object.values(dayGroups || {}).forEach((group) => {
             group.sort((a, b) => {
                 const dateSort = b.date.localeCompare(a.date);
                 if (dateSort !== 0) return dateSort;
@@ -200,7 +200,7 @@
                 });
             });
 
-        return Object.values(months)
+        return Object.values(months || {})
             .sort((a, b) => b.monthKey.localeCompare(a.monthKey))
             .slice(0, pageSize);
     });
@@ -341,7 +341,10 @@
             if (result.success) {
                 toast.success($t("general.deleteSuccess"));
             } else {
-                toast.error(result.error || "Erro ao excluir transação.");
+                toast.error(
+                    result.error ||
+                        $t("finance.statement.messages.deleteError"),
+                );
             }
             deleteId = null;
         }
@@ -490,7 +493,8 @@
                                         >{$t("general.balance")} {curr}</span
                                     >
                                     <span
-                                        class="text-xs font-black {total >= 0
+                                        class="text-xs font-mono font-bold {total >=
+                                        0
                                             ? 'text-emerald-400'
                                             : 'text-red-400'}"
                                     >
@@ -570,7 +574,7 @@
                                                     class="flex items-center gap-2"
                                                 >
                                                     <span
-                                                        class="text-[10px] font-bold {(total as number) >=
+                                                        class="text-[10px] font-mono font-bold {(total as number) >=
                                                         0
                                                             ? 'text-emerald-400'
                                                             : 'text-red-400'}"
@@ -657,7 +661,18 @@
                                                         class="border-zinc-800/50 hover:bg-zinc-800/20"
                                                     >
                                                         <Table.Cell>
-                                                            {#if tx.type === "Deposit"}
+                                                            {#if tx.system_linked && tx.id && tx.id.startsWith("daily_closure_")}
+                                                                <div
+                                                                    class="flex items-center text-blue-400 text-[10px] font-bold uppercase tracking-tighter bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 w-fit"
+                                                                >
+                                                                    <CalendarCheck
+                                                                        class="w-3 h-3 mr-1"
+                                                                    />
+                                                                    {$t(
+                                                                        "finance.dailyClosure",
+                                                                    )}
+                                                                </div>
+                                                            {:else if tx.type === "Deposit"}
                                                                 <div
                                                                     class="flex items-center text-emerald-500 text-[10px] font-bold uppercase tracking-tighter bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 w-fit"
                                                                 >
@@ -681,7 +696,7 @@
                                                                 </div>
                                                             {:else if tx.type === "DailyResult"}
                                                                 <div
-                                                                    class="flex items-center text-zinc-400 text-[10px] font-bold uppercase tracking-tighter bg-zinc-500/10 px-2 py-0.5 rounded border border-zinc-500/20 w-fit"
+                                                                    class="flex items-center text-zinc-400 text-[10px] font-mono font-bold uppercase tracking-tighter bg-zinc-500/10 px-2 py-0.5 rounded border border-zinc-500/20 w-fit"
                                                                 >
                                                                     <CalendarCheck
                                                                         class="w-3 h-3 mr-1"
@@ -692,7 +707,7 @@
                                                                 </div>
                                                             {:else}
                                                                 <div
-                                                                    class="flex items-center text-blue-500 text-[10px] font-bold uppercase tracking-tighter bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 w-fit"
+                                                                    class="flex items-center text-blue-500 text-[10px] font-mono font-bold uppercase tracking-tighter bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 w-fit"
                                                                 >
                                                                     <RefreshCw
                                                                         class="w-3 h-3 mr-1"
@@ -706,7 +721,20 @@
                                                         <Table.Cell
                                                             class="font-medium text-zinc-200"
                                                         >
-                                                            {tx.description}
+                                                            {#if tx.system_linked && tx.id && tx.id.startsWith("daily_closure_")}
+                                                                {$t(
+                                                                    "finance.dailyClosure",
+                                                                )} ({tx.trade_ids
+                                                                    ? tx
+                                                                          .trade_ids
+                                                                          .length
+                                                                    : 0}
+                                                                {$t(
+                                                                    "sidebar.trades",
+                                                                ).toLowerCase()})
+                                                            {:else}
+                                                                {tx.description}
+                                                            {/if}
                                                         </Table.Cell>
                                                         <Table.Cell
                                                             class="text-zinc-500 text-xs"
@@ -858,7 +886,7 @@
                         class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-1"
                         >{$t("finance.statement.summary.totalDeposits")}</span
                     >
-                    <span class="text-lg font-black text-emerald-400">
+                    <span class="text-lg font-mono font-bold text-emerald-400">
                         {formatCurrencyValue(
                             dayDetailsStats.deposits,
                             dayDetailsStats.currency || "BRL",
@@ -874,7 +902,7 @@
                             "finance.statement.summary.totalWithdrawals",
                         )}</span
                     >
-                    <span class="text-lg font-black text-red-400">
+                    <span class="text-lg font-mono font-bold text-red-400">
                         {formatCurrencyValue(
                             dayDetailsStats.withdrawals,
                             dayDetailsStats.currency || "BRL",
@@ -889,7 +917,9 @@
                             class="text-[10px] font-black text-primary uppercase tracking-widest block mb-1"
                             >{$t("finance.statement.summary.netResult")}</span
                         >
-                        <span class="text-2xl font-black text-white">
+                        <span
+                            class="text-2xl font-mono font-bold text-white leading-none"
+                        >
                             {formatCurrencyValue(
                                 dayDetailsStats.net,
                                 dayDetailsStats.currency || "BRL",
