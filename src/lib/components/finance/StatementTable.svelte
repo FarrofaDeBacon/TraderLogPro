@@ -661,7 +661,7 @@
                                                         class="border-zinc-800/50 hover:bg-zinc-800/20"
                                                     >
                                                         <Table.Cell>
-                                                            {#if tx.system_linked && tx.id && tx.id.startsWith("daily_closure_")}
+                                                            {#if tx.id && tx.id.includes("daily_closure_")}
                                                                 <div
                                                                     class="flex items-center text-blue-400 text-[10px] font-bold uppercase tracking-tighter bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 w-fit"
                                                                 >
@@ -721,7 +721,7 @@
                                                         <Table.Cell
                                                             class="font-medium text-zinc-200"
                                                         >
-                                                            {#if tx.system_linked && tx.id && tx.id.startsWith("daily_closure_")}
+                                                            {#if tx.id && tx.id.includes("daily_closure_")}
                                                                 {$t(
                                                                     "finance.dailyClosure",
                                                                 )} ({tx.trade_ids
@@ -786,7 +786,7 @@
                                                                     </Button>
                                                                 {/if}
 
-                                                                {#if tx.system_linked}
+                                                                {#if tx.system_linked && (!tx.id || !tx.id.includes("daily_closure_"))}
                                                                     <Tooltip.Root
                                                                     >
                                                                         <Tooltip.Trigger

@@ -540,7 +540,7 @@ pub async fn delete_cash_transaction(db: State<'_, DbState>, id: String) -> Resu
     let clean_id = id.split(':').last().unwrap_or(&id).to_string();
     
     // 1. Check if linked to system logic
-    let mut res = db.0.query("SELECT system_linked FROM type::thing('cash_transaction', $id)")
+    let mut res = db.0.query("SELECT VALUE system_linked FROM type::thing('cash_transaction', $id)")
         .bind(("id", clean_id.clone()))
         .await
         .map_err(|e| e.to_string())?;
