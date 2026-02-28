@@ -450,7 +450,7 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
 
 #[tauri::command]
 pub async fn delete_trade(db: State<'_, DbState>, id: String) -> Result<(), String> {
-    let clean_id = id.split(':').last().unwrap_or(&id);
+    let clean_id = id.split(':').last().unwrap_or(&id).to_string();
     let full_id = format!("trade:{}", clean_id);
 
     // 1. Delete associated daily closures (cash_transactions) that contain this trade
@@ -459,7 +459,7 @@ pub async fn delete_trade(db: State<'_, DbState>, id: String) -> Result<(), Stri
     let _ = db.0.query(sql).bind(("trade_id", full_id)).await;
 
     // 2. Delete the trade itself
-    delete_record(&db.0, "trade", clean_id).await
+    delete_record(&db.0, "trade", &clean_id).await
 }
 
 // --- Cash Transactions ---

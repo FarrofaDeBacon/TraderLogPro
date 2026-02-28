@@ -206,10 +206,8 @@ fn generate_all_sqls() -> (Vec<(String, String, serde_json::Value)>, Vec<(String
 
     // Generate daily closing cash_transactions (Fechamento Diário)
     let mut closing_sqls = Vec::new();
-    let mut closing_count = 0u32;
 
     for (date, (net_result, trade_ids)) in &daily_results {
-        closing_count += 1;
         let rounded_result = (net_result * 100.0).round() / 100.0;
         let tx_type = if rounded_result >= 0.0 { "Deposit" } else { "Withdraw" };
         let date_str = format!("{}T17:30:00Z", date);
