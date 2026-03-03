@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { onMount, tick } from "svelte";
     import * as echarts from "echarts";
     import { formatCurrency } from "$lib/utils";
 
@@ -12,7 +12,8 @@
     let { data = [] }: { data: TaxData[] } = $props();
 
     let chartContainer: HTMLDivElement;
-    let chartInstance: echarts.ECharts;
+    let chartInstance = $state<echarts.ECharts>();
+    let resizeObserver: ResizeObserver;
 
     $effect(() => {
         if (chartInstance && data) {
@@ -20,43 +21,50 @@
         }
     });
 
-    onMount(() => {
+    onMount(async () => {
+        await tick();
         initChart();
-        window.addEventListener("resize", handleResize);
+
+        // Use ResizeObserver instead of window resize for better precision
+        resizeObserver = new ResizeObserver(() => {
+            if (chartInstance) {
+                chartInstance.resize();
+            }
+        });
+
+        if (chartContainer) {
+            resizeObserver.observe(chartContainer);
+        }
+
+        // Handle common Svelte/ECharts race condition where container is not yet ready
+        // despite being onMount + tick.
+        const resizeTimeout = setTimeout(() => {
+            if (chartInstance) chartInstance.resize();
+        }, 300);
+
         return () => {
-            window.removeEventListener("resize", handleResize);
+            clearTimeout(resizeTimeout);
+            resizeObserver?.disconnect();
             chartInstance?.dispose();
         };
     });
 
-    function handleResize() {
-        chartInstance?.resize();
-    }
-
     function initChart() {
-        if (!chartContainer) return;
+        if (!chartContainer || chartInstance) return;
+
+        // Ensure container has dimensions before init
+        const rect = chartContainer.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) {
+            // If dimensions aren't ready, wait a bit
+            setTimeout(initChart, 100);
+            return;
+        }
+
         chartInstance = echarts.init(chartContainer);
         updateChart();
-        // Force a resize after a short delay because some containers in Svelte 5
-        // might not have full height during onMount/init
-        setTimeout(() => {
-            chartInstance?.resize();
-        }, 100);
     }
 
     function updateChart() {
-        if (data.length > 0) {
-            const hasData = data.some((d) => d.taxDue > 0 || d.taxPaid > 0);
-            console.log(
-                `[TAX_CHART] Updating with ${data.length} items. Has positive values: ${hasData}`,
-            );
-            if (hasData) {
-                console.table(
-                    data.filter((d) => d.taxDue > 0 || d.taxPaid > 0),
-                );
-            }
-        }
-
         const option = {
             backgroundColor: "transparent",
             tooltip: {
@@ -84,7 +92,7 @@
             grid: {
                 left: "3%",
                 right: "4%",
-                bottom: "10%",
+                bottom: "15%", // Increased to fit labels
                 top: "10%",
                 containLabel: true,
             },
@@ -92,7 +100,10 @@
                 type: "category",
                 data: data.map((d) => d.month),
                 axisLine: { lineStyle: { color: "#3f3f46" } },
-                axisLabel: { color: "#a1a1aa" },
+                axisLabel: {
+                    color: "#a1a1aa",
+                    interval: 0, // Show all months
+                },
             },
             yAxis: {
                 type: "value",
@@ -115,6 +126,7 @@
                     data: data.map((d) => d.taxDue),
                     itemStyle: { color: "#ef4444" }, // Red
                     barMaxWidth: 20,
+                    animationDuration: 1000,
                 },
                 {
                     name: "Imposto Pago",
@@ -122,6 +134,7 @@
                     data: data.map((d) => d.taxPaid),
                     itemStyle: { color: "#22c55e" }, // Green
                     barMaxWidth: 20,
+                    animationDuration: 1000,
                 },
             ],
         };

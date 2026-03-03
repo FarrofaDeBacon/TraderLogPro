@@ -57,7 +57,9 @@
     // Multi-window utility
     const detach = async () => {
         try {
-            await invoke("open_detached_trade_window");
+            await invoke("open_detached_trade_window", {
+                theme: settingsStore.userProfile.theme,
+            });
             close(); // Close the modal in the main window
         } catch (e) {
             console.error("Failed to detach window:", e);

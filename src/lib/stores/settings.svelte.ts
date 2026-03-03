@@ -32,7 +32,7 @@ class SettingsStore {
         email: "",
         phone: "",
         cpf: "",
-        theme: "dark",
+        theme: "",
         language: "pt-BR",
         timezone: "America/Sao_Paulo",
         main_currency: "BRL",

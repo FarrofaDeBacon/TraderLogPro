@@ -166,7 +166,9 @@
                             value={(rule.condition === "drawdown_limit"
                                 ? currentStats.currentDrawdown / rule.value
                                 : currentStats.lossStreak / rule.value) * 100}
-                            class="h-2 bg-red-100"
+                            class="h-2 {rule.condition === 'drawdown_limit'
+                                ? 'bg-red-100'
+                                : ''}"
                         />
                     {/each}
                 </div>

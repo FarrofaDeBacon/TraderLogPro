@@ -171,7 +171,7 @@ export type UserProfile = {
     email: string;
     phone: string;
     cpf: string;
-    theme: "light" | "dark" | "system";
+    theme: "light" | "dark" | "system" | "";
     language: string;
     timezone: string;
     main_currency: string;

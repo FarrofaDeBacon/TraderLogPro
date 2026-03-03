@@ -1737,8 +1737,8 @@ pub async fn restore_database(db: State<'_, DbState>, path: String) -> Result<us
 }
 
 #[tauri::command]
-pub async fn open_detached_trade_window(app_handle: tauri::AppHandle) -> Result<(), String> {
-    println!("[COMMAND] Spawning detached trade window...");
+pub async fn open_detached_trade_window(app_handle: tauri::AppHandle, theme: Option<String>) -> Result<(), String> {
+    println!("[COMMAND] Spawning detached trade window with theme: {:?}", theme);
     
     // Check if window already exists to avoid duplicates
     if let Some(window) = tauri::Manager::get_webview_window(&app_handle, "detached-trade") {
@@ -1746,10 +1746,15 @@ pub async fn open_detached_trade_window(app_handle: tauri::AppHandle) -> Result<
         return Ok(());
     }
 
+    let url_str = match &theme {
+        Some(t) => format!("detached-trade?theme={}", t),
+        None => "detached-trade".to_string(),
+    };
+
     let _window = tauri::WebviewWindowBuilder::new(
         &app_handle,
         "detached-trade",
-        tauri::WebviewUrl::App("detached-trade".into()),
+        tauri::WebviewUrl::App(url_str.into()),
     )
     .title("TraderLog Pro - Novo Trade (Independente)")
     .inner_size(850.0, 750.0)

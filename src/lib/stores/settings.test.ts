@@ -27,6 +27,8 @@ describe('SettingsStore Unit Tests', () => {
         // userProfile is initialized with BRL and pt-BR
         expect(settingsStore.userProfile.language).toBe('pt-BR');
         expect(settingsStore.userProfile.main_currency).toBe('BRL');
+        // CRITICAL for detached windows: should start empty to avoid theme flash/override
+        expect(settingsStore.userProfile.theme).toBe('');
     });
 
     it('should calculate trial days correctly', () => {

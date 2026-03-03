@@ -18,6 +18,15 @@
 
   let isBypassLoading = $state(false);
   let isSplashFinished = $state(false);
+  let isDetached = $state(false);
+
+  // Check if window is detached (secondary) on mount
+  if (typeof window !== "undefined") {
+    isDetached = window.location.pathname.includes("detached-trade");
+    if (isDetached) {
+      isSplashFinished = true; // Skip splash for secondary windows
+    }
+  }
 
   // Auth Guard: Force login if password is set and user is not authenticated
   $effect(() => {
@@ -35,9 +44,21 @@
 
   // Integrated Theme Sync (One source of truth: Store -> UI)
   $effect(() => {
-    if (settingsStore.isLoadingData) return;
+    // 1. Check for theme override in URL (for detached windows)
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlTheme = urlParams.get("theme");
+      if (urlTheme && urlTheme !== mode.current) {
+        console.log(`[Layout] Theme override from URL: ${urlTheme}`);
+        setMode(urlTheme as any);
+        return; // Prioritize URL param on initial load
+      }
+    }
 
-    const desiredTheme = settingsStore.userProfile.theme;
+    // 2. Otherwise sync from settingsStore
+    // We only sync if theme is explicitly set (not empty string)
+    let desiredTheme = settingsStore.userProfile.theme;
+
     if (desiredTheme && desiredTheme !== mode.current) {
       console.log(
         `[Layout] Syncing theme: ${desiredTheme} (current: ${mode.current})`,
