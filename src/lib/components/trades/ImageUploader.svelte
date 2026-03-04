@@ -142,7 +142,7 @@
                         <Button
                             variant="ghost"
                             size="icon"
-                            class="h-8 w-8 text-red-500 hover:bg-red-500/20"
+                            class="h-8 w-8 text-rose-500 hover:bg-rose-500/20"
                             onclick={() => removeImage(i)}
                         >
                             <Trash2 class="w-4 h-4" />

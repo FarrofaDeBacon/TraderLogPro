@@ -182,14 +182,23 @@ class TradesStore {
             const isClosed = t.exit_price !== null && t.exit_price !== undefined;
             if (!isClosed) return false;
 
-            const dateToUse = t.exit_date || t.date;
-            return dateToUse && dateToUse.startsWith(yearMonth);
+            // Use startsWith but also support date objects if they ever leak here
+            const dateStr = t.exit_date || t.date || "";
+            return dateStr.substring(0, 7) === yearMonth;
         });
 
         for (const trade of monthlyTrades) {
             total += this.getConvertedTradeResult(trade, accounts, currencies);
         }
         return total;
+    }
+
+    getTotalBalanceBRL(accounts: Account[], currencies: Currency[]) {
+        return accounts.reduce((acc, curr) => {
+            const currencyObj = currencies.find(c => c.code === curr.currency);
+            const rate = currencyObj?.exchange_rate || 1;
+            return acc + (Number(curr.balance) || 0) * rate;
+        }, 0);
     }
 
     getConvertedTradeResult(trade: Trade, accounts: Account[], currencies: Currency[]): number {

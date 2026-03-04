@@ -138,7 +138,7 @@
 
         const today = new Date().toISOString().split("T")[0];
         if (dueDate < today)
-            return "text-red-500 bg-red-500/10 border-red-500/20";
+            return "text-rose-500 bg-rose-500/10 border-rose-500/20";
 
         return "text-yellow-500 bg-yellow-500/10 border-yellow-500/20";
     }
@@ -283,7 +283,7 @@
                                     .toISOString()
                                     .split("T")[0]}
                                 <span
-                                    class="px-1.5 py-0.5 rounded-[4px] text-[8px] font-black uppercase tracking-tighter text-red-500 bg-red-500/10 border border-red-500/20"
+                                    class="px-1.5 py-0.5 rounded-[4px] text-[8px] font-black uppercase tracking-tighter text-rose-500 bg-rose-500/10 border border-rose-500/20"
                                 >
                                     {$t("fiscal.darf.status.late")}
                                 </span>
@@ -374,11 +374,11 @@
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                class="h-7 w-7 p-0 hover:bg-red-500/10"
+                                class="h-7 w-7 p-0 hover:bg-rose-500/10"
                                 onclick={() => deleteDarf(item)}
                             >
                                 <Trash2
-                                    class="w-3 h-3 text-red-400 group-hover:text-red-500"
+                                    class="w-3 h-3 text-red-400 group-hover:text-rose-500"
                                 />
                             </Button>
                         </Card.Footer>

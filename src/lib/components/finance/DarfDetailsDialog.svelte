@@ -362,8 +362,8 @@
         >
             {#if showUnpayConfirm}
                 <div class="flex items-center gap-2 mr-auto">
-                    <Undo2 class="w-4 h-4 text-red-500 animate-pulse" />
-                    <span class="text-xs font-bold text-red-500 uppercase"
+                    <Undo2 class="w-4 h-4 text-rose-500 animate-pulse" />
+                    <span class="text-xs font-bold text-rose-500 uppercase"
                         >{$t("finance.darfDetails.unpayTitle")}</span
                     >
                 </div>
@@ -386,10 +386,10 @@
                     <Button
                         variant="destructive"
                         onclick={handleUnpay}
-                        class="bg-red-600/10 hover:bg-red-600 text-red-600 dark:text-white hover:text-white border border-red-500/30 mr-auto group transition-all"
+                        class="bg-red-600/10 hover:bg-red-600 text-red-600 dark:text-white hover:text-white border border-rose-500/30 mr-auto group transition-all"
                     >
                         <Undo2
-                            class="w-4 h-4 mr-2 text-red-500 group-hover:text-white"
+                            class="w-4 h-4 mr-2 text-rose-500 group-hover:text-white"
                         />
                         {$t("finance.darfDetails.unpayAction")}
                     </Button>

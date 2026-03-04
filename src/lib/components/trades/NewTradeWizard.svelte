@@ -1,6 +1,7 @@
-﻿<script lang="ts">
+<script lang="ts">
     import { t, locale } from "svelte-i18n";
     import { invoke } from "@tauri-apps/api/core";
+    import { emit } from "@tauri-apps/api/event";
     import { toast } from "svelte-sonner";
     import { onMount, untrack } from "svelte";
     import { settingsStore } from "$lib/stores/settings.svelte";
@@ -57,6 +58,13 @@
     // Multi-window utility
     const detach = async () => {
         try {
+            // Save current state to localStorage for the new window to pick up
+            const stateToPass = $state.snapshot(formData);
+            localStorage.setItem(
+                "pending_trade_wizard_state",
+                JSON.stringify(stateToPass),
+            );
+
             await invoke("open_detached_trade_window", {
                 theme: settingsStore.userProfile.theme,
             });
@@ -341,37 +349,92 @@
     let timeframeList = $state<any[]>([]);
     let assetsList = $state<any[]>([]);
 
+    // Reactive sync for snapshots (for detached windows or slow loads)
+    $effect(() => {
+        if (!settingsStore.isLoadingData) {
+            if (
+                accountsList.length === 0 &&
+                settingsStore.accounts.length > 0
+            ) {
+                accountsList = [...settingsStore.accounts];
+            }
+            if (
+                strategiesList.length === 0 &&
+                settingsStore.strategies.length > 0
+            ) {
+                strategiesList = [...settingsStore.strategies];
+            }
+            if (
+                assetTypesList.length === 0 &&
+                settingsStore.assetTypes.length > 0
+            ) {
+                assetTypesList = [...settingsStore.assetTypes];
+            }
+            if (assetsList.length === 0 && settingsStore.assets.length > 0) {
+                assetsList = [...settingsStore.assets];
+            }
+            if (
+                timeframeList.length === 0 &&
+                settingsStore.timeframes.length > 0
+            ) {
+                timeframeList = [...settingsStore.timeframes];
+            }
+        }
+    });
+
     onMount(() => {
+        // --- RESTORE DETACHED STATE ---
+        if (detached) {
+            const savedState = localStorage.getItem(
+                "pending_trade_wizard_state",
+            );
+            if (savedState) {
+                try {
+                    const parsed = JSON.parse(savedState);
+                    formData = { ...formData, ...parsed };
+                    console.log(
+                        "[NewTradeWizard] Restored state in detached window.",
+                    );
+                    // Clear it so it doesn't leak to future windows
+                    localStorage.removeItem("pending_trade_wizard_state");
+                } catch (e) {
+                    console.error("Failed to restore detached state:", e);
+                }
+            }
+        }
+
         // Capture initial snapshots from store
-        accountsList = [...settingsStore.accounts];
-        strategiesList = [...settingsStore.strategies];
-        assetTypesList = [...settingsStore.assetTypes];
-        assetsList = [...settingsStore.assets];
-        timeframeList =
-            settingsStore.timeframes.length > 0
-                ? [...settingsStore.timeframes]
-                : [
-                      {
-                          value: "1m",
-                          name: $t("trades.wizard.timeframe_options.1m"),
-                      },
-                      {
-                          value: "5m",
-                          name: $t("trades.wizard.timeframe_options.5m"),
-                      },
-                      {
-                          value: "15m",
-                          name: $t("trades.wizard.timeframe_options.15m"),
-                      },
-                      {
-                          value: "60m",
-                          name: $t("trades.wizard.timeframe_options.60m"),
-                      },
-                      {
-                          value: "D",
-                          name: $t("trades.wizard.timeframe_options.d"),
-                      },
-                  ];
+        if (!settingsStore.isLoadingData) {
+            accountsList = [...settingsStore.accounts];
+            strategiesList = [...settingsStore.strategies];
+            assetTypesList = [...settingsStore.assetTypes];
+            assetsList = [...settingsStore.assets];
+            timeframeList =
+                settingsStore.timeframes.length > 0
+                    ? [...settingsStore.timeframes]
+                    : [
+                          {
+                              value: "1m",
+                              name: $t("trades.wizard.timeframe_options.1m"),
+                          },
+                          {
+                              value: "5m",
+                              name: $t("trades.wizard.timeframe_options.5m"),
+                          },
+                          {
+                              value: "15m",
+                              name: $t("trades.wizard.timeframe_options.15m"),
+                          },
+                          {
+                              value: "60m",
+                              name: $t("trades.wizard.timeframe_options.60m"),
+                          },
+                          {
+                              value: "D",
+                              name: $t("trades.wizard.timeframe_options.d"),
+                          },
+                      ];
+        }
 
         console.log(
             "[NewTradeWizard] UI Snapshots captured for performance stability.",
@@ -442,16 +505,13 @@
 
         // Priority 3: Auto-select based on formData.asset changes (for new trades or when changing symbol)
         // But don't override if user manually selected a type
-        if (
-            !userManuallySelectedType &&
-            formData.asset &&
-            assetsList.length > 0
-        ) {
-            const asset = assetsList.find(
+        if (!userManuallySelectedType && formData.asset) {
+            const allAssets = [...settingsStore.assets, ...rtdAssets];
+            const asset = allAssets.find(
                 (a) => a.symbol.toUpperCase() === formData.asset.toUpperCase(),
             );
             if (asset) {
-                const type = assetTypesList.find(
+                const type = settingsStore.assetTypes.find(
                     (t) =>
                         t.id === asset.asset_type_id ||
                         t.id.replace(/^asset_type:/, "") ===
@@ -460,7 +520,7 @@
                 if (type && type.id !== selectedAssetTypeId) {
                     selectedAssetTypeId = type.id;
                     console.log(
-                        "[NewTradeWizard] Auto-syncing from asset symbol:",
+                        "[NewTradeWizard] Auto-syncing from asset symbol (direct store access):",
                         selectedAssetTypeId,
                         "for",
                         formData.asset,
@@ -841,6 +901,8 @@
                 );
                 if (result.success) {
                     toast.success($t("trades.wizard.messages.update_success"));
+                    currentStep = 1;
+                    emit("trade-saved", { mode: "update" }).catch(() => {});
                     onsave();
                     close();
                 } else {
@@ -866,6 +928,8 @@
                             $t("trades.wizard.messages.save_success"),
                         );
                     }
+                    currentStep = 1;
+                    emit("trade-saved", { mode: "new" }).catch(() => {});
                     onsave();
                     close();
                 } else {
@@ -1245,7 +1309,7 @@
                                             for="asset-select-main"
                                             class="text-[9px] uppercase font-bold text-muted-foreground tracking-tighter"
                                             >{$t("trades.wizard.fields.asset")}
-                                            <span class="text-red-500">*</span
+                                            <span class="text-rose-500">*</span
                                             ></Label
                                         >
                                         <Select.Root
@@ -1323,7 +1387,7 @@
                                     <Label
                                         class="text-[9px] uppercase font-bold text-muted-foreground tracking-tighter"
                                         >{$t("trades.wizard.fields.direction")}
-                                        <span class="text-red-500">*</span
+                                        <span class="text-rose-500">*</span
                                         ></Label
                                     >
                                     <div
@@ -1344,7 +1408,7 @@
                                             type="button"
                                             class="rounded-md font-bold text-xs transition-all flex items-center justify-center {formData.direction ===
                                             'sell'
-                                                ? 'bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]'
+                                                ? 'bg-rose-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]'
                                                 : 'bg-muted/40 text-muted-foreground hover:bg-muted/60'}"
                                             onclick={() =>
                                                 (formData.direction = "sell")}
@@ -1379,7 +1443,7 @@
                                             >{$t(
                                                 "trades.wizard.fields.entry_price",
                                             )}
-                                            <span class="text-red-500">*</span
+                                            <span class="text-rose-500">*</span
                                             ></Label
                                         >
                                         <div class="flex gap-2">
@@ -2091,10 +2155,10 @@
                             <div class="flex-1 space-y-6">
                                 <div class="space-y-2">
                                     <h3
-                                        class="text-lg font-black tracking-tighter text-foreground uppercase italic flex items-center gap-2"
+                                        class="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2"
                                     >
                                         <ShieldCheck
-                                            class="w-5 h-5 text-primary"
+                                            class="w-4 h-4 text-primary"
                                         />
                                         {$t(
                                             "trades.wizard.sections.final_summary",

@@ -55,7 +55,7 @@
     >
         <div class="flex items-center gap-4">
             <div
-                class={`p-3 rounded-full ${trade.direction === "buy" ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"}`}
+                class={`p-3 rounded-full ${trade.direction === "buy" ? "bg-green-500/20 text-green-500" : "bg-rose-500/20 text-rose-500"}`}
             >
                 {#if trade.direction === "buy"}
                     <TrendingUp class="w-6 h-6" />
@@ -85,7 +85,7 @@
         </div>
         <div class="text-right">
             <div
-                class={`text-2xl font-mono font-bold ${(trade.result || 0) >= 0 ? "text-green-500" : "text-red-500"}`}
+                class={`text-2xl font-mono font-bold ${(trade.result || 0) >= 0 ? "text-green-500" : "text-rose-500"}`}
             >
                 {formatCurrency(
                     trade.result || 0,
@@ -163,7 +163,7 @@
                             >{$t("trades.details.stop_loss")}</span
                         >
                         <span
-                            class="font-mono font-bold text-red-500/80 text-sm"
+                            class="font-mono font-bold text-rose-500/80 text-sm"
                             >{trade.stop_loss || "-"}</span
                         >
                     </div>
@@ -256,7 +256,7 @@
                                 <Badge
                                     class={entryEmotion.impact === "Positive"
                                         ? "bg-green-500/20 text-green-500"
-                                        : "bg-red-500/20 text-red-500"}
+                                        : "bg-rose-500/20 text-rose-500"}
                                 >
                                     {entryEmotion.name}
                                 </Badge>
@@ -282,7 +282,7 @@
                                 <Badge
                                     class={exitEmotion.impact === "Positive"
                                         ? "bg-green-500/20 text-green-500"
-                                        : "bg-red-500/20 text-red-500"}
+                                        : "bg-rose-500/20 text-rose-500"}
                                 >
                                     {exitEmotion.name}
                                 </Badge>
@@ -323,7 +323,7 @@
                             <Badge variant="destructive"
                                 >{$t("trades.wizard.summary.n")}</Badge
                             >
-                            <span class="text-sm text-red-500/80"
+                            <span class="text-sm text-rose-500/80"
                                 >{$t("trades.wizard.adherence.no_msg")}</span
                             >
                         {/if}

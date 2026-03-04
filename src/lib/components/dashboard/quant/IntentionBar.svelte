@@ -18,7 +18,7 @@
             <span>{label}</span>
             <div class="space-x-2">
                 <span class="text-green-500">{buyPercent.toFixed(1)}%</span>
-                <span class="text-red-500">{sellPercent.toFixed(1)}%</span>
+                <span class="text-rose-500">{sellPercent.toFixed(1)}%</span>
             </div>
         </div>
     {/if}
@@ -28,7 +28,7 @@
             style="width: {buyPercent}%"
         ></div>
         <div
-            class="h-full bg-red-500/80 transition-all duration-500"
+            class="h-full bg-rose-500/80 transition-all duration-500"
             style="width: {sellPercent}%"
         ></div>
     </div>

@@ -318,7 +318,7 @@
                                             class="text-right font-mono font-bold {item.result >=
                                             0
                                                 ? 'text-green-500'
-                                                : 'text-red-500'}"
+                                                : 'text-rose-500'}"
                                         >
                                             {item.result.toLocaleString(
                                                 $locale || "pt-BR",

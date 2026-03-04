@@ -894,7 +894,7 @@
             {:else}
                 <!-- Melhor Mindset -->
                 <div
-                    class="group relative overflow-hidden rounded-xl border border-border/50 bg-muted/30 transition-all hover:border-emerald-500/30 border-l-4 border-l-emerald-500"
+                    class="card-glass border-l-4 border-l-emerald-500 overflow-hidden"
                 >
                     <div class="flex items-start justify-between py-1.5 px-3">
                         <span
@@ -925,7 +925,7 @@
 
                 <!-- Pior Mindset -->
                 <div
-                    class="group relative overflow-hidden rounded-xl border border-border/50 bg-muted/30 transition-all hover:border-red-500/30 border-l-4 border-l-red-500"
+                    class="card-glass border-l-4 border-l-rose-500 overflow-hidden"
                 >
                     <div class="flex items-start justify-between py-1.5 px-3">
                         <span
@@ -933,16 +933,16 @@
                         >
                             {$t("psychology.kpi.worstMindset")}
                         </span>
-                        <AlertTriangle class="h-3 w-3 text-red-500" />
+                        <AlertTriangle class="h-3 w-3 text-rose-500" />
                     </div>
                     <div class="py-1 px-3 pb-2">
                         <div
-                            class="text-base font-mono font-bold text-red-500 uppercase tracking-tight leading-none"
+                            class="text-base font-mono font-bold text-rose-500 uppercase tracking-tight leading-none"
                         >
                             {worstMindset?.name || "-"}
                         </div>
                         <p
-                            class="text-[10px] text-muted-foreground mt-1 underline decoration-red-500/30 underline-offset-2 decoration-dotted"
+                            class="text-[10px] text-muted-foreground mt-1 underline decoration-rose-500/30 underline-offset-2 decoration-dotted"
                         >
                             {$t("psychology.kpi.accumulatedLoss")}:
                             <span class="font-mono font-bold"
@@ -956,7 +956,7 @@
 
                 <!-- Custo do Tilt -->
                 <div
-                    class="group relative overflow-hidden rounded-xl border border-border/50 bg-muted/30 transition-all hover:border-orange-500/30 border-l-4 border-l-orange-500"
+                    class="card-glass border-l-4 border-l-orange-500 overflow-hidden"
                 >
                     <div class="flex items-start justify-between py-1.5 px-3">
                         <span
@@ -984,7 +984,7 @@
 
                 <!-- Registros -->
                 <div
-                    class="group relative overflow-hidden rounded-xl border border-border/50 bg-muted/30 transition-all hover:border-blue-500/30 border-l-4 border-l-blue-500"
+                    class="card-glass border-l-4 border-l-blue-500 overflow-hidden"
                 >
                     <div class="flex items-start justify-between py-1.5 px-3">
                         <span
@@ -1023,7 +1023,7 @@
                     </Card.Root>
                 {/each}
             {:else}
-                <Card.Root class="bg-card/50 backdrop-blur-md border-border/50">
+                <Card.Root class="card-glass h-full">
                     <Card.Header class="pb-1">
                         <Card.Title
                             class="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70"
@@ -1035,7 +1035,7 @@
                     </Card.Content>
                 </Card.Root>
 
-                <Card.Root class="bg-card/50 backdrop-blur-md border-border/50">
+                <Card.Root class="card-glass h-full">
                     <Card.Header class="pb-1">
                         <Card.Title
                             class="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70"
@@ -1047,7 +1047,7 @@
                     </Card.Content>
                 </Card.Root>
 
-                <Card.Root class="bg-card/50 backdrop-blur-md border-border/50">
+                <Card.Root class="card-glass h-full">
                     <Card.Header class="pb-1">
                         <Card.Title
                             class="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70"
@@ -1063,7 +1063,7 @@
 
         <!-- Detailed Analysis & Filters -->
         <div
-            class="flex flex-col sm:flex-row gap-4 justify-between items-end bg-card/40 backdrop-blur-sm p-4 rounded-xl border border-border/50"
+            class="flex flex-col sm:flex-row gap-4 justify-between items-end card-glass p-4"
         >
             <div class="space-y-1">
                 <h3
@@ -1135,11 +1135,11 @@
                                 month.key,
                             )}
                             <div
-                                class="rounded-xl border border-border/50 overflow-hidden bg-card/20 backdrop-blur-sm"
+                                class="card-glass border border-border/50 overflow-hidden"
                             >
                                 <!-- Month Header -->
                                 <button
-                                    class="w-full flex items-center justify-between p-3 rounded-xl bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-colors sticky top-0 z-10 backdrop-blur-md"
+                                    class="w-full flex items-center justify-between p-3 rounded-xl card-glass border-primary/20 hover:bg-primary/15 transition-colors sticky top-0 z-10 backdrop-blur-md"
                                     onclick={() => toggleMonth(month.key)}
                                 >
                                     <div class="flex items-center gap-4">
@@ -1174,7 +1174,7 @@
                                                             class="text-[9px] font-bold {(total as number) >=
                                                             0
                                                                 ? 'text-emerald-500'
-                                                                : 'text-red-500'}"
+                                                                : 'text-rose-500'}"
                                                         >
                                                             {formatCurrency(
                                                                 total as number,
@@ -1211,7 +1211,7 @@
                                                         .equivalentState
                                                         .impact === 'Positive'
                                                         ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                                        : 'bg-red-500/10 text-red-400 border-red-500/20'}"
+                                                        : 'bg-rose-500/10 text-red-400 border-rose-500/20'}"
                                                     variant="outline"
                                                 >
                                                     {month.equivalentState.name}
@@ -1248,10 +1248,10 @@
                                             {@const isWeekExpanded =
                                                 expandedWeeks.has(week.key)}
                                             <div
-                                                class="rounded-lg border border-border/40 bg-muted/20 overflow-hidden"
+                                                class="card-glass border border-border/40 overflow-hidden"
                                             >
                                                 <button
-                                                    class="w-full flex items-center justify-between p-3 hover:bg-muted/40 transition-colors"
+                                                    class="w-full flex items-center justify-between p-3 hover:bg-primary/10 transition-colors"
                                                     onclick={() =>
                                                         toggleWeek(week.key)}
                                                 >
@@ -1275,7 +1275,7 @@
                                                                         class="text-[9px] font-bold {(total as number) >=
                                                                         0
                                                                             ? 'text-emerald-500'
-                                                                            : 'text-red-500'}"
+                                                                            : 'text-rose-500'}"
                                                                     >
                                                                         {formatCurrency(
                                                                             total as number,
@@ -1316,7 +1316,7 @@
                                                                         .impact ===
                                                                     'Positive'
                                                                         ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                                                                        : 'bg-red-500/10 text-red-500 border-red-500/20'}"
+                                                                        : 'bg-rose-500/10 text-rose-500 border-rose-500/20'}"
                                                                     variant="outline"
                                                                 >
                                                                     {week
@@ -1360,10 +1360,10 @@
                                                                     day.date,
                                                                 )}
                                                             <div
-                                                                class="group/day relative bg-muted/20 backdrop-blur-sm rounded-xl border border-border/50 hover:border-border/60 transition-all duration-300 shadow-sm overflow-hidden"
+                                                                class="card-glass border border-border/50 overflow-hidden"
                                                             >
                                                                 <button
-                                                                    class="w-full flex items-center justify-between p-2 sm:p-3 hover:bg-muted/40 transition-colors text-left"
+                                                                    class="w-full flex items-center justify-between p-2 sm:p-3 hover:bg-primary/10 transition-colors text-left"
                                                                     onclick={() =>
                                                                         toggleDay(
                                                                             day.date,
@@ -1431,7 +1431,7 @@
                                                                                             class="text-[9px] font-bold {(total as number) >=
                                                                                             0
                                                                                                 ? 'text-emerald-500'
-                                                                                                : 'text-red-500'}"
+                                                                                                : 'text-rose-500'}"
                                                                                         >
                                                                                             {formatCurrency(
                                                                                                 total as number,
@@ -1479,7 +1479,7 @@
                                                                                                 .impact ===
                                                                                             'Positive'
                                                                                                 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                                                                                                : 'bg-red-500/10 text-red-500 border-red-500/20'}"
+                                                                                                : 'bg-rose-500/10 text-rose-500 border-rose-500/20'}"
                                                                                             variant="outline"
                                                                                         >
                                                                                             {day
@@ -1558,7 +1558,7 @@
                                                                                 >
                                                                                     {#each day.trades as trade}
                                                                                         <tr
-                                                                                            class="h-8 border-b border-border/10 last:border-0 hover:bg-accent/5 transition-colors"
+                                                                                            class="h-8 border-b border-border/10 last:border-0 hover:bg-primary/10 transition-colors"
                                                                                         >
                                                                                             <td
                                                                                                 class="px-3 text-[10px] font-bold text-foreground uppercase"
@@ -1707,7 +1707,7 @@
                                     {@const itemIntensity =
                                         entry.intensity || 5}
                                     <tr
-                                        class="h-10 border-b border-border/10 hover:bg-accent/5 transition-colors group"
+                                        class="h-10 border-b border-border/10 hover:bg-primary/10 transition-colors group"
                                     >
                                         <td class="px-3">
                                             <div class="flex flex-col">
@@ -1838,7 +1838,7 @@
                             class="text-[9px] font-black uppercase {insightData
                                 .equivalentState.impact === 'Positive'
                                 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                                : 'bg-red-500/10 text-red-500 border-red-500/20'}"
+                                : 'bg-rose-500/10 text-rose-500 border-rose-500/20'}"
                             variant="outline"
                         >
                             {insightData.equivalentState.name}
@@ -1905,7 +1905,7 @@
                                         : 5}
 
                                 <tr
-                                    class="h-10 border-b border-border/10 hover:bg-accent/5 transition-colors"
+                                    class="h-10 border-b border-border/10 hover:bg-primary/10 transition-colors"
                                 >
                                     <td class="px-3">
                                         <div class="flex flex-col">
@@ -2285,7 +2285,7 @@
                                     class="text-xs px-3 h-6 font-black uppercase {selectedDayData
                                         .equivalentState.impact === 'Positive'
                                         ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                        : 'bg-red-500/10 text-red-400 border-red-500/20'}"
+                                        : 'bg-rose-500/10 text-red-400 border-rose-500/20'}"
                                 >
                                     {selectedDayData.equivalentState.name}
                                 </Badge>

@@ -23,7 +23,7 @@
 
     // Determine color based on balance (optional, currently static primary)
     let cardAccentColor = $derived(
-        account.balance >= 0 ? "border-primary/20" : "border-red-500/20",
+        account.balance >= 0 ? "border-primary/20" : "border-rose-500/20",
     );
 
     // Sparkline data

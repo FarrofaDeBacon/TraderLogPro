@@ -476,43 +476,64 @@ pub async fn calculate_monthly_tax(
             .sum();
 
         // 3.5 IRRF Credit Carryover Logic
-        let credit_query = "SELECT type::float(withholding_credit_remaining) as withholding_credit_remaining FROM tax_appraisal WHERE trade_type = $type AND (`period_year` < $year OR (`period_year` = $year AND `period_month` < $month)) ORDER BY `period_year` DESC, `period_month` DESC LIMIT 1";
+        // NOTE: ORDER BY is removed from the query to avoid SurrealDB 'Missing order idiom' parse
+        // error when combining parenthesized WHERE conditions with ORDER BY on numeric fields.
+        // We fetch all prior records and sort in Rust instead.
+        let credit_query = "SELECT type::float(withholding_credit_remaining) as withholding_credit_remaining, period_year, period_month FROM tax_appraisal WHERE trade_type = $type";
         let mut credit_res =
             db.0.query(credit_query)
                 .bind(("type", loss_category.clone()))
-                .bind(("year", year))
-                .bind(("month", month))
                 .await
                 .map_err(|e| e.to_string())?;
 
-        let prev_credit_vec: Vec<serde_json::Value> =
+        let mut prev_credit_vec: Vec<serde_json::Value> =
             credit_res.take(0).map_err(|e| e.to_string())?;
-        let previous_credit = if let Some(v) = prev_credit_vec.first() {
-            v.get("withholding_credit_remaining")
-                .and_then(|t| t.as_f64())
-                .unwrap_or(0.0)
-        } else {
-            0.0
-        };
+        // Filter to only prior periods and sort desc to get the most recent
+        prev_credit_vec.retain(|v| {
+            let py = v.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0) as u16;
+            let pm = v.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0) as u8;
+            py < year || (py == year && pm < month)
+        });
+        prev_credit_vec.sort_by(|a, b| {
+            let ay = a.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0);
+            let am = a.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0);
+            let by = b.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0);
+            let bm = b.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0);
+            (by, bm).cmp(&(ay, am)) // descending
+        });
+        let previous_credit = prev_credit_vec.first()
+            .and_then(|v| v.get("withholding_credit_remaining"))
+            .and_then(|t| t.as_f64())
+            .unwrap_or(0.0);
 
         // 3.5 Accumulation Logic (< R$ 10)
-        let accum_query = "SELECT type::float(total_payable) as total_payable FROM tax_appraisal WHERE trade_type = $type AND status = 'Pending' AND total_payable < 10.0 AND (`period_year` < $year OR (`period_year` = $year AND `period_month` < $month)) ORDER BY `period_year` DESC, `period_month` DESC LIMIT 1";
+        // NOTE: Same pattern - ORDER BY removed to avoid SurrealDB parse error.
+        let accum_query = "SELECT type::float(total_payable) as total_payable, period_year, period_month FROM tax_appraisal WHERE trade_type = $type AND status = 'Pending'";
         let mut accum_res =
             db.0.query(accum_query)
                 .bind(("type", loss_category.clone()))
-                .bind(("year", year))
-                .bind(("month", month))
                 .await
                 .map_err(|e| e.to_string())?;
 
-        let prev_accum: Vec<serde_json::Value> = accum_res.take(0).map_err(|e| e.to_string())?;
-        let tax_accumulated = if let Some(v) = prev_accum.first() {
-            v.get("total_payable")
-                .and_then(|t| t.as_f64())
-                .unwrap_or(0.0)
-        } else {
-            0.0
-        };
+        let mut prev_accum: Vec<serde_json::Value> = accum_res.take(0).map_err(|e| e.to_string())?;
+        // Filter: only prior periods with total_payable < 10.0, then sort desc
+        prev_accum.retain(|v| {
+            let py = v.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0) as u16;
+            let pm = v.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0) as u8;
+            let tp = v.get("total_payable").and_then(|x| x.as_f64()).unwrap_or(0.0);
+            tp < 10.0 && (py < year || (py == year && pm < month))
+        });
+        prev_accum.sort_by(|a, b| {
+            let ay = a.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0);
+            let am = a.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0);
+            let by = b.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0);
+            let bm = b.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0);
+            (by, bm).cmp(&(ay, am)) // descending
+        });
+        let tax_accumulated = prev_accum.first()
+            .and_then(|v| v.get("total_payable"))
+            .and_then(|t| t.as_f64())
+            .unwrap_or(0.0);
 
         let mut appraisal = crate::logic::calculate_appraisal(
             &bucket,
@@ -540,7 +561,7 @@ pub async fn get_appraisals(
 ) -> Result<Vec<TaxAppraisal>, String> {
     // PRE-MIGRATION: Robust multi-stage field renaming
     let migrations = vec![
-        "UPDATE tax_appraisal SET period_month = `month`, period_year = `year`, `month` = NONE, `year` = NONE WHERE `month` != NONE",
+        "UPDATE tax_appraisal SET period_month = month, period_year = year, month = NONE, year = NONE WHERE month != NONE",
         "UPDATE tax_appraisal SET period_month = appraisal_month, period_year = appraisal_year, appraisal_month = NONE, appraisal_year = NONE WHERE appraisal_month != NONE"
     ];
     for m in migrations {
@@ -573,23 +594,28 @@ pub async fn get_appraisals(
         trade_ids \
         FROM tax_appraisal ";
 
+    // NOTE: ORDER BY removed to avoid SurrealDB 'Missing order idiom' parse error.
+    // Filtering and sorting done in Rust.
     let query = if let Some(y) = year {
-        format!("{} WHERE `period_year` = {} OR status = 'Pending' ORDER BY `period_year` DESC, `period_month` DESC", base_select, y)
+        format!("{} WHERE period_year = {} OR status = 'Pending'", base_select, y)
     } else {
-        format!(
-            "{} ORDER BY `period_year` DESC, `period_month` DESC",
-            base_select
-        )
+        format!("{}", base_select)
     };
 
     let mut result = db.0.query(query).await.map_err(|e| e.to_string())?;
-    let appraisals: Vec<TaxAppraisal> = result.take(0).map_err(|e| {
+    let mut appraisals: Vec<TaxAppraisal> = result.take(0).map_err(|e| {
         println!(
             "[ERROR] get_appraisals (irpf) deserialization failure: {}",
             e
         );
         e.to_string()
     })?;
+
+    // Sort descending by year then month
+    appraisals.sort_by(|a, b| {
+        b.period_year.cmp(&a.period_year)
+            .then(b.period_month.cmp(&a.period_month))
+    });
 
     Ok(appraisals)
 }
@@ -600,7 +626,7 @@ pub async fn save_appraisal(
     data: TaxAppraisal,
 ) -> Result<TaxAppraisal, String> {
     // --- NEW: LOSS RESTORATION (Undo previous compensation if updating) ---
-    let query_existing = "SELECT *, type::string(id) as id FROM tax_appraisal WHERE `period_month` = $month AND `period_year` = $year AND trade_type = $type AND status = 'Pending' LIMIT 1";
+    let query_existing = "SELECT *, type::string(id) as id FROM tax_appraisal WHERE period_month = $month AND period_year = $year AND trade_type = $type AND status = 'Pending' LIMIT 1";
     let mut check_res =
         db.0.query(query_existing)
             .bind(("month", data.period_month))
@@ -813,7 +839,7 @@ pub async fn save_appraisal(
 
     // 2. If no ID, check if one exists for this Month/Year/Type to avoid duplicates
     // CRITICAL: Only match PENDING appraisals. If a PAID one exists, we create a COMPLEMENTARY record.
-    let query = "SELECT *, type::string(id) as id FROM tax_appraisal WHERE `period_month` = $month AND `period_year` = $year AND trade_type = $type AND status = 'Pending'";
+    let query = "SELECT *, type::string(id) as id FROM tax_appraisal WHERE period_month = $month AND period_year = $year AND trade_type = $type AND status = 'Pending'";
     let mut result =
         db.0.query(query)
             .bind(("month", data.period_month))
@@ -866,7 +892,7 @@ pub async fn save_appraisal(
 
     // --- NEW: ACCUMULATION MERGE / COMPLEMENTARY DETECTION ---
     // If a PAID appraisal already exists for this same period/type, this NEW one is complementary.
-    let comp_query = "SELECT count() FROM tax_appraisal WHERE `period_month` = $month AND `period_year` = $year AND trade_type = $type AND status = 'Paid'";
+    let comp_query = "SELECT count() FROM tax_appraisal WHERE period_month = $month AND period_year = $year AND trade_type = $type AND status = 'Paid'";
     let mut comp_res = db.0.query(comp_query)
         .bind(("month", created.period_month))
         .bind(("year", created.period_year))
@@ -888,7 +914,7 @@ pub async fn save_appraisal(
     }
 
     if created.tax_accumulated > 0.0 {
-        let mark_query = "UPDATE tax_appraisal SET status = 'Paid', calculation_date = $now WHERE trade_type = $type AND status = 'Pending' AND total_payable < 10.0 AND (`period_year` < $year OR (`period_year` = $year AND `period_month` < $month))";
+        let mark_query = "UPDATE tax_appraisal SET status = 'Paid', calculation_date = $now WHERE trade_type = $type AND status = 'Pending' AND total_payable < 10.0 AND (period_year < $year OR (period_year = $year AND period_month < $month))";
         db.0.query(mark_query)
             .bind(("type", created.trade_type.clone()))
             .bind(("year", created.period_year))
@@ -1277,7 +1303,7 @@ pub async fn mark_darf_paid(
 
             // 3. Mark all PREVIOUS PENDING appraisals of the same type as PAID (Accumulation Clear)
             let trade_type_inner = appraisal.trade_type.clone();
-            let clear_query = "UPDATE tax_appraisal SET status = 'Paid' WHERE trade_type = $type AND status = 'Pending' AND (`period_year` < $year OR (`period_year` = $year AND `period_month` < $month))";
+            let clear_query = "UPDATE tax_appraisal SET status = 'Paid' WHERE trade_type = $type AND status = 'Pending' AND (period_year < $year OR (period_year = $year AND period_month < $month))";
 
             let _: surrealdb::Response =
                 db.0.query(clear_query)
@@ -1697,7 +1723,7 @@ pub async fn unpay_darf(db: State<'_, DbState>, id: String) -> Result<TaxDarf, S
             let trade_type_inner = appraisal.trade_type.clone();
             let revert_query = "UPDATE tax_appraisal SET status = 'Pending' \
                 WHERE trade_type = $type AND status = 'Paid' \
-                AND (`period_year` < $year OR (`period_year` = $year AND `period_month` < $month))";
+                AND (period_year < $year OR (period_year = $year AND period_month < $month))";
 
             let _: surrealdb::Response =
                 db.0.query(revert_query)

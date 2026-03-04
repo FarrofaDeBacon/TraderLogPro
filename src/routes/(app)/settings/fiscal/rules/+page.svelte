@@ -185,7 +185,7 @@
                         <span
                             class={rule.cumulative_losses
                                 ? "text-green-500"
-                                : "text-red-500"}
+                                : "text-rose-500"}
                         >
                             {rule.cumulative_losses
                                 ? $t("general.yes")

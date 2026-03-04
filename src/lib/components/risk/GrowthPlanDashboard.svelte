@@ -154,7 +154,7 @@
                             >
                             <span
                                 class={currentStats.currentDrawdown > rule.value
-                                    ? "text-red-500 font-bold"
+                                    ? "text-rose-500 font-bold"
                                     : ""}
                             >
                                 {rule.condition === "drawdown_limit"

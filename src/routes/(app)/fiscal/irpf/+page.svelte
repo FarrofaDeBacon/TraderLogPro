@@ -239,9 +239,7 @@
     <!-- KPI Cards (Standardized - Single Container for Perfect Height) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Total Devido -->
-        <div
-            class="group relative overflow-hidden rounded-xl border border-border/50 bg-muted/30 transition-all hover:border-rose-500/30 border-l-4 border-l-rose-500"
-        >
+        <div class="card-glass border-l-4 border-l-rose-500 overflow-hidden">
             <div class="flex items-start justify-between py-2 px-4">
                 <span
                     class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
@@ -263,9 +261,7 @@
         </div>
 
         <!-- Total Pago -->
-        <div
-            class="group relative overflow-hidden rounded-xl border border-border/50 bg-muted/30 transition-all hover:border-emerald-500/30 border-l-4 border-l-emerald-500"
-        >
+        <div class="card-glass border-l-4 border-l-emerald-500 overflow-hidden">
             <div class="flex items-start justify-between py-2 px-4">
                 <span
                     class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
@@ -287,9 +283,7 @@
         </div>
 
         <!-- Card 3: Pendente Atual -->
-        <div
-            class="group relative overflow-hidden rounded-xl border border-border/50 bg-muted/30 transition-all hover:border-amber-500/30 border-l-4 border-l-amber-500"
-        >
+        <div class="card-glass border-l-4 border-l-amber-500 overflow-hidden">
             <div class="flex items-start justify-between py-2 px-4">
                 <span
                     class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
@@ -322,9 +316,7 @@
         </div>
 
         <!-- Card 4: Prejuízos Acumulados -->
-        <div
-            class="group relative overflow-hidden rounded-xl border border-border/50 bg-muted/30 transition-all hover:border-blue-500/30 border-l-4 border-l-blue-500"
-        >
+        <div class="card-glass border-l-4 border-l-blue-500 overflow-hidden">
             <div class="flex items-start justify-between py-2 px-4">
                 <span
                     class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
@@ -362,7 +354,7 @@
 
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card.Root class="lg:col-span-2 bg-muted/30 border-border/50 glass">
+        <Card.Root class="lg:col-span-2 card-glass">
             <Card.Header>
                 <Card.Title class="text-lg font-medium"
                     >{$t("fiscal.irpf.evolution")} ({irpfStore.selectedYear})</Card.Title
@@ -401,7 +393,7 @@
 
         <!-- Year Selector & Quick Actions (Side) -->
         <div class="space-y-6">
-            <Card.Root class="bg-muted/30 border-border/50 glass">
+            <Card.Root class="card-glass">
                 <Card.Header>
                     <Card.Title class="text-sm font-medium"
                         >{$t("fiscal.irpf.periodFilter")}</Card.Title
@@ -443,7 +435,9 @@
                 </Card.Content>
             </Card.Root>
 
-            <Card.Root class="bg-amber-500/10 border-amber-500/20">
+            <Card.Root
+                class="card-glass bg-amber-500/5 hover:bg-amber-500/10 transition-all"
+            >
                 <Card.Content class="p-4 flex flex-col gap-3">
                     <div class="flex items-start gap-3">
                         <div class="p-2 bg-amber-500/20 rounded-full">
@@ -473,7 +467,7 @@
     </div>
 
     <!-- Appraisals List -->
-    <Card.Root class="bg-muted/30 border-border/50 glass">
+    <Card.Root class="card-glass">
         <Card.Header>
             <Card.Title>{$t("fiscal.irpf.history")}</Card.Title>
         </Card.Header>

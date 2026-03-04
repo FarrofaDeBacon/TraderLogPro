@@ -13,19 +13,14 @@
     let dataLoaded = $state(false);
 
     onMount(async () => {
-        console.log("[Layout] Initializing stores and dumping diagnostics...");
+        console.log("[Layout] App layout mounted, data handled by root.");
 
         // --- DIAGNOSTICS ---
         invoke("diagnostic_dump_trades").catch((e) => console.error(e));
         invoke("diagnostic_dump_users").catch((e) => console.error(e));
         // -------------------
 
-        await Promise.all([settingsStore.loadData(), tradesStore.loadTrades()]);
         dataLoaded = true;
-        console.log(
-            "[Layout] Settings store loaded. Onboarding completed:",
-            settingsStore.userProfile.onboarding_completed,
-        );
     });
 
     $inspect(settingsStore.userProfile.onboarding_completed).with(
@@ -35,6 +30,7 @@
     );
 
     async function handleOnboardingComplete() {
+        console.log("[Layout] Onboarding complete, refreshing data...");
         await Promise.all([settingsStore.loadData(), tradesStore.loadTrades()]);
     }
 </script>

@@ -45,7 +45,7 @@ while ($true) {
         $excel = [Runtime.InteropServices.Marshal]::GetActiveObject("Excel.Application")
         if ($excel) {
             $workbook = $null
-            $targetPath = "C:\PROJETOS\TraderLogPro\Profit_RTD.xlsx"
+            $targetPath = if ($ExcelPath) { $ExcelPath } else { "C:\PROJETOS\TraderLogPro\Profit_RTD.xlsx" }
             
             foreach ($wb in $excel.Workbooks) {
                 if ($wb.FullName -eq $targetPath -or $wb.Name -match "Profit_RTD") {
@@ -84,25 +84,28 @@ while ($true) {
                             continue 
                         }
                         
-                        # Find headers dynamically
+                        # Find headers dynamically with accent-agnostic regex
                         $colMap = @{}
                         for ($c = 1; $c -le $data.GetUpperBound(1); $c++) {
                             $h = [string]$data[1, $c]
                             if ($null -ne $h) {
                                 $h = $h.Trim().ToUpper()
-                                if ($h -match "ATIVO|SYMB|ASSET") { $colMap["SYM"] = $c }
-                                elseif ($h -match "ULTIMO|LAST") { $colMap["LAST"] = $c }
+                                if ($h -match "ATIVO|SYMB|ASSET|S[IÍ]MB") { $colMap["SYM"] = $c }
+                                elseif ($h -match "ULTIMO|LAST|[UÚ]LTIMO") { $colMap["LAST"] = $c }
                                 elseif ($h -match "ABERT|OPEN") { $colMap["OPEN"] = $c }
-                                elseif ($h -match "MAX|HIGH") { $colMap["HIGH"] = $c }
-                                elseif ($h -match "MIN|LOW") { $colMap["LOW"] = $c }
+                                elseif ($h -match "MAX|HIGH|M[AÁ]X") { $colMap["HIGH"] = $c }
+                                elseif ($h -match "MIN|LOW|M[IÍ]N") { $colMap["LOW"] = $c }
                                 elseif ($h -match "FECH|CLOSE") { $colMap["CLOSE"] = $c }
-                                elseif ($h -match "NEGOC|TRADE") { $colMap["TRADES"] = $c }
+                                elseif ($h -match "NEGOC|TRADE|NEG[OÓ]C") { $colMap["TRADES"] = $c }
                                 elseif ($h -match "VOL") { $colMap["VOL"] = $c }
                                 # Custom Indicator Detection
                                 elseif ($h -match "PSICOTRADEMONITOR.*PLOT1") { $colMap["POS"] = $c }
                                 elseif ($h -match "PSICOTRADEMONITOR.*PLOT2") { $colMap["AVG"] = $c }
                             }
                         }
+
+                        $msg = "[$(Get-Date -Format 'HH:mm:ss')] DEBUG: Header Mapping for $rawName: $($colMap | ConvertTo-Json -Compress)"
+                        $msg | Out-File -FilePath $debugLog -Append
 
                         $maxR = $data.GetUpperBound(0)
                         $count = 0
@@ -206,7 +209,9 @@ while ($true) {
                 }
             
                 if ($aggregatedData.Count -gt 1) {
-                    $aggregatedData | Set-Content -Path $csvPath -Force -Encoding utf8
+                    $tmpCsv = $csvPath + ".tmp"
+                    $aggregatedData | Set-Content -Path $tmpCsv -Force -Encoding utf8
+                    Move-Item -Path $tmpCsv -Destination $csvPath -Force -ErrorAction SilentlyContinue
                 }
             }
         }

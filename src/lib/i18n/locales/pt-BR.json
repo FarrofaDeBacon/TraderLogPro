@@ -167,19 +167,19 @@
       "currentPhase": "Fase Atual",
       "dailyEvolution": "Evolução Diária",
       "eligibility": "Elegibilidade",
-      "greenZone": "Green Zone",
+      "greenZone": "Zona Verde",
       "limit": "Limite",
       "operateTrade": "OPERAR 2% TRADE",
       "operationalStatus": "Status Operacional",
-      "pnl": "Pnl",
+      "pnl": "PnL",
       "riskMonth": "Survivor Risk (Mês)",
-      "roadmapProgress": "Roadmap Progress",
+      "roadmapProgress": "Progresso do Roadmap",
       "select": "Selecione",
-      "statusAlpha": "Alpha Operational",
+      "statusAlpha": "Operacional Alpha",
       "statusBlocked": "Bloqueado (Loss Max)",
       "statusRisk": "Alerta de Risco",
       "target": "Meta: ",
-      "title": "Survivor Hub & Monitoring",
+      "title": "Survivor Hub & Monitoramento",
       "tradesUsage": "Uso de Operações"
     },
     "terminalHub": "Terminal Hub",
@@ -299,6 +299,8 @@
       "account": "Conta",
       "allAccounts": "Todas as Contas",
       "allCurrencies": "Todas as Moedas",
+      "monthlyResult": "Resultado Mensal",
+      "result": "Resultado",
       "columns": {
         "account": "CONTA",
         "amount": "VALOR",
@@ -1760,12 +1762,12 @@
   },
   "sidebar": {
     "categories": {
-      "analysis": "Analysis",
+      "analysis": "Análise",
       "fiscal": "Fiscal",
-      "workspace": "Workspace"
+      "workspace": "Início"
     },
-    "darfs": "Darfs",
-    "dashboard": "Dashboard",
+    "darfs": "DARFs",
+    "dashboard": "Painel",
     "finance": "Hub Financeiro",
     "fiscalDashboard": "Visão Geral",
     "fiscalRules": "Regras Fiscais",
@@ -1775,7 +1777,7 @@
     "quant": "Tela Quant",
     "settings": "Configurações",
     "strategies": "Estratégias",
-    "trades": "Trades"
+    "trades": "Negociações"
   },
   "strategies": {
     "currency_modes": {
@@ -2165,7 +2167,7 @@
         "closing_data": "Dados de Fechamento",
         "context": "Contexto da Operação",
         "execution_details": "Detalhes da Execução",
-        "final_summary": "Resumo Final",
+        "final_summary": "RESUMO FINAL",
         "partial_management": {
           "add_partial": "Adicionar Parcial",
           "addition": "ADIÇÃO",

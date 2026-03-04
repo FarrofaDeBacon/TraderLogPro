@@ -77,9 +77,20 @@
   });
 
   // --- Mastery Stats Engine ---
+  const totalBalanceBRL = $derived(
+    tradesStore.getTotalBalanceBRL(
+      settingsStore.accounts,
+      settingsStore.currencies,
+    ),
+  );
+
   const stats = $derived.by(() => {
     try {
       const trades = filteredTrades;
+      const today = new Date();
+      const thisMonth = startOfMonth(today);
+      const yearMonthStr = format(today, "yyyy-MM");
+
       if (!trades || trades.length === 0)
         return {
           net: 0,
@@ -113,8 +124,6 @@
         tradesToday = 0,
         rFactorSum = 0,
         rFactorCount = 0;
-      const today = new Date();
-      const thisMonth = startOfMonth(today);
 
       const equity = sorted.map((t) => {
         const res = Number(t.result) || 0;
@@ -134,11 +143,18 @@
 
         try {
           const tDate = parseISO(t.date);
-          if (isSameDay(tDate, today)) {
+          const tExitDate = t.exit_date ? parseISO(t.exit_date) : tDate;
+
+          if (isSameDay(tExitDate, today)) {
             dayRes += res;
             tradesToday++;
           }
-          if (tDate >= thisMonth) monthRes += res;
+
+          // Use consistent year-month detection for parity with Finance
+          const tMonthStr = format(tExitDate, "yyyy-MM");
+          if (tMonthStr === yearMonthStr) {
+            monthRes += res;
+          }
         } catch (e) {
           // ignore single date error
         }
@@ -345,8 +361,8 @@
       </div>
 
       <!-- ELITE KPI LINE: 6 Professional Horizontal Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-        {#each [{ label: $t("dashboard.kpis.netResult"), val: formatCurrency(stats.net), icon: TrendingUp, color: "text-emerald-500", borderColor: "border-l-emerald-500" }, { label: $t("dashboard.kpis.winRate"), val: `${stats.winRate.toFixed(1)}%`, icon: Trophy, color: "text-blue-500", borderColor: "border-l-blue-500" }, { label: $t("dashboard.kpis.profitFactor"), val: stats.profitFactor.toFixed(2), icon: Activity, color: "text-amber-500", borderColor: "border-l-amber-500" }, { label: $t("dashboard.kpis.discipline"), val: `${stats.discipline.toFixed(0)}%`, icon: Zap, color: "text-indigo-500", borderColor: "border-l-indigo-500" }, { label: $t("dashboard.kpis.payoff"), val: stats.payoff.toFixed(2), icon: ArrowUpRight, color: "text-cyan-400", borderColor: "border-l-cyan-400" }, { label: $t("dashboard.kpis.maxDrawdown"), val: `${(stats.drawdown || 0).toFixed(1)}%`, icon: Activity, color: "text-rose-500", borderColor: "border-l-rose-500" }] as kpi}
+      <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-7 gap-4">
+        {#each [{ label: $t("general.balance") + " (Est.)", val: formatCurrency(totalBalanceBRL), icon: Wallet, color: "text-emerald-500", borderColor: "border-l-emerald-500" }, { label: $t("dashboard.kpis.netResult"), val: formatCurrency(stats.net), icon: TrendingUp, color: stats.net >= 0 ? "text-emerald-500" : "text-rose-500", borderColor: stats.net >= 0 ? "border-l-emerald-500" : "border-l-rose-500" }, { label: $t("dashboard.kpis.winRate"), val: `${stats.winRate.toFixed(1)}%`, icon: Trophy, color: "text-blue-500", borderColor: "border-l-blue-500" }, { label: $t("dashboard.kpis.profitFactor"), val: stats.profitFactor.toFixed(2), icon: Activity, color: "text-amber-500", borderColor: "border-l-amber-500" }, { label: $t("dashboard.kpis.discipline"), val: `${stats.discipline.toFixed(0)}%`, icon: Zap, color: "text-indigo-500", borderColor: "border-l-indigo-500" }, { label: $t("dashboard.kpis.payoff"), val: stats.payoff.toFixed(2), icon: ArrowUpRight, color: "text-cyan-400", borderColor: "border-l-cyan-400" }, { label: $t("dashboard.kpis.maxDrawdown"), val: `${(stats.drawdown || 0).toFixed(1)}%`, icon: Activity, color: "text-rose-500", borderColor: "border-l-rose-500" }] as kpi}
           <Card class="card-glass border-l-2 {kpi.borderColor}">
             <CardContent class="py-0.5 px-2.5">
               <div class="flex items-center justify-between space-y-0">

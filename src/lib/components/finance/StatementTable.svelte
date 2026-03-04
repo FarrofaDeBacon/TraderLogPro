@@ -535,7 +535,7 @@
             <div class="space-y-3">
                 <!-- Month Header -->
                 <button
-                    class="w-full flex items-center justify-between p-3 rounded-xl bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-colors sticky top-0 z-10 backdrop-blur-md"
+                    class="w-full flex items-center justify-between p-3 rounded-xl card-glass border-primary/20 hover:bg-primary/15 transition-all duration-300 sticky top-0 z-10 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2"
                     onclick={() => toggleMonth(monthKey)}
                 >
                     <div class="flex items-center gap-3">
@@ -560,7 +560,8 @@
                                 <div class="flex flex-col items-end">
                                     <span
                                         class="text-[9px] font-bold text-muted-foreground uppercase tracking-widest"
-                                        >{$t("general.balance")} {curr}</span
+                                        >{$t("finance.statement.monthlyResult")}
+                                        {curr}</span
                                     >
                                     <span
                                         class="text-xs font-mono font-bold {total >=
@@ -590,10 +591,10 @@
                         {#each days as { date, transactions, pnl }}
                             {@const isExpanded = expandedDays.has(date)}
                             <div
-                                class="rounded-xl border border-border/50 bg-muted/20 overflow-hidden"
+                                class="rounded-xl border border-border/50 card-glass overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300"
                             >
                                 <button
-                                    class="w-full flex items-center justify-between p-2 hover:bg-muted/40 transition-colors"
+                                    class="w-full flex items-center justify-between p-2 hover:bg-primary/10 transition-colors"
                                     onclick={() => toggleDay(date)}
                                 >
                                     <div class="flex items-center gap-4">
@@ -753,7 +754,7 @@
                                                                 </div>
                                                             {:else if tx.type === "Withdraw"}
                                                                 <div
-                                                                    class="flex items-center text-red-500 text-[10px] font-bold uppercase tracking-tighter bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 w-fit"
+                                                                    class="flex items-center text-rose-500 text-[10px] font-bold uppercase tracking-tighter bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 w-fit"
                                                                 >
                                                                     <ArrowUpRight
                                                                         class="w-3 h-3 mr-1"
@@ -882,7 +883,7 @@
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="icon"
-                                                                        class="h-7 w-7 text-red-500/50 hover:text-red-500 hover:bg-red-500/10"
+                                                                        class="h-7 w-7 text-rose-500/50 hover:text-rose-500 hover:bg-rose-500/10"
                                                                         onclick={() =>
                                                                             requestDelete(
                                                                                 tx.id,
@@ -1182,7 +1183,7 @@
                                                         trade.direction ===
                                                             "Buy"
                                                             ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                                                            : "bg-red-500/10 text-red-500 border-red-500/20",
+                                                            : "bg-rose-500/10 text-rose-500 border-rose-500/20",
                                                     )}
                                                 >
                                                     {trade.direction.toUpperCase()}

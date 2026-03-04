@@ -291,7 +291,7 @@
                             >
                                 {#if transactionType === "Withdraw"}
                                     <ArrowUpRight
-                                        class="w-4 h-4 text-red-500"
+                                        class="w-4 h-4 text-rose-500"
                                     />
                                 {:else}
                                     <ArrowDownLeft
@@ -407,7 +407,7 @@
                                 bind:value={feePercent}
                                 oninput={handleTransferSourceChange}
                                 placeholder="0"
-                                class="text-red-500 pr-0 text-center font-mono font-bold"
+                                class="text-rose-500 pr-0 text-center font-mono font-bold"
                             />
                         </div>
                     </div>

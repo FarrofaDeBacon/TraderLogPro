@@ -62,7 +62,7 @@
                 <div class="text-2xl font-bold">{win?.last || "---"}</div>
                 <div class="text-xs text-muted-foreground flex gap-2 mt-1">
                     <span class="text-green-500">M: {win?.high || "---"}</span>
-                    <span class="text-red-500">m: {win?.low || "---"}</span>
+                    <span class="text-rose-500">m: {win?.low || "---"}</span>
                     <span>V: {win?.volume?.toLocaleString() || "---"}</span>
                 </div>
 
@@ -90,7 +90,7 @@
                 <div class="text-2xl font-bold">{wdo?.last || "---"}</div>
                 <div class="text-xs text-muted-foreground flex gap-2 mt-1">
                     <span class="text-green-500">M: {wdo?.high || "---"}</span>
-                    <span class="text-red-500">m: {wdo?.low || "---"}</span>
+                    <span class="text-rose-500">m: {wdo?.low || "---"}</span>
                     <span>V: {wdo?.volume?.toLocaleString() || "---"}</span>
                 </div>
 
@@ -131,7 +131,7 @@
                             <span
                                 class={player.saldo >= 0
                                     ? "text-green-500 font-mono text-xs"
-                                    : "text-red-500 font-mono text-xs"}
+                                    : "text-rose-500 font-mono text-xs"}
                             >
                                 {player.saldo.toLocaleString()}
                             </span>

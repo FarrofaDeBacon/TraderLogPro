@@ -149,7 +149,7 @@
                 <Button
                     variant="destructive"
                     size="sm"
-                    class="h-8 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border-red-500/20 px-3"
+                    class="h-8 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white border-rose-500/20 px-3"
                     onclick={handleDeactivate}
                 >
                     <Trash2 class="w-4 h-4 mr-2" />

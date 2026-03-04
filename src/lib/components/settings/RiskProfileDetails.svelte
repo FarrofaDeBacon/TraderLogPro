@@ -49,7 +49,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Downside Protection -->
-        <Card.Root class="border-red-500/20 bg-red-500/5">
+        <Card.Root class="border-rose-500/20 bg-rose-500/5">
             <Card.Header class="pb-2">
                 <Card.Title
                     class="text-base flex items-center gap-2 text-red-600 dark:text-red-400"
@@ -142,8 +142,8 @@
                 >
                 <div class="flex items-center gap-2">
                     {#if profile.lock_on_loss}
-                        <Ban class="w-4 h-4 text-red-500" />
-                        <span class="font-medium text-red-500">
+                        <Ban class="w-4 h-4 text-rose-500" />
+                        <span class="font-medium text-rose-500">
                             {$t("general.yes")}
                         </span>
                     {:else}

@@ -203,7 +203,7 @@
                                     : isUS
                                       ? "bg-blue-500/10"
                                       : isAsia
-                                        ? "bg-red-500/10"
+                                        ? "bg-rose-500/10"
                                         : "bg-muted"
                             }`}
                         >
@@ -212,7 +212,7 @@
                             {:else if isUS}
                                 <MapPin class="w-4 h-4 text-blue-500" />
                             {:else if isAsia}
-                                <MapPin class="w-4 h-4 text-red-500" />
+                                <MapPin class="w-4 h-4 text-rose-500" />
                             {:else}
                                 <Clock class="w-4 h-4 text-muted-foreground" />
                             {/if}

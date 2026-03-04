@@ -167,7 +167,7 @@
             "currentPhase": "Fase Actual",
             "dailyEvolution": "Evolución Diaria",
             "eligibility": "Elegibilidad",
-            "greenZone": "Green Zone",
+            "greenZone": "Zona Verde",
             "limit": "Límite",
             "operateTrade": "OPERAR 2% TRADE",
             "operationalStatus": "Estado Operativo",
@@ -175,11 +175,11 @@
             "riskMonth": "Riesgo Survivor (Mes)",
             "roadmapProgress": "Progreso Roadmap",
             "select": "Seleccionar",
-            "statusAlpha": "Alpha Operational",
+            "statusAlpha": "Operacional Alpha",
             "statusBlocked": "Bloqueado (Pérdida Máx)",
             "statusRisk": "Alerta de Riesgo",
             "target": "Meta: ",
-            "title": "Survivor Hub & Monitoring",
+            "title": "Survivor Hub & Monitoreo",
             "tradesUsage": "Uso de Operaciones"
         },
         "terminalHub": "Terminal Hub",
@@ -1553,20 +1553,20 @@
             },
             "growthPlan": {
                 "actions": {
-                    "demote": "Demote",
-                    "promote": "Promote"
+                    "demote": "Degradar Fase",
+                    "promote": "Promover Fase"
                 },
-                "activeStatus": "Active Status",
-                "addPhase": "Add Phase",
-                "dailyLossLabel": "Daily Loss Label",
-                "enable": "Enable",
-                "enableDesc": "Enable Desc",
-                "lossLabel": "Loss Label",
-                "maxLotLabel": "Max Lot Label",
-                "maxLotsLabel": "Max Lots Label",
-                "noPhases": "No Phases",
-                "phases": "Phases",
-                "phasesTitle": "Phases Title",
+                "activeStatus": "Estado Activo",
+                "addPhase": "Añadir Fase",
+                "dailyLossLabel": "Límite de Pérdida Diaria",
+                "enable": "Habilitar Plan de Crecimiento",
+                "enableDesc": "Gestión automática de lotes y límites basada en el rendimiento.",
+                "lossLabel": "Límite de Pérdida",
+                "maxLotLabel": "Lotes Máx",
+                "maxLotsLabel": "Lotes Máximos",
+                "noPhases": "Sin Fases Configuradas",
+                "phases": "Fases del Plan",
+                "phasesTitle": "Estructura de Fases",
                 "requirements": {
                     "days": "Sesiones Positivas",
                     "demote": "Criterios de Regresión",
@@ -1597,11 +1597,11 @@
             "name": "Nombre del Perfil",
             "namePlaceholder": "Ej: Conservador",
             "new": "Nuevo Perfil",
-            "platformLock": "Platform Lock",
+            "platformLock": "Bloqueo de Plataforma",
             "profiles": {
-                "activate": "Activate",
-                "dailyLoss": "Daily Loss",
-                "dailyTarget": "Daily Target"
+                "activate": "Activar",
+                "dailyLoss": "Pérdida Diaria",
+                "dailyTarget": "Meta Diaria"
             },
             "title": "Gestión de Riesgo",
             "upside": "Metas (Upside)"

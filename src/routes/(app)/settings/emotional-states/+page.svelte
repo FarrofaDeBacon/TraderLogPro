@@ -55,7 +55,7 @@
             case "Positive":
                 return "text-green-500 bg-green-500/10 border-green-500/20";
             case "Negative":
-                return "text-red-500 bg-red-500/10 border-red-500/20";
+                return "text-rose-500 bg-rose-500/10 border-rose-500/20";
             default:
                 return "text-muted-foreground bg-secondary border-secondary";
         }
@@ -126,7 +126,7 @@
                             class="w-2 h-2 rounded-full {impact === 'Positive'
                                 ? 'bg-green-500'
                                 : impact === 'Negative'
-                                  ? 'bg-red-500'
+                                  ? 'bg-rose-500'
                                   : 'bg-gray-500'}"
                         ></span>
                         {$t(getImpactLabel(impact))}

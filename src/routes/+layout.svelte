@@ -6,9 +6,12 @@
   import { isLoading } from "svelte-i18n";
   import { Toaster } from "$lib/components/ui/sonner";
   import { settingsStore } from "$lib/stores/settings.svelte";
+  import { tradesStore } from "$lib/stores/trades.svelte";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import StartupSplash from "$lib/components/ui/branding/StartupSplash.svelte";
+  import { onMount, onDestroy } from "svelte";
+  import { listen } from "@tauri-apps/api/event";
 
   let isI18nReady = $state(false);
 
@@ -27,6 +30,47 @@
       isSplashFinished = true; // Skip splash for secondary windows
     }
   }
+
+  // Cross-window sync: reload trades when another window (detached) saves
+  let _unlistenTradeSaved: (() => void) | null = null;
+  // Ctrl+scroll zoom handler reference for cleanup
+  let _handleWheel: ((e: WheelEvent) => void) | null = null;
+
+  onMount(() => {
+    console.log("[Root Layout] Starting initial data load...");
+    Promise.all([settingsStore.loadData(), tradesStore.loadTrades()])
+      .then(() => {
+        console.log("[Root Layout] Initial data load complete.");
+      })
+      .catch((e) => {
+        console.error("[Root Layout] Error loading initial data:", e);
+        settingsStore.isLoadingData = false;
+      });
+
+    // Fire-and-forget: listen for trade-saved from detached windows
+    listen("trade-saved", () => {
+      tradesStore.loadTrades();
+    }).then((fn) => {
+      _unlistenTradeSaved = fn;
+    });
+
+    // Ctrl+scroll wheel zoom
+    let currentZoom = 1.0;
+    _handleWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      currentZoom += e.deltaY < 0 ? 0.05 : -0.05;
+      currentZoom = Math.min(Math.max(currentZoom, 0.5), 2.0);
+      (document.documentElement as HTMLElement).style.zoom =
+        String(currentZoom);
+    };
+    window.addEventListener("wheel", _handleWheel, { passive: false });
+  });
+
+  onDestroy(() => {
+    _unlistenTradeSaved?.();
+    if (_handleWheel) window.removeEventListener("wheel", _handleWheel);
+  });
 
   // Auth Guard: Force login if password is set and user is not authenticated
   $effect(() => {
@@ -70,9 +114,16 @@
   // Panic bypass for fixed loading screen (5s threshold)
   $effect(() => {
     const timer = setTimeout(() => {
-      if ($isLoading) {
-        console.warn("[Layout] i18n taking too long, forcing bypass.");
+      if ($isLoading || settingsStore.isLoadingData) {
+        console.warn(
+          "[Layout] Initial loading taking too long, forcing bypass.",
+        );
         isBypassLoading = true;
+
+        // Ensure store isn't stuck in loading state (prevent lockouts)
+        if (settingsStore.isLoadingData) {
+          settingsStore.isLoadingData = false;
+        }
       }
     }, 5000);
     return () => clearTimeout(timer);
@@ -86,7 +137,7 @@
 {#if isI18nReady}
   {#if !isSplashFinished}
     <StartupSplash onFinish={() => (isSplashFinished = true)} />
-  {:else if $isLoading && !isBypassLoading}
+  {:else if ($isLoading || settingsStore.isLoadingData) && !isBypassLoading}
     <div
       class="flex items-center justify-center h-screen w-full bg-background border-t-4 border-primary"
     >

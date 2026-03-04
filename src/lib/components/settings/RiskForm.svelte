@@ -338,9 +338,9 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Downside Protection -->
                 <div
-                    class="space-y-4 p-4 rounded-lg border border-red-500/20 bg-red-500/5"
+                    class="space-y-4 p-4 rounded-lg border border-rose-500/20 bg-rose-500/5"
                 >
-                    <h3 class="flex items-center gap-2 font-bold text-red-500">
+                    <h3 class="flex items-center gap-2 font-bold text-rose-500">
                         <Shield class="w-4 h-4" />
                         {$t("settings.risk.downside")}
                     </h3>

@@ -58,17 +58,17 @@
     }
 
     let totalBalanceBRL = $derived(
-        settingsStore.accounts.reduce((acc, curr) => {
-            const currencyObj = settingsStore.currencies.find(
-                (c) => c.code === curr.currency,
-            );
-            const rate = currencyObj?.exchange_rate || 1;
-            return acc + curr.balance * rate;
-        }, 0),
+        tradesStore.getTotalBalanceBRL(
+            settingsStore.accounts,
+            settingsStore.currencies,
+        ),
     );
 
     const today = new Date();
-    const currentMonthStr = today.toISOString().slice(0, 7); // "YYYY-MM"
+    const currentMonthStr =
+        today.getFullYear() +
+        "-" +
+        String(today.getMonth() + 1).padStart(2, "0"); // "YYYY-MM" local
 
     let monthResultBRL = $derived(
         tradesStore.getMonthlyTradeResult(
@@ -164,9 +164,7 @@
             class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
         >
             <!-- Main Converted Balance -->
-            <Card.Root
-                class="border-l-2 border-l-emerald-500 shadow-sm bg-card hover:shadow-md transition-shadow"
-            >
+            <Card.Root class="card-glass border-l-4 border-l-emerald-500">
                 <Card.Content class="py-0.5 px-2">
                     <div class="flex items-center justify-between">
                         <span
@@ -203,7 +201,7 @@
                 >
                     <Card.Root
                         class={cn(
-                            "border-l-2 shadow-sm bg-card transition-all cursor-pointer hover:shadow-md",
+                            "card-glass border-l-4 cursor-pointer",
                             getCurrencyColor(currency),
                         )}
                     >
@@ -246,7 +244,7 @@
 
             <Card.Root
                 class={cn(
-                    "border-l-2 shadow-sm bg-card",
+                    "card-glass border-l-4",
                     monthResultBRL >= 0
                         ? "border-l-emerald-500"
                         : "border-l-rose-500",
@@ -296,7 +294,7 @@
         <!-- (Suas Contas section removed) -->
 
         <!-- Evolution Chart -->
-        <Card.Root class="shadow-sm bg-card">
+        <Card.Root class="card-glass">
             <Card.Header class="pb-2">
                 <div class="flex flex-row items-center justify-between w-full">
                     <div>

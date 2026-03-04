@@ -175,11 +175,11 @@
             "riskMonth": "Risque Survivor (Mois)",
             "roadmapProgress": "Progression de la Feuille de Route",
             "select": "Sélectionner",
-            "statusAlpha": "Alpha Operational",
+            "statusAlpha": "Opérationnel Alpha",
             "statusBlocked": "Bloqué (Perte Max)",
             "statusRisk": "Alerte de Risque",
             "target": "Cible: ",
-            "title": "Survivor Hub & Monitoring",
+            "title": "Survivor Hub & Surveillance",
             "tradesUsage": "Utilisation des Opérations"
         },
         "terminalHub": "Terminal Hub",
@@ -1553,20 +1553,20 @@
             },
             "growthPlan": {
                 "actions": {
-                    "demote": "Demote",
-                    "promote": "Promote"
+                    "demote": "Rétrograder Phase",
+                    "promote": "Promouvoir Phase"
                 },
-                "activeStatus": "Active Status",
-                "addPhase": "Add Phase",
-                "dailyLossLabel": "Daily Loss Label",
-                "enable": "Enable",
-                "enableDesc": "Enable Desc",
-                "lossLabel": "Loss Label",
-                "maxLotLabel": "Max Lot Label",
-                "maxLotsLabel": "Max Lots Label",
-                "noPhases": "No Phases",
-                "phases": "Phases",
-                "phasesTitle": "Phases Title",
+                "activeStatus": "Statut Actif",
+                "addPhase": "Ajouter une Phase",
+                "dailyLossLabel": "Limite de Perte Quotidienne",
+                "enable": "Activer le Plan de Croissance",
+                "enableDesc": "Gestion automatique des lots et des limites basée sur la performance.",
+                "lossLabel": "Limite de Perte",
+                "maxLotLabel": "Lots Max",
+                "maxLotsLabel": "Lots Maximum",
+                "noPhases": "Aucune Phase Configurée",
+                "phases": "Phases du Plan",
+                "phasesTitle": "Structure des Phases",
                 "requirements": {
                     "days": "Sessions Positives",
                     "demote": "Critères de Régression",
@@ -1597,11 +1597,11 @@
             "name": "Nom du Profil",
             "namePlaceholder": "Ex : Conservateur, Agressif...",
             "new": "Nouveau Profil",
-            "platformLock": "Platform Lock",
+            "platformLock": "Verrouillage de la Plateforme",
             "profiles": {
-                "activate": "Activate",
-                "dailyLoss": "Daily Loss",
-                "dailyTarget": "Daily Target"
+                "activate": "Activer",
+                "dailyLoss": "Perte Quotidienne",
+                "dailyTarget": "Objectif Quotidien"
             },
             "title": "Risque & Objectifs",
             "upside": "Objectifs (Gain)"

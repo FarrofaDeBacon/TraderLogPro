@@ -699,9 +699,9 @@
         <!-- KPI Row -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
             <Card.Root
-                class="border-l-2 {kpis.profitTotal >= 0
+                class="card-glass border-l-2 {kpis.profitTotal >= 0
                     ? 'border-l-emerald-500'
-                    : 'border-l-rose-500'} shadow-sm bg-card hover:shadow-md transition-shadow"
+                    : 'border-l-rose-500'} shadow-sm"
             >
                 <Card.Content class="py-0.5 px-2">
                     <div class="flex items-center justify-between">
@@ -762,7 +762,7 @@
             </Card.Root>
 
             <Card.Root
-                class="border-l-2 border-l-blue-500 shadow-sm bg-card hover:shadow-md transition-shadow"
+                class="card-glass border-l-2 border-l-blue-500 shadow-sm"
             >
                 <Card.Content class="py-1 px-3">
                     <div class="flex items-center justify-between">
@@ -794,7 +794,7 @@
             </Card.Root>
 
             <Card.Root
-                class="border-l-2 border-l-blue-500 shadow-sm bg-card hover:shadow-md transition-shadow"
+                class="card-glass border-l-2 border-l-blue-500 shadow-sm"
             >
                 <Card.Content class="py-1 px-3">
                     <div class="flex items-center justify-between">
@@ -821,7 +821,7 @@
             </Card.Root>
 
             <Card.Root
-                class="border-l-2 border-l-amber-500 shadow-sm bg-card hover:shadow-md transition-shadow"
+                class="card-glass border-l-2 border-l-amber-500 shadow-sm"
             >
                 <Card.Content class="py-1 px-3">
                     <div class="flex items-center justify-between">
@@ -849,9 +849,7 @@
         </div>
 
         {#if showFilters}
-            <Card.Root
-                class="bg-card/30 backdrop-blur-md border-primary/10 shadow-xl overflow-visible"
-            >
+            <Card.Root class="card-glass shadow-xl overflow-visible">
                 <Card.Content class="p-4 flex flex-wrap gap-4 items-end">
                     <div class="space-y-1 w-[150px]">
                         <label
@@ -1064,15 +1062,10 @@
                             {@const isMonthExpanded = expandedMonths.has(
                                 month.key,
                             )}
-                            <div
-                                class="rounded-xl border border-border/40 overflow-hidden bg-muted/20 backdrop-blur-sm"
-                            >
+                            <div class="card-glass overflow-hidden">
                                 <!-- Month Header -->
                                 <button
-                                    class="w-full flex items-center justify-between p-3 rounded-xl bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-colors sticky top-0 z-10 backdrop-blur-md {activeContext.key ===
-                                    month.key
-                                        ? 'bg-primary/20 ring-1 ring-inset ring-primary/30'
-                                        : ''}"
+                                    class="w-full flex items-center justify-between p-3 rounded-xl card-glass border-primary/20 hover:bg-primary/15 transition-colors sticky top-0 z-10 backdrop-blur-md"
                                     onclick={() => toggleMonth(month.key)}
                                 >
                                     <div class="flex items-center gap-4">
@@ -1114,7 +1107,7 @@
                                                                 class="text-[9px] font-mono font-bold {entry.val >=
                                                                 0
                                                                     ? 'text-emerald-500'
-                                                                    : 'text-red-500'}"
+                                                                    : 'text-rose-500'}"
                                                                 >{formatNumber(
                                                                     entry.val,
                                                                 )}</span
@@ -1141,14 +1134,11 @@
                                             {@const isWeekExpanded =
                                                 expandedWeeks.has(week.key)}
                                             <div
-                                                class="rounded-lg border border-border/40 bg-muted/20 overflow-hidden"
+                                                class="card-glass overflow-hidden"
                                             >
                                                 <!-- Week Header -->
                                                 <button
-                                                    class="w-full flex items-center justify-between p-3 hover:bg-muted/40 transition-colors border-none bg-transparent cursor-pointer {activeContext.key ===
-                                                    week.key
-                                                        ? 'bg-primary/5 ring-1 ring-inset ring-primary/20'
-                                                        : ''}"
+                                                    class="w-full flex items-center justify-between p-3 hover:bg-primary/10 transition-colors border-none bg-transparent cursor-pointer"
                                                     onclick={() =>
                                                         toggleWeek(week.key)}
                                                 >
@@ -1223,13 +1213,10 @@
                                                                     day.date
                                                                 ]}
                                                             <div
-                                                                class="group rounded-xl border border-border/50 bg-muted/20 overflow-hidden shadow-sm"
+                                                                class="card-glass overflow-hidden"
                                                             >
                                                                 <button
-                                                                    class="w-full flex items-center justify-between p-2 hover:bg-muted/40 transition-colors border-none bg-transparent cursor-pointer {activeContext.key ===
-                                                                    day.date
-                                                                        ? 'bg-primary/5 ring-1 ring-inset ring-primary/20'
-                                                                        : ''}"
+                                                                    class="w-full flex items-center justify-between p-2 hover:bg-primary/10 transition-colors border-none bg-transparent cursor-pointer"
                                                                     onclick={() =>
                                                                         toggleDay(
                                                                             day.date,
@@ -1371,10 +1358,7 @@
                                                                             >
                                                                                 {#each day.trades as trade (trade.id)}
                                                                                     <Table.Row
-                                                                                        class="group/row hover:bg-muted/30 border-border/10 cursor-pointer {activeContext.key ===
-                                                                                        trade.id
-                                                                                            ? 'bg-primary/5 border-l-2 border-l-primary'
-                                                                                            : ''}"
+                                                                                        class="group/row hover:bg-primary/10 border-border/10 cursor-pointer"
                                                                                         onclick={() =>
                                                                                             handleSelectTrade(
                                                                                                 trade,
@@ -1626,9 +1610,7 @@
 
                 {#if activeContext.type === "trade" && activeContext.data}
                     <!-- Card: Trade Essential Info (Visible only when trade selected) -->
-                    <Card.Root
-                        class="shadow-sm bg-card border-border/10 overflow-hidden"
-                    >
+                    <Card.Root class="card-glass shadow-sm overflow-hidden">
                         <Card.Header class="pb-2">
                             <div class="flex items-center justify-between">
                                 <Badge
@@ -1694,9 +1676,7 @@
                     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4"
                 >
                     <!-- Card: KPIs Dashboard -->
-                    <Card.Root
-                        class="shadow-sm bg-card border-border/10 flex flex-col justify-between"
-                    >
+                    <Card.Root class="card-glass flex flex-col justify-between">
                         <Card.Header
                             class="p-4 pb-2 border-b border-border/10 flex flex-row items-center justify-between space-y-0"
                         >
@@ -1774,9 +1754,7 @@
                     </Card.Root>
 
                     <!-- Card: Outcome/Pie Chart -->
-                    <Card.Root
-                        class="shadow-sm bg-card border-border/10 overflow-hidden"
-                    >
+                    <Card.Root class="card-glass shadow-sm overflow-hidden">
                         <Card.Header
                             class="p-4 pb-0 border-b border-border/10 flex flex-row items-center justify-between space-y-0 bg-muted/5"
                         >
@@ -1801,7 +1779,7 @@
                 </div>
 
                 <!-- Card: Equity Curve with Drawdown -->
-                <Card.Root class="shadow-sm bg-card border-border/10">
+                <Card.Root class="card-glass">
                     <Card.Header
                         class="p-4 py-3 border-b border-border/10 flex flex-row items-center justify-between space-y-0"
                     >

@@ -98,7 +98,7 @@
                 </p>
                 <p
                     class="text-sm font-mono font-bold {remaining < 0
-                        ? 'text-red-500'
+                        ? 'text-rose-500'
                         : 'text-muted-foreground'}"
                 >
                     {remaining}
@@ -251,7 +251,7 @@
                                     ) > 0
                                         ? 'text-emerald-500'
                                         : calculateResult(partial) < 0
-                                          ? 'text-red-500'
+                                          ? 'text-rose-500'
                                           : 'text-muted-foreground'}"
                                 >
                                     {resultPrefix}
@@ -274,7 +274,7 @@
                                     variant="ghost"
                                     size="icon"
                                     onclick={() => removePartial(i)}
-                                    class="h-6 w-6 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
+                                    class="h-6 w-6 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-all"
                                 >
                                     <Trash2 class="w-3 h-3" />
                                 </Button>
