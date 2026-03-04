@@ -18,6 +18,7 @@ pub fn calculate_appraisal(
     available_loss: f64,
     previous_credit: f64,
     tax_accumulated: f64,
+    already_paid: f64,
 ) -> TaxAppraisal {
     let rule = &bucket.rule;
     let gross_profit = bucket.gross_profit;
@@ -81,7 +82,10 @@ pub fn calculate_appraisal(
         }
     };
 
-    let total_deduction_available = total_irrf + previous_credit;
+    let mut total_deduction_available = total_irrf + previous_credit;
+    if total_deduction_available < 0.0 {
+        total_deduction_available = 0.0;
+    }
     let mut withholding_credit_used = 0.0;
     let mut tax_after_irrf = 0.0;
     let mut withholding_credit_remaining = 0.0;
@@ -107,7 +111,13 @@ pub fn calculate_appraisal(
         tax_payable = 0.0;
     }
 
-    let total_payable = tax_payable + tax_accumulated;
+    // Complementary Logic: subtract what was already paid for this period/type.
+    let total_payable = (tax_payable + tax_accumulated) - already_paid;
+    let final_total_payable = if total_payable < 0.0 {
+        0.0
+    } else {
+        total_payable
+    };
 
     TaxAppraisal {
         id: None,
@@ -128,11 +138,11 @@ pub fn calculate_appraisal(
         withholding_credit_remaining,
         tax_payable,
         tax_accumulated,
-        total_payable,
+        total_payable: final_total_payable,
         is_exempt,
         calculation_date: "".to_string(),
         status: "Pending".to_string(),
         trade_ids: bucket_trades.clone(),
-        is_complementary: false,
+        is_complementary: already_paid > 0.0,
     }
 }

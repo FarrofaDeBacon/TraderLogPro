@@ -458,6 +458,7 @@
             "totalPaid": "Total Paid"
         },
         "irpf": {
+            "complementary": "Complementary",
             "calculate": "Calculate",
             "calculating": "Calculating...",
             "description": "Track and consolidate your monthly tax assessments (Day Trade and Swing).",
@@ -1237,8 +1238,10 @@
         "general": {
             "checkUpdates": "Check for Updates",
             "description": "System information and global preferences.",
+            "no": "No",
             "title": "General",
-            "version": "App Version"
+            "version": "App Version",
+            "yes": "Yes"
         },
         "header": {
             "description": "Description",
@@ -1506,6 +1509,12 @@
             "title": "My Profile"
         },
         "risk": {
+            "alerts_title": "Risk Alerts",
+            "emotional_warning": "Emotional Deviation: Your current weight ({weight}) is below the threshold ({threshold}). We suggest reducing the lot by {percent}%.",
+            "outlier_warning": "Outlier Detection: We identified recent losses outside the normal statistical curve.",
+            "sniper_warning": "Sniper Limit: You have already performed {current} of {limit} allowed operations for today.",
+            "reduce_lot_button": "REDUCE LOT BY {percent}%",
+            "toast_lot_adjusted": "Lot adjusted successfully!",
             "accountTypes": {
                 "All": "All Accounts",
                 "Demo": "Demo Account",
@@ -1524,31 +1533,42 @@
             "edit": "Edit Risk Profile",
             "engine": {
                 "outlier": {
-                    "description": "Description",
-                    "title": "Title"
+                    "description": "Automatic reduction upon detecting negative statistical outliers.",
+                    "lookback": "Analysis Window",
+                    "title": "Outlier Regression"
                 },
                 "psychological": {
-                    "title": "Title"
+                    "description": "Detects 'tilt' or euphoria patterns based on the last {count} trades.",
+                    "lookback": "Activation Window",
+                    "multiplier": "Reduction Factor",
+                    "strategy": "Search Strategy",
+                    "strategySequence": "Sequential (Loss Streak)",
+                    "strategyStrict": "Strict (Moving Average)",
+                    "threshold": "Deviation Limit (Z-Score)",
+                    "title": "Psychological Coupling"
                 },
                 "sniper": {
-                    "description": "Description",
-                    "title": "Title"
+                    "description": "Increases entry rigor after loss sequences.",
+                    "selectivity": "Selectivity Degree",
+                    "selectivityTip": "The higher, the more entry filters will be applied.",
+                    "title": "Sniper Mode"
                 }
             },
             "form": {
                 "accounts": {
-                    "title": "Title"
+                    "noneSelected": "No account selected. The profile will not be applied to any account.",
+                    "title": "Link Accounts"
                 },
                 "presets": {
                     "aggressive": "Aggressive",
                     "conservative": "Conservative",
                     "moderate": "Moderate",
-                    "title": "Title"
+                    "title": "Profile Presets"
                 },
                 "tabs": {
-                    "engine": "Engine",
+                    "engine": "Risk Engine",
                     "general": "General",
-                    "growth": "Growth"
+                    "growth": "Roadmap"
                 }
             },
             "growthPlan": {
@@ -1558,15 +1578,22 @@
                 },
                 "activeStatus": "Growth Plan Active",
                 "addPhase": "Add New Phase",
+                "consistency": "Consistency of",
+                "dailyLoss": "Daily Loss Limit",
                 "dailyLossLabel": "Daily Limit",
+                "drawdown": "Max Drawdown",
                 "enable": "Enable Growth Plan",
                 "enableDesc": "Automatic lot and limit management based on performance.",
                 "lossLabel": "Loss Limit",
                 "maxLotLabel": "Max Lots",
+                "maxLots": "Maximum Lots",
                 "maxLotsLabel": "Maximum Lots",
                 "noPhases": "No phases configured",
                 "phases": "Plan Phases",
                 "phasesTitle": "Phase Structure",
+                "profitTarget": "Profit Target",
+                "progression": "Progression Criteria",
+                "regression": "Regression Criteria",
                 "requirements": {
                     "days": "Positive Sessions",
                     "demote": "Regression Criteria",
@@ -1585,7 +1612,8 @@
                 "toasts": {
                     "demote": "Attention: You demoted back to phase: {name}",
                     "promote": "Congratulations! You promoted to phase: {name}"
-                }
+                },
+                "tradingSessions": "Sessions"
             },
             "lockOnLoss": "Lock Platform on Daily Loss",
             "lockOnLossShort": "Lock on loss",
@@ -1600,6 +1628,7 @@
             "platformLock": "Platform Lock",
             "profiles": {
                 "activate": "Activate Profile",
+                "active": "Active",
                 "dailyLoss": "Daily Loss",
                 "dailyTarget": "Daily Target"
             },
@@ -2157,7 +2186,12 @@
                 "visual_desc": "Chart screenshots and context (max 5MB)."
             },
             "risk": {
-                "toast_lot_adjusted": "Toast_lot_adjusted"
+                "alerts_title": "Risk Alerts",
+                "emotional_warning": "Emotional Deviation: Your current weight ({weight}) is below the threshold ({threshold}). We suggest reducing the lot by {percent}%.",
+                "outlier_warning": "Outlier Detection: We identified recent losses outside the normal statistical curve.",
+                "sniper_warning": "Sniper Limit: You have already performed {current} of {limit} allowed operations for today.",
+                "reduce_lot_button": "REDUCE LOT BY {percent}%",
+                "toast_lot_adjusted": "Lot adjusted successfully!"
             },
             "sections": {
                 "asset_direction": "Asset and Direction",

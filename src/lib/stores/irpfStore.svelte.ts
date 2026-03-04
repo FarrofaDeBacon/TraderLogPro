@@ -140,7 +140,10 @@ class IrpfStore {
             if (results.length === 0) {
                 toast.info("Nenhuma operação encontrada para este período.");
             } else {
-                this.appraisals = [...this.appraisals.filter(a => !(a.period_month === month && a.period_year === year)), ...results];
+                this.appraisals = [
+                    ...this.appraisals.filter(a => !(a.period_month === month && a.period_year === year && a.status !== 'Paid')),
+                    ...results
+                ];
                 // Sort by month desc
                 this.appraisals.sort((a, b) => {
                     if (a.period_year !== b.period_year) return b.period_year - a.period_year;
@@ -162,9 +165,12 @@ class IrpfStore {
         try {
             const saved = await invoke<TaxAppraisal>("save_appraisal", { data });
             const index = this.appraisals.findIndex(
-                (a) => a.period_month === saved.period_month && a.period_year === saved.period_year && a.trade_type === saved.trade_type
+                (a) => a.period_month === saved.period_month &&
+                    a.period_year === saved.period_year &&
+                    a.trade_type === saved.trade_type &&
+                    (a.status === saved.status || a.status !== 'Paid')
             );
-            if (index !== -1) {
+            if (index !== -1 && this.appraisals[index].status !== 'Paid') {
                 this.appraisals[index] = saved;
             } else {
                 this.appraisals.push(saved);
@@ -175,6 +181,7 @@ class IrpfStore {
                 return b.period_month - a.period_month;
             }); toast.success(`Apuração de ${data.trade_type} salva com sucesso!`);
             this.loadAccumulatedLosses(); // Refresh losses as they might have changed
+            this.loadDarfs(this.selectedYear); // REFRESH DARFs to reflect synced changes
             return saved;
         } catch (error) {
             console.error("Failed to save appraisal:", error);

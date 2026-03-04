@@ -16,7 +16,12 @@
     import { t, locale } from "svelte-i18n";
     import { toast } from "svelte-sonner";
 
-    let { transactionId = "", darfId = "", open = $bindable(false) } = $props();
+    let {
+        transactionId = "",
+        darfId = "",
+        appraisalId = "",
+        open = $bindable(false),
+    } = $props();
 
     let darf = $state<TaxDarf | null>(null);
     let appraisal = $state<any>(null);
@@ -24,7 +29,7 @@
     let isComplementary = $state(false);
 
     $effect(() => {
-        if (open && (transactionId || darfId)) {
+        if (open && (transactionId || darfId || appraisalId)) {
             loadDarf();
         }
     });
@@ -32,31 +37,38 @@
     async function loadDarf() {
         loading = true;
         try {
+            console.log("[DARF DIALOG] Loading details...", {
+                darfId,
+                transactionId,
+                appraisalId,
+            });
+
             if (darfId) {
-                console.log("[DARF DIALOG] Loading for darfId:", darfId);
                 darf = await irpfStore.getDarfById(darfId);
             } else if (transactionId) {
-                console.log(
-                    "[DARF DIALOG] Loading for transactionId:",
-                    transactionId,
-                );
                 darf = await irpfStore.getDarfByTransaction(transactionId);
             }
 
             if (darf) {
                 console.log("[DARF DIALOG] DARF found:", darf);
-                // Load appraisal
                 if (darf.appraisal_id) {
                     appraisal = await irpfStore.getAppraisalById(
                         darf.appraisal_id,
                     );
                 }
-
                 isComplementary = darf.is_complementary;
+            } else if (appraisalId) {
+                console.log(
+                    "[DARF DIALOG] No DARF, loading appraisal directly:",
+                    appraisalId,
+                );
+                appraisal = await irpfStore.getAppraisalById(appraisalId);
+                if (appraisal) {
+                    isComplementary = appraisal.is_complementary;
+                }
             } else {
                 console.warn(
-                    "[DARF DIALOG] No DARF found for transactionId:",
-                    transactionId,
+                    "[DARF DIALOG] No identifier provided or no data found",
                 );
             }
         } catch (e) {
@@ -116,7 +128,7 @@
                     {$t("finance.darfDetails.loading")}
                 </p>
             </div>
-        {:else if darf}
+        {:else if darf || appraisal}
             <div class="space-y-6 pt-4">
                 <!-- Status & Period -->
                 <div class="flex items-center justify-between">
@@ -130,35 +142,50 @@
                                 class="w-4 h-4 text-muted-foreground/70"
                             />
                             <span class="text-lg font-medium"
-                                >{darf.period}</span
+                                >{darf?.period ||
+                                    (appraisal
+                                        ? `${appraisal.period_month}/${appraisal.period_year}`
+                                        : "")}</span
                             >
                         </div>
                     </div>
                     <div class="flex flex-col items-end gap-2">
-                        {#if darf.status === "Paid"}
+                        {#if darf}
+                            {#if darf.status === "Paid"}
+                                <Badge
+                                    variant="outline"
+                                    class="bg-green-500/10 text-green-500 border-green-500/20 px-3 py-1"
+                                >
+                                    <CheckCircle2 class="w-3.5 h-3.5 mr-1.5" />
+                                    {$t("finance.darfDetails.statusPaid")}
+                                </Badge>
+                            {:else}
+                                <Badge
+                                    variant="outline"
+                                    class="bg-amber-500/10 text-amber-500 border-amber-500/20 px-3 py-1"
+                                >
+                                    <Info class="w-3.5 h-3.5 mr-1.5" />
+                                    {$t("finance.darfDetails.statusPending")}
+                                </Badge>
+                            {/if}
+                        {:else if appraisal}
                             <Badge
                                 variant="outline"
-                                class="bg-green-500/10 text-green-500 border-green-500/20 px-3 py-1"
-                            >
-                                <CheckCircle2 class="w-3.5 h-3.5 mr-1.5" />
-                                {$t("finance.darfDetails.statusPaid")}
-                            </Badge>
-                        {:else}
-                            <Badge
-                                variant="outline"
-                                class="bg-amber-500/10 text-amber-500 border-amber-500/20 px-3 py-1"
+                                class="bg-blue-500/10 text-blue-500 border-blue-500/20 px-3 py-1"
                             >
                                 <Info class="w-3.5 h-3.5 mr-1.5" />
-                                {$t("finance.darfDetails.statusPending")}
+                                {appraisal.status === "Paid"
+                                    ? $t("finance.darfDetails.statusPaid")
+                                    : "Apuração Salva"}
                             </Badge>
                         {/if}
                         <Badge
                             variant="outline"
-                            class={darf.is_complementary
+                            class={isComplementary
                                 ? "bg-blue-500/10 text-blue-400 border-blue-500/20 px-2 py-0.5 text-[10px]"
                                 : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 px-2 py-0.5 text-[10px]"}
                         >
-                            {darf.is_complementary
+                            {isComplementary
                                 ? $t("finance.darfDetails.complementaryBadge")
                                 : "Guia Principal"}
                         </Badge>
@@ -175,7 +202,9 @@
                             >{$t("finance.darfDetails.revenueCode")}</span
                         >
                         <div class="text-base font-semibold text-foreground">
-                            {darf.revenue_code}
+                            {darf?.revenue_code ||
+                                appraisal?.revenue_code ||
+                                "6015"}
                         </div>
                     </div>
                     <div class="space-y-1">
@@ -184,7 +213,7 @@
                             >{$t("finance.darfDetails.dueDate")}</span
                         >
                         <div class="text-base font-semibold text-foreground">
-                            {darf.due_date
+                            {darf?.due_date
                                 ? new Date(darf.due_date).toLocaleDateString(
                                       $locale || "pt-BR",
                                   )
@@ -275,11 +304,15 @@
                             >{$t("finance.darfDetails.principalValue")}</span
                         >
                         <span class="font-mono text-foreground"
-                            >{formatCurrency(darf.principal_value)}</span
+                            >{formatCurrency(
+                                darf?.principal_value ||
+                                    appraisal?.total_payable ||
+                                    0,
+                            )}</span
                         >
                     </div>
 
-                    {#if darf.fine > 0}
+                    {#if darf && darf.fine > 0}
                         <div class="flex justify-between items-center text-sm">
                             <span
                                 class="text-muted-foreground flex items-center gap-1.5"
@@ -318,35 +351,43 @@
                         <span
                             class="text-lg font-bold text-emerald-600 dark:text-green-400 font-mono"
                         >
-                            {formatCurrency(darf.total_value)}
+                            {formatCurrency(
+                                darf?.total_value ||
+                                    appraisal?.total_payable ||
+                                    0,
+                            )}
                         </span>
                     </div>
                 </div>
 
                 <!-- Payment Info -->
-                <div
-                    class="flex items-center gap-3 p-3 bg-muted/20 rounded-lg border border-border/30"
-                >
-                    <Wallet class="w-5 h-5 text-muted-foreground" />
-                    <div class="space-y-0.5">
-                        <p
-                            class="text-[10px] text-muted-foreground uppercase font-bold"
-                        >
-                            {$t("finance.darfDetails.paidAt")}
-                        </p>
-                        <p class="text-xs text-foreground/80">
-                            {darf.payment_date
-                                ? new Date(
-                                      darf.payment_date,
-                                  ).toLocaleDateString($locale || "pt-BR", {
-                                      day: "numeric",
-                                      month: "long",
-                                      year: "numeric",
-                                  })
-                                : $t("finance.darfDetails.dateNotAvailable")}
-                        </p>
+                {#if darf}
+                    <div
+                        class="flex items-center gap-3 p-3 bg-muted/20 rounded-lg border border-border/30"
+                    >
+                        <Wallet class="w-5 h-5 text-muted-foreground" />
+                        <div class="space-y-0.5">
+                            <p
+                                class="text-[10px] text-muted-foreground uppercase font-bold"
+                            >
+                                {$t("finance.darfDetails.paidAt")}
+                            </p>
+                            <p class="text-xs text-foreground/80">
+                                {darf.payment_date
+                                    ? new Date(
+                                          darf.payment_date,
+                                      ).toLocaleDateString($locale || "pt-BR", {
+                                          day: "numeric",
+                                          month: "long",
+                                          year: "numeric",
+                                      })
+                                    : $t(
+                                          "finance.darfDetails.dateNotAvailable",
+                                      )}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                {/if}
             </div>
         {:else}
             <div class="py-12 text-center space-y-2">

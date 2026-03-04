@@ -180,6 +180,8 @@
         // Update item.id so "Gerar DARF" button appears immediately
         if (saved?.id) {
             item.id = saved.id;
+            // Removed: isAppraisalModalOpen = false;
+            irpfStore.loadAllData(); // Refresh history
         }
     }
 
@@ -561,16 +563,27 @@
                                 {@const existingDarf = irpfStore.darfs.find(
                                     (d) =>
                                         irpfStore.getId(d.appraisal_id) ===
-                                            irpfStore.getId(item.id) ||
-                                        (d.period === period &&
-                                            d.revenue_code === revenueCode),
+                                        irpfStore.getId(item.id),
                                 )}
                                 <tr
                                     class="hover:bg-accent/10 transition-colors"
                                 >
-                                    <td class="px-6 py-4 font-medium"
-                                        >{item.period_month}/{item.period_year}</td
-                                    >
+                                    <td class="px-6 py-4 font-medium">
+                                        <div class="flex flex-col">
+                                            <span
+                                                >{item.period_month}/{item.period_year}</span
+                                            >
+                                            {#if item.is_complementary}
+                                                <span
+                                                    class="text-[9px] font-bold text-amber-500 uppercase tracking-tighter"
+                                                >
+                                                    {$t(
+                                                        "fiscal.irpf.complementary",
+                                                    )}
+                                                </span>
+                                            {/if}
+                                        </div>
+                                    </td>
                                     <td class="px-6 py-4">
                                         <span
                                             class="px-2 py-1 rounded text-xs font-bold {item.trade_type ===
@@ -1144,6 +1157,9 @@
                       irpfStore.getId(d.appraisal_id) ===
                       irpfStore.getId(selectedAppraisal.id),
               )?.id || ""
+            : ""}
+        appraisalId={selectedAppraisal
+            ? irpfStore.getId(selectedAppraisal.id)
             : ""}
         bind:open={isViewModalOpen}
     />

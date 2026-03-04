@@ -37,61 +37,63 @@
     );
 </script>
 
-<div class="space-y-6">
-    <!-- Header with Search & actions -->
-    <div
-        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-    >
-        <div>
-            <h2 class="text-3xl font-bold tracking-tight">
-                {$t("strategy.list.title")}
-            </h2>
-            <p class="text-muted-foreground">
-                {$t("strategy.list.description")}
-            </p>
-        </div>
-        <Button href="/settings/strategies">
-            <Plus class="w-4 h-4 mr-2" />
-            {$t("strategy.list.new")}
-        </Button>
-    </div>
-
-    <Separator />
-
-    <!-- Grid Layout -->
-    {#if filteredStrategies.length > 0}
+<div class="space-y-6 animate-in fade-in duration-500">
+    <div class="flex-1 flex flex-col space-y-8 p-4 md:p-8">
+        <!-- Header with Search & actions -->
         <div
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
         >
-            {#each filteredStrategies as strategy (strategy.id)}
-                <StrategyPerformanceCard
-                    {strategy}
-                    stats={tradesStore.getStrategyStats(
-                        strategy.id,
-                        settingsStore.accounts,
-                        settingsStore.currencies,
-                        settingsStore.userProfile,
-                        "main",
-                    )}
-                />
-            {/each}
-        </div>
-    {:else}
-        <div
-            class="flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-lg border-muted text-center h-[400px]"
-        >
-            <div class="p-4 bg-muted/50 rounded-full mb-4">
-                <Search class="w-8 h-8 text-muted-foreground" />
+            <div>
+                <h2 class="text-3xl font-bold tracking-tight">
+                    {$t("strategy.list.title")}
+                </h2>
+                <p class="text-muted-foreground">
+                    {$t("strategy.list.description")}
+                </p>
             </div>
-            <h3 class="text-lg font-semibold">
-                {$t("strategy.list.notFound.title")}
-            </h3>
-            <p class="text-muted-foreground max-w-sm mt-2">
-                {$t("strategy.list.notFound.description")}
-            </p>
-            <Button href="/settings/strategies" variant="link" class="mt-4">
-                {$t("strategy.list.notFound.action")}
+            <Button href="/settings/strategies">
+                <Plus class="w-4 h-4 mr-2" />
+                {$t("strategy.list.new")}
             </Button>
         </div>
-    {/if}
+
+        <Separator />
+
+        <!-- Grid Layout -->
+        {#if filteredStrategies.length > 0}
+            <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            >
+                {#each filteredStrategies as strategy (strategy.id)}
+                    <StrategyPerformanceCard
+                        {strategy}
+                        stats={tradesStore.getStrategyStats(
+                            strategy.id,
+                            settingsStore.accounts,
+                            settingsStore.currencies,
+                            settingsStore.userProfile,
+                            "main",
+                        )}
+                    />
+                {/each}
+            </div>
+        {:else}
+            <div
+                class="flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-lg border-muted text-center h-[400px]"
+            >
+                <div class="p-4 bg-muted/50 rounded-full mb-4">
+                    <Search class="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 class="text-lg font-semibold">
+                    {$t("strategy.list.notFound.title")}
+                </h3>
+                <p class="text-muted-foreground max-w-sm mt-2">
+                    {$t("strategy.list.notFound.description")}
+                </p>
+                <Button href="/settings/strategies" variant="link" class="mt-4">
+                    {$t("strategy.list.notFound.action")}
+                </Button>
+            </div>
+        {/if}
+    </div>
 </div>

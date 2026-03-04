@@ -32,7 +32,7 @@ mod tests {
             trade_ids: vec!["t1".to_string()],
         };
 
-        let appraisal = calculate_appraisal(&bucket, 3, 2024, 0.0, 0.0, 0.0);
+        let appraisal = calculate_appraisal(&bucket, 3, 2024, 0.0, 0.0, 0.0, 0.0);
 
         assert_eq!(appraisal.net_profit, 800.0);
         assert_eq!(appraisal.tax_due, 160.0); // 20% of 800
@@ -55,7 +55,7 @@ mod tests {
             trade_ids: vec!["t2".to_string()],
         };
 
-        let appraisal = calculate_appraisal(&bucket, 3, 2024, 0.0, 0.0, 0.0);
+        let appraisal = calculate_appraisal(&bucket, 3, 2024, 0.0, 0.0, 0.0, 0.0);
 
         assert!(appraisal.is_exempt);
         assert_eq!(appraisal.tax_due, 0.0);
@@ -75,7 +75,7 @@ mod tests {
         };
 
         // compensation with 600 available loss
-        let appraisal = calculate_appraisal(&bucket, 3, 2024, 600.0, 0.0, 0.0);
+        let appraisal = calculate_appraisal(&bucket, 3, 2024, 600.0, 0.0, 0.0, 0.0);
 
         assert_eq!(appraisal.compensated_loss, 600.0);
         assert_eq!(appraisal.calculation_basis, 400.0);
@@ -95,7 +95,7 @@ mod tests {
         };
 
         // tax_due = 100.0. Current IRRF = 5.0. Prev credit = 110.0.
-        let appraisal = calculate_appraisal(&bucket, 3, 2024, 0.0, 110.0, 0.0);
+        let appraisal = calculate_appraisal(&bucket, 3, 2024, 0.0, 110.0, 0.0, 0.0);
 
         assert_eq!(appraisal.tax_due, 100.0);
         assert_eq!(appraisal.withheld_tax, 5.0);
@@ -116,7 +116,7 @@ mod tests {
             trade_ids: vec!["t5".to_string()],
         };
 
-        let appraisal = calculate_appraisal(&bucket, 3, 2024, 0.0, 0.0, 0.0);
+        let appraisal = calculate_appraisal(&bucket, 3, 2024, 0.0, 0.0, 0.0, 0.0);
         // On B3, exactly 20k IS exempt (up to 20k)
         assert!(appraisal.is_exempt);
         assert_eq!(appraisal.tax_due, 0.0);
@@ -135,10 +135,32 @@ mod tests {
         };
 
         // compensation with 2000 available loss (more than profit)
-        let appraisal = calculate_appraisal(&bucket, 3, 2024, 2000.0, 0.0, 0.0);
+        let appraisal = calculate_appraisal(&bucket, 3, 2024, 2000.0, 0.0, 0.0, 0.0);
 
         assert_eq!(appraisal.compensated_loss, 500.0);
         assert_eq!(appraisal.calculation_basis, 0.0);
         assert_eq!(appraisal.tax_due, 0.0);
+    }
+
+    #[test]
+    fn test_complementary_calculation() {
+        let rule = create_mock_rule("DayTrade", 20.0, 0.0);
+        let bucket = RuleBucket {
+            rule,
+            modality_id: "mod1".to_string(),
+            gross_profit: 2000.0, // Increased profit
+            gross_loss: 0.0,
+            sales_total: 5000.0,
+            trade_ids: vec!["t7".to_string()],
+        };
+
+        // Original tax was 160.0 (from 800.0 profit at 20%).
+        // Now profit is 2000.0 -> total tax due = 400.0.
+        // If we already paid 160.0, the delta should be 240.0.
+        let appraisal = calculate_appraisal(&bucket, 3, 2024, 0.0, 0.0, 0.0, 160.0);
+
+        assert_eq!(appraisal.tax_due, 400.0);
+        assert_eq!(appraisal.total_payable, 220.0); // 400 (due) - 20 (IRRF) - 160 (already paid)
+        assert!(appraisal.is_complementary);
     }
 }

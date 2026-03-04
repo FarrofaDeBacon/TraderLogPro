@@ -153,14 +153,11 @@ pub async fn calculate_monthly_tax(
     let existing_appraisals: Vec<TaxAppraisal> = exist_res.take(0).map_err(|e| e.to_string())?;
 
     // --- INCREMENTAL LOGIC ---
-    // Identify trades already appraised in "Paid" appraisals for this period
+    // Identify trades already appraised in ANY appraisal for this period
     let mut already_appraised_ids = std::collections::HashSet::new();
     for app in &existing_appraisals {
-        // Only exclude trades from appraisals that are "Paid" or "Ok" (settled)
-        if app.status == "Paid" || app.status == "Ok" {
-            for tid in &app.trade_ids {
-                already_appraised_ids.insert(tid.clone());
-            }
+        for tid in &app.trade_ids {
+            already_appraised_ids.insert(tid.clone());
         }
     }
 
@@ -183,17 +180,20 @@ pub async fn calculate_monthly_tax(
         println!("[IRPF] After exclusion, {} trades remain", final_list.len());
         final_list
     } else {
-        println!("[IRPF] No existing 'Paid'/'Ok' appraisals found. All {} trades from period will be processed.", trades_for_period.len());
+        println!("[IRPF] No existing appraisals found. All {} trades from period will be processed.", trades_for_period.len());
         trades_for_period
     };
+    // --- END INCREMENTAL LOGIC ---
 
+    /*
     if already_appraised_ids.len() > 0 && trades.is_empty() {
         println!("[IRPF] No NEW trades to appraise for {}/{}", month, year);
         return Ok(vec![]);
     }
+    */
 
     println!(
-        "[IRPF] Total de trades a processar (novos): {}",
+        "[IRPF] Total de trades a processar: {}",
         trades.len()
     );
 
@@ -479,7 +479,7 @@ pub async fn calculate_monthly_tax(
         // NOTE: ORDER BY is removed from the query to avoid SurrealDB 'Missing order idiom' parse
         // error when combining parenthesized WHERE conditions with ORDER BY on numeric fields.
         // We fetch all prior records and sort in Rust instead.
-        let credit_query = "SELECT type::float(withholding_credit_remaining) as withholding_credit_remaining, period_year, period_month FROM tax_appraisal WHERE trade_type = $type";
+        let credit_query = "SELECT type::float(withholding_credit_remaining) as withholding_credit_remaining, period_year, period_month, type::string(calculation_date) as calculation_date FROM tax_appraisal WHERE trade_type = $type";
         let mut credit_res =
             db.0.query(credit_query)
                 .bind(("type", loss_category.clone()))
@@ -488,18 +488,23 @@ pub async fn calculate_monthly_tax(
 
         let mut prev_credit_vec: Vec<serde_json::Value> =
             credit_res.take(0).map_err(|e| e.to_string())?;
-        // Filter to only prior periods and sort desc to get the most recent
+        // Filter to only prior periods OR same month (incremental flow)
         prev_credit_vec.retain(|v| {
             let py = v.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0) as u16;
             let pm = v.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0) as u8;
-            py < year || (py == year && pm < month)
+            py < year || (py == year && pm <= month)
         });
+        // Sort by year, month, and calculation_date to get the absolute latest state
         prev_credit_vec.sort_by(|a, b| {
             let ay = a.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0);
             let am = a.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0);
+            let ad = a.get("calculation_date").and_then(|x| x.as_str()).unwrap_or("");
+            
             let by = b.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0);
             let bm = b.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0);
-            (by, bm).cmp(&(ay, am)) // descending
+            let bd = b.get("calculation_date").and_then(|x| x.as_str()).unwrap_or("");
+            
+            (by, bm, bd).cmp(&(ay, am, ad)) // descending
         });
         let previous_credit = prev_credit_vec.first()
             .and_then(|v| v.get("withholding_credit_remaining"))
@@ -508,7 +513,7 @@ pub async fn calculate_monthly_tax(
 
         // 3.5 Accumulation Logic (< R$ 10)
         // NOTE: Same pattern - ORDER BY removed to avoid SurrealDB parse error.
-        let accum_query = "SELECT type::float(total_payable) as total_payable, period_year, period_month FROM tax_appraisal WHERE trade_type = $type AND status = 'Pending'";
+        let accum_query = "SELECT type::float(total_payable) as total_payable, period_year, period_month, type::string(calculation_date) as calculation_date FROM tax_appraisal WHERE trade_type = $type AND status = 'Pending'";
         let mut accum_res =
             db.0.query(accum_query)
                 .bind(("type", loss_category.clone()))
@@ -516,32 +521,52 @@ pub async fn calculate_monthly_tax(
                 .map_err(|e| e.to_string())?;
 
         let mut prev_accum: Vec<serde_json::Value> = accum_res.take(0).map_err(|e| e.to_string())?;
-        // Filter: only prior periods with total_payable < 10.0, then sort desc
+        // Filter: only prior periods OR same month with total_payable < 10.0
         prev_accum.retain(|v| {
             let py = v.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0) as u16;
             let pm = v.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0) as u8;
             let tp = v.get("total_payable").and_then(|x| x.as_f64()).unwrap_or(0.0);
-            tp < 10.0 && (py < year || (py == year && pm < month))
+            tp < 10.0 && (py < year || (py == year && pm <= month))
         });
         prev_accum.sort_by(|a, b| {
             let ay = a.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0);
             let am = a.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0);
+            let ad = a.get("calculation_date").and_then(|x| x.as_str()).unwrap_or("");
+            
             let by = b.get("period_year").and_then(|x| x.as_u64()).unwrap_or(0);
             let bm = b.get("period_month").and_then(|x| x.as_u64()).unwrap_or(0);
-            (by, bm).cmp(&(ay, am)) // descending
+            let bd = b.get("calculation_date").and_then(|x| x.as_str()).unwrap_or("");
+            
+            (by, bm, bd).cmp(&(ay, am, ad)) // descending
         });
         let tax_accumulated = prev_accum.first()
             .and_then(|v| v.get("total_payable"))
             .and_then(|t| t.as_f64())
             .unwrap_or(0.0);
 
-        let mut appraisal = crate::logic::calculate_appraisal(
+        // 3.6 Complementary Logic: Fetch what was already paid for THIS month/type
+        let paid_query = "SELECT type::float(total_payable) as total_payable FROM tax_appraisal WHERE period_month = $month AND period_year = $year AND trade_type = $type AND status = 'Paid'";
+        let mut paid_res = db.0.query(paid_query)
+            .bind(("month", month))
+            .bind(("year", year))
+            .bind(("type", loss_category.clone()))
+            .await
+            .map_err(|e| e.to_string())?;
+        
+        let already_paid: f64 = paid_res.take::<Vec<serde_json::Value>>(0)
+            .map_err(|e| e.to_string())?
+            .iter()
+            .map(|v| v.get("total_payable").and_then(|t| t.as_f64()).unwrap_or(0.0))
+            .sum();
+
+        let appraisal = crate::logic::calculate_appraisal(
             &bucket,
             month,
             year,
             available_loss,
             previous_credit,
             tax_accumulated,
+            0.0, // Incremental approach: already processing delta trades, so already_paid is 0.0
         );
         appraisal.tax_rule_id = rule_id; 
         appraisal.calculation_date = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
@@ -838,8 +863,9 @@ pub async fn save_appraisal(
     }
 
     // 2. If no ID, check if one exists for this Month/Year/Type to avoid duplicates
-    // CRITICAL: Only match PENDING appraisals. If a PAID one exists, we create a COMPLEMENTARY record.
-    let query = "SELECT *, type::string(id) as id FROM tax_appraisal WHERE period_month = $month AND period_year = $year AND trade_type = $type AND status = 'Pending'";
+    // CRITICAL: Only match PENDING appraisals WITHOUT a generated DARF.
+    // If a DARF exists, we create a NEW COMPLEMENTARY record to avoid changing the committed value.
+    let query = "SELECT *, type::string(id) as id, (SELECT VALUE count() FROM tax_darf WHERE appraisal_id = $parent.id AND status = 'Pending') as pending_darf_count FROM tax_appraisal WHERE period_month = $month AND period_year = $year AND trade_type = $type AND status = 'Pending'";
     let mut result =
         db.0.query(query)
             .bind(("month", data.period_month))
@@ -848,32 +874,49 @@ pub async fn save_appraisal(
             .await
             .map_err(|e| e.to_string())?;
 
-    let existing: Option<TaxAppraisal> = result.take(0).map_err(|e| e.to_string())?;
+    let existing: Option<serde_json::Value> = result.take(0).map_err(|e| e.to_string())?;
 
-    if let Some(existing_record) = existing {
-        if let Some(id) = &existing_record.id {
-            let parts: Vec<&str> = id.split(':').collect();
-            let tb = if parts.len() > 1 {
-                parts[0]
-            } else {
-                "tax_appraisal"
-            };
-            let tid = if parts.len() > 1 { parts[1] } else { id };
+    if let Some(existing_val) = existing {
+        let dc = existing_val["pending_darf_count"].as_i64().unwrap_or(0);
+        if dc > 0 {
+            println!("[IRPF] Existing Pending appraisal found, but it ALREADY has a DARF. Falling through to create a new complementary one.");
+        } else {
+            let id = existing_val["id"].as_str().unwrap_or("");
+            if !id.is_empty() {
+                let parts: Vec<&str> = id.split(':').collect();
+                let tb = if parts.len() > 1 { parts[0] } else { "tax_appraisal" };
+                let tid = if parts.len() > 1 { parts[1] } else { id };
 
-            println!(
-                "[IRPF] Updating EXISTING record found by month/year/type: {}:{}",
-                tb, tid
-            );
+                println!(
+                    "[IRPF] Updating EXISTING record found by month/year/type: {}:{}",
+                    tb, tid
+                );
 
-            let mut new_data = data.clone();
-            new_data.id = None;
+                let mut new_data = data.clone();
+                new_data.id = None;
+                
+                // Merge trade IDs to avoid losing previous ones if calculating incrementally
+                let mut combined_trades = data.trade_ids.clone();
+                if let Some(ext) = existing_val["trade_ids"].as_array() {
+                    for t in ext {
+                        if let Some(ts) = t.as_str() {
+                            if !combined_trades.contains(&ts.to_string()) {
+                                combined_trades.push(ts.to_string());
+                            }
+                        }
+                    }
+                }
+                new_data.trade_ids = combined_trades;
 
-            let updated: Option<TaxAppraisal> =
-                db.0.update((tb, tid))
-                    .content(new_data)
-                    .await
-                    .map_err(|e| e.to_string())?;
-            return updated.ok_or_else(|| "Failed to update existing record".to_string());
+                let updated: TaxAppraisal =
+                    db.0.update((tb, tid))
+                        .content(new_data)
+                        .await
+                        .map_err(|e| e.to_string())?
+                        .ok_or_else(|| "Failed to update existing record".to_string())?;
+
+                return Ok(updated);
+            }
         }
     }
 
@@ -891,25 +934,37 @@ pub async fn save_appraisal(
     let created = created_opt.ok_or_else(|| "Failed to create new appraisal".to_string())?;
 
     // --- NEW: ACCUMULATION MERGE / COMPLEMENTARY DETECTION ---
-    // If a PAID appraisal already exists for this same period/type, this NEW one is complementary.
-    let comp_query = "SELECT count() FROM tax_appraisal WHERE period_month = $month AND period_year = $year AND trade_type = $type AND status = 'Paid'";
+    // If ANY appraisal already exists for this same period/type, this NEW one is complementary.
+    let comp_query = "SELECT count() FROM tax_appraisal WHERE period_month = $month AND period_year = $year AND trade_type = $type AND id != $created_id";
     let mut comp_res = db.0.query(comp_query)
         .bind(("month", created.period_month))
         .bind(("year", created.period_year))
         .bind(("type", created.trade_type.clone()))
+        .bind(("created_id", created.id.clone().unwrap_or("".to_string())))
         .await
         .map_err(|e| e.to_string())?;
-    
-    let paid_count: i64 = comp_res.take::<Option<i64>>(0).map_err(|e| e.to_string())?.unwrap_or(0);
+
+    let paid_count: i64 = comp_res
+        .take::<Vec<serde_json::Value>>(0)
+        .map_err(|e| e.to_string())?
+        .first()
+        .and_then(|v| v.get("count"))
+        .and_then(|c| c.as_i64())
+        .unwrap_or(0);
     
     if paid_count > 0 {
         if let Some(id_str) = created.id.as_ref() {
             let clean_id = id_str.split(':').last().unwrap_or(id_str).to_string();
             println!("[IRPF] Marking NEW appraisal as COMPLEMENTARY because a Paid one exists");
-            let update_comp = "UPDATE type::thing('tax_appraisal', $id) SET is_complementary = true";
-            let _ = db.0.query(update_comp)
+            let update_comp = "UPDATE type::thing('tax_appraisal', $id) SET is_complementary = true RETURN *";
+            let mut comp_res = db.0.query(update_comp)
                 .bind(("id", clean_id))
-                .await;
+                .await
+                .map_err(|e| e.to_string())?;
+            
+            if let Some(updated_comp) = comp_res.take::<Option<TaxAppraisal>>(0).map_err(|e| e.to_string())? {
+                return Ok(updated_comp);
+            }
         }
     }
 

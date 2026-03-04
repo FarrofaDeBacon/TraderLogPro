@@ -1236,9 +1236,11 @@
         },
         "general": {
             "checkUpdates": "Vérifier les Mises à Jour",
-            "description": "Informations système et préférences globales.",
+            "description": "Système d'information et préférences mondiales.",
+            "no": "Non",
             "title": "Général",
-            "version": "Version de l'App"
+            "version": "Version de l'App",
+            "yes": "Oui"
         },
         "header": {
             "description": "Description",
@@ -1506,12 +1508,18 @@
             "title": "Mon Profil"
         },
         "risk": {
+            "alerts_title": "Alertes de Risque",
+            "emotional_warning": "Déviation Émotionnelle : Votre poids actuel ({weight}) est inférieur au seuil ({threshold}). Nous suggérons de réduire le lot de {percent}%.",
+            "outlier_warning": "Détection d'Outlier : Nous avons identifié des pertes récentes en dehors de la courbe statistique normale.",
+            "sniper_warning": "Limite Sniper : Vous avez déjà effectué {current} des {limit} opérations autorisées pour aujourd'hui.",
+            "reduce_lot_button": "RÉDUIRE LE LOT DE {percent}%",
+            "toast_lot_adjusted": "Lot ajusté avec succès !",
             "accountTypes": {
                 "All": "Tous les Comptes",
                 "Demo": "Compte Démo",
                 "Prop": "Prop Firm",
                 "Real": "Compte Réel",
-                "Specific": "Specific"
+                "Specific": "Comptes Spécifiques"
             },
             "applicability": "Applicabilité",
             "dailyGoal": "Objectif Journalier ($)",
@@ -1524,31 +1532,42 @@
             "edit": "Modifier Profil",
             "engine": {
                 "outlier": {
-                    "description": "Description",
-                    "title": "Title"
+                    "description": "Réduction automatique lors de la détection d'outliers statistiques négatifs.",
+                    "lookback": "Fenêtre d'Analyse",
+                    "title": "Régression d'Outliers"
                 },
                 "psychological": {
-                    "title": "Title"
+                    "description": "Détecte les schémas de 'tilt' ou d'euphorie basés sur les {count} derniers trades.",
+                    "lookback": "Fenêtre d'Activation",
+                    "multiplier": "Facteur de Réduction",
+                    "strategy": "Stratégie de Recherche",
+                    "strategySequence": "Séquentielle (Pertes Consécutives)",
+                    "strategyStrict": "Stricte (Moyenne Mobile)",
+                    "threshold": "Limite de Déviation (Z-Score)",
+                    "title": "Couplage Psychologique"
                 },
                 "sniper": {
-                    "description": "Description",
-                    "title": "Title"
+                    "description": "Augmente la rigueur d'entrée après des séquences de pertes.",
+                    "selectivity": "Degré de Sélectivité",
+                    "selectivityTip": "Plus il est élevé, plus de filtres d'entrée seront appliqués.",
+                    "title": "Mode Sniper"
                 }
             },
             "form": {
                 "accounts": {
-                    "title": "Title"
+                    "noneSelected": "Aucun compte sélectionné. Le profil ne sera appliqué à aucun compte.",
+                    "title": "Lier les Comptes"
                 },
                 "presets": {
-                    "aggressive": "Aggressive",
-                    "conservative": "Conservative",
-                    "moderate": "Moderate",
-                    "title": "Title"
+                    "aggressive": "Agressif",
+                    "conservative": "Conservateur",
+                    "moderate": "Modéré",
+                    "title": "Préréglages de Profil"
                 },
                 "tabs": {
-                    "engine": "Engine",
-                    "general": "General",
-                    "growth": "Growth"
+                    "engine": "Moteur de Risque",
+                    "general": "Général",
+                    "growth": "Roadmap"
                 }
             },
             "growthPlan": {
@@ -1558,15 +1577,22 @@
                 },
                 "activeStatus": "Statut Actif",
                 "addPhase": "Ajouter une Phase",
+                "consistency": "Consistance de",
+                "dailyLoss": "Limite de Perte",
                 "dailyLossLabel": "Limite de Perte Quotidienne",
+                "drawdown": "Drawdown Maximum",
                 "enable": "Activer le Plan de Croissance",
                 "enableDesc": "Gestion automatique des lots et des limites basée sur la performance.",
                 "lossLabel": "Limite de Perte",
                 "maxLotLabel": "Lots Max",
+                "maxLots": "Lots Maximum",
                 "maxLotsLabel": "Lots Maximum",
                 "noPhases": "Aucune Phase Configurée",
                 "phases": "Phases du Plan",
                 "phasesTitle": "Structure des Phases",
+                "profitTarget": "Objectif de Profit",
+                "progression": "Critères de Progression",
+                "regression": "Critères de Régression",
                 "requirements": {
                     "days": "Sessions Positives",
                     "demote": "Critères de Régression",
@@ -1585,7 +1611,8 @@
                 "toasts": {
                     "demote": "Attention : Vous êtes retourné à la phase : {name}",
                     "promote": "Félicitations ! Vous êtes passé à la phase : {name}"
-                }
+                },
+                "tradingSessions": "Sessions"
             },
             "lockOnLoss": "Bloquer la Plateforme à la Limite de Perte",
             "lockOnLossShort": "Blocage Perte",
@@ -1600,6 +1627,7 @@
             "platformLock": "Verrouillage de la Plateforme",
             "profiles": {
                 "activate": "Activer",
+                "active": "Actif",
                 "dailyLoss": "Perte Quotidienne",
                 "dailyTarget": "Objectif Quotidien"
             },
@@ -2157,7 +2185,12 @@
                 "visual_desc": "Captures d'écran du graphique (max 5 Mo)."
             },
             "risk": {
-                "toast_lot_adjusted": "Toast_lot_adjusted"
+                "alerts_title": "Alertes de Risque",
+                "emotional_warning": "Déviation Émotionnelle : Votre poids actuel ({weight}) est inférieur au seuil ({threshold}). Nous suggérons de réduire le lot de {percent}%.",
+                "outlier_warning": "Détection d'Outlier : Nous avons identifié des pertes récentes en dehors de la courbe statistique normale.",
+                "sniper_warning": "Limite Sniper : Vous avez déjà effectué {current} des {limit} opérations autorisées pour aujourd'hui.",
+                "reduce_lot_button": "RÉDUIRE LE LOT DE {percent}%",
+                "toast_lot_adjusted": "Lot ajusté avec succès !"
             },
             "sections": {
                 "asset_direction": "Actif et Direction",

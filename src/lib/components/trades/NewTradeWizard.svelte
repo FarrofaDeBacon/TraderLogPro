@@ -128,9 +128,10 @@
 
     let selectedAsset = $derived.by(() => {
         const symbol = formData.asset;
-        return untrack(() =>
-            settingsStore.assets.find((a) => a.symbol === symbol),
-        );
+        return untrack(() => {
+            const allAssets = [...settingsStore.assets, ...rtdAssets];
+            return allAssets.find((a) => a.symbol === symbol);
+        });
     });
 
     let selectedAccount = $derived.by(() => {

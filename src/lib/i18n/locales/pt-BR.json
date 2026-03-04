@@ -460,6 +460,7 @@
       "totalPaid": "Total Pago"
     },
     "irpf": {
+      "complementary": "Complementar",
       "calculate": "Calcular",
       "calculating": "Calculando...",
       "description": "Acompanhe e consolide suas notas e tributos mensais (Day Trade e Swing).",
@@ -1239,8 +1240,10 @@
     "general": {
       "checkUpdates": "Verificar Atualizações",
       "description": "Informações do sistema e preferências globais.",
+      "no": "Não",
       "title": "Geral",
-      "version": "Versão do Aplicativo"
+      "version": "Versão do Aplicativo",
+      "yes": "Sim"
     },
     "header": {
       "description": "Description",
@@ -1513,7 +1516,7 @@
         "Demo": "Conta Demo",
         "Prop": "Mesa Proprietária",
         "Real": "Conta Real",
-        "Specific": "Specific"
+        "Specific": "Contas Específicas"
       },
       "applicability": "Aplicabilidade",
       "dailyGoal": "Meta de Lucro Diária",
@@ -1526,31 +1529,42 @@
       "edit": "Editar Perfil",
       "engine": {
         "outlier": {
-          "description": "Description",
-          "title": "Title"
+          "description": "Redução automática ao detectar desvios estatísticos negativos.",
+          "lookback": "Janela de Análise",
+          "title": "Regressão de Outliers"
         },
         "psychological": {
-          "title": "Title"
+          "description": "Detecta padrões de 'tilt' ou euforia baseados nos últimos {count} trades.",
+          "lookback": "Janela de Ativação",
+          "multiplier": "Fator de Redução",
+          "strategy": "Estratégia de Busca",
+          "strategySequence": "Sequencial (Loss Seguidos)",
+          "strategyStrict": "Rigorosa (Média Móvel)",
+          "threshold": "Limite de Desvio (Z-Score)",
+          "title": "Acoplamento Psicológico"
         },
         "sniper": {
-          "description": "Description",
-          "title": "Title"
+          "description": "Aumenta o rigor da entrada após sequências de perda.",
+          "selectivity": "Grau de Seletividade",
+          "selectivityTip": "Quanto maior, mais filtros de entrada serão aplicados.",
+          "title": "Modo Sniper"
         }
       },
       "form": {
         "accounts": {
-          "title": "Title"
+          "noneSelected": "Nenhuma conta selecionada. O perfil não será aplicado a nenhuma conta.",
+          "title": "Vincular Contas"
         },
         "presets": {
-          "aggressive": "Aggressive",
-          "conservative": "Conservative",
-          "moderate": "Moderate",
-          "title": "Title"
+          "aggressive": "Agressivo",
+          "conservative": "Conservador",
+          "moderate": "Moderado",
+          "title": "Predefinições de Perfil"
         },
         "tabs": {
-          "engine": "Engine",
-          "general": "General",
-          "growth": "Growth"
+          "engine": "Motor de Risco",
+          "general": "Geral",
+          "growth": "Roadmap"
         }
       },
       "growthPlan": {
@@ -1560,15 +1574,22 @@
         },
         "activeStatus": "Plano de Crescimento Ativo",
         "addPhase": "Adicionar Nova Fase",
+        "consistency": "Consistência de",
+        "dailyLoss": "Limite de Perda",
         "dailyLossLabel": "Limite Diário",
+        "drawdown": "Drawdown Máximo",
         "enable": "Habilitar Plano de Crescimento",
         "enableDesc": "Gerenciamento automático de lotes e limites baseado em performance.",
         "lossLabel": "Loss Limite",
         "maxLotLabel": "Lotes Máx",
+        "maxLots": "Máximo de Lotes",
         "maxLotsLabel": "Máximo de Lotes",
         "noPhases": "Nenhuma fase configurada",
         "phases": "Fases do Plano",
         "phasesTitle": "Estrutura de Fases",
+        "profitTarget": "Meta de Lucro",
+        "progression": "Critérios de Avanço",
+        "regression": "Critérios de Regressão",
         "requirements": {
           "days": "Sessões Positivas",
           "demote": "Critérios de Regressão",
@@ -1587,7 +1608,8 @@
         "toasts": {
           "demote": "Atenção: Você retornou para a fase: {name}",
           "promote": "Parabéns! Você avançou para a fase: {name}"
-        }
+        },
+        "tradingSessions": "Sessões"
       },
       "lockOnLoss": "Bloquear Plataforma ao Atingir Loss",
       "lockOnLossShort": "Bloqueia Plataforma (Loss)",
@@ -1602,6 +1624,7 @@
       "platformLock": "Trava da Plataforma",
       "profiles": {
         "activate": "Ativar Perfil",
+        "active": "Ativo",
         "dailyLoss": "Loss Diário",
         "dailyTarget": "Meta Diária"
       },
@@ -2159,7 +2182,12 @@
         "visual_desc": "Screenshots do gráfico e contexto (máx 5MB)."
       },
       "risk": {
-        "toast_lot_adjusted": "Toast_lot_adjusted"
+        "alerts_title": "Alertas de Risco",
+        "emotional_warning": "Desvio Emocional: Seu peso atual ({weight}) está abaixo do limite ({threshold}). Sugerimos reduzir o lote em {percent}%.",
+        "outlier_warning": "Detecção de Outlier: Identificamos perdas recentes fora da curva estatística normal.",
+        "sniper_warning": "Limite Sniper: Você já realizou {current} de {limit} operações permitidas para hoje.",
+        "reduce_lot_button": "REDUZIR LOTE EM {percent}%",
+        "toast_lot_adjusted": "Lote ajustado com sucesso!"
       },
       "sections": {
         "asset_direction": "Ativo e Direção",
