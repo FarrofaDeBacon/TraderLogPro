@@ -1065,7 +1065,7 @@
                             <div class="card-glass overflow-hidden">
                                 <!-- Month Header -->
                                 <button
-                                    class="w-full flex items-center justify-between p-3 rounded-xl card-glass border-primary/20 hover:bg-primary/15 transition-colors sticky top-0 z-10 backdrop-blur-md"
+                                    class="w-full flex items-center justify-between p-3 rounded-xl card-glass border-primary/20 hover:bg-primary/15 transition-all duration-300 sticky top-0 z-10 backdrop-blur-md"
                                     onclick={() => toggleMonth(month.key)}
                                 >
                                     <div
@@ -1121,7 +1121,7 @@
                                         </div>
                                     </div>
                                     <ChevronDown
-                                        class="w-4 h-4 text-muted-foreground transition-transform duration-300 {isMonthExpanded
+                                        class="w-4 h-4 text-primary transition-transform duration-300 {isMonthExpanded
                                             ? 'rotate-180'
                                             : ''}"
                                     />
@@ -1129,7 +1129,7 @@
 
                                 {#if isMonthExpanded}
                                     <div
-                                        class="pl-4 pb-4 space-y-3 border-l-2 border-border/30 ml-6 animate-in fade-in slide-in-from-top-2"
+                                        class="pl-4 pb-4 space-y-3 border-l-2 border-border/30 ml-6 animate-in fade-in slide-in-from-top-2 duration-300"
                                     >
                                         <Separator class="bg-border/20 mb-3" />
                                         {#each month.weeks as week (week.key)}
@@ -1140,7 +1140,7 @@
                                             >
                                                 <!-- Week Header -->
                                                 <button
-                                                    class="w-full flex items-center justify-between p-3 hover:bg-primary/10 transition-colors border-none bg-transparent cursor-pointer"
+                                                    class="w-full flex items-center justify-between p-3 hover:bg-primary/10 transition-all duration-300 border-none bg-transparent cursor-pointer"
                                                     onclick={() =>
                                                         toggleWeek(week.key)}
                                                 >
@@ -1199,7 +1199,7 @@
                                                         </div>
                                                     </div>
                                                     <ChevronDown
-                                                        class="w-3 h-3 text-muted-foreground transition-transform duration-300 {isWeekExpanded
+                                                        class="w-3 h-3 text-primary transition-transform duration-300 {isWeekExpanded
                                                             ? 'rotate-180'
                                                             : ''}"
                                                     />
@@ -1207,7 +1207,7 @@
 
                                                 {#if isWeekExpanded}
                                                     <div
-                                                        class="pl-4 pb-2 space-y-2 border-l-2 border-border/20 ml-6 animate-in fade-in slide-in-from-top-1"
+                                                        class="pl-4 pb-2 space-y-2 border-l-2 border-border/20 ml-6 animate-in fade-in slide-in-from-top-1 duration-300"
                                                     >
                                                         {#each week.days as day (day.key)}
                                                             {@const isExpanded =
@@ -1218,14 +1218,14 @@
                                                                 class="card-glass overflow-hidden"
                                                             >
                                                                 <button
-                                                                    class="w-full flex items-center justify-between p-2 hover:bg-primary/10 transition-colors border-none bg-transparent cursor-pointer"
+                                                                    class="w-full flex items-center justify-between p-2 hover:bg-primary/10 transition-all duration-300 border-none bg-transparent cursor-pointer"
                                                                     onclick={() =>
                                                                         toggleDay(
                                                                             day.date,
                                                                         )}
                                                                 >
                                                                     <div
-                                                                        class="flex items-center gap-3"
+                                                                        class="flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300"
                                                                     >
                                                                         <div
                                                                             class="flex flex-col items-center justify-center bg-muted/80 rounded-lg min-w-[36px] h-9 border border-border/50 shadow-inner"
