@@ -1245,121 +1245,41 @@
                                     >
                                         <Separator class="bg-border/20 mb-3" />
                                         {#each month.weeks as week}
-                                            {@const isWeekExpanded =
-                                                expandedWeeks.has(week.key)}
-                                            <div class="space-y-3">
-                                                <button
-                                                    class="w-full flex items-center justify-between p-3 rounded-xl border-none bg-transparent hover:bg-primary/10 transition-all duration-300"
-                                                    onclick={() =>
-                                                        toggleWeek(week.key)}
-                                                >
-                                                    <div
-                                                        class="flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300"
-                                                    >
-                                                        <TrendingUp
-                                                            class="w-3.5 h-3.5 text-emerald-400"
-                                                        />
-                                                        <div class="text-left">
-                                                            <h5
-                                                                class="text-xs font-black text-foreground/90 uppercase tracking-tight"
-                                                            >
-                                                                {week.label}
-                                                            </h5>
-                                                            <div
-                                                                class="flex gap-1.5 opacity-60 mt-0.5"
-                                                            >
-                                                                {#each Object.entries(week.totalPnlByCurrency) as [curr, total]}
-                                                                    <span
-                                                                        class="text-[9px] font-bold {(total as number) >=
-                                                                        0
-                                                                            ? 'text-emerald-500'
-                                                                            : 'text-rose-500'}"
-                                                                    >
-                                                                        {formatCurrency(
-                                                                            total as number,
-                                                                            curr,
-                                                                        )}
-                                                                    </span>
-                                                                {/each}
+                                            <div class="space-y-3 relative">
+                                                <!-- UI Match: Week Identifier (Spans, like Hub) -->
+                                                <div class="flex items-center gap-2 mb-2 ml-4 animate-in fade-in slide-in-from-top-1 duration-300">
+                                                    <div class="p-1 rounded bg-muted border border-border/40">
+                                                        <TrendingUp class="w-3 h-3 text-primary" />
+                                                    </div>
+                                                    <span class="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                                                        {week.label}
+                                                    </span>
+                                                    <div class="h-[1px] flex-1 bg-border/20"></div>
+                                                    <div class="flex gap-2">
+                                                        {#each Object.entries(week.totalPnlByCurrency) as [curr, total]}
+                                                            <div class="flex items-baseline gap-0.5">
+                                                                <span class="text-[7px] text-muted-foreground uppercase">{curr}</span>
+                                                                <span class="text-[9px] font-mono font-bold {(total as number) >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
+                                                                    {formatNumber(total as number)}
+                                                                </span>
                                                             </div>
+                                                        {/each}
+                                                        <div class="flex items-center gap-1.5 ml-2 border-l border-border/30 pl-2">
+                                                            <span class="text-[10px] font-black text-foreground">{week.avgWeight.toFixed(1)}</span>
+                                                            <span class="text-[7px] font-bold text-muted-foreground uppercase tracking-tighter">SCORE</span>
                                                         </div>
                                                     </div>
-                                                    <div
-                                                        class="flex items-center gap-4"
-                                                    >
-                                                        <div
-                                                            class="flex items-center gap-2"
-                                                        >
-                                                            <div
-                                                                class="flex flex-col items-end mr-1"
-                                                            >
-                                                                <div
-                                                                    class="flex items-baseline gap-1"
-                                                                >
-                                                                    <span
-                                                                        class="text-[10px] font-black text-foreground"
-                                                                    >
-                                                                        {week.avgWeight.toFixed(
-                                                                            1,
-                                                                        )}
-                                                                    </span>
-                                                                    <span
-                                                                        class="text-[6px] font-bold text-muted-foreground uppercase tracking-tighter"
-                                                                        >SCORE</span
-                                                                    >
-                                                                </div>
-                                                                <Badge
-                                                                    class="text-[6px] h-3 px-1 font-black uppercase {week
-                                                                        .equivalentState
-                                                                        .impact ===
-                                                                    'Positive'
-                                                                        ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                                                                        : 'bg-rose-500/10 text-rose-500 border-rose-500/20'}"
-                                                                    variant="outline"
-                                                                >
-                                                                    {week
-                                                                        .equivalentState
-                                                                        .name}
-                                                                </Badge>
-                                                            </div>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                class="h-6 w-6 hover:bg-accent/10"
-                                                                onclick={(
-                                                                    e,
-                                                                ) => {
-                                                                    e.stopPropagation();
-                                                                    openInsight(
-                                                                        week,
-                                                                    );
-                                                                }}
-                                                            >
-                                                                <Eye
-                                                                    class="w-3 h-3 text-muted-foreground hover:text-foreground"
-                                                                />
-                                                            </Button>
-                                                        </div>
-                                                        <ChevronDown
-                                                            class="w-3.5 h-3.5 text-primary transition-transform duration-300 {isWeekExpanded
-                                                                ? 'rotate-180'
-                                                                : ''}"
-                                                        />
-                                                    </div>
-                                                </button>
+                                                </div>
 
-                                                {#if isWeekExpanded}
-                                                    <div
-                                                        class="pl-4 pb-2 space-y-2 border-l-2 border-border/20 ml-6 animate-in fade-in slide-in-from-top-1 duration-300"
-                                                    >
-                                                        {#each week.days as day}
-                                                            {@const isDayExpanded =
-                                                                expandedDays.has(
-                                                                    day.date,
-                                                                )}
-                                                            <div
-                                                                class="rounded-xl border border-border/50 card-glass overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300"
-                                                            >
+                                                <div class="pl-4 pb-2 space-y-3 border-l-2 border-border/30 ml-6">
+                                                    {#each week.days as day}
+                                                        {@const isDayExpanded =
+                                                            expandedDays.has(
+                                                                day.date,
+                                                            )}
+                                                        <div
+                                                            class="rounded-xl border border-border/50 card-glass overflow-hidden transition-all duration-300 hover:border-primary/30"
+                                                        >
                                                                 <button
                                                                     class="w-full flex items-center justify-between p-2 sm:p-3 hover:bg-primary/10 transition-all duration-300 text-left border-none bg-transparent"
                                                                     onclick={() =>
