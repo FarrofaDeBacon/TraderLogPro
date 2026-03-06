@@ -361,12 +361,7 @@
 
         <!-- Statement Section -->
         <div class="space-y-4">
-            <h3 class="text-xl font-bold tracking-tight">
-                {$t("finance.statement.title")}
-            </h3>
-            <div class="rounded-md border bg-card/50">
-                <StatementTable />
-            </div>
+            <StatementTable />
         </div>
     </div>
 </div>

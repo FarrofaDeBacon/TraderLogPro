@@ -5,6 +5,7 @@
     import * as Card from "$lib/components/ui/card";
     import { Badge } from "$lib/components/ui/badge";
     import { Separator } from "$lib/components/ui/separator";
+    import HierarchicalList from "$lib/components/shared/HierarchicalList.svelte";
     import * as Select from "$lib/components/ui/select";
     import {
         Brain,
@@ -164,41 +165,6 @@
     let endDate = $state("");
     let itemsLimit = $state("10"); // "10", "20", "50", "all"
     let groupBy = $state("day"); // "day", "week", "month"
-
-    // Expansion state
-    let expandedMonths = $state(new Set<string>());
-    let expandedWeeks = $state(new Set<string>());
-    let expandedDays = $state(new Set<string>());
-
-    function toggleMonth(key: string) {
-        console.log(`[PsychologyHub] Toggling month: ${key}`);
-        if (expandedMonths.has(key)) {
-            expandedMonths.delete(key);
-        } else {
-            expandedMonths.add(key);
-        }
-        expandedMonths = new Set(expandedMonths);
-    }
-
-    function toggleWeek(key: string) {
-        console.log(`[PsychologyHub] Toggling week: ${key}`);
-        if (expandedWeeks.has(key)) {
-            expandedWeeks.delete(key);
-        } else {
-            expandedWeeks.add(key);
-        }
-        expandedWeeks = new Set(expandedWeeks);
-    }
-
-    function toggleDay(date: string) {
-        console.log(`[PsychologyHub] Toggling day: ${date}`);
-        if (expandedDays.has(date)) {
-            expandedDays.delete(date);
-        } else {
-            expandedDays.add(date);
-        }
-        expandedDays = new Set(expandedDays);
-    }
 
     // --- Derived Data ---
 
@@ -478,23 +444,6 @@
         } catch (err) {
             console.error("[PsychologyHub] Error processing results:", err);
             return [];
-        }
-    });
-
-    // Auto-expand first items (Month and Week)
-    $effect(() => {
-        if (hierarchicalPsychologyData.length > 0) {
-            untrack(() => {
-                if (expandedMonths.size === 0) {
-                    const firstMonth = hierarchicalPsychologyData[0];
-                    expandedMonths.add(firstMonth.key);
-                    if (firstMonth.weeks.length > 0) {
-                        expandedWeeks.add(firstMonth.weeks[0].key);
-                    }
-                    expandedMonths = new Set(expandedMonths);
-                    expandedWeeks = new Set(expandedWeeks);
-                }
-            });
         }
     });
 
@@ -1129,439 +1078,263 @@
                         {$t("general.noData")}
                     </div>
                 {:else}
-                    <div class="space-y-4">
-                        {#each hierarchicalPsychologyData as month}
-                            {@const isMonthExpanded = expandedMonths.has(
-                                month.key,
-                            )}
-                            <div class="space-y-3">
-                                <!-- Month Header -->
-                                <button
-                                    class="w-full flex items-center justify-between p-3 rounded-xl card-glass border-primary/20 hover:bg-primary/15 transition-all duration-300 sticky top-0 z-10 backdrop-blur-md"
-                                    onclick={() => toggleMonth(month.key)}
-                                >
-                                    <div
-                                        class="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300"
-                                    >
+                    <HierarchicalList data={hierarchicalPsychologyData}>
+                        {#snippet monthRight(month)}
+                            <div class="flex items-center gap-2">
+                                {#if month.equivalentState}
+                                    <div class="flex flex-col items-end mr-2">
                                         <div
-                                            class="p-2 rounded-lg bg-primary/20"
+                                            class="flex items-baseline gap-1.5"
                                         >
-                                            <Calendar
-                                                class="w-4 h-4 text-primary"
-                                            />
+                                            <span
+                                                class="text-xs font-black text-foreground"
+                                                >{month.avgWeight.toFixed(
+                                                    1,
+                                                )}</span
+                                            >
+                                            <span
+                                                class="text-[7px] font-bold text-muted-foreground uppercase tracking-tighter"
+                                                >SCORE</span
+                                            >
                                         </div>
-                                        <div class="text-left">
-                                            <h4
-                                                class="text-sm font-black text-foreground uppercase tracking-tight"
-                                            >
-                                                {month.label}
-                                            </h4>
-                                            <div
-                                                class="flex items-center gap-2 mt-0.5"
-                                            >
-                                                <Badge
-                                                    variant="outline"
-                                                    class="text-[9px] px-1.5 h-4 bg-muted border-border font-bold uppercase"
-                                                >
-                                                    {month.weeks.length}
-                                                    {$t("general.weeks_upper")}
-                                                </Badge>
-                                                <div
-                                                    class="flex gap-1.5 opacity-60"
-                                                >
-                                                    {#each Object.entries(month.totalPnlByCurrency) as [curr, total]}
-                                                        <span
-                                                            class="text-[9px] font-bold {(total as number) >=
-                                                            0
-                                                                ? 'text-emerald-500'
-                                                                : 'text-rose-500'}"
-                                                        >
-                                                            {formatCurrency(
-                                                                total as number,
-                                                                curr,
-                                                            )}
-                                                        </span>
-                                                    {/each}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-6">
-                                        <div class="flex items-center gap-2">
-                                            <div
-                                                class="flex flex-col items-end mr-2"
-                                            >
-                                                <div
-                                                    class="flex items-baseline gap-1.5"
-                                                >
-                                                    <span
-                                                        class="text-xs font-black text-foreground"
-                                                    >
-                                                        {month.avgWeight.toFixed(
-                                                            1,
-                                                        )}
-                                                    </span>
-                                                    <span
-                                                        class="text-[7px] font-bold text-muted-foreground uppercase tracking-tighter"
-                                                        >SCORE</span
-                                                    >
-                                                </div>
-                                                <Badge
-                                                    class="text-[7px] h-3.5 px-1 font-black uppercase {month
-                                                        .equivalentState
-                                                        .impact === 'Positive'
-                                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                                        : 'bg-rose-500/10 text-red-400 border-rose-500/20'}"
-                                                    variant="outline"
-                                                >
-                                                    {month.equivalentState.name}
-                                                </Badge>
-                                            </div>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                class="h-7 w-7 hover:bg-accent/10"
-                                                onclick={(e) => {
-                                                    e.stopPropagation();
-                                                    openInsight(month);
-                                                }}
-                                            >
-                                                <Eye
-                                                    class="w-3.5 h-3.5 text-muted-foreground hover:text-foreground"
-                                                />
-                                            </Button>
-                                        </div>
-                                        <ChevronDown
-                                            class="w-4 h-4 text-primary transition-transform duration-300 {isMonthExpanded
-                                                ? 'rotate-180'
-                                                : ''}"
-                                        />
-                                    </div>
-                                </button>
-
-                                {#if isMonthExpanded}
-                                    <div
-                                        class="pl-4 pb-4 space-y-3 border-l-2 border-border/30 ml-6 animate-in fade-in slide-in-from-top-2 duration-300"
-                                    >
-                                        <Separator class="bg-border/20 mb-3" />
-                                        {#each month.weeks as week}
-                                            <div class="space-y-3 relative">
-                                                <!-- UI Match: Week Identifier (Spans, like Hub) -->
-                                                <div class="flex items-center gap-2 mb-2 ml-4 animate-in fade-in slide-in-from-top-1 duration-300">
-                                                    <div class="p-1 rounded bg-muted border border-border/40">
-                                                        <TrendingUp class="w-3 h-3 text-primary" />
-                                                    </div>
-                                                    <span class="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                                                        {week.label}
-                                                    </span>
-                                                    <div class="h-[1px] flex-1 bg-border/20"></div>
-                                                    <div class="flex gap-2">
-                                                        {#each Object.entries(week.totalPnlByCurrency) as [curr, total]}
-                                                            <div class="flex items-baseline gap-0.5">
-                                                                <span class="text-[7px] text-muted-foreground uppercase">{curr}</span>
-                                                                <span class="text-[9px] font-mono font-bold {(total as number) >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
-                                                                    {formatNumber(total as number)}
-                                                                </span>
-                                                            </div>
-                                                        {/each}
-                                                        <div class="flex items-center gap-1.5 ml-2 border-l border-border/30 pl-2">
-                                                            <span class="text-[10px] font-black text-foreground">{week.avgWeight.toFixed(1)}</span>
-                                                            <span class="text-[7px] font-bold text-muted-foreground uppercase tracking-tighter">SCORE</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="pl-4 pb-2 space-y-3 border-l-2 border-border/30 ml-6">
-                                                    {#each week.days as day}
-                                                        {@const isDayExpanded =
-                                                            expandedDays.has(
-                                                                day.date,
-                                                            )}
-                                                        <div
-                                                            class="rounded-xl border border-border/50 card-glass overflow-hidden transition-all duration-300 hover:border-primary/30"
-                                                        >
-                                                                <button
-                                                                    class="w-full flex items-center justify-between p-2 sm:p-3 hover:bg-primary/10 transition-all duration-300 text-left border-none bg-transparent"
-                                                                    onclick={() =>
-                                                                        toggleDay(
-                                                                            day.date,
-                                                                        )}
-                                                                >
-                                                                    <!-- LHS: Date Badge & Summary -->
-                                                                    <div
-                                                                        class="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300"
-                                                                    >
-                                                                        <div
-                                                                            class="flex flex-col items-center justify-center bg-muted/80 rounded-lg h-9 w-9 border border-border/50 shadow-inner"
-                                                                        >
-                                                                            <span
-                                                                                class="text-[10px] font-black leading-none text-muted-foreground/80"
-                                                                                >{new Date(
-                                                                                    day.date +
-                                                                                        "T12:00:00",
-                                                                                )
-                                                                                    .toLocaleString(
-                                                                                        $locale ||
-                                                                                            "pt-BR",
-                                                                                        {
-                                                                                            weekday:
-                                                                                                "short",
-                                                                                        },
-                                                                                    )
-                                                                                    .toUpperCase()}</span
-                                                                            >
-                                                                            <span
-                                                                                class="text-sm font-black leading-none mt-0.5 text-foreground"
-                                                                                >{new Date(
-                                                                                    day.date +
-                                                                                        "T12:00:00",
-                                                                                ).getDate()}</span
-                                                                            >
-                                                                        </div>
-                                                                        <div
-                                                                            class="flex flex-col items-start px-1"
-                                                                        >
-                                                                            <span
-                                                                                class="text-xs font-bold text-foreground"
-                                                                                >{$t(
-                                                                                    "general.dayClosure",
-                                                                                )}</span
-                                                                            >
-                                                                            <div
-                                                                                class="flex items-center gap-2"
-                                                                            >
-                                                                                <span
-                                                                                    class="text-[9px] font-medium text-muted-foreground uppercase tracking-widest whitespace-nowrap"
-                                                                                    >{day
-                                                                                        .trades
-                                                                                        .length}
-                                                                                    trades</span
-                                                                                >
-                                                                                <span
-                                                                                    class="w-1 h-1 rounded-full bg-border"
-
-                                                                                ></span>
-                                                                                <div
-                                                                                    class="flex gap-1.5 opacity-60"
-                                                                                >
-                                                                                    {#each Object.entries(day.totalPnlByCurrency) as [curr, total]}
-                                                                                        <span
-                                                                                            class="text-[9px] font-bold {(total as number) >=
-                                                                                            0
-                                                                                                ? 'text-emerald-500'
-                                                                                                : 'text-rose-500'}"
-                                                                                        >
-                                                                                            {formatCurrency(
-                                                                                                total as number,
-                                                                                                curr,
-                                                                                            )}
-                                                                                        </span>
-                                                                                    {/each}
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <!-- RHS: PnL & Actions -->
-                                                                    <div
-                                                                        class="flex items-center gap-6"
-                                                                    >
-                                                                        <div
-                                                                            class="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2"
-                                                                        >
-                                                                            <div
-                                                                                class="flex items-center gap-2 mr-2"
-                                                                            >
-                                                                                {#if day.equivalentState}
-                                                                                    <div
-                                                                                        class="flex flex-col items-end"
-                                                                                    >
-                                                                                        <div
-                                                                                            class="flex items-baseline gap-1.5"
-                                                                                        >
-                                                                                            <span
-                                                                                                class="text-xs font-black text-foreground"
-                                                                                            >
-                                                                                                {day.avgWeight.toFixed(
-                                                                                                    1,
-                                                                                                )}
-                                                                                            </span>
-                                                                                            <span
-                                                                                                class="text-[7px] font-bold text-muted-foreground uppercase tracking-tighter"
-                                                                                                >SCORE</span
-                                                                                            >
-                                                                                        </div>
-                                                                                        <Badge
-                                                                                            class="text-[7px] h-3.5 px-1 font-black uppercase {day
-                                                                                                .equivalentState
-                                                                                                .impact ===
-                                                                                            'Positive'
-                                                                                                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                                                                                                : 'bg-rose-500/10 text-rose-500 border-rose-500/20'}"
-                                                                                            variant="outline"
-                                                                                        >
-                                                                                            {day
-                                                                                                .equivalentState
-                                                                                                .name}
-                                                                                        </Badge>
-                                                                                    </div>
-                                                                                {/if}
-                                                                                <Button
-                                                                                    variant="ghost"
-                                                                                    size="icon"
-                                                                                    class="h-7 w-7 hover:bg-white/10"
-                                                                                    onclick={(
-                                                                                        e,
-                                                                                    ) => {
-                                                                                        e.stopPropagation();
-                                                                                        openInsight(
-                                                                                            day,
-                                                                                        );
-                                                                                    }}
-                                                                                >
-                                                                                    <Eye
-                                                                                        class="w-3.5 h-3.5 text-muted-foreground"
-                                                                                    />
-                                                                                </Button>
-                                                                            </div>
-                                                                            <div
-                                                                                class="w-6 h-6 rounded-full bg-muted/50 flex items-center justify-center transition-transform {isDayExpanded
-                                                                                    ? 'rotate-180'
-                                                                                    : ''}"
-                                                                            >
-                                                                                <ChevronDown
-                                                                                    class="w-3 h-3 text-primary"
-                                                                                />
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </button>
-
-                                                                {#if isDayExpanded}
-                                                                    <div
-                                                                        class="px-4 pb-4 animate-in fade-in slide-in-from-top-2 duration-300"
-                                                                    >
-                                                                        <div
-                                                                            class="rounded-lg border border-border/40 overflow-hidden bg-background/40 mt-1"
-                                                                        >
-                                                                            <table
-                                                                                class="w-full text-left"
-                                                                            >
-                                                                                <thead
-                                                                                    class="bg-muted/50 h-7 border-b border-border/20"
-                                                                                >
-                                                                                    <tr
-                                                                                    >
-                                                                                        <th
-                                                                                            class="px-3 text-[8px] font-black text-muted-foreground uppercase"
-                                                                                            >{$t(
-                                                                                                "general.asset",
-                                                                                            )}</th
-                                                                                        >
-                                                                                        <th
-                                                                                            class="px-3 text-[8px] font-black text-muted-foreground uppercase"
-                                                                                            >{$t(
-                                                                                                "psychology.analysis.emotionalCalc",
-                                                                                            )}</th
-                                                                                        >
-                                                                                        <th
-                                                                                            class="px-3 text-[8px] font-black text-muted-foreground uppercase text-right"
-                                                                                            >{$t(
-                                                                                                "psychology.analysis.totalWeight",
-                                                                                            )}</th
-                                                                                        >
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody
-                                                                                >
-                                                                                    {#each day.trades as trade}
-                                                                                        <tr
-                                                                                            class="h-8 border-b border-border/10 last:border-0 hover:bg-primary/10 transition-colors"
-                                                                                        >
-                                                                                            <td
-                                                                                                class="px-3 text-[10px] font-bold text-foreground uppercase"
-                                                                                                >{trade.asset_symbol}</td
-                                                                                            >
-                                                                                            <td
-                                                                                                class="px-3 py-1.5"
-                                                                                            >
-                                                                                                {#if trade.entry_emotional_state_id}
-                                                                                                    {@const st =
-                                                                                                        emotionalStates.find(
-                                                                                                            (
-                                                                                                                s,
-                                                                                                            ) =>
-                                                                                                                s.id ===
-                                                                                                                trade.entry_emotional_state_id,
-                                                                                                        )}
-                                                                                                    <div
-                                                                                                        class="flex items-center gap-2"
-                                                                                                    >
-                                                                                                        <span
-                                                                                                            class="text-[9px] font-bold text-muted-foreground uppercase"
-                                                                                                            >{st?.name}</span
-                                                                                                        >
-                                                                                                        <span
-                                                                                                            class="text-[8px] text-muted-foreground/60 font-medium lowercase italic"
-                                                                                                        >
-                                                                                                            ({st?.weight}
-                                                                                                            {$t(
-                                                                                                                "general.weight",
-                                                                                                            )}
-                                                                                                            x
-                                                                                                            {(
-                                                                                                                trade.intensity ||
-                                                                                                                5
-                                                                                                            ).toFixed(
-                                                                                                                1,
-                                                                                                            )}
-                                                                                                            {$t(
-                                                                                                                "general.intensity_short",
-                                                                                                            )}
-                                                                                                        </span>
-                                                                                                    </div>
-                                                                                                {/if}
-                                                                                            </td>
-                                                                                            <td
-                                                                                                class="px-3 text-[10px] font-black text-right text-foreground"
-                                                                                            >
-                                                                                                {#if trade.entry_emotional_state_id}
-                                                                                                    {@const st =
-                                                                                                        emotionalStates.find(
-                                                                                                            (
-                                                                                                                s,
-                                                                                                            ) =>
-                                                                                                                s.id ===
-                                                                                                                trade.entry_emotional_state_id,
-                                                                                                        )}
-                                                                                                    {(
-                                                                                                        (st?.weight ||
-                                                                                                            5) *
-                                                                                                        (trade.intensity ||
-                                                                                                            5)
-                                                                                                    ).toFixed(
-                                                                                                        1,
-                                                                                                    )}
-                                                                                                {/if}
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    {/each}
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </div>
-                                                                {/if}
-                                                            </div>
-                                                        {/each}
-                                                    </div>
-                                                {/if}
-                                            </div>
-                                        {/each}
+                                        <Badge
+                                            class="text-[7px] h-3.5 px-1 font-black uppercase {month
+                                                .equivalentState.impact ===
+                                            'Positive'
+                                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                                : 'bg-rose-500/10 text-red-400 border-rose-500/20'}"
+                                            variant="outline"
+                                        >
+                                            {month.equivalentState.name}
+                                        </Badge>
                                     </div>
                                 {/if}
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    class="h-7 w-7 hover:bg-accent/10"
+                                    onclick={(e) => {
+                                        e.stopPropagation();
+                                        openInsight(month);
+                                    }}
+                                >
+                                    <Eye
+                                        class="w-3.5 h-3.5 text-muted-foreground hover:text-foreground"
+                                    />
+                                </Button>
                             </div>
-                        {/each}
-                    </div>
+                        {/snippet}
+                        {#snippet monthBadges(month)}
+                            <Badge
+                                variant="outline"
+                                class="text-[9px] px-1.5 h-4 bg-muted border-border font-bold uppercase"
+                            >
+                                {month.weeks.length}
+                                {$t("general.weeks_upper")}
+                            </Badge>
+                            <div class="flex gap-1.5 opacity-60">
+                                {#each Object.entries(month.totalPnlByCurrency ?? {}) as [curr, total]}
+                                    <span
+                                        class="text-[9px] font-bold {(total as number) >=
+                                        0
+                                            ? 'text-emerald-500'
+                                            : 'text-rose-500'}"
+                                    >
+                                        {formatCurrency(total as number, curr)}
+                                    </span>
+                                {/each}
+                            </div>
+                        {/snippet}
+                        {#snippet weekRight(week)}
+                            <div
+                                class="flex items-center gap-1.5 border-l border-border/30 pl-2 mr-1"
+                            >
+                                <span
+                                    class="text-[10px] font-black text-foreground"
+                                    >{week.avgWeight?.toFixed(1) ?? "-"}</span
+                                >
+                                <span
+                                    class="text-[7px] font-bold text-muted-foreground uppercase tracking-tighter"
+                                    >SCORE</span
+                                >
+                            </div>
+                        {/snippet}
+                        {#snippet weekBadges(week)}
+                            <div class="flex gap-2">
+                                {#each Object.entries(week.totalPnlByCurrency ?? {}) as [curr, total]}
+                                    <div class="flex items-baseline gap-0.5">
+                                        <span
+                                            class="text-[7px] text-muted-foreground uppercase"
+                                            >{curr}</span
+                                        >
+                                        <span
+                                            class="text-[9px] font-mono font-bold {(total as number) >=
+                                            0
+                                                ? 'text-emerald-500'
+                                                : 'text-rose-500'}"
+                                        >
+                                            {(total as number).toFixed(2)}
+                                        </span>
+                                    </div>
+                                {/each}
+                            </div>
+                        {/snippet}
+                        {#snippet dayRight(day)}
+                            {#if day.equivalentState}
+                                <div class="flex items-center gap-2 mr-2">
+                                    <div class="flex flex-col items-end">
+                                        <div
+                                            class="flex items-baseline gap-1.5"
+                                        >
+                                            <span
+                                                class="text-xs font-black text-foreground"
+                                                >{day.avgWeight.toFixed(
+                                                    1,
+                                                )}</span
+                                            >
+                                            <span
+                                                class="text-[7px] font-bold text-muted-foreground uppercase tracking-tighter"
+                                                >SCORE</span
+                                            >
+                                        </div>
+                                        <Badge
+                                            class="text-[7px] h-3.5 px-1 font-black uppercase {day
+                                                .equivalentState.impact ===
+                                            'Positive'
+                                                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                                                : 'bg-rose-500/10 text-rose-500 border-rose-500/20'}"
+                                            variant="outline"
+                                        >
+                                            {day.equivalentState.name}
+                                        </Badge>
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        class="h-7 w-7 hover:bg-white/10"
+                                        onclick={(e) => {
+                                            e.stopPropagation();
+                                            openInsight(day);
+                                        }}
+                                    >
+                                        <Eye
+                                            class="w-3.5 h-3.5 text-muted-foreground"
+                                        />
+                                    </Button>
+                                </div>
+                            {/if}
+                        {/snippet}
+                        {#snippet dayBadges(day)}
+                            <div class="flex gap-1.5 opacity-60">
+                                {#each Object.entries(day.totalPnlByCurrency ?? {}) as [curr, total]}
+                                    <span
+                                        class="text-[9px] font-bold {(total as number) >=
+                                        0
+                                            ? 'text-emerald-500'
+                                            : 'text-rose-500'}"
+                                    >
+                                        {formatCurrency(total as number, curr)}
+                                    </span>
+                                {/each}
+                            </div>
+                        {/snippet}
+                        {#snippet dayContent(day)}
+                            <div class="px-4 pb-4">
+                                <div
+                                    class="rounded-lg border border-border/40 overflow-hidden bg-background/40 mt-1"
+                                >
+                                    <table class="w-full text-left">
+                                        <thead
+                                            class="bg-muted/50 h-7 border-b border-border/20"
+                                        >
+                                            <tr>
+                                                <th
+                                                    class="px-3 text-[8px] font-black text-muted-foreground uppercase"
+                                                    >{$t("general.asset")}</th
+                                                >
+                                                <th
+                                                    class="px-3 text-[8px] font-black text-muted-foreground uppercase"
+                                                    >{$t(
+                                                        "psychology.analysis.emotionalCalc",
+                                                    )}</th
+                                                >
+                                                <th
+                                                    class="px-3 text-[8px] font-black text-muted-foreground uppercase text-right"
+                                                    >{$t(
+                                                        "psychology.analysis.totalWeight",
+                                                    )}</th
+                                                >
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {#each day.trades as trade}
+                                                <tr
+                                                    class="h-8 border-b border-border/10 last:border-0 hover:bg-primary/10 transition-colors"
+                                                >
+                                                    <td
+                                                        class="px-3 text-[10px] font-bold text-foreground uppercase"
+                                                        >{trade.asset_symbol}</td
+                                                    >
+                                                    <td class="px-3 py-1.5">
+                                                        {#if trade.entry_emotional_state_id}
+                                                            {@const st =
+                                                                emotionalStates.find(
+                                                                    (s) =>
+                                                                        s.id ===
+                                                                        trade.entry_emotional_state_id,
+                                                                )}
+                                                            <div
+                                                                class="flex items-center gap-2"
+                                                            >
+                                                                <span
+                                                                    class="text-[9px] font-bold text-muted-foreground uppercase"
+                                                                    >{st?.name}</span
+                                                                >
+                                                                <span
+                                                                    class="text-[8px] text-muted-foreground/60 font-medium lowercase italic"
+                                                                >
+                                                                    ({st?.weight}
+                                                                    {$t(
+                                                                        "general.weight",
+                                                                    )} x {(
+                                                                        trade.intensity ||
+                                                                        5
+                                                                    ).toFixed(
+                                                                        1,
+                                                                    )}
+                                                                    {$t(
+                                                                        "general.intensity_short",
+                                                                    )})
+                                                                </span>
+                                                            </div>
+                                                        {/if}
+                                                    </td>
+                                                    <td
+                                                        class="px-3 text-[10px] font-black text-right text-foreground"
+                                                    >
+                                                        {#if trade.entry_emotional_state_id}
+                                                            {@const st =
+                                                                emotionalStates.find(
+                                                                    (s) =>
+                                                                        s.id ===
+                                                                        trade.entry_emotional_state_id,
+                                                                )}
+                                                            {(
+                                                                (st?.weight ||
+                                                                    5) *
+                                                                (trade.intensity ||
+                                                                    5)
+                                                            ).toFixed(1)}
+                                                        {/if}
+                                                    </td>
+                                                </tr>
+                                            {/each}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {/snippet}
+                    </HierarchicalList>
                 {/if}
             </div>
 

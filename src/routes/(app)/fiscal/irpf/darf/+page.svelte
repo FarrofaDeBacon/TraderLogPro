@@ -22,6 +22,24 @@
     import * as Select from "$lib/components/ui/select";
     import DarfDetailsDialog from "$lib/components/finance/DarfDetailsDialog.svelte";
     import { formatLocalISO } from "$lib/utils";
+    import HierarchicalList from "$lib/components/shared/HierarchicalList.svelte";
+    import { Badge } from "$lib/components/ui/badge";
+
+    const monthKeys = [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+    ];
+
     // Use centralized year from irpfStore
     let selectedYear = $state(irpfStore.selectedYear);
 
@@ -206,6 +224,44 @@
             }),
     );
 
+    let hierarchicalDarfs = $derived.by(() => {
+        const dataByMonth: Record<number, any> = {};
+
+        historyDarfs.forEach((item) => {
+            const parts = item.period.split("/");
+            if (parts.length !== 2) return;
+            const periodMonth = parseInt(parts[0]);
+            const periodYear = parseInt(parts[1]);
+
+            if (!dataByMonth[periodMonth]) {
+                const monthKey = monthKeys[periodMonth - 1];
+                const monthName = $t(`months.${monthKey}`, {
+                    default: "Mês Inválido",
+                });
+                dataByMonth[periodMonth] = {
+                    key: `month-${periodMonth}-${periodYear}`,
+                    label: `${monthName} / ${periodYear}`.toUpperCase(),
+                    days: [], // used for flat mode
+                    originalItems: [],
+                };
+            }
+
+            dataByMonth[periodMonth].originalItems.push(item);
+            dataByMonth[periodMonth].days.push({
+                key: `darf-${item.id}`,
+                date: "",
+                label: item.revenue_code,
+                originalItem: item,
+            });
+        });
+
+        return Object.values(dataByMonth).sort((a: any, b: any) => {
+            const m1 = parseInt(a.key.split("-")[1]);
+            const m2 = parseInt(b.key.split("-")[1]);
+            return m2 - m1;
+        });
+    });
+
     function loadIrpfData() {
         irpfStore.loadAllData(selectedYear);
     }
@@ -218,19 +274,35 @@
     <div
         class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/30 pb-6"
     >
-        <div class="flex items-center gap-4">
-            <Button variant="ghost" size="icon" href="/fiscal/irpf">
+        <div class="flex flex-col md:flex-row md:items-center gap-4">
+            <Button
+                variant="ghost"
+                size="icon"
+                href="/fiscal/irpf"
+                class="hidden md:flex"
+            >
                 <ArrowLeft class="w-5 h-5" />
             </Button>
             <div>
-                <h2 class="text-2xl font-bold text-foreground tracking-tight">
+                <h2
+                    class="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2"
+                >
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        href="/fiscal/irpf"
+                        class="md:hidden h-6 w-6"
+                    >
+                        <ArrowLeft class="w-4 h-4" />
+                    </Button>
                     {$t("fiscal.darf.title")}
                 </h2>
-                <p class="text-muted-foreground">
+                <p class="text-muted-foreground mt-1">
                     {$t("fiscal.darf.description")}
                 </p>
             </div>
         </div>
+
         <div class="flex items-center gap-1.5">
             <Select.Root
                 type="single"
@@ -410,100 +482,178 @@
                 })}
             </div>
         {:else}
-            <div
-                class="bg-muted/30 border border-border/30 rounded-lg overflow-hidden glass"
-            >
-                <table class="w-full text-sm text-left">
-                    <thead
-                        class="bg-muted/20 text-xs uppercase text-muted-foreground border-b border-border/20"
-                    >
-                        <tr>
-                            <th class="px-6 py-3"
-                                >{$t("fiscal.irpf.table.period")}</th
-                            >
-                            <th class="px-6 py-3"
-                                >{$t("fiscal.darf.revenueCode")}</th
-                            >
-                            <th class="px-6 py-3 text-right"
-                                >{$t("fiscal.darf.principalValue")}</th
-                            >
-                            <th class="px-6 py-3 text-right"
-                                >{$t("fiscal.darf.fineInterest")}</th
-                            >
-                            <th class="px-6 py-3 text-right"
-                                >{$t("fiscal.darf.totalPaid")}</th
-                            >
-                            <th class="px-6 py-3"
-                                >{$t("fiscal.irpf.table.status")}</th
-                            >
-                            <th class="px-6 py-3 text-right"
-                                >{$t("fiscal.irpf.table.actions")}</th
-                            >
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-border/10">
-                        {#each historyDarfs as item}
-                            <tr
-                                class="hover:bg-accent/5 transition-colors group"
-                            >
-                                <td
-                                    class="px-6 py-4 font-medium text-foreground"
-                                    >{item.period}</td
+            <div class="mt-4">
+                <HierarchicalList
+                    data={hierarchicalDarfs}
+                    flatMode={true}
+                    omitDays={true}
+                >
+                    {#snippet monthBadges(month: any)}
+                        {@const totalMonthPaid = month.originalItems.reduce(
+                            (acc: number, curr: any) => acc + curr.total_value,
+                            0,
+                        )}
+                        {@const totalMonthPrin = month.originalItems.reduce(
+                            (acc: number, curr: any) =>
+                                acc + curr.principal_value,
+                            0,
+                        )}
+
+                        <Badge
+                            variant="outline"
+                            class="text-[9px] px-1.5 h-4 bg-muted border-border font-bold uppercase"
+                        >
+                            {month.days.length}
+                            {$t("general.records", { default: "REGISTROS" })}
+                        </Badge>
+
+                        <div class="flex gap-4 ml-2">
+                            <div class="flex flex-col items-end">
+                                <span
+                                    class="text-[9px] font-bold text-muted-foreground uppercase opacity-70"
                                 >
-                                <td class="px-6 py-4">{item.revenue_code}</td>
-                                <td
-                                    class="px-6 py-4 text-right font-mono text-muted-foreground"
-                                    >{formatCurrency(item.principal_value)}</td
+                                    {$t("fiscal.darf.principalValue")}
+                                </span>
+                                <span
+                                    class="text-[10px] font-mono font-bold text-muted-foreground"
                                 >
-                                <td
-                                    class="px-6 py-4 text-right font-mono text-red-300"
+                                    {formatCurrency(totalMonthPrin)}
+                                </span>
+                            </div>
+
+                            <div class="flex flex-col items-end">
+                                <span
+                                    class="text-[9px] font-bold text-muted-foreground uppercase opacity-70"
                                 >
-                                    {#if item.fine + item.interest > 0}
-                                        {formatCurrency(
-                                            item.fine + item.interest,
-                                        )}
-                                    {:else}
-                                        -
-                                    {/if}
-                                </td>
-                                <td
-                                    class="px-6 py-4 text-right font-mono font-bold text-green-400"
-                                    >{formatCurrency(item.total_value)}</td
+                                    Total Pago
+                                </span>
+                                <span
+                                    class="text-[10px] font-mono font-bold text-green-400"
                                 >
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="px-2 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-500 border border-green-500/20 flex w-fit items-center gap-1"
+                                    {formatCurrency(totalMonthPaid)}
+                                </span>
+                            </div>
+                        </div>
+                    {/snippet}
+
+                    {#snippet monthContent(month: any)}
+                        <div class="space-y-2">
+                            {#each month.originalItems as item}
+                                <div
+                                    class="flex flex-col md:flex-row items-center justify-between p-3 gap-4 w-full group hover:bg-muted/10 transition-colors"
+                                >
+                                    <div class="flex items-center gap-3 w-32">
+                                        <span
+                                            class="px-2 py-1 rounded text-xs font-bold bg-muted/50 text-foreground border border-border/30"
+                                        >
+                                            {item.revenue_code}
+                                        </span>
+                                    </div>
+
+                                    <div
+                                        class="flex flex-col sm:flex-row items-end sm:items-center gap-4 sm:gap-8 flex-wrap justify-end"
                                     >
-                                        <CheckCircle class="w-3 h-3" />
-                                        {$t("fiscal.irpf.table.paid")}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        class="h-8 w-8 p-0"
-                                        onclick={() => openViewModal(item)}
-                                    >
-                                        <Eye
-                                            class="w-4 h-4 text-slate-400 group-hover:text-white transition-colors"
-                                        />
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        class="h-8 w-8 p-0"
-                                        onclick={() => deleteDarf(item)}
-                                    >
-                                        <Trash2
-                                            class="w-4 h-4 text-slate-400 group-hover:text-red-400 transition-colors"
-                                        />
-                                    </Button>
-                                </td>
-                            </tr>
-                        {/each}
-                    </tbody>
-                </table>
+                                        <div class="flex flex-col items-end">
+                                            <span
+                                                class="text-[9px] text-muted-foreground uppercase font-bold"
+                                                >{$t(
+                                                    "fiscal.darf.principalValue",
+                                                )}</span
+                                            >
+                                            <span
+                                                class="font-mono text-sm leading-none font-bold text-muted-foreground"
+                                            >
+                                                {formatCurrency(
+                                                    item.principal_value,
+                                                )}
+                                            </span>
+                                        </div>
+
+                                        <div
+                                            class="flex flex-col items-end h-[34px] justify-center w-24"
+                                        >
+                                            {#if item.fine + item.interest > 0}
+                                                <span
+                                                    class="text-[9px] text-muted-foreground uppercase font-bold"
+                                                    >{$t(
+                                                        "fiscal.darf.fineInterest",
+                                                    )}</span
+                                                >
+                                                <span
+                                                    class="font-mono text-xs leading-none font-bold text-rose-400"
+                                                >
+                                                    {formatCurrency(
+                                                        item.fine +
+                                                            item.interest,
+                                                    )}
+                                                </span>
+                                            {/if}
+                                        </div>
+
+                                        <div class="flex flex-col items-end">
+                                            <span
+                                                class="text-[9px] text-muted-foreground uppercase font-bold"
+                                                >{$t(
+                                                    "fiscal.darf.totalPaid",
+                                                )}</span
+                                            >
+                                            <span
+                                                class="font-mono text-sm leading-none font-bold text-green-400"
+                                            >
+                                                {formatCurrency(
+                                                    item.total_value,
+                                                )}
+                                            </span>
+                                        </div>
+
+                                        <div
+                                            class="flex items-center gap-3 min-w-[150px] justify-between border-l border-border/50 pl-4 ml-2"
+                                        >
+                                            <div class="text-center">
+                                                <span
+                                                    class="px-2 py-1 rounded text-[10px] font-bold bg-green-500/10 text-green-500 border border-green-500/20 uppercase flex items-center gap-1"
+                                                >
+                                                    <CheckCircle
+                                                        class="w-2.5 h-2.5"
+                                                    />
+                                                    {$t(
+                                                        "fiscal.irpf.table.paid",
+                                                    )}
+                                                </span>
+                                            </div>
+
+                                            <div
+                                                class="flex items-center gap-1"
+                                            >
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    class="h-8 w-8 text-blue-500 hover:text-blue-400"
+                                                    onclick={() =>
+                                                        openViewModal(item)}
+                                                >
+                                                    <Eye class="w-4 h-4" />
+                                                </Button>
+
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    class="h-8 w-8 text-rose-500 hover:bg-rose-500/10"
+                                                    onclick={() =>
+                                                        deleteDarf(item)}
+                                                >
+                                                    <Trash2
+                                                        class="w-4 h-4 text-rose-500"
+                                                    />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {/each}
+                        </div>
+                    {/snippet}
+                </HierarchicalList>
             </div>
         {/if}
 

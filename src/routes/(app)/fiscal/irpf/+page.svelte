@@ -29,6 +29,8 @@
     import * as Tabs from "$lib/components/ui/tabs";
     import * as Tooltip from "$lib/components/ui/tooltip";
     import DarfDetailsDialog from "$lib/components/finance/DarfDetailsDialog.svelte";
+    import HierarchicalList from "$lib/components/shared/HierarchicalList.svelte";
+    import { Badge } from "$lib/components/ui/badge";
 
     // View Modal State
     let isViewModalOpen = $state(false);
@@ -45,6 +47,22 @@
 
     let currentMonth = new Date().getMonth() + 1;
     let selectedMonth = $state<number | null>(null); // null = "Todos"
+
+    // Define months *before* using in derived stores
+    const months = [
+        { val: 1, key: "months.january" },
+        { val: 2, key: "months.february" },
+        { val: 3, key: "months.march" },
+        { val: 4, key: "months.april" },
+        { val: 5, key: "months.may" },
+        { val: 6, key: "months.june" },
+        { val: 7, key: "months.july" },
+        { val: 8, key: "months.august" },
+        { val: 9, key: "months.september" },
+        { val: 10, key: "months.october" },
+        { val: 11, key: "months.november" },
+        { val: 12, key: "months.december" },
+    ];
 
     let taxEvolutionData = $derived.by(() => {
         const result = [];
@@ -79,31 +97,15 @@
                 return acc + (isNaN(val) ? 0 : val);
             }, 0);
 
+            const activeMonth = months.find((m) => m.val === i);
             result.push({
-                month: $t(
-                    months.find((m) => m.val === i)?.key || "general.error",
-                ),
+                month: activeMonth ? $t(activeMonth.key) : "Mês Inválido",
                 taxDue: taxDueValue,
                 taxPaid: taxPaidValue,
             });
         }
         return result;
     });
-
-    const months = [
-        { val: 1, key: "months.january" },
-        { val: 2, key: "months.february" },
-        { val: 3, key: "months.march" },
-        { val: 4, key: "months.april" },
-        { val: 5, key: "months.may" },
-        { val: 6, key: "months.june" },
-        { val: 7, key: "months.july" },
-        { val: 8, key: "months.august" },
-        { val: 9, key: "months.september" },
-        { val: 10, key: "months.october" },
-        { val: 11, key: "months.november" },
-        { val: 12, key: "months.december" },
-    ];
 
     // Filter appraisals by selected month and hide paid ones
     let filteredAppraisals = $derived(
@@ -116,6 +118,48 @@
             (a) => Number(a.period_year) === Number(irpfStore.selectedYear),
         ),
     );
+
+    let hierarchicalAppraisals = $derived.by(() => {
+        const dataByMonth: Record<number, any> = {};
+
+        filteredAppraisals.forEach((item) => {
+            if (!dataByMonth[item.period_month]) {
+                const monthName = $t(
+                    months.find((m) => m.val === Number(item.period_month))
+                        ?.key || "general.error",
+                );
+                dataByMonth[item.period_month] = {
+                    key: `month-${item.period_month}-${item.period_year}`,
+                    label: `${monthName} / ${item.period_year}`,
+                    days: [], // flatMode reads 'days' array directly
+                    originalItems: [],
+                };
+            }
+
+            const existingDarf = irpfStore.darfs.find(
+                (d) =>
+                    irpfStore.getId(d.appraisal_id) ===
+                    irpfStore.getId(item.id),
+            );
+            dataByMonth[item.period_month].originalItems.push(item);
+            dataByMonth[item.period_month].days.push({
+                key: `appraisal-${item.id}`,
+                date: "",
+                label:
+                    item.trade_type === "DayTrade"
+                        ? "Day Trade"
+                        : "Swing Trade",
+                originalItem: item,
+                existingDarf: existingDarf, // Otimizado: lookup feito apenas uma vez na derivação
+            });
+        });
+
+        return Object.values(dataByMonth).sort((a: any, b: any) => {
+            const m1 = parseInt(a.key.split("-")[1]);
+            const m2 = parseInt(b.key.split("-")[1]);
+            return m2 - m1;
+        });
+    });
 
     onMount(() => {
         irpfStore.loadAllData();
@@ -204,6 +248,7 @@
 <div
     class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20"
 >
+    <!-- Header & Actions -->
     <div
         class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border/30 pb-6"
     >
@@ -524,37 +569,65 @@
                     </Button>
                 </div>
             {:else}
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left">
-                        <thead
-                            class="text-xs text-muted-foreground uppercase bg-muted/20 border-b border-border/30"
+                <HierarchicalList
+                    data={hierarchicalAppraisals}
+                    flatMode={true}
+                    omitDays={true}
+                >
+                    {#snippet monthBadges(month: any)}
+                        {@const totalPayable = month.originalItems.reduce(
+                            (acc: number, curr: any) =>
+                                acc + curr.total_payable,
+                            0,
+                        )}
+                        {@const totalProfit = month.originalItems.reduce(
+                            (acc: number, curr: any) => acc + curr.net_profit,
+                            0,
+                        )}
+
+                        <Badge
+                            variant="outline"
+                            class="text-[9px] px-1.5 h-4 bg-muted border-border font-bold uppercase"
                         >
-                            <tr>
-                                <th class="px-6 py-3"
-                                    >{$t("fiscal.irpf.table.period")}</th
+                            {month.days.length}
+                            {$t("general.records", { default: "REGISTROS" })}
+                        </Badge>
+
+                        <div class="flex gap-3 ml-2">
+                            <div class="flex flex-col items-end">
+                                <span
+                                    class="text-[9px] font-bold text-muted-foreground uppercase opacity-70"
                                 >
-                                <th class="px-6 py-3"
-                                    >{$t("fiscal.irpf.table.type")}</th
+                                    {$t("fiscal.irpf.table.netProfit")}
+                                </span>
+                                <span
+                                    class="text-[10px] font-mono font-bold {totalProfit >=
+                                    0
+                                        ? 'text-emerald-500'
+                                        : 'text-rose-500'}"
                                 >
-                                <th class="px-6 py-3 text-right"
-                                    >{$t("fiscal.irpf.table.netProfit")}</th
+                                    {formatCurrency(totalProfit)}
+                                </span>
+                            </div>
+
+                            <div class="flex flex-col items-end hidden sm:flex">
+                                <span
+                                    class="text-[9px] font-bold text-muted-foreground uppercase opacity-70"
                                 >
-                                <th class="px-6 py-3 text-right"
-                                    >{$t("fiscal.irpf.table.toPay")}</th
+                                    {$t("fiscal.irpf.kpis.totalDue")}
+                                </span>
+                                <span
+                                    class="text-[10px] font-mono font-bold text-foreground"
                                 >
-                                <th class="px-6 py-3 text-right"
-                                    >{$t("fiscal.irpf.table.compensated")}</th
-                                >
-                                <th class="px-6 py-3 text-center"
-                                    >{$t("fiscal.irpf.table.status")}</th
-                                >
-                                <th class="px-6 py-3 text-right"
-                                    >{$t("fiscal.irpf.table.actions")}</th
-                                >
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-border/10">
-                            {#each filteredAppraisals as item}
+                                    {formatCurrency(totalPayable)}
+                                </span>
+                            </div>
+                        </div>
+                    {/snippet}
+
+                    {#snippet monthContent(month: any)}
+                        <div class="space-y-2">
+                            {#each month.originalItems as item}
                                 {@const revenueCode =
                                     item.trade_type === "DayTrade"
                                         ? "6015"
@@ -565,26 +638,11 @@
                                         irpfStore.getId(d.appraisal_id) ===
                                         irpfStore.getId(item.id),
                                 )}
-                                <tr
-                                    class="hover:bg-accent/10 transition-colors"
+
+                                <div
+                                    class="flex flex-col md:flex-row items-start md:items-center justify-between p-3 gap-4 w-full group hover:bg-muted/10 transition-colors"
                                 >
-                                    <td class="px-6 py-4 font-medium">
-                                        <div class="flex flex-col">
-                                            <span
-                                                >{item.period_month}/{item.period_year}</span
-                                            >
-                                            {#if item.is_complementary}
-                                                <span
-                                                    class="text-[9px] font-bold text-amber-500 uppercase tracking-tighter"
-                                                >
-                                                    {$t(
-                                                        "fiscal.irpf.complementary",
-                                                    )}
-                                                </span>
-                                            {/if}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
                                         <span
                                             class="px-2 py-1 rounded text-xs font-bold {item.trade_type ===
                                             'DayTrade'
@@ -595,153 +653,195 @@
                                                 ? "Day Trade"
                                                 : "Swing Trade"}
                                         </span>
-                                    </td>
-                                    <td
-                                        class="px-6 py-4 text-right font-mono font-bold tabular-nums leading-none {item.net_profit >=
-                                        0
-                                            ? 'text-green-400'
-                                            : 'text-red-400'}"
-                                    >
-                                        {formatCurrency(item.net_profit)}
-                                    </td>
-                                    <td
-                                        class="px-6 py-4 text-right font-mono font-bold tabular-nums leading-none text-foreground"
-                                        title={item.tax_accumulated > 0
-                                            ? `${$t("fiscal.irpf.modal.month")}: ${formatCurrency(item.tax_payable)} | Acum.: ${formatCurrency(item.tax_accumulated)}`
-                                            : ""}
-                                    >
-                                        {formatCurrency(item.total_payable)}
-                                    </td>
-                                    <td
-                                        class="px-6 py-4 text-right font-mono font-bold tabular-nums leading-none text-yellow-400"
-                                    >
-                                        {item.compensated_loss > 0
-                                            ? `-${formatCurrency(item.compensated_loss)}`
-                                            : "-"}
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        {#if item.status === "Paid"}
+                                        {#if item.is_complementary}
                                             <span
-                                                class="px-2 py-1 rounded text-xs bg-green-500/10 text-green-500 border border-green-500/20"
-                                                >{$t(
-                                                    "fiscal.irpf.table.paid",
-                                                )}</span
+                                                class="text-[9px] font-bold text-amber-500 uppercase tracking-tighter"
                                             >
-                                        {:else if item.status === "Pending"}
-                                            <span
-                                                class="px-2 py-1 rounded text-xs bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
-                                                >{$t(
-                                                    "fiscal.irpf.table.pending",
-                                                )}</span
-                                            >
-                                        {:else}
-                                            <span
-                                                class="px-2 py-1 rounded text-xs bg-green-500/10 text-green-500 border border-green-500/20"
-                                                >{$t(
-                                                    "fiscal.irpf.table.ok",
-                                                )}</span
-                                            >
+                                                {$t(
+                                                    "fiscal.irpf.complementary",
+                                                )}
+                                            </span>
                                         {/if}
-                                    </td>
-                                    <td
-                                        class="px-6 py-4 text-right flex justify-end gap-2"
+                                    </div>
+
+                                    <div
+                                        class="flex flex-col sm:flex-row items-end sm:items-center gap-4 sm:gap-8 flex-wrap justify-end"
                                     >
-                                        {#if item.status !== "Paid" && item.total_payable > 0}
-                                            {#if existingDarf}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    title={$t(
-                                                        "fiscal.irpf.table.alreadyGenerated",
-                                                    )}
-                                                    href="/fiscal/irpf/darf"
-                                                >
-                                                    <FileText
-                                                        class="w-4 h-4 text-green-400"
-                                                    />
-                                                </Button>
-                                            {:else if item.total_payable >= 10}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    title={$t(
-                                                        "fiscal.irpf.table.generateDarf",
-                                                    )}
-                                                    onclick={() =>
-                                                        generateDarf(item)}
-                                                >
-                                                    <FileText
-                                                        class="w-4 h-4 text-yellow-400"
-                                                    />
-                                                </Button>
-                                            {:else}
-                                                <div
-                                                    class="flex items-center"
-                                                    title={$t(
-                                                        "fiscal.irpf.table.minTaxHint",
-                                                    )}
-                                                >
-                                                    <AlertCircle
-                                                        class="w-4 h-4 text-muted-foreground mr-1"
-                                                    />
-                                                    <span
-                                                        class="text-[10px] text-muted-foreground"
-                                                        >{$t(
-                                                            "fiscal.irpf.table.minTaxAlert",
-                                                        )}</span
-                                                    >
-                                                </div>
-                                            {/if}
-                                        {/if}
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onclick={() => openViewModal(item)}
+                                        <div class="flex flex-col items-end">
+                                            <span
+                                                class="text-[9px] text-muted-foreground uppercase font-bold"
+                                                >Líquido</span
+                                            >
+                                            <span
+                                                class="font-mono text-sm leading-none font-bold {item.net_profit >=
+                                                0
+                                                    ? 'text-green-400'
+                                                    : 'text-red-400'}"
+                                            >
+                                                {formatCurrency(
+                                                    item.net_profit,
+                                                )}
+                                            </span>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span
+                                                class="text-[9px] text-muted-foreground uppercase font-bold"
+                                                title={item.tax_accumulated > 0
+                                                    ? `Corrente: ${formatCurrency(item.tax_payable)} | Acum.: ${formatCurrency(item.tax_accumulated)}`
+                                                    : ""}
+                                            >
+                                                {$t("fiscal.irpf.table.toPay")}
+                                            </span>
+                                            <span
+                                                class="font-mono text-sm leading-none font-bold text-foreground"
+                                            >
+                                                {formatCurrency(
+                                                    item.total_payable,
+                                                )}
+                                            </span>
+                                        </div>
+                                        <div
+                                            class="flex flex-col items-end hidden md:flex"
                                         >
-                                            <Eye
-                                                class="w-4 h-4 text-blue-400"
-                                            />
-                                        </Button>
-                                        {#if item.status === "Paid" || item.status === "Ok"}
-                                            <Tooltip.Root>
-                                                <Tooltip.Trigger>
+                                            <span
+                                                class="text-[9px] text-muted-foreground uppercase font-bold"
+                                                >{$t(
+                                                    "fiscal.irpf.table.compensated",
+                                                )}</span
+                                            >
+                                            <span
+                                                class="font-mono text-sm leading-none font-bold text-yellow-500/80"
+                                            >
+                                                {item.compensated_loss > 0
+                                                    ? `-${formatCurrency(item.compensated_loss)}`
+                                                    : "-"}
+                                            </span>
+                                        </div>
+
+                                        <div
+                                            class="flex items-center gap-3 min-w-[150px] justify-between border-l border-border/50 pl-4 ml-2"
+                                        >
+                                            <div class="text-center">
+                                                {#if item.status === "Paid"}
+                                                    <span
+                                                        class="px-2 py-1 rounded text-[10px] font-bold bg-green-500/10 text-green-500 border border-green-500/20 uppercase"
+                                                    >
+                                                        {$t(
+                                                            "fiscal.irpf.table.paid",
+                                                        )}
+                                                    </span>
+                                                {:else if item.status === "Pending"}
+                                                    <span
+                                                        class="px-2 py-1 rounded text-[10px] font-bold bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 uppercase"
+                                                    >
+                                                        {$t(
+                                                            "fiscal.irpf.table.pending",
+                                                        )}
+                                                    </span>
+                                                {:else}
+                                                    <span
+                                                        class="px-2 py-1 rounded text-[10px] font-bold bg-green-500/10 text-green-500 border border-green-500/20 uppercase"
+                                                    >
+                                                        {$t(
+                                                            "fiscal.irpf.table.ok",
+                                                        )}
+                                                    </span>
+                                                {/if}
+                                            </div>
+
+                                            <div
+                                                class="flex items-center gap-1"
+                                            >
+                                                {#if item.status !== "Paid" && item.total_payable > 0}
+                                                    {#if existingDarf}
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            class="h-8 w-8 text-green-500 hover:text-green-400"
+                                                            title={$t(
+                                                                "fiscal.irpf.table.alreadyGenerated",
+                                                            )}
+                                                            href="/fiscal/irpf/darf"
+                                                        >
+                                                            <FileText
+                                                                class="w-4 h-4"
+                                                            />
+                                                        </Button>
+                                                    {:else if item.total_payable >= 10}
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            class="h-8 w-8 text-amber-500 hover:text-amber-400"
+                                                            title={$t(
+                                                                "fiscal.irpf.table.generateDarf",
+                                                            )}
+                                                            onclick={() =>
+                                                                generateDarf(
+                                                                    item,
+                                                                )}
+                                                        >
+                                                            <FileText
+                                                                class="w-4 h-4"
+                                                            />
+                                                        </Button>
+                                                    {/if}
+                                                {/if}
+
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    class="h-8 w-8 text-blue-500 hover:text-blue-400"
+                                                    onclick={() =>
+                                                        openViewModal(item)}
+                                                >
+                                                    <Eye class="w-4 h-4" />
+                                                </Button>
+
+                                                {#if item.status === "Paid" || item.status === "Ok"}
+                                                    <Tooltip.Root>
+                                                        <Tooltip.Trigger>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                class="h-8 w-8 opacity-50 cursor-not-allowed"
+                                                                disabled
+                                                            >
+                                                                <Trash2
+                                                                    class="w-4 h-4 text-muted-foreground/40"
+                                                                />
+                                                            </Button>
+                                                        </Tooltip.Trigger>
+                                                        <Tooltip.Content
+                                                            class="bg-popover border-border text-foreground text-xs"
+                                                        >
+                                                            {$t(
+                                                                "fiscal.irpf.table.cannotDelete",
+                                                            )}
+                                                        </Tooltip.Content>
+                                                    </Tooltip.Root>
+                                                {:else}
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        class="opacity-50 cursor-not-allowed"
-                                                        disabled
+                                                        class="h-8 w-8 text-rose-500 hover:bg-rose-500/10"
+                                                        onclick={() =>
+                                                            deleteAppraisal(
+                                                                item,
+                                                            )}
                                                     >
                                                         <Trash2
-                                                            class="w-4 h-4 text-muted-foreground/40"
+                                                            class="w-4 h-4 text-rose-500"
                                                         />
                                                     </Button>
-                                                </Tooltip.Trigger>
-                                                <Tooltip.Content
-                                                    class="bg-popover border-border text-foreground text-xs"
-                                                >
-                                                    {$t(
-                                                        "fiscal.irpf.table.cannotDelete",
-                                                    )}
-                                                </Tooltip.Content>
-                                            </Tooltip.Root>
-                                        {:else}
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onclick={() =>
-                                                    deleteAppraisal(item)}
-                                            >
-                                                <Trash2
-                                                    class="w-4 h-4 text-red-400"
-                                                />
-                                            </Button>
-                                        {/if}
-                                    </td>
-                                </tr>
+                                                {/if}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             {/each}
-                        </tbody>
-                    </table>
-                </div>
+                        </div>
+                    {/snippet}
+                </HierarchicalList>
             {/if}
         </Card.Content>
     </Card.Root>
