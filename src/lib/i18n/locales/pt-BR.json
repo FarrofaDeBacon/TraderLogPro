@@ -127,7 +127,8 @@
       "netResult": "Resultado Líquido",
       "payoff": "Payoff",
       "profitFactor": "Fator de Lucro",
-      "winRate": "Taxa de Acerto"
+      "winRate": "Taxa de Acerto",
+      "avgInterval": "Intervalo Entre Trades"
     },
     "newTrade": "Novo Trade",
     "quant": {
@@ -169,7 +170,24 @@
       "tradesUsage": "Uso de Operações"
     },
     "terminalHub": "Terminal Hub",
-    "title": "Dashboard"
+    "title": "Dashboard",
+    "gann": {
+      "title": "Vibrações de Gann",
+      "subtitle": "Confluência Matemática e Ciclos",
+      "kpis": {
+        "nextCot": "Próxima Reversão (Janela)",
+        "cycleDay": "Dia do Ciclo",
+        "vibration": "Vibração Atual",
+        "masterCycle": "Ciclo Mestre",
+        "avgInterval": "Intervalo Entre Trades"
+      },
+      "sq9": {
+        "expansion": "Alvos de Expansão",
+        "retracement": "Alvos de Retração",
+        "degrees": "{deg}°",
+        "reference": "Ref"
+      }
+    }
   },
   "filters": {
     "date": {
@@ -188,12 +206,12 @@
   },
   "finance": {
     "charts": {
-      "evolution": "Evolution",
+      "evolution": "Evolução",
       "evolutionSubtitle": "Evolução do Patrimônio e Aportes"
     },
     "closureWizard": {
       "description": "Consolide o resultado dos seus trades no saldo das contas.",
-      "error": "Error",
+      "error": "Erro",
       "step1": {
         "hint": "Geralmente realizado para o dia anterior (ontem) ou dias passados.",
         "label": "Selecione a Data",
@@ -226,7 +244,7 @@
         "statePlaceholder": "Selecione uma emoção...",
         "title": "Check-in Emocional"
       },
-      "success": "Success",
+      "success": "Sucesso",
       "title": "Fechamento Diário"
     },
     "dailyClosure": "Fechamento Diário",
@@ -623,11 +641,13 @@
       "button": "Novo Registro",
       "date": "Data do Trade",
       "description": "Registre como você estava se sentindo no momento deste trade.",
-      "intensityLabel": "Intensidade",
-      "intensityPlaceholder": "Qual a intensidade (1-10)?",
+      "intensity": "Intensidade",
+      "intensity_label": "Intensidade",
+      "intensity_placeholder": "Qual a intensidade (1-10)?",
       "notesLabel": "Observações Adicionais",
       "notesPlaceholder": "O que desencadeou isso? (Opcional)",
-      "saveCheckin": "Salvar Check-in",
+      "save": "Salvar Check-in",
+      "success": "Registro salvo com sucesso!",
       "stateLabel": "Estado Emocional",
       "statePlaceholder": "Selecione a emoção predominante",
       "title": "Check-in Emocional"
@@ -1732,8 +1752,24 @@
       "finish": {
         "configuringDb": "Configurando Banco de Dados...",
         "description": "Clique no botão abaixo para concluir a inicialização.",
-        "finalizing": "Finalizando tudo...",
-        "generatingDemo": "Gerando Trades de Teste...",
+        "syncingTerminal": "Sincronizando Terminal",
+        "waitingSurvivorData": "Aguardando dados do Survivor Hub...",
+        "gann": {
+            "title": "Vibrações de Gann",
+            "subtitle": "Confluência Matemática e Ciclos",
+            "kpis": {
+                "nextCot": "Próxima Reversão (Janela)",
+                "cycleDay": "Dia do Ciclo",
+                "vibration": "Vibração Atual",
+                "masterCycle": "Ciclo Mestre"
+            },
+            "sq9": {
+                "expansion": "Alvos de Expansão",
+                "retracement": "Alvos de Retração",
+                "degrees": "{deg}°",
+                "reference": "Ref"
+            }
+        },
         "ready": "Tudo pronto",
         "savingProfile": "Salvando Perfil...",
         "startNow": "Começar Agora",
@@ -1942,6 +1978,7 @@
         "averageWin": "Média de Ganho",
         "avgDurationLoss": "Duração Média (Prejuízo)",
         "avgDurationWin": "Duração Média (Lucro)",
+        "avgInterval": "Intervalo Entre Trades",
         "avgTimeBetweenTrades": "Tempo Médio entre Trades",
         "bestTrade": "Melhor Trade",
         "consecutiveLosses": "Losses Consecutivos",
@@ -2070,6 +2107,8 @@
     "quickStats": {
       "openTrades": "Em Aberto",
       "openTradesDesc": "Posições Atuais",
+      "avgInterval": "Intervalo Entre Trades",
+      "avgIntervalDesc": "Tempo médio entre operações executadas",
       "profitFactor": "Fator de Lucro",
       "profitFactorDesc": "Fator de Lucratividade",
       "totalBalance": "Saldo Total",

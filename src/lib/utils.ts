@@ -47,23 +47,36 @@ export const formatNumber = (amount: number, locale: string = "pt-BR") => {
 	}).format(amount);
 };
 
+/**
+ * Parses a date string safely, ensuring "YYYY-MM-DD" is treated as local midnight.
+ * Direct "YYYY-MM-DD" parsing by new Date() often defaults to UTC midnight, 
+ * which shifts the date in local Brazilian timezones.
+ */
+export const parseSafeDate = (dateStr: string | null | undefined): Date => {
+    if (!dateStr) return new Date();
+
+    // If it's strictly YYYY-MM-DD, force it to be local by adding a separator-less time or using parts
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        const [year, month, day] = dateStr.split("-").map(Number);
+        return new Date(year, month - 1, day, 0, 0, 0);
+    }
+
+    // Attempt normalized parsing
+    const normalized = dateStr.includes(" ") ? dateStr.replace(" ", "T") : dateStr;
+    const d = new Date(normalized);
+
+    if (isNaN(d.getTime())) {
+        // Fallback for weird formats
+        return new Date();
+    }
+
+    return d;
+};
+
 export const getLocalDatePart = (dateStr: string): string => {
 	if (!dateStr) return "";
 
-	// Se já for apenas uma data YYYY-MM-DD (10 caracteres), retorna como está.
-	// Isso evita que o construtor Date trate como UTC e mude o dia.
-	if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-		return dateStr;
-	}
-
-	// Tenta normalizar espaços para T para melhor aceitação do construtor Date
-	const normalized = dateStr.includes(" ") ? dateStr.replace(" ", "T") : dateStr;
-	const d = new Date(normalized);
-
-	if (isNaN(d.getTime())) {
-		// Fallback: se não for uma data válida, tenta o split básico
-		return dateStr.split(/[ T]/)[0];
-	}
+    const d = parseSafeDate(dateStr);
 
 	// Retorna a data no fuso horário local
 	const year = d.getFullYear();

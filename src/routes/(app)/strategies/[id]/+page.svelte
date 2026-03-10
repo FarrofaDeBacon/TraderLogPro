@@ -23,7 +23,9 @@
         Globe,
         FileText,
         ImageIcon,
+        Compass,
     } from "lucide-svelte";
+    import GannStrategyAnalyst from "$lib/components/strategies/GannStrategyAnalyst.svelte";
     import * as Dialog from "$lib/components/ui/dialog";
     import { onMount, onDestroy } from "svelte";
     import EChart from "$lib/components/ui/echart.svelte";
@@ -204,6 +206,9 @@
             drawdownCurve: { dates, data: drawdownData },
         };
     });
+
+    // Reference Price for Gann Analysis
+    const gannRefPrice = $derived(strategyTrades.length > 0 ? Number(strategyTrades[0].entry_price) : 0);
 
     // Chart Options Generators
     const equityOptions = $derived({
@@ -499,6 +504,10 @@
                 <Tabs.Trigger value="dossier"
                     >{$t("strategy.dashboard.tabs.dossier")}</Tabs.Trigger
                 >
+                <Tabs.Trigger value="gann" class="gap-2">
+                    <Compass class="w-3.5 h-3.5" />
+                    Gann Analysis
+                </Tabs.Trigger>
             </Tabs.List>
 
             <!-- TAB 1: DASHBOARD -->
@@ -1247,6 +1256,11 @@
                         </div>
                     {/if}
                 </div>
+            </Tabs.Content>
+
+            <!-- TAB 3: GANN ANALYSIS -->
+            <Tabs.Content value="gann" class="space-y-4">
+                <GannStrategyAnalyst trades={strategyTrades} referencePrice={gannRefPrice} />
             </Tabs.Content>
         </Tabs.Root>
 

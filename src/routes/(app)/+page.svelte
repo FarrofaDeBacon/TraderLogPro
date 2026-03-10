@@ -30,11 +30,12 @@
     BookOpen,
     Wallet,
     Plus,
+    Timer,
   } from "lucide-svelte";
   import { isSameDay, startOfMonth, format, parseISO } from "date-fns";
   import PerformanceCalendar from "$lib/components/dashboard/PerformanceCalendar.svelte";
   import { ptBR } from "date-fns/locale";
-  import { cn } from "$lib/utils";
+  import { cn, parseSafeDate } from "$lib/utils";
   import {
     Select,
     SelectContent,
@@ -42,6 +43,7 @@
     SelectTrigger,
     SelectValue,
   } from "$lib/components/ui/select";
+
 
   // --- State ---
   let selectedAccountId = $state<string>("all");
@@ -64,6 +66,14 @@
   const activeProfile = $derived(
     settingsStore.activeProfile || settingsStore.riskProfiles[0],
   );
+
+  const lastPrice = $derived.by(() => {
+    if (!filteredTrades || filteredTrades.length === 0) return 0;
+    const sorted = [...filteredTrades].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+    return Number(sorted[0].entry_price) || 0;
+  });
 
   const activePhase = $derived.by(() => {
     const profile = activeProfile;
@@ -107,8 +117,8 @@
         };
 
       const sorted = [...trades].sort((a, b) => {
-        const da = new Date(a.date).getTime();
-        const db = new Date(b.date).getTime();
+        const da = parseSafeDate(a.date).getTime();
+        const db = parseSafeDate(b.date).getTime();
         return (isNaN(da) ? 0 : da) - (isNaN(db) ? 0 : db);
       });
 
@@ -167,7 +177,7 @@
           rFactorCount++;
         }
 
-        return [new Date(t.date).getTime(), current];
+        return [parseSafeDate(t.date).getTime(), current];
       });
 
       return {
@@ -360,8 +370,8 @@
         </div>
       </div>
 
-      <!-- ELITE KPI LINE: 6 Professional Horizontal Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-7 gap-4">
+      <!-- ELITE KPI LINE: 7 Professional Horizontal Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-4">
         {#each [{ label: $t("general.balance") + " (Est.)", val: formatCurrency(totalBalanceBRL), icon: Wallet, color: "text-emerald-500", borderColor: "border-l-emerald-500" }, { label: $t("dashboard.kpis.netResult"), val: formatCurrency(stats.net), icon: TrendingUp, color: stats.net >= 0 ? "text-emerald-500" : "text-rose-500", borderColor: stats.net >= 0 ? "border-l-emerald-500" : "border-l-rose-500" }, { label: $t("dashboard.kpis.winRate"), val: `${stats.winRate.toFixed(1)}%`, icon: Trophy, color: "text-blue-500", borderColor: "border-l-blue-500" }, { label: $t("dashboard.kpis.profitFactor"), val: stats.profitFactor.toFixed(2), icon: Activity, color: "text-amber-500", borderColor: "border-l-amber-500" }, { label: $t("dashboard.kpis.discipline"), val: `${stats.discipline.toFixed(0)}%`, icon: Zap, color: "text-indigo-500", borderColor: "border-l-indigo-500" }, { label: $t("dashboard.kpis.payoff"), val: stats.payoff.toFixed(2), icon: ArrowUpRight, color: "text-cyan-400", borderColor: "border-l-cyan-400" }, { label: $t("dashboard.kpis.maxDrawdown"), val: `${(stats.drawdown || 0).toFixed(1)}%`, icon: Activity, color: "text-rose-500", borderColor: "border-l-rose-500" }] as kpi}
           <Card class="card-glass border-l-2 {kpi.borderColor}">
             <CardContent class="py-0.5 px-2.5">
@@ -408,7 +418,7 @@
                     <Select
                       type="single"
                       value={activeProfile?.id}
-                      onValueChange={(val) =>
+                      onValueChange={(val: string) =>
                         settingsStore.setActiveRiskProfile(val)}
                     >
                       <SelectTrigger
@@ -797,6 +807,8 @@
             </CardContent>
           </Card>
 
+
+
           <!-- Daily Detail Modal -->
           <Dialog.Root bind:open={isDailyDetailOpen}>
             <Dialog.Content
@@ -827,7 +839,7 @@
                 </div>
                 {#if selectedDateForDetail}
                   {@const dayTrades = filteredTrades.filter((t) =>
-                    isSameDay(new Date(t.date), selectedDateForDetail as Date),
+                    isSameDay(parseSafeDate(t.date), selectedDateForDetail as Date),
                   )}
                   {@const dayRes = dayTrades.reduce(
                     (acc, t) => acc + (t.result || 0),

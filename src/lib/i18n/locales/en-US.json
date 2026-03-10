@@ -127,7 +127,8 @@
             "netResult": "Net Result",
             "payoff": "Payoff",
             "profitFactor": "Profit Factor",
-            "winRate": "Win Rate"
+            "winRate": "Win Rate",
+            "avgInterval": "Interval Between Trades"
         },
         "newTrade": "New Trade",
         "quant": {
@@ -136,9 +137,12 @@
             "intention": "Intention",
             "ranking": "Ranking",
             "subtitle": "Subtitle",
+            "syncingTerminal": "Syncing Terminal",
             "title": "Title",
             "waitingData": "Waiting Data"
         },
+        "waitingSurvivorData": "Waiting for Survivor Hub data...",
+
         "schedule": {
             "afternoon": "Afternoon",
             "basedOn": "Based on the last {count} business days",
@@ -169,7 +173,24 @@
             "tradesUsage": "Trades Usage"
         },
         "terminalHub": "Terminal Hub",
-        "title": "Dashboard"
+        "title": "Dashboard",
+        "gann": {
+            "title": "Gann Vibrations",
+            "subtitle": "Mathematical Confluence & Cycles",
+            "kpis": {
+                "nextCot": "Next Reversal (Window)",
+                "cycleDay": "Cycle Day",
+                "vibration": "Current Vibration",
+                "masterCycle": "Master Cycle",
+                "avgInterval": "Interval Between Trades"
+            },
+            "sq9": {
+                "expansion": "Expansion Targets",
+                "retracement": "Retracement Targets",
+                "degrees": "{deg}°",
+                "reference": "Ref"
+            }
+        }
     },
     "filters": {
         "date": {
@@ -623,11 +644,13 @@
             "button": "New Entry",
             "date": "Trade Date",
             "description": "Log how you were feeling at the time of this trade.",
-            "intensityLabel": "Intensity",
-            "intensityPlaceholder": "Intensity level (1-10)?",
+            "intensity": "Intensity",
+            "intensity_label": "Intensity",
+            "intensity_placeholder": "Intensity level (1-10)?",
             "notesLabel": "Additional Notes",
             "notesPlaceholder": "What triggered this? (Optional)",
-            "saveCheckin": "Save Check-in",
+            "save": "Save Check-in",
+            "success": "Check-in saved successfully!",
             "stateLabel": "Emotional State",
             "statePlaceholder": "Select the predominant emotion",
             "title": "Emotional Check-in"
@@ -1942,6 +1965,7 @@
                 "averageWin": "Average Win",
                 "avgDurationLoss": "Avg Duration (Loss)",
                 "avgDurationWin": "Avg Duration (Win)",
+                "avgInterval": "Average Interval",
                 "avgTimeBetweenTrades": "Avg Time Between Trades",
                 "bestTrade": "Best Trade",
                 "consecutiveLosses": "Consecutive Losses",
@@ -2070,6 +2094,8 @@
         "quickStats": {
             "openTrades": "Open Trades",
             "openTradesDesc": "Current Positions",
+            "avgInterval": "Interval Between Trades",
+            "avgIntervalDesc": "Average time between executed trades",
             "profitFactor": "Profit Factor",
             "profitFactorDesc": "Profitability Factor",
             "totalBalance": "Total Balance",

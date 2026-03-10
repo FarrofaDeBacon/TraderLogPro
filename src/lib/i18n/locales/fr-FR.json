@@ -127,7 +127,8 @@
             "netResult": "Résultat Net",
             "payoff": "Payoff",
             "profitFactor": "Facteur de Profit",
-            "winRate": "Taux de Réussite"
+            "winRate": "Taux de Réussite",
+            "avgInterval": "Intervalle Entre Trades"
         },
         "newTrade": "New Trade",
         "quant": {
@@ -169,7 +170,24 @@
             "tradesUsage": "Utilisation des Opérations"
         },
         "terminalHub": "Terminal Hub",
-        "title": "Tableau de Bord"
+        "title": "Tableau de Bord",
+        "gann": {
+            "title": "Vibrations de Gann",
+            "subtitle": "Confluence Mathématique et Cycles",
+            "kpis": {
+                "nextCot": "Prochain Retournement (Fenêtre)",
+                "cycleDay": "Jour du Cycle",
+                "vibration": "Vibration Actuelle",
+                "masterCycle": "Cycle Maître",
+                "avgInterval": "Intervalle Entre Trades"
+            },
+            "sq9": {
+                "expansion": "Objectifs d'Expansion",
+                "retracement": "Objectifs de Retrait",
+                "degrees": "{deg}°",
+                "reference": "Ref"
+            }
+        }
     },
     "filters": {
         "date": {
@@ -623,11 +641,13 @@
             "button": "Nouvelle Entrée",
             "date": "Date",
             "description": "Suivez votre état mental indépendamment des trades.",
-            "intensityLabel": "Intensité",
-            "intensityPlaceholder": "Qual a intensidade (1-10)?",
+            "intensity": "Intensité",
+            "intensity_label": "Intensité",
+            "intensity_placeholder": "Quelle intensité (1-10)?",
             "notesLabel": "Notes / Journal",
             "notesPlaceholder": "Écrivez sur votre journée...",
-            "saveCheckin": "Salvar Check-in",
+            "save": "Enregistrer Check-in",
+            "success": "Enregistrement réussi !",
             "stateLabel": "Comment vous sentez-vous ?",
             "statePlaceholder": "Sélectionnez...",
             "title": "Entrée Émotionnelle Quotidienne"
@@ -1941,7 +1961,8 @@
                 "averageLoss": "Perte Moyenne",
                 "averageWin": "Gain Moyen",
                 "avgDurationLoss": "Durée Moyenne (Perte)",
-                "avgDurationWin": "Durée Moyenne (Gain)",
+                "avgDurationWin": "Durée Moyenne (Gains)",
+                "avgInterval": "Intervalle Moyen",
                 "avgTimeBetweenTrades": "Temps Moyen entre Trades",
                 "bestTrade": "Meilleur Trade",
                 "consecutiveLosses": "Pertes Consécutives",
@@ -2070,6 +2091,8 @@
         "quickStats": {
             "openTrades": "Ouverts",
             "openTradesDesc": "Positions Actuelles",
+            "avgInterval": "Intervalle Entre Trades",
+            "avgIntervalDesc": "Temps moyen entre les opérations exécutées",
             "profitFactor": "Facteur de Profit",
             "profitFactorDesc": "Facteur de Rentabilité",
             "totalBalance": "Solde Total",

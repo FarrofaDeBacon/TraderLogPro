@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { getLocalDatePart } from "$lib/utils";
 import type { Trade, Account, Currency, UserProfile } from "$lib/types";
 import { settingsStore } from "$lib/stores/settings.svelte";
+import { calculateAverageTimeBetweenTrades } from "$lib/utils/gann";
 
 class TradesStore {
     trades = $state<Trade[]>([]);
@@ -247,6 +248,7 @@ class TradesStore {
                 total_profit: 0,
                 average_profit: 0,
                 payoff: 0,
+                avg_interval: 0,
                 currency: userProfile.main_currency
             };
         }
@@ -312,6 +314,7 @@ class TradesStore {
             total_profit,
             average_profit,
             payoff,
+            avg_interval: calculateAverageTimeBetweenTrades(strategyTrades),
             currency: usedCurrency
         };
     }

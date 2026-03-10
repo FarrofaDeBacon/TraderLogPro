@@ -4,7 +4,7 @@
     import * as echarts from "echarts";
     import { settingsStore } from "$lib/stores/settings.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
-    import { formatCurrency } from "$lib/utils";
+    import { formatCurrency, parseSafeDate } from "$lib/utils";
     import { format } from "date-fns";
 
     let { trades = [] } = $props();
@@ -16,8 +16,8 @@
         // Sort trades by date
         const sortedTrades = [...tradesData].sort(
             (a, b) =>
-                new Date(a.exit_date || a.date).getTime() -
-                new Date(b.exit_date || b.date).getTime(),
+                parseSafeDate(a.exit_date || a.date).getTime() -
+                parseSafeDate(b.exit_date || b.date).getTime(),
         );
 
         let cumulativePnL = 0;
@@ -31,9 +31,11 @@
             cumulativePnL += result;
             if (cumulativePnL > maxPeak) maxPeak = cumulativePnL;
 
+            const tradeTimestamp = parseSafeDate(t.exit_date || t.date).getTime();
+
             return {
                 value: [
-                    new Date(t.exit_date || t.date).getTime(),
+                    tradeTimestamp,
                     cumulativePnL,
                 ],
                 drawdown: maxPeak - cumulativePnL,
@@ -47,7 +49,7 @@
 
         // Add a starting point at zero if there are trades
         if (equityCurve.length > 0) {
-            const firstDate = new Date(
+            const firstDate = parseSafeDate(
                 sortedTrades[0].exit_date || sortedTrades[0].date,
             ).getTime();
             equityCurve.unshift({

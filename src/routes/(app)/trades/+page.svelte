@@ -25,6 +25,7 @@
         Coins,
         BarChart2,
         Percent,
+        Timer,
     } from "lucide-svelte";
     import { Badge } from "$lib/components/ui/badge";
     import HierarchicalList from "$lib/components/shared/HierarchicalList.svelte";
@@ -43,6 +44,7 @@
     import { Separator } from "$lib/components/ui/separator";
     import TradeOutcomePieChart from "$lib/components/trades/TradeOutcomePieChart.svelte";
     import TradeEquityChart from "$lib/components/trades/TradeEquityChart.svelte";
+    import { calculateAverageTimeBetweenTrades, formatDuration } from "$lib/utils/gann";
 
     import { untrack } from "svelte";
     import { format } from "date-fns";
@@ -426,6 +428,7 @@
             winners,
             openCount: allTrades.filter((t) => !t.exit_price).length,
             profitFactor: profitFactor.toFixed(2),
+            avgInterval: calculateAverageTimeBetweenTrades(filteredTrades),
         };
     });
 
@@ -697,7 +700,7 @@
         </div>
 
         <!-- KPI Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-2">
             <Card.Root
                 class="card-glass border-l-2 {kpis.profitTotal >= 0
                     ? 'border-l-emerald-500'
@@ -762,7 +765,7 @@
             </Card.Root>
 
             <Card.Root
-                class="card-glass border-l-2 border-l-blue-500 shadow-sm"
+                class="card-glass border-l-2 border-l-cyan-500 shadow-sm"
             >
                 <Card.Content class="py-1 px-3">
                     <div class="flex items-center justify-between">
@@ -771,7 +774,7 @@
                         >
                             {$t("trades.quickStats.winRate")}
                         </span>
-                        <Percent class="w-3 h-3 text-blue-500" />
+                        <Percent class="w-3 h-3 text-cyan-500" />
                     </div>
                     <div class="mt-1">
                         <div
@@ -794,7 +797,7 @@
             </Card.Root>
 
             <Card.Root
-                class="card-glass border-l-2 border-l-blue-500 shadow-sm"
+                class="card-glass border-l-2 border-l-indigo-500 shadow-sm"
             >
                 <Card.Content class="py-1 px-3">
                     <div class="flex items-center justify-between">
@@ -803,7 +806,7 @@
                         >
                             {$t("trades.quickStats.profitFactor")}
                         </span>
-                        <TrendingUp class="w-3 h-3 text-blue-500" />
+                        <TrendingUp class="w-3 h-3 text-indigo-500" />
                     </div>
                     <div class="mt-1">
                         <div
@@ -842,6 +845,33 @@
                             class="text-[9px] text-muted-foreground/50 leading-none mt-0.5"
                         >
                             {$t("trades.quickStats.openTradesDesc")}
+                        </p>
+                    </div>
+                </Card.Content>
+            </Card.Root>
+
+            <Card.Root
+                class="card-glass border-l-2 border-l-fuchsia-500 shadow-sm"
+            >
+                <Card.Content class="py-1 px-3">
+                    <div class="flex items-center justify-between">
+                        <span
+                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60 leading-none"
+                        >
+                            {$t("trades.quickStats.avgInterval")}
+                        </span>
+                        <Timer class="w-3 h-3 text-fuchsia-500" />
+                    </div>
+                    <div class="mt-1">
+                        <div
+                            class="text-sm font-mono font-bold text-foreground tabular-nums tracking-tight leading-none"
+                        >
+                            {formatDuration(kpis.avgInterval)}
+                        </div>
+                        <p
+                            class="text-[9px] text-muted-foreground/50 leading-none mt-0.5"
+                        >
+                            {$t("trades.quickStats.avgIntervalDesc") || "Intervalo médio entre operações consecutivas"}
                         </p>
                     </div>
                 </Card.Content>

@@ -127,7 +127,8 @@
             "netResult": "Resultado Neto",
             "payoff": "Payoff",
             "profitFactor": "Factor de Beneficio",
-            "winRate": "Tasa de Acierto"
+            "winRate": "Tasa de Acierto",
+            "avgInterval": "Intervalo Entre Trades"
         },
         "newTrade": "New Trade",
         "quant": {
@@ -169,7 +170,24 @@
             "tradesUsage": "Uso de Operaciones"
         },
         "terminalHub": "Terminal Hub",
-        "title": "Panel de Control"
+        "title": "Panel de Control",
+        "gann": {
+            "title": "Vibraciones de Gann",
+            "subtitle": "Confluencia Matemática y Ciclos",
+            "kpis": {
+                "nextCot": "Próxima Reversión (Ventana)",
+                "cycleDay": "Día del Ciclo",
+                "vibration": "Vibración Actual",
+                "masterCycle": "Ciclo Maestro",
+                "avgInterval": "Intervalo Entre Trades"
+            },
+            "sq9": {
+                "expansion": "Objetivos de Expansión",
+                "retracement": "Objetivos de Retracción",
+                "degrees": "{deg}°",
+                "reference": "Ref"
+            }
+        }
     },
     "filters": {
         "date": {
@@ -623,11 +641,13 @@
             "button": "Nuevo Registro",
             "date": "Fecha",
             "description": "Siga su estado mental independientemente de los trades.",
-            "intensityLabel": "Intensidad",
-            "intensityPlaceholder": "Qual a intensidade (1-10)?",
+            "intensity": "Intensidad",
+            "intensity_label": "Intensidade",
+            "intensity_placeholder": "Qual a intensidade (1-10)?",
             "notesLabel": "Notas / Diario",
             "notesPlaceholder": "Escriba sobre su día...",
-            "saveCheckin": "Salvar Check-in",
+            "save": "Salvar Check-in",
+            "success": "¡Registro guardado con éxito!",
             "stateLabel": "¿Cómo se siente?",
             "statePlaceholder": "Seleccione...",
             "title": "Registro Emocional Diario"
@@ -1732,6 +1752,8 @@
             "finish": {
                 "configuringDb": "Configurando Base de Datos...",
                 "description": "Haz clic en el botón de abajo para completar la configuración.",
+                "syncingTerminal": "Sincronizando Terminal",
+                "waitingSurvivorData": "Esperando datos de Survivor Hub...",
                 "finalizing": "Finalizando todo...",
                 "generatingDemo": "Generando Trades de Prueba...",
                 "ready": "Todo listo",
@@ -1941,7 +1963,8 @@
                 "averageLoss": "Pérdida Media",
                 "averageWin": "Ganancia Media",
                 "avgDurationLoss": "Duración Media (Pérdida)",
-                "avgDurationWin": "Duración Media (Ganancia)",
+                "avgDurationWin": "Duración Promedio (Ganancia)",
+                "avgInterval": "Intervalo Medio",
                 "avgTimeBetweenTrades": "Tiempo Medio entre Trades",
                 "bestTrade": "Mejor Trade",
                 "consecutiveLosses": "Pérdidas Consecutivas",
@@ -2070,6 +2093,8 @@
         "quickStats": {
             "openTrades": "Abiertos",
             "openTradesDesc": "Posiciones Actuales",
+            "avgInterval": "Intervalo Entre Trades",
+            "avgIntervalDesc": "Tiempo promedio entre operaciones ejecutadas",
             "profitFactor": "Factor de Beneficio",
             "profitFactorDesc": "Factor de Rentabilidad",
             "totalBalance": "Saldo Total",

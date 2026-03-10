@@ -20,7 +20,7 @@
         Calendar as CalendarIcon,
     } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
-    import { cn } from "$lib/utils";
+    import { cn, parseSafeDate } from "$lib/utils";
     import { goto } from "$app/navigation";
     import { t, locale } from "svelte-i18n";
 
@@ -54,7 +54,7 @@
     const pnlByDay = $derived.by(() => {
         const map = new Map<string, number>();
         trades.forEach((t: import("$lib/stores/settings.svelte").Trade) => {
-            const day = format(new Date(t.date), "yyyy-MM-dd");
+            const day = format(parseSafeDate(t.date), "yyyy-MM-dd");
             map.set(day, (map.get(day) || 0) + (t.result || 0));
         });
         return map;

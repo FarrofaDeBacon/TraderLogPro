@@ -13,6 +13,8 @@
     import { goto } from "$app/navigation";
     import { t, locale } from "svelte-i18n";
     import { formatCurrency } from "$lib/utils";
+    import { formatDuration } from "$lib/utils/gann";
+    import { Timer } from "lucide-svelte";
 
     // Mock Stats Interface (until backend is ready)
     export interface StrategyStats {
@@ -22,6 +24,7 @@
         total_profit: number;
         average_profit: number;
         payoff: number;
+        avg_interval?: number;
         currency?: string;
     }
 
@@ -35,6 +38,7 @@
             total_profit: 0,
             average_profit: 0,
             payoff: 0,
+            avg_interval: 0,
         },
     }: { strategy: Strategy; stats?: StrategyStats } = $props();
 
@@ -149,6 +153,21 @@
                     class={`text-xs font-bold ${stats.profit_factor > 1.2 ? "text-emerald-500" : stats.profit_factor >= 1 ? "text-yellow-500" : "text-rose-500"}`}
                 >
                     {stats.profit_factor.toFixed(2)}
+                </div>
+            </div>
+
+            <!-- Average Interval -->
+            <div
+                class="space-y-0.5 p-1.5 rounded bg-muted/20 border border-border/50 col-span-2 flex items-center justify-between"
+            >
+                <div
+                    class="text-[9px] uppercase tracking-wider text-muted-foreground flex items-center gap-1"
+                >
+                    <Timer class="w-2.5 h-2.5" />
+                    {$t("strategy.dashboard.stats.avgInterval")}
+                </div>
+                <div class="text-xs font-bold text-fuchsia-500">
+                    {formatDuration(stats.avg_interval || 0)}
                 </div>
             </div>
         </div>

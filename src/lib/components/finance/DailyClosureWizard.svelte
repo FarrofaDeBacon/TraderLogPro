@@ -19,8 +19,8 @@
 
     let step = $state(1);
     let selectedDate = $state(
-        new Date(Date.now() - 86400000).toISOString().split("T")[0],
-    ); // Defaults to yesterday
+        getLocalDatePart(new Date(Date.now() - 86400000).toISOString()),
+    ); // Defaults to yesterday local
     let previewData = $state<any[]>([]);
     let selectedAccounts = $state<string[]>([]);
     let processing = $state(false);
@@ -244,9 +244,7 @@
                     </div>
 
                     {#if step === 1 && selectedDate}
-                        {@const count = tradesStore.trades.filter(
-                            (t) => t.date === selectedDate,
-                        ).length}
+                        {@const count = tradesStore.getTradesCountForDate(selectedDate)}
                         {#if count === 0}
                             <div
                                 class="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded text-yellow-500 text-sm"
