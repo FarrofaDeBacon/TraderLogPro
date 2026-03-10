@@ -22,8 +22,13 @@ pub mod timeframes_seed;
 pub mod user_profile_seed;
 
 // Expõe publicamente as funções que serão chamadas de fora
+#[allow(unused_imports)]
 pub use _master_seeder::force_reseed_all;
+#[allow(unused_imports)]
 pub use _master_seeder::run_all_seeds;
 pub use _master_seeder::run_base_seeds;
+pub use _master_seeder::run_custom_seeds;
+#[allow(unused_imports)]
 pub use _master_seeder::run_minimal_seeds;
+#[allow(unused_imports)]
 pub use _master_seeder::run_selective_seeds;

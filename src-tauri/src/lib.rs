@@ -48,10 +48,20 @@ fn start_rtd_monitor(app_handle: AppHandle, excel_path: Option<String>) {
                     );
                     loop {
                         if csv_path.exists() {
-                            if let Ok(content) = fs::read_to_string(&csv_path) {
-                                if !content.trim().is_empty() {
-                                    app_handle_clone.emit("rtd-update", content).ok();
+                            // Resilient read: try multiple times if it's locked by another process (common on Windows)
+                            let mut content = String::new();
+                            let mut success = false;
+                            for _ in 0..3 {
+                                if let Ok(c) = fs::read_to_string(&csv_path) {
+                                    content = c;
+                                    success = true;
+                                    break;
                                 }
+                                std::thread::sleep(Duration::from_millis(100));
+                            }
+
+                            if success && !content.trim().is_empty() {
+                                app_handle_clone.emit("rtd-update", content).ok();
                             }
                         }
                         std::thread::sleep(Duration::from_millis(1000));
@@ -153,11 +163,11 @@ pub fn run() {
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_log::Builder::new().build())
         .setup(|app| {
             println!("[SETUP] Starting app setup...");
 
             let handle = app.handle().clone();
-            start_rtd_monitor(handle.clone(), None); 
 
             // Initialize Database
             let db_handle = handle.clone();
@@ -256,9 +266,10 @@ pub fn run() {
             commands::seed_demo_data,
             commands::seed_stress_data,
             commands::complete_onboarding,
-            commands::seed_custom_data,
+            commands::finish_custom_onboarding,
             commands::get_onboarding_meta,
             commands::get_machine_id_cmd,
+            commands::validate_license_cmd,
             commands::factory_reset,
             commands::backup_database,
             commands::restore_database,
@@ -293,6 +304,7 @@ pub fn run() {
             commands::irpf::save_tax_profile_entry,
             commands::irpf::delete_tax_profile_entry,
             commands::irpf::diagnostic_dump_darfs,
+            commands::irpf::diagnostic_fix_darf_status,
             commands::irpf::get_appraisal_by_id,
             commands::diagnostic_dump_users,
             commands::diagnostic_dump_trades,

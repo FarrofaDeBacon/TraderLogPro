@@ -25,6 +25,51 @@ pub async fn seed_asset_types(db: &Surreal<Db>, filter: Option<Vec<String>>) -> 
             "points",
             Some("tax_profile:tp_futuros"),
         ),
+        (
+            "at3",
+            "Ações Internacionais (NYSE)",
+            "STOCK-US",
+            "market:m2",
+            "Ações listadas na NYSE",
+            "currency",
+            Some("tax_profile:tp_acoes"),
+        ),
+        (
+            "at4",
+            "Ações Internacionais (NASDAQ)",
+            "STOCK-TECH",
+            "market:m3",
+            "Ações listadas na NASDAQ",
+            "currency",
+            Some("tax_profile:tp_acoes"),
+        ),
+        (
+            "at5",
+            "Futuros Globais",
+            "FUT-GL",
+            "market:m4",
+            "Contratos futuros globais (CME)",
+            "points",
+            Some("tax_profile:tp_futuros"),
+        ),
+        (
+            "at6",
+            "Pares de Moedas",
+            "FOREX",
+            "market:m5",
+            "Mercado de câmbio",
+            "pips",
+            Some("tax_profile:tp_daytrade"),
+        ),
+        (
+            "at7",
+            "Criptomoedas",
+            "CRYPTO",
+            "market:m6",
+            "Criptoativos",
+            "currency",
+            Some("tax_profile:tp_acoes"),
+        ),
     ];
 
     for (id, name, code, market_id, unit_label, result_type, t_profile) in asset_types {
@@ -34,7 +79,6 @@ pub async fn seed_asset_types(db: &Surreal<Db>, filter: Option<Vec<String>>) -> 
                 continue;
             }
         }
-        let record_id = format!("asset_type:{}", id);
         let asset_type_data = AssetType {
             id: id.into(),
             name: name.into(),
@@ -52,7 +96,7 @@ pub async fn seed_asset_types(db: &Surreal<Db>, filter: Option<Vec<String>>) -> 
         }
 
         // Use raw query for robust serialization
-        db.query("UPSERT type::thing('asset_type', $id) CONTENT $data")
+        db.query("UPSERT type::thing('asset_type', $id) CONTENT $data RETURN NONE")
             .bind(("id", id))
             .bind(("data", json_data))
             .await

@@ -92,7 +92,7 @@ pub async fn seed_tax_rules(db: &Surreal<Db>) -> Result<(), String> {
         }
 
         // Use raw query for robust serialization
-        db.query("UPSERT type::thing('tax_rule', $id) CONTENT $data")
+        db.query("UPSERT type::thing('tax_rule', $id) CONTENT $data RETURN NONE")
             .bind(("id", id))
             .bind(("data", data))
             .await
@@ -127,7 +127,7 @@ pub async fn seed_tax_rules(db: &Surreal<Db>) -> Result<(), String> {
         }
 
         // Use raw query for robust serialization
-        db.query("UPSERT type::thing('tax_profile', $id) CONTENT $data")
+        db.query("UPSERT type::thing('tax_profile', $id) CONTENT $data RETURN NONE")
             .bind(("id", id))
             .bind(("data", data))
             .await
@@ -177,7 +177,7 @@ pub async fn seed_tax_rules(db: &Surreal<Db>) -> Result<(), String> {
         }
 
         // Use raw query for robust serialization
-        db.query("UPSERT type::thing('tax_profile_entry', $id) CONTENT $data")
+        db.query("UPSERT type::thing('tax_profile_entry', $id) CONTENT $data RETURN NONE")
             .bind(("id", id))
             .bind(("data", data))
             .await
@@ -259,7 +259,7 @@ pub async fn seed_initial_tax_records(db: &Surreal<Db>) -> Result<(), String> {
         m,
         y,
         t_type,
-        r_name,
+        _r_name,
         r_code,
         gross,
         loss,
@@ -311,7 +311,7 @@ pub async fn seed_initial_tax_records(db: &Surreal<Db>) -> Result<(), String> {
             obj.remove("id");
         }
 
-        db.query("UPSERT type::thing('tax_appraisal', $id) CONTENT $data")
+        db.query("UPSERT type::thing('tax_appraisal', $id) CONTENT $data RETURN NONE")
             .bind(("id", id.split(':').last().unwrap().to_string()))
             .bind(("data", data))
             .await
@@ -357,7 +357,7 @@ pub async fn seed_initial_tax_records(db: &Surreal<Db>) -> Result<(), String> {
                 obj.remove("id");
             }
 
-            db.query("UPSERT type::thing('tax_darf', $id) CONTENT $data")
+            db.query("UPSERT type::thing('tax_darf', $id) CONTENT $data RETURN NONE")
                 .bind(("id", darf_id.split(':').last().unwrap().to_string()))
                 .bind(("data", darf_data))
                 .await

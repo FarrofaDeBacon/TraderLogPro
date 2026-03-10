@@ -352,32 +352,5 @@
         </Card.Root>
     </div>
 
-    <div
-        class="bg-primary/5 rounded-lg p-6 border border-primary/20 space-y-4 backdrop-blur-sm"
-    >
-        <h4 class="font-bold text-foreground flex items-center gap-2">
-            <ShieldCheck class="w-5 h-5 text-primary" />
-            {$t("settings.license.perksTitle")}
-        </h4>
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div class="flex gap-3">
-                <CheckCircle2 class="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
-                <span class="text-sm text-foreground/90"
-                    >{$t("settings.license.perk1")}</span
-                >
-            </div>
-            <div class="flex gap-3">
-                <CheckCircle2 class="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
-                <span class="text-sm text-foreground/90"
-                    >{$t("settings.license.perk2")}</span
-                >
-            </div>
-            <div class="flex gap-3">
-                <CheckCircle2 class="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
-                <span class="text-sm text-foreground/90"
-                    >{$t("settings.license.perk3")}</span
-                >
-            </div>
-        </div>
-    </div>
 </div>
+

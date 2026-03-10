@@ -1,84 +1,170 @@
-    Checking tauri-apptraderlogpro v0.1.0 (C:\PROJETOS\TraderLogPro\src-tauri)
-error[E0425]: cannot find value `debug_file` in this scope
-  --> src\commands\irpf.rs:66:14
-   |
-66 |     writeln!(debug_file, "DEBUG: Query executed, taking raw results...").unwrap();
-   |              ^^^^^^^^^^ not found in this scope
-
-error[E0425]: cannot find value `debug_file` in this scope
-  --> src\commands\irpf.rs:67:5
-   |
-67 |     debug_file.flush().unwrap();
-   |     ^^^^^^^^^^ not found in this scope
-
-warning: unused import: `std::path::PathBuf`
- --> src\db.rs:1:5
+﻿cargo : warning: unused import: `GrowthPhaseRegressionRule`
+No linha:1 caractere:1
++ cargo check --message-format=short 2>&1 | Out-File -Encoding utf8 err ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (warning: unused...RegressionRule`:String 
+   ) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ --> src\seed\risk_seed.rs:3:46
   |
-1 | use std::path::PathBuf;
-  |     ^^^^^^^^^^^^^^^^^^
+3 |     GrowthPhase, GrowthPhaseProgressionRule, GrowthPhaseRegressionRule, 
+RiskProfile,
+  |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^
   |
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 
-warning: unused import: `surrealdb::sql::Thing`
- --> src\models.rs:3:5
-  |
-3 | use surrealdb::sql::Thing;
-  |     ^^^^^^^^^^^^^^^^^^^^^
+warning: unused import: `_master_seeder::run_all_seeds`
+  --> src\seed\mod.rs:26:9
+   |
+26 | pub use _master_seeder::run_all_seeds;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-warning: unused import: `crate::models::Trade`
- --> src\commands\irpf.rs:3:5
-  |
-3 | use crate::models::Trade;
-  |     ^^^^^^^^^^^^^^^^^^^^
+warning: unused import: `_master_seeder::run_minimal_seeds`
+  --> src\seed\mod.rs:29:9
+   |
+29 | pub use _master_seeder::run_minimal_seeds;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-warning: unused import: `GrowthPhase`
- --> src\seed\risk_seed.rs:4:34
-  |
-4 | use crate::models::{RiskProfile, GrowthPhase};
-  |                                  ^^^^^^^^^^^
+warning: unused import: `_master_seeder::run_selective_seeds`
+  --> src\seed\mod.rs:30:9
+   |
+30 | pub use _master_seeder::run_selective_seeds;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-warning: unused import: `std::process::Command`
- --> src\hardware.rs:1:5
-  |
-1 | use std::process::Command;
-  |     ^^^^^^^^^^^^^^^^^^^^^
+warning: variable does not need to be mutable
+   --> src\commands.rs:694:18
+    |
+694 |             for (mut closure, is_target) in closures_to_process {
+    |                  ----^^^^^^^
+    |                  |
+    |                  help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
 
 warning: unused variable: `create_sql`
-  --> src\seed\timeframes_seed.rs:27:13
+  --> src\seed\timeframes_seed.rs:29:13
    |
-27 |         let create_sql = format!("CREATE timeframe:{} CONTENT $data", id);
-   |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_create_sql`
+29 |         let create_sql = format!("CREATE timeframe:{} CONTENT $data", id);
+   |             ^^^^^^^^^^ help: if this is intentional, prefix it with an 
+underscore: `_create_sql`
    |
    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
 
 warning: unused variable: `record_id`
-  --> src\seed\asset_types_seed.rs:19:13
+  --> src\seed\asset_types_seed.rs:82:13
    |
-19 |         let record_id = format!("asset_type:{}", id);
-   |             ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_record_id`
+82 |         let record_id = format!("asset_type:{}", id);
+   |             ^^^^^^^^^ help: if this is intentional, prefix it with an 
+underscore: `_record_id`
 
 warning: unused variable: `record_id`
-  --> src\seed\assets_seed.rs:26:13
+  --> src\seed\assets_seed.rs:17:13
    |
-26 |         let record_id = format!("asset:{}", id);
-   |             ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_record_id`
+17 |         let record_id = format!("asset:{}", id);
+   |             ^^^^^^^^^ help: if this is intentional, prefix it with an 
+underscore: `_record_id`
+
+warning: unused variable: `filter`
+ --> src\seed\demo_accounts_seed.rs:7:46
+  |
+7 | pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> 
+Result<(), String> {
+  |                                              ^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_filter`
 
 warning: unused variable: `clean_id`
-  --> src\seed\demo_accounts_seed.rs:43:13
+  --> src\seed\demo_accounts_seed.rs:72:13
    |
-43 |         let clean_id = id_suffix;
-   |             ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_clean_id`
+72 |         let clean_id = id_suffix;
+   |             ^^^^^^^^ help: if this is intentional, prefix it with an underscore: 
+`_clean_id`
+
+warning: unused variable: `r_name`
+   --> src\seed\tax_seed.rs:262:9
+    |
+262 |         r_name,
+    |         ^^^^^^ help: if this is intentional, prefix it with an underscore: 
+`_r_name`
 
 warning: variable does not need to be mutable
-  --> src\seed\demo_trades_seed.rs:61:9
+  --> src\logic.rs:37:9
    |
-61 |     let mut daily_results: BTreeMap<NaiveDate, (f64, Vec<String>)> = BTreeMap::new(); // date -> (net_result, [trade_ids])
-   |         ----^^^^^^^^^^^^^
+37 |     let mut calculation_basis;
+   |         ----^^^^^^^^^^^^^^^^^
    |         |
    |         help: remove this `mut`
-   |
-   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
 
-For more information about this error, try `rustc --explain E0425`.
-warning: `tauri-apptraderlogpro` (lib) generated 10 warnings
-error: could not compile `tauri-apptraderlogpro` (lib) due to 2 previous errors; 10 warnings emitted
+warning: value assigned to `withholding_credit_used` is never read
+  --> src\logic.rs:89:39
+   |
+89 |     let mut withholding_credit_used = 0.0;
+   |                                       ^^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: value assigned to `tax_after_irrf` is never read
+  --> src\logic.rs:90:30
+   |
+90 |     let mut tax_after_irrf = 0.0;
+   |                              ^^^
+   |
+   = help: maybe it is overwritten before being read?
+
+warning: value assigned to `withholding_credit_remaining` is never read
+  --> src\logic.rs:91:44
+   |
+91 |     let mut withholding_credit_remaining = 0.0;
+   |                                            ^^^
+   |
+   = help: maybe it is overwritten before being read?
+
+warning: function `surreal_to_json` is never used
+   --> src\models.rs:186:4
+    |
+186 | fn surreal_to_json(v: SurrealValue) -> serde_json::Value {
+    |    ^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `TaxPayment` is never constructed
+   --> src\models.rs:972:12
+    |
+972 | pub struct TaxPayment {
+    |            ^^^^^^^^^^
+
+warning: function `run_minimal_seeds` is never used
+  --> src\seed\_master_seeder.rs:15:14
+   |
+15 | pub async fn run_minimal_seeds(db: &Surreal<Db>) -> Result<(), String> {
+   |              ^^^^^^^^^^^^^^^^^
+
+warning: function `run_all_seeds` is never used
+  --> src\seed\_master_seeder.rs:21:14
+   |
+21 | pub async fn run_all_seeds(db: &Surreal<Db>) -> Result<(), String> {
+   |              ^^^^^^^^^^^^^
+
+warning: function `run_selective_seeds` is never used
+   --> src\seed\_master_seeder.rs:154:14
+    |
+154 | pub async fn run_selective_seeds(db: &Surreal<Db>, selection: Vec<String>) -> 
+Result<(), String> {
+    |              ^^^^^^^^^^^^^^^^^^^
+
+warning: field `modality_id` is never read
+ --> src\logic.rs:7:9
+  |
+5 | pub struct RuleBucket {
+  |            ---------- field in this struct
+6 |     pub rule: TaxRule,
+7 |     pub modality_id: String,
+  |         ^^^^^^^^^^^
+  |
+  = note: `RuleBucket` has derived impls for the traits `Clone` and `Debug`, but 
+these are intentionally ignored during dead code analysis
+
+warning: `tauri-apptraderlogpro` (lib) generated 21 warnings (run `cargo fix --lib -p 
+tauri-apptraderlogpro` to apply 12 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.80s

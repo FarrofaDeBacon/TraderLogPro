@@ -25,7 +25,6 @@ mod tests {
         let rule = create_mock_rule("DayTrade", 20.0, 0.0);
         let bucket = RuleBucket {
             rule: rule.clone(),
-            modality_id: "mod1".to_string(),
             gross_profit: 1000.0,
             gross_loss: 200.0,
             sales_total: 5000.0,
@@ -48,7 +47,6 @@ mod tests {
 
         let bucket = RuleBucket {
             rule: rule.clone(),
-            modality_id: "mod2".to_string(),
             gross_profit: 1000.0,
             gross_loss: 0.0,
             sales_total: 15000.0, // Below 20k threshold
@@ -67,7 +65,6 @@ mod tests {
         let rule = create_mock_rule("DayTrade", 20.0, 0.0);
         let bucket = RuleBucket {
             rule: rule.clone(),
-            modality_id: "mod1".to_string(),
             gross_profit: 1000.0,
             gross_loss: 0.0,
             sales_total: 5000.0,
@@ -87,7 +84,6 @@ mod tests {
         let rule = create_mock_rule("DayTrade", 20.0, 0.0);
         let bucket = RuleBucket {
             rule: rule.clone(),
-            modality_id: "mod1".to_string(),
             gross_profit: 500.0,
             gross_loss: 0.0,
             sales_total: 1000.0,
@@ -109,7 +105,6 @@ mod tests {
         let rule = create_mock_rule("SwingTrade", 15.0, 20000.0);
         let bucket = RuleBucket {
             rule,
-            modality_id: "mod2".to_string(),
             gross_profit: 1000.0,
             gross_loss: 0.0,
             sales_total: 20000.0, // EXACT threshold
@@ -127,7 +122,6 @@ mod tests {
         let rule = create_mock_rule("DayTrade", 20.0, 0.0);
         let bucket = RuleBucket {
             rule,
-            modality_id: "mod1".to_string(),
             gross_profit: 500.0,
             gross_loss: 0.0,
             sales_total: 1000.0,
@@ -147,7 +141,6 @@ mod tests {
         let rule = create_mock_rule("DayTrade", 20.0, 0.0);
         let bucket = RuleBucket {
             rule,
-            modality_id: "mod1".to_string(),
             gross_profit: 2000.0, // Increased profit
             gross_loss: 0.0,
             sales_total: 5000.0,

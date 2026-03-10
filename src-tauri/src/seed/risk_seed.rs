@@ -1,6 +1,6 @@
 // src-tauri/src/seed/risk_seed.rs
 use crate::models::{
-    GrowthPhase, GrowthPhaseProgressionRule, GrowthPhaseRegressionRule, RiskProfile,
+    GrowthPhase, GrowthPhaseProgressionRule, RiskProfile,
 };
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;

@@ -26,7 +26,6 @@ pub async fn seed_timeframes(db: &Surreal<Db>, filter: Option<Vec<String>>) -> R
                 continue;
             }
         }
-        let create_sql = format!("CREATE timeframe:{} CONTENT $data", id);
         let tf_data = Timeframe {
             id: id.into(),
             name: name.into(),

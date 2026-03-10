@@ -13,22 +13,7 @@
             "json": "Json"
         }
     },
-    "$lib/stores/settings": {
-        "svelte": "Svelte"
-    },
-    "(": "(",
-    "-": "-",
-    "/": "/",
-    "2023-12-25": "2023-12-25",
-    "2023-12-25T10:00:00": {
-        "000Z": "000Z"
-    },
-    ":": ":",
-    ";": ";",
-    "String:": "String:",
-    "T": "T",
-    "\\n": "\\n",
-    "auth": {
+  "auth": {
         "login": {
             "createAccount": "Create account",
             "description": "Enter your credentials to access TraderLog Pro.",
@@ -111,7 +96,8 @@
         "of": "of",
         "weekOf": "Week of",
         "weekly": "Weekly",
-        "weeklyShort": "W"
+        "weeklyShort": "W",
+        "next": "Next"
     },
     "dashboard": {
         "charts": {
@@ -570,7 +556,8 @@
         },
         "weeks_upper": "WEEKS",
         "weight": "weight",
-        "yes": "Yes"
+        "yes": "Yes",
+        "progress": "Progress"
     },
     "header": {
         "searchPlaceholder": "Search Placeholder",
@@ -702,6 +689,25 @@
         "title": "Psychological Analysis"
     },
     "settings": {
+        "fiscal": {
+            "assignments": {
+                "title": "Fiscal Assignments",
+                "description": "Link tax profiles to asset types to automate tax calculations.",
+                "goToAssetTypes": "Manage Asset Types",
+                "table": {
+                    "market": "Market",
+                    "assetType": "Asset Type",
+                    "fiscalProfile": "Tax Profile",
+                    "unknownProfile": "Unknown Profile",
+                    "defaultExempt": "Exempt (Default)",
+                    "empty": "No asset types configured."
+                },
+                "tip": {
+                    "title": "Tip:",
+                    "text": "Changing the fiscal profile only affects new calculations and trade closings."
+                }
+            }
+        },
         "accounts": {
             "balance": "BALANCE",
             "confirmDeduplicate": "Are you sure you want to remove duplicate settings?",
@@ -1778,8 +1784,66 @@
                 "title": "Title"
             },
             "welcome": {
-                "description": "We're setting up your workspace.",
-                "title": "Welcome to TraderLog Pro"
+                "description": "We are setting up your workspace.",
+                "title": "Welcome to TraderLog Pro",
+                "select_language": "SELECT YOUR LANGUAGE",
+                "select_theme": "SELECT VISUAL THEME",
+                "dark": "Dark Mode",
+                "light": "Light Mode"
+            },
+            "common": {
+                "name": "Full Name",
+                "name_placeholder": "Your name",
+                "email": "E-mail",
+                "password": "Access Password",
+                "confirm_password": "Confirm Password",
+                "recovery_key_title": "Recovery Key",
+                "recovery_key_desc": "This key is the only way to recover access if you forget your password.",
+                "master_key": "MASTER KEY",
+                "copy_to_clipboard": "Tap to copy",
+                "never_share": "⚠️ NEVER share this key. Keep it in a safe physical location.",
+                "activation_title": "License Activation",
+                "activation_desc": "If you already have a license, import the .lic file below.",
+                "active_license": "License Active!",
+                "plan": "Plan",
+                "import_lic": "IMPORT .LIC FILE",
+                "no_license_title": "DON'T HAVE A LICENSE?",
+                "no_license_desc": "By skipping, you will start in limited TRIAL mode.",
+                "currency_title": "Base Currency",
+                "currency_desc": "Choose the official currency for consolidating all your profits and taxes.",
+                "markets_title": "Where do you trade?",
+                "markets_desc": "Select markets to enable the correct tools.",
+                "asset_types_title": "Asset Types",
+                "asset_types_desc": "Which financial instruments are part of your daily routine?",
+                "rtd_title": "Real-Time Connection (RTD)",
+                "rtd_desc": "Connect TraderLog Pro to your trading terminal via Excel.",
+                "rtd_active_now": "Activate RTD now",
+                "rtd_active_desc": "Detect Profit/Tryd trades instantly.",
+                "rtd_select_sheet": "SELECT SPREADSHEET",
+                "rtd_later_title": "Configure Later",
+                "rtd_later_desc": "You can activate RTD in the settings menu at any time.",
+                "rtd_skip": "SKIP THIS STEP",
+                "mission_ready": "Mission Ready!",
+                "mission_ready_desc": "Your base of operations has been successfully configured. Good trades!",
+                "start_journey": "START JOURNEY",
+                "configuring": "CONFIGURURING...",
+                "markets": {
+                    "M1": "B3 (Brazil)",
+                    "M2": "NYSE (USA)",
+                    "M3": "NASDAQ (USA)",
+                    "M4": "CME Group",
+                    "M5": "Forex",
+                    "M6": "Crypto"
+                },
+                "assets": {
+                    "T1": "Brazil Stocks",
+                    "T2": "Brazil Options",
+                    "T3": "Brazil Futures",
+                    "T4": "Real Estate Funds",
+                    "T5": "US Stocks",
+                    "T6": "Forex Pairs",
+                    "T7": "Cryptocurrencies"
+                }
             }
         }
     },

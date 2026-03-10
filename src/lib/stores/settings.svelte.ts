@@ -167,32 +167,25 @@ class SettingsStore {
         }
     }
 
-    async loadData() {
+    async loadData(silent: boolean = false) {
         if (this.isLoadingData) {
             console.log("[SettingsStore] loadData already in progress, skipping.");
             return;
         }
-        this.isLoadingData = true;
+        if (!silent) this.isLoadingData = true;
         console.log("[SettingsStore] Starting loadData...");
 
-        const safeInvoke = async <T>(command: string, label: string): Promise<T | null> => {
-            try {
-                console.log(`[SettingsStore] Fetching ${label}...`);
-                const result = await invoke(command) as T;
-                if (Array.isArray(result)) {
-                    console.log(`[SettingsStore] ${label} loaded: ${result.length} items`);
-                } else {
-                    console.log(`[SettingsStore] ${label} loaded:`, result ? "success" : "null");
-                }
-                return result;
-            } catch (e) {
-                console.error(`[SettingsStore] ERROR loading ${label}:`, e);
-                return null;
-            }
-        };
-
         try {
-            // Parallel fetch all independent data
+            const safeInvoke = async <T>(command: string, label: string): Promise<T | null> => {
+                try {
+                    const result = await invoke(command) as T;
+                    return result;
+                } catch (e) {
+                    console.error(`[SettingsStore] ERROR loading ${label}:`, e);
+                    return null;
+                }
+            };
+
             const [
                 profile,
                 hwid,
@@ -243,25 +236,7 @@ class SettingsStore {
                 safeInvoke<TaxProfileEntry[]>("get_tax_profile_entries", "Tax Profile Entries")
             ]);
 
-            if (journalEntriesRes) {
-                this.journalEntries = journalEntriesRes;
-                await this.deduplicateJournalEntries(); // Self-heal on load
-            }
-
-            // Process results
-            if (profile) {
-                this.userProfile = { ...this.userProfile, ...profile };
-
-                // If user has no password yet (legacy/new install), auto-login
-                if (!this.userProfile.password_hash) {
-                    this.isLoggedIn = true;
-                }
-
-                if (!this.userProfile.trial_start_date && this.userProfile.onboarding_completed) {
-                    this.userProfile.trial_start_date = new Date().toISOString();
-                    this.saveUserProfile();
-                }
-            }
+            // Assign results
             if (hwid) this.hardwareId = hwid;
             if (apiConfigsRes) this.apiConfigs = apiConfigsRes;
             if (accountsRes) this.accounts = accountsRes;
@@ -272,7 +247,6 @@ class SettingsStore {
             if (emotionalStatesRes) this.emotionalStates = emotionalStatesRes;
             if (strategiesRes) this.strategies = strategiesRes;
             if (transactionsRes) this.cashTransactions = transactionsRes;
-            if (journalEntriesRes) this.journalEntries = journalEntriesRes;
             if (feesRes) this.fees = feesRes;
             if (riskProfilesRes) {
                 this.riskProfiles = riskProfilesRes.map(rp => ({
@@ -285,67 +259,45 @@ class SettingsStore {
             if (indicatorsRes) this.indicators = indicatorsRes;
             if (timeframesRes) this.timeframes = timeframesRes;
             if (chartTypesRes) this.chartTypes = chartTypesRes;
-
-            if (taxRulesRes) {
-                const validRules = taxRulesRes.filter(r => r.name && r.name.trim() !== "");
-                const ghostRules = taxRulesRes.filter(r => !r.name || r.name.trim() === "");
-                for (const ghost of ghostRules) {
-                    await invoke("delete_tax_rule", { id: ghost.id }).catch(e => console.error(e));
-                }
-                this.taxRules = validRules;
-            }
-
+            if (taxRulesRes) this.taxRules = taxRulesRes;
             if (taxMappingsRes) this.taxMappings = taxMappingsRes;
+            if (taxProfilesRes) this.taxProfiles = taxProfilesRes;
+            if (taxProfileEntriesRes) this.taxProfileEntries = taxProfileEntriesRes;
 
-            if (taxProfilesRes) {
-                const validProfiles = taxProfilesRes.filter(p => p.name && p.name.trim() !== "");
-                const ghostProfiles = taxProfilesRes.filter(p => !p.name || p.name.trim() === "");
-                for (const ghost of ghostProfiles) {
-                    await invoke("delete_tax_profile", { id: ghost.id }).catch(e => console.error(e));
-                }
-                this.taxProfiles = validProfiles;
+            if (journalEntriesRes) {
+                this.journalEntries = journalEntriesRes;
+                await this.deduplicateJournalEntries();
             }
 
-            if (taxProfileEntriesRes) {
-                const validEntries = taxProfileEntriesRes.filter(e => e.tax_profile_id && e.tax_rule_id && e.modality_id);
-                const ghostEntries = taxProfileEntriesRes.filter(e => !e.tax_profile_id || !e.tax_rule_id || !e.modality_id);
-                for (const ghost of ghostEntries) {
-                    await invoke("delete_tax_profile_entry", { id: ghost.id }).catch(e => console.error(e));
-                }
-                this.taxProfileEntries = validEntries;
+            if (profile) {
+                this.userProfile = { ...this.userProfile, ...profile };
+
+                console.log("[SettingsStore] User Profile loaded and processed. Onboarding:", this.userProfile.onboarding_completed);
+            } else {
+                console.warn("[SettingsStore] No profile found, using defaults.");
             }
 
-            // Other items (localStorage fallback for shared/UI state only)
+            // LocalStorage fallbacks for UI state
             const savedBindings = localStorage.getItem("service_api_bindings");
             if (savedBindings) {
                 const parsed = JSON.parse(savedBindings);
                 this.psychologyApiId = parsed.psychology || "mock";
                 this.marketDataApiId = parsed.market_data || "mock";
             }
+            this.rtdEnabled = localStorage.getItem("rtd_enabled") === "true";
+            this.rtdExcelPath = localStorage.getItem("rtd_excel_path") || "";
 
-            const savedRtd = localStorage.getItem("rtd_enabled");
-            if (savedRtd) this.rtdEnabled = savedRtd === "true";
-
-            const savedRtdPath = localStorage.getItem("rtd_excel_path");
-            if (savedRtdPath) this.rtdExcelPath = savedRtdPath;
-
-            // Initial license verification
             if (this.userProfile.license_key && this.hardwareId) {
                 this.refreshLicenseStatus();
             }
 
-            // --- AUTO-START RTD MONITOR ---
-            // If it was enabled in a previous session, we must re-start the bridge
             if (this.rtdEnabled) {
-                console.log("[SettingsStore] RTD was enabled, restarting monitor...");
-                invoke("start_rtd_monitor_cmd", {
-                    excelPath: this.rtdExcelPath || null,
-                }).catch(e => console.error("[SettingsStore] Failed to auto-start RTD monitor:", e));
+                invoke("start_rtd_monitor_cmd", { excelPath: this.rtdExcelPath || null }).catch(e => console.error(e));
             }
 
             console.log("[SettingsStore] loadData completed.");
         } catch (e) {
-            console.error("Failed to load data from SurrealDB (Critical)", e);
+            console.error("[SettingsStore] CRITICAL error in loadData:", e);
         } finally {
             this.isLoadingData = false;
         }
@@ -416,14 +368,21 @@ class SettingsStore {
         }
     }
 
-    private async saveAssets() {
+    async saveAssets() {
+        console.log(`[SettingsStore] saveAssets: Saving ${this.assets.length} assets...`);
+        let successCount = 0;
+        let failCount = 0;
+
         for (const asset of this.assets) {
             try {
                 await invoke("save_asset", { asset: $state.snapshot(asset) });
+                successCount++;
             } catch (e) {
-                console.error("[SettingsStore] Error saving asset:", e);
+                failCount++;
+                console.error(`[SettingsStore] FATAL Error saving asset ${asset.symbol}:`, e);
             }
         }
+        console.log(`[SettingsStore] saveAssets complete. Success: ${successCount}, Failed: ${failCount}`);
     }
 
     private async saveEmotionalStates() {
@@ -654,9 +613,9 @@ class SettingsStore {
     }
 
     // Assets
-    addAsset(item: Omit<Asset, "id">) {
+    async addAsset(item: Omit<Asset, "id">, autoSave: boolean = true) {
         this.assets.push({ ...item, id: crypto.randomUUID() });
-        this.saveAssets();
+        if (autoSave) await this.saveAssets();
     }
     updateAsset(id: string, item: Partial<Asset>) {
         this.assets = this.assets.map(a => a.id === id ? { ...a, ...item } : a);

@@ -1,0 +1,9 @@
+﻿cargo :     Checking tauri-apptraderlogpro v0.1.0 (C:\PROJETOS\TraderLogPro\src-tauri)
+No linha:1 caractere:1
++ cargo check 2>&1 | Out-File -Encoding utf8 final_check_v2.txt
++ ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (    Checking ta...gPro\src-tauri):String 
+   ) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.93s

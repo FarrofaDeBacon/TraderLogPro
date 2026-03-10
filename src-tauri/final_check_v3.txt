@@ -1,0 +1,33 @@
+﻿cargo :     Checking tauri-apptraderlogpro v0.1.0 (C:\PROJETOS\TraderLogPro\src-tauri)
+No linha:1 caractere:1
++ cargo check 2>&1 | Out-File -Encoding utf8 final_check_v3.txt
++ ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (    Checking ta...gPro\src-tauri):String 
+   ) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+error[E0382]: use of moved value: `variant`
+    --> src\models.rs:117:54
+     |
+  92 |         let (tag, variant) = data.variant::<String>()?;
+     |                   ------- move occurs because `variant` has type `<A as 
+EnumAccess<'_>>::Variant`, which does not implement the `Copy` trait
+...
+ 114 |                 match variant.unit_variant() {
+     |                               -------------- `variant` moved due to this 
+method call
+...
+ 117 |                         let val: serde_json::Value = 
+variant.newtype_variant_seed(UniversalSeed)?;
+     |                                                      ^^^^^^^ value used here 
+after move
+     |
+note: `unit_variant` takes ownership of the receiver `self`, which moves `variant`
+    --> C:\Users\Farrofa DeBacon\scoop\persist\rustup\.cargo\registry\src\index.crates
+.io-1949cf8c6b5b557f\serde_core-1.0.228\src\de\mod.rs:2128:21
+     |
+2128 |     fn unit_variant(self) -> Result<(), Self::Error>;
+     |                     ^^^^
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `tauri-apptraderlogpro` (lib) due to 1 previous error

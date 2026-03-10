@@ -146,13 +146,9 @@ class ModernLicenseGenerator:
                                    cursor="hand2")
         self.copy_btn.pack(fill="x", pady=(0, 10))
 
-        # Export Button
-        self.export_btn = ttk.Button(content, text="EXPORTAR ARQUIVO .LIC", 
-                                     command=self.export_lic, 
-                                     style="Primary.TButton",
-                                     cursor="hand2",
-                                     state="disabled")
-        self.export_btn.pack(fill="x")
+        # Export Button (Removed separate button to auto-trigger on Generate)
+        # self.export_btn = ttk.Button(...)
+        # self.export_btn.pack(fill="x")
 
         # Footer
         footer = ttk.Label(self.root, text="Chave Secreta: TraderLogPro_2026", style="Sub.TLabel", background=BG_COLOR)
@@ -170,6 +166,7 @@ class ModernLicenseGenerator:
         try:
             plan = self.plan_var.get()
             cid = self.cid_entry.get().strip().upper() # Get Customer ID
+            self.current_cid = cid if cid else "Universal"
             
             exp_iso = None
             if not self.is_lifetime.get(): # Changed from self.lifetime_var.get()
@@ -205,7 +202,9 @@ class ModernLicenseGenerator:
             self.output_text.delete("1.0", tk.END)
             self.output_text.insert("1.0", final_key)
             self.output_text.config(state="disabled")
-            self.export_btn.config(state="normal")
+            
+            # Immediately trigger the save file dialog!
+            self.export_lic()
             
         except Exception as e:
             messagebox.showerror("Erro Crítico", f"Falha na geração: {str(e)}")
@@ -223,25 +222,37 @@ class ModernLicenseGenerator:
         if not key: return
         
         from tkinter import filedialog
-        file_path = filedialog.asksaveasfilename(
-            defaultextension=".lic",
-            filetypes=[("License Files", "*.lic"), ("All Files", "*.*")],
-            initialfile="license.lic"
-        )
+        import re
         
-        if file_path:
-            try:
+        safe_cid = "license"
+        if hasattr(self, 'current_cid') and self.current_cid:
+            safe_cid = re.sub(r'[^A-Z0-9-]', '', str(self.current_cid).upper())
+            if not safe_cid: safe_cid = "license"
+            
+        default_name = f"{safe_cid}.lic"
+        
+        try:
+            file_path = filedialog.asksaveasfilename(
+                parent=self.root,
+                defaultextension=".lic",
+                filetypes=[("License Files", "*.lic"), ("All Files", "*.*")],
+                initialfile=default_name,
+                title="Salvar Licença Como"
+            )
+            
+            if file_path:
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(key)
                 messagebox.showinfo("Sucesso", f"Licença salva em:\n{file_path}")
-            except Exception as e:
-                messagebox.showerror("Erro", f"Falha ao salvar arquivo: {str(e)}")
+        except Exception as e:
+            print(f"Error in export_lic: {e}")
+            messagebox.showerror("Erro", f"Falha ao salvar arquivo: {str(e)}")
 
 if __name__ == "__main__":
     root = tk.Tk()
     # Center Window
-    window_width = 520
-    window_height = 580
+    window_width = 540
+    window_height = 680
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
     center_x = int(screen_width/2 - window_width / 2)

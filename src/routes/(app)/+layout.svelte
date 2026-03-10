@@ -35,20 +35,26 @@
     }
 </script>
 
-{#if dataLoaded && !settingsStore.userProfile.onboarding_completed}
-    <OnboardingWizard onComplete={handleOnboardingComplete} />
+{#if dataLoaded}
+    {#if !settingsStore.userProfile.onboarding_completed}
+        <OnboardingWizard onComplete={handleOnboardingComplete} />
+    {:else}
+        <div
+            class="grid min-h-screen w-full transition-all duration-300 bg-background md:grid-cols-[var(--sidebar-width)_1fr]"
+            style="--sidebar-width: {sidebarState.isCollapsed
+                ? '70px'
+                : '280px'};"
+        >
+            <AppSidebar />
+            <div class="flex flex-col min-w-0">
+                <LicenseBanner />
+                <AutoTradeDetectionDialog />
+                <main
+                    class="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 min-w-0"
+                >
+                    {@render children()}
+                </main>
+            </div>
+        </div>
+    {/if}
 {/if}
-
-<div
-    class="grid min-h-screen w-full transition-all duration-300 bg-background md:grid-cols-[var(--sidebar-width)_1fr]"
-    style="--sidebar-width: {sidebarState.isCollapsed ? '70px' : '280px'};"
->
-    <AppSidebar />
-    <div class="flex flex-col min-w-0">
-        <LicenseBanner />
-        <AutoTradeDetectionDialog />
-        <main class="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 min-w-0">
-            {@render children()}
-        </main>
-    </div>
-</div>

@@ -9,7 +9,14 @@ use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
 use tauri::State;
 
+use hmac::{Hmac, Mac};
+use sha2::Sha256;
+type HmacSha256 = Hmac<Sha256>;
+use base64::Engine as _;
+
 pub mod irpf;
+
+const LICENSE_SECRET_KEY: &[u8] = b"TRADERLOGPRO_SECRET_KEY_2026";
 
 /// Helper: CREATE if new, UPDATE if exists.
 /// CRITICAL: Uses ⟨UUID⟩ angle-bracket notation in the SurrealQL Record ID.
@@ -27,7 +34,7 @@ async fn upsert_record(
     // Use ⟨⟩ angle brackets to escape UUID hyphens in SurrealQL Record IDs
     // Result: UPSERT trade:⟨ccd50e28-cb72-...⟩ CONTENT $data
     let full_id = format!("{}:⟨{}⟩", table, id);
-    let query = format!("UPSERT {} CONTENT $data", full_id);
+    let query = format!("UPSERT {} CONTENT $data RETURN NONE", full_id);
 
     db.query(&query).bind(("data", data)).await.map_err(|e| {
         println!("[DB] SDK Upsert ERROR for {}. Error: {}", full_id, e);
@@ -39,7 +46,7 @@ async fn upsert_record(
 
 /// Helper: DELETE a record by table:id using ⟨UUID⟩ angle-bracket notation.
 async fn delete_record(db: &Surreal<Db>, table: &str, id: &str) -> Result<(), String> {
-    let query = format!("DELETE {}:⟨{}⟩", table, id);
+    let query = format!("DELETE {}:⟨{}⟩ RETURN NONE", table, id);
     db.query(&query).await.map_err(|e| e.to_string())?;
     Ok(())
 }
@@ -105,7 +112,7 @@ pub async fn save_user_profile(
     }
 
     // Using UPSERT to ensure it creates if missing, and raw query to avoid high-level API result serialization issues
-    db.0.query("UPSERT user_profile:main CONTENT $profile")
+    db.0.query("UPSERT user_profile:main CONTENT $profile RETURN NONE")
         .bind(("profile", profile_json))
         .await
         .map_err(|e| e.to_string())?;
@@ -124,10 +131,10 @@ pub async fn verify_password(db: State<'_, DbState>, password: String) -> Result
             .await
             .map_err(|e| e.to_string())?;
 
-    let profiles: Vec<serde_json::Value> = result.take(0).map_err(|e| e.to_string())?;
+    let profiles: Vec<crate::models::SurrealJson> = result.take(0).map_err(|e| e.to_string())?;
 
     if let Some(profile_data) = profiles.first() {
-        if let Some(hash_val) = profile_data.get("password_hash") {
+        if let Some(hash_val) = profile_data.0.get("password_hash") {
             if let Some(stored_hash) = hash_val.as_str() {
                 if stored_hash.is_empty() {
                     println!("[DEBUG] No password set for user, allowing access.");
@@ -155,10 +162,10 @@ pub async fn verify_recovery_key(db: State<'_, DbState>, key: String) -> Result<
         db.0.query("SELECT * FROM user_profile:main")
             .await
             .map_err(|e| e.to_string())?;
-    let profiles: Vec<serde_json::Value> = result.take(0).map_err(|e| e.to_string())?;
+    let profiles: Vec<crate::models::SurrealJson> = result.take(0).map_err(|e| e.to_string())?;
 
     if let Some(profile_data) = profiles.first() {
-        if let Some(hash_val) = profile_data.get("recovery_hash") {
+        if let Some(hash_val) = profile_data.0.get("recovery_hash") {
             if let Some(stored_hash) = hash_val.as_str() {
                 if stored_hash.is_empty() {
                     return Ok(false);
@@ -186,10 +193,10 @@ pub async fn reset_password(
             .await
             .map_err(|e| e.to_string())?;
 
-    let profiles: Vec<serde_json::Value> = result.take(0).map_err(|e| e.to_string())?;
+    let profiles: Vec<crate::models::SurrealJson> = result.take(0).map_err(|e| e.to_string())?;
 
     let is_key_valid = if let Some(profile_data) = profiles.first() {
-        if let Some(hash_val) = profile_data.get("recovery_hash") {
+        if let Some(hash_val) = profile_data.0.get("recovery_hash") {
             if let Some(stored_hash) = hash_val.as_str() {
                 if stored_hash.is_empty() {
                     false
@@ -566,15 +573,15 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
     // Diagnostic check for existence BEFORE upserting
     let check_sql = format!("SELECT id FROM trade:⟨{}⟩ LIMIT 1", clean_id);
     if let Ok(mut res) = db.0.query(&check_sql).await {
-        if let Ok(existing) = res.take::<Vec<serde_json::Value>>(0) {
+        if let Ok(existing) = res.take::<Vec<crate::models::SurrealJson>>(0) {
             if !existing.is_empty() {
                 println!("[DEBUG] save_trade: Record trade:⟨{}⟩ already exists. Performing UPDATE.", clean_id);
             } else {
                 println!("[DEBUG] save_trade: Record trade:⟨{}⟩ NOT found. Performing INSERT.", clean_id);
                 // Log all IDs in the table to find potential mismatches
                 if let Ok(mut all_res) = db.0.query("SELECT type::string(id) as id FROM trade LIMIT 5").await {
-                   if let Ok(ids) = all_res.take::<Vec<serde_json::Value>>(0) {
-                       println!("[DEBUG] save_trade: Sample existing IDs in 'trade' table: {:?}", ids);
+                   if let Ok(ids) = all_res.take::<Vec<crate::models::SurrealJson>>(0) {
+                        println!("[DEBUG] save_trade: Sample existing IDs in 'trade' table: {:?}", ids);
                    }
                 }
             }
@@ -684,7 +691,7 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
             }
 
             // C. Process updates
-            for (mut closure, is_target) in closures_to_process {
+            for (closure, is_target) in closures_to_process {
                 let ct_clean = closure.id.split(':').last().unwrap_or(&closure.id)
                     .replace("⟨", "").replace("⟩", "").replace("`", "").to_string();
                 let ct_full = format!("cash_transaction:⟨{}⟩", ct_clean);
@@ -732,9 +739,9 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
                         } else {
                             let sql_res = format!("SELECT result FROM trade:⟨{}⟩ LIMIT 1", tid_clean_loop);
                             if let Ok(mut res_query) = db.0.query(&sql_res).await {
-                                if let Ok(results) = res_query.take::<Vec<serde_json::Value>>(0) {
+                                if let Ok(results) = res_query.take::<Vec<crate::models::SurrealJson>>(0) {
                                     if let Some(first) = results.first() {
-                                        new_total += first.get("result").and_then(|v| v.as_f64()).unwrap_or(0.0);
+                                        new_total += first.0.get("result").and_then(|v| v.as_f64()).unwrap_or(0.0);
                                     }
                                 }
                             }
@@ -788,14 +795,14 @@ pub async fn delete_trade(db: State<'_, DbState>, id: String) -> Result<(), Stri
 
     let mut trade_result = 0.0_f64;
     if let Ok(mut trade_res) = db.0.query(&sql_trade).await {
-        if let Ok(results) = trade_res.take::<Vec<serde_json::Value>>(0) {
+        if let Ok(results) = trade_res.take::<Vec<crate::models::SurrealJson>>(0) {
             println!(
                 "[COMMAND] delete_trade: trade result query returned {} rows: {:?}",
                 results.len(),
                 results
             );
             if let Some(first) = results.first() {
-                trade_result = first.get("result").and_then(|v| v.as_f64()).unwrap_or(0.0);
+                trade_result = first.0.get("result").and_then(|v| v.as_f64()).unwrap_or(0.0);
             }
         }
     }
@@ -897,10 +904,10 @@ pub async fn delete_trade(db: State<'_, DbState>, id: String) -> Result<(), Stri
                     
                     let sql_res = format!("SELECT result FROM trade:⟨{}⟩ LIMIT 1", tid_clean_rem);
                     if let Ok(mut res_query) = db.0.query(&sql_res).await {
-                        if let Ok(results) = res_query.take::<Vec<serde_json::Value>>(0) {
+                        if let Ok(results) = res_query.take::<Vec<crate::models::SurrealJson>>(0) {
                             if let Some(first) = results.first() {
                                 new_total +=
-                                    first.get("result").and_then(|v| v.as_f64()).unwrap_or(0.0);
+                                    first.0.get("result").and_then(|v| v.as_f64()).unwrap_or(0.0);
                             }
                         }
                     }
@@ -1006,7 +1013,7 @@ pub async fn diagnostic_closure_dump(db: State<'_, DbState>) -> Result<(), Strin
     println!("\n[TRADES]");
     let query = "SELECT type::string(id) as id, type::string(date) as date, (IF exit_date != NONE THEN type::string(exit_date) ELSE null END) as exit_date, type::float(result) as result, type::float(exit_price) as exit_price, (IF account_id != NONE THEN type::string(account_id) ELSE null END) as account_id FROM trade ORDER BY date DESC LIMIT 1";
     let mut res = db.0.query(query).await.map_err(|e| e.to_string())?;
-    let all_fields_trades: Vec<serde_json::Value> = res.take(0).map_err(|e| e.to_string())?;
+    let all_fields_trades: Vec<crate::models::SurrealJson> = res.take(0).map_err(|e| e.to_string())?;
     if let Some(t) = all_fields_trades.first() {
         println!(
             "SAMPLE TRADE DATA: {}",
@@ -1018,16 +1025,16 @@ pub async fn diagnostic_closure_dump(db: State<'_, DbState>) -> Result<(), Strin
     println!("\n[CASH TRANSACTIONS]");
     let query_tx = "SELECT type::string(id) as id, date, amount, description, account_id, system_linked FROM cash_transaction ORDER BY date DESC LIMIT 20";
     let mut res_tx = db.0.query(query_tx).await.map_err(|e| e.to_string())?;
-    let txs: Vec<serde_json::Value> = res_tx.take(0).map_err(|e| e.to_string())?;
+    let txs: Vec<crate::models::SurrealJson> = res_tx.take(0).map_err(|e| e.to_string())?;
     for tx in txs {
         println!(
             "Tx: id={}, date={:?}, amt={:?}, desc={:?}, acc={:?}, linked={:?}",
-            tx["id"],
-            tx["date"],
-            tx["amount"],
-            tx["description"],
-            tx["account_id"],
-            tx["system_linked"]
+            tx.0["id"],
+            tx.0["date"],
+            tx.0["amount"],
+            tx.0["description"],
+            tx.0["account_id"],
+            tx.0["system_linked"]
         );
     }
 
@@ -1035,11 +1042,11 @@ pub async fn diagnostic_closure_dump(db: State<'_, DbState>) -> Result<(), Strin
     println!("\n[ACCOUNTS]");
     let query_acc = "SELECT type::string(id) as id, nickname, balance FROM account";
     let mut res_acc = db.0.query(query_acc).await.map_err(|e| e.to_string())?;
-    let accs: Vec<serde_json::Value> = res_acc.take(0).map_err(|e| e.to_string())?;
+    let accs: Vec<crate::models::SurrealJson> = res_acc.take(0).map_err(|e| e.to_string())?;
     for a in accs {
         println!(
             "Account: id={}, name={:?}, bal={:?}",
-            a["id"], a["nickname"], a["balance"]
+            a.0["id"], a.0["nickname"], a.0["balance"]
         );
     }
 
@@ -1147,7 +1154,7 @@ pub async fn diagnostic_dump_trades(db: State<'_, DbState>) -> Result<(), String
         db.0.query("SELECT *, type::string(id) as id FROM trade")
             .await
             .map_err(|e| e.to_string())?;
-    let trades: Vec<serde_json::Value> = result.take(0).map_err(|e| e.to_string())?;
+    let trades: Vec<crate::models::SurrealJson> = result.take(0).map_err(|e| e.to_string())?;
     println!("[DIAGNOSTIC] Total trades found: {}", trades.len());
     for t in trades {
         println!(
@@ -1165,7 +1172,7 @@ pub async fn diagnostic_dump_users(db: State<'_, DbState>) -> Result<(), String>
         db.0.query("SELECT *, type::string(id) as id FROM user_profile")
             .await
             .map_err(|e| e.to_string())?;
-    let users: Vec<serde_json::Value> = result.take(0).map_err(|e| e.to_string())?;
+    let users: Vec<crate::models::SurrealJson> = result.take(0).map_err(|e| e.to_string())?;
     println!("[DIAGNOSTIC] Total users found: {}", users.len());
     for u in users {
         println!(
@@ -1415,13 +1422,13 @@ pub async fn factory_reset(db: State<'_, DbState>) -> Result<(), String> {
     ];
 
     for table in tables {
-        let _ = db.0.query(format!("DELETE {}", table)).await;
+        let _ = db.0.query(format!("DELETE {} RETURN NONE", table)).await;
     }
 
     // 2. Reset Onboarding in Profile
     let _ = db
         .0
-        .query("UPDATE user_profile:main SET onboarding_completed = false, trial_start_date = NONE")
+        .query("UPDATE user_profile:main SET onboarding_completed = false, trial_start_date = NONE RETURN NONE")
         .await;
 
     println!(
@@ -1440,6 +1447,29 @@ pub async fn ensure_defaults(db: State<'_, DbState>) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub async fn finish_custom_onboarding(
+    db: State<'_, DbState>,
+    currencies: Vec<String>,
+    markets: Vec<String>,
+    asset_types: Vec<String>,
+) -> Result<(), String> {
+    println!("[ONBOARDING] Executando rotina restrita de seeds customizadas...");
+    crate::seed::run_custom_seeds(&db.0, currencies, markets, asset_types).await?;
+    
+    // Ensure at least an empty Real account exists
+    crate::seed::demo_accounts_seed::seed_accounts(&db.0, Some(vec!["account:real".to_string()]))
+        .await?;
+
+    // CRITICAL: Mark onboarding as completed in the database
+    db.0.query("UPDATE user_profile:main SET onboarding_completed = true RETURN NONE")
+        .await
+        .map_err(|e| e.to_string())?;
+
+    println!("[ONBOARDING] Sucesso: Custom seeds aplicadas e onboarding marcado como OK.");
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn check_database_status(db: tauri::State<'_, DbState>) -> Result<String, String> {
     println!("[DIAGNOSTIC] Checking database status...");
 
@@ -1453,9 +1483,9 @@ pub async fn check_database_status(db: tauri::State<'_, DbState>) -> Result<Stri
 
         match res {
             Ok(mut response) => {
-                let result: Option<serde_json::Value> = response.take(0).unwrap_or(None);
+                let result: Option<crate::models::SurrealJson> = response.take(0).unwrap_or(None);
                 result
-                    .and_then(|v| v.get("count").and_then(|c| c.as_i64()))
+                    .and_then(|v| v.0.get("count").and_then(|c| c.as_i64()))
                     .unwrap_or(0)
             }
             Err(_) => 0,
@@ -1555,7 +1585,7 @@ pub async fn complete_onboarding(db: State<'_, DbState>) -> Result<(), String> {
     println!("[COMMAND] Finalizando onboarding no banco de dados...");
 
     // Using raw query to avoid high-level API result serialization issues
-    db.0.query("UPDATE user_profile:main SET onboarding_completed = true")
+    db.0.query("UPDATE user_profile:main SET onboarding_completed = true RETURN NONE")
         .await
         .map_err(|e| e.to_string())?;
 
@@ -1563,13 +1593,9 @@ pub async fn complete_onboarding(db: State<'_, DbState>) -> Result<(), String> {
     Ok(())
 }
 
-#[tauri::command]
-pub async fn seed_custom_data(db: State<'_, DbState>, modules: Vec<String>) -> Result<(), String> {
-    crate::seed::run_selective_seeds(&db.0, modules).await
-}
 
 #[tauri::command]
-pub async fn get_onboarding_meta() -> Result<serde_json::Value, String> {
+pub async fn get_onboarding_meta() -> Result<crate::models::SurrealJson, String> {
     let defaults = crate::seed::defaults::get_onboarding_defaults();
     let mut modules = serde_json::json!([]);
 
@@ -1588,12 +1614,116 @@ pub async fn get_onboarding_meta() -> Result<serde_json::Value, String> {
         }));
     }
 
-    Ok(modules)
+    Ok(crate::models::SurrealJson(modules))
 }
 
 #[tauri::command]
 pub async fn seed_emotional_states(db: tauri::State<'_, crate::db::DbState>) -> Result<(), String> {
     crate::seed::emotional_states_seed::seed_emotional_states(&db.0, None).await
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct LicenseResult {
+    pub valid: bool,
+    pub plan: String,
+    pub expiration: Option<String>,
+    pub error: Option<String>,
+}
+
+#[tauri::command]
+pub async fn validate_license_cmd(key: String, expected_cid: String) -> LicenseResult {
+    println!("[LICENSE] Validating key for CID: {}", expected_cid);
+
+    // FORMAT: TLP-v1-<B64_PAYLOAD>-<HEX_SIGNATURE>
+    let parts: Vec<&str> = key.split('-').collect();
+    if parts.len() != 4 || parts[0] != "TLP" || parts[1] != "v1" {
+        return LicenseResult {
+            valid: false,
+            plan: "Trial".into(),
+            expiration: None,
+            error: Some("Formato de chave inválido.".into()),
+        };
+    }
+
+    let payload_b64 = parts[2];
+    let signature_hex = parts[3];
+    let data_to_verify = format!("{}-{}-{}", parts[0], parts[1], parts[2]);
+
+    // 1. Verify Signature
+    let mut mac =
+        HmacSha256::new_from_slice(LICENSE_SECRET_KEY).expect("HMAC can take key of any size");
+    mac.update(data_to_verify.as_bytes());
+
+    let signature_bytes = match hex::decode(signature_hex) {
+        Ok(b) => b,
+        Err(_) => {
+            return LicenseResult {
+                valid: false,
+                plan: "Trial".into(),
+                expiration: None,
+                error: Some("Assinatura inválida (Hex decode failed).".into()),
+            }
+        }
+    };
+
+    if mac.verify_slice(&signature_bytes).is_err() {
+        return LicenseResult {
+            valid: false,
+            plan: "Trial".into(),
+            expiration: None,
+            error: Some("Assinatura da chave inválida (Chave adulterada).".into()),
+        };
+    }
+
+    // 2. Decode Payload
+    let payload_bytes = match base64::engine::general_purpose::STANDARD.decode(payload_b64) {
+        Ok(b) => b,
+        Err(_) => {
+            return LicenseResult {
+                valid: false,
+                plan: "Trial".into(),
+                expiration: None,
+                error: Some("Falha ao decodificar payload (Base64).".into()),
+            }
+        }
+    };
+
+    let payload_str = String::from_utf8_lossy(&payload_bytes);
+    let payload: serde_json::Value = match serde_json::from_str(&payload_str) {
+        Ok(v) => v,
+        Err(_) => {
+            return LicenseResult {
+                valid: false,
+                plan: "Trial".into(),
+                expiration: None,
+                error: Some("Payload corrompido (JSON).".into()),
+            }
+        }
+    };
+
+    // 3. Check CID (Identity + Hardware Lock)
+    if let Some(payload_cid) = payload["cid"].as_str() {
+        if payload_cid != expected_cid {
+            println!(
+                "[LICENSE] CID MISMATCH: expected {}, got {}",
+                expected_cid, payload_cid
+            );
+            return LicenseResult {
+                valid: false,
+                plan: payload["plan"].as_str().unwrap_or("Pro").into(),
+                expiration: payload["exp"].as_str().map(|s| s.into()),
+                error: Some("Licença vinculada a outra identidade (ID incorreto).".into()),
+            };
+        }
+    }
+
+    // 4. Return Success
+    LicenseResult {
+        valid: true,
+        plan: payload["plan"].as_str().unwrap_or("Pro").into(),
+        expiration: payload["exp"].as_str().map(|s| s.into()),
+        error: None,
+    }
 }
 
 #[tauri::command]
@@ -1651,16 +1781,16 @@ pub async fn backup_database(db: State<'_, DbState>, path: String) -> Result<Str
     });
 
     for table in &tables {
-        let sql = format!("SELECT * FROM {}", table);
+        let sql = format!("SELECT *, type::string(id) as id FROM {}", table);
         match db.0.query(&sql).await {
-            Ok(mut res) => match res.take::<Vec<serde_json::Value>>(0) {
+            Ok(mut res) => match res.take::<Vec<crate::models::SurrealJson>>(0) {
                 Ok(rows) => {
                     let row_count = rows.len();
                     backup["tables"][table] = serde_json::json!(rows);
                     println!("[BACKUP] Table {}: {} rows confirmed", table, row_count);
                     if row_count > 0 {
                         if let Some(first) = rows.first() {
-                             println!("[BACKUP]   Sample ID for {}: {:?}", table, first.get("id"));
+                             println!("[BACKUP]   Sample ID for {}: {:?}", table, first.0.get("id"));
                         }
                     }
                 }

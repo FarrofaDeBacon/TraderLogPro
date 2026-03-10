@@ -1,0 +1,10 @@
+﻿cargo :     Blocking waiting for file lock on build directory
+No linha:1 caractere:1
++ cargo check 2>&1 | Out-File -Encoding utf8 final_check_v4.txt
++ ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (    Blocking wa...build directory:String 
+   ) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    Checking tauri-apptraderlogpro v0.1.0 (C:\PROJETOS\TraderLogPro\src-tauri)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 43.89s

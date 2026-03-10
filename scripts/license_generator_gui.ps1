@@ -127,6 +127,7 @@ $BtnGen.Add_Click({
             $IsLife = $ChkLifetime.Checked -or ($ComboPlan.Text -eq "Lifetime")
             $Plan = if ($IsLife) { "Lifetime" } else { $ComboPlan.Text }
             $Cid = $TxtCid.Text.Trim().ToUpper()
+            $Script:CurrentCid = if ($Cid) { $Cid } else { "Universal" }
             $ExpIso = $null
         
             if (-not $IsLife) {
@@ -193,7 +194,7 @@ $BtnExport.Add_Click({
         if ($TxtResult.Text -ne "") {
             $SaveDialog = New-Object Windows.Forms.SaveFileDialog
             $SaveDialog.Filter = "License Files (*.lic)|*.lic|All files (*.*)|*.*"
-            $SaveDialog.FileName = "license.lic"
+            $SaveDialog.FileName = if ($Script:CurrentCid) { "$Script:CurrentCid.lic" } else { "license.lic" }
             if ($SaveDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
                 $UTF8NoBOM = New-Object System.Text.UTF8Encoding $false
                 [System.IO.File]::WriteAllText($SaveDialog.FileName, $TxtResult.Text, $UTF8NoBOM)

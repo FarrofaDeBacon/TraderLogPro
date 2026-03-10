@@ -4,7 +4,6 @@ use crate::models::TaxRule;
 #[derive(Debug, Clone)]
 pub struct RuleBucket {
     pub rule: TaxRule,
-    pub modality_id: String,
     pub gross_profit: f64,
     pub gross_loss: f64,
     pub sales_total: f64,
@@ -34,7 +33,7 @@ pub fn calculate_appraisal(
 
     // 3. Compensation Logic
     let mut compensated_loss = 0.0;
-    let mut calculation_basis;
+    let calculation_basis;
 
     let basis_profit = if rule.basis == "GrossProfit" {
         gross_profit
@@ -86,9 +85,9 @@ pub fn calculate_appraisal(
     if total_deduction_available < 0.0 {
         total_deduction_available = 0.0;
     }
-    let mut withholding_credit_used = 0.0;
-    let mut tax_after_irrf = 0.0;
-    let mut withholding_credit_remaining = 0.0;
+    let withholding_credit_used;
+    let tax_after_irrf;
+    let withholding_credit_remaining;
 
     if tax_due > 0.0 {
         if total_deduction_available >= tax_due {
@@ -106,10 +105,7 @@ pub fn calculate_appraisal(
         withholding_credit_remaining = total_deduction_available;
     }
 
-    let mut tax_payable = tax_after_irrf;
-    if tax_payable < 0.0 {
-        tax_payable = 0.0;
-    }
+    let tax_payable = tax_after_irrf; // No need for mut or if < 0.0 checks as tax_due is already >= 0 and logic handles it.
 
     // Complementary Logic: subtract what was already paid for this period/type.
     let total_payable = (tax_payable + tax_accumulated) - already_paid;

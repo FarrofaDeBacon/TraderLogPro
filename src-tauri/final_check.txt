@@ -1,0 +1,50 @@
+﻿cargo :     Checking tauri-apptraderlogpro v0.1.0 (C:\PROJETOS\TraderLogPro\src-tauri)
+No linha:1 caractere:1
++ cargo check 2>&1 | Out-File -Encoding utf8 final_check.txt
++ ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (    Checking ta...gPro\src-tauri):String 
+   ) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+warning: unused import: `_master_seeder::run_all_seeds`
+  --> src\seed\mod.rs:26:9
+   |
+26 | pub use _master_seeder::run_all_seeds;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `_master_seeder::run_minimal_seeds`
+  --> src\seed\mod.rs:29:9
+   |
+29 | pub use _master_seeder::run_minimal_seeds;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `_master_seeder::run_selective_seeds`
+  --> src\seed\mod.rs:30:9
+   |
+30 | pub use _master_seeder::run_selective_seeds;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0560]: struct `RuleBucket` has no field named `modality_id`
+   --> src\commands\irpf.rs:225:21
+    |
+225 |                     modality_id: trade_mod_id.clone(),
+    |                     ^^^^^^^^^^^ `RuleBucket` does not have this field
+    |
+    = note: all struct fields are already assigned
+
+warning: variable does not need to be mutable
+   --> src\commands.rs:694:18
+    |
+694 |             for (mut closure, is_target) in closures_to_process {
+    |                  ----^^^^^^^
+    |                  |
+    |                  help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+For more information about this error, try `rustc --explain E0560`.
+warning: `tauri-apptraderlogpro` (lib) generated 4 warnings
+error: could not compile `tauri-apptraderlogpro` (lib) due to 1 previous error; 4 
+warnings emitted

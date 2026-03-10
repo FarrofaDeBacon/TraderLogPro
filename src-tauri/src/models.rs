@@ -1,166 +1,157 @@
 use serde::{Deserialize, Serialize};
 use serde_json;
-use surrealdb::sql::Thing;
+use surrealdb::sql::{Thing, Value as SurrealValue};
 
 use serde::de::{self, Visitor};
 use std::fmt;
 
+pub trait ToDto {
+    type Dto;
+    fn to_dto(&self) -> Self::Dto;
+}
+
 // Robust helper to handle IDs from both JSON (WebSocket/HTTP) and Binary (SurrealKV)
-struct SurrealIdInner(String);
+#[derive(Debug, Clone)]
+pub struct SurrealId(pub String);
 
-impl<'de> Deserialize<'de> for SurrealIdInner {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        struct InnerVisitor;
-        impl<'de> Visitor<'de> for InnerVisitor {
-            type Value = SurrealIdInner;
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                formatter.write_str("any valid ID value (string, number, object, enum)")
-            }
+struct UniversalVisitor;
 
-            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-            where
-                E: de::Error,
-            {
-                Ok(SurrealIdInner(v.to_string()))
-            }
-            fn visit_string<E>(self, v: String) -> Result<Self::Value, E>
-            where
-                E: de::Error,
-            {
-                Ok(SurrealIdInner(v))
-            }
-            fn visit_i64<E>(self, v: i64) -> Result<Self::Value, E>
-            where
-                E: de::Error,
-            {
-                Ok(SurrealIdInner(v.to_string()))
-            }
-            fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
-            where
-                E: de::Error,
-            {
-                Ok(SurrealIdInner(v.to_string()))
-            }
-            fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E>
-            where
-                E: de::Error,
-            {
-                Ok(SurrealIdInner(v.to_string()))
-            }
-            fn visit_bool<E>(self, v: bool) -> Result<Self::Value, E>
-            where
-                E: de::Error,
-            {
-                Ok(SurrealIdInner(v.to_string()))
-            }
+/// DeserializeSeed that recursively applies UniversalVisitor so enums (SurrealDB Things)
+/// inside sequences and maps are handled correctly.
+struct UniversalSeed;
 
-            fn visit_map<M>(self, mut map: M) -> Result<Self::Value, M::Error>
-            where
-                M: de::MapAccess<'de>,
-            {
-                // Manually parse map to avoid codec-incompatible serde_json::Value
-                let mut string_val = None;
-                while let Some(key) = map.next_key::<String>()? {
-                    if key == "String" || key == "Uuid" {
-                        string_val = Some(map.next_value::<String>()?);
-                    } else {
-                        let _ = map.next_value::<de::IgnoredAny>()?;
-                    }
-                }
-                Ok(SurrealIdInner(
-                    string_val.unwrap_or_else(|| "id".to_string()),
-                ))
-            }
-
-            fn visit_enum<A>(self, data: A) -> Result<Self::Value, A::Error>
-            where
-                A: de::EnumAccess<'de>,
-            {
-                let (variant, variant_access) = data.variant::<String>()?;
-                use serde::de::VariantAccess;
-                let content: String = match variant.as_str() {
-                    "String" | "Uuid" => variant_access.newtype_variant()?,
-                    "Number" => {
-                        let n: i64 = variant_access.newtype_variant()?;
-                        n.to_string()
-                    }
-                    _ => {
-                        let _ = variant_access.newtype_variant::<de::IgnoredAny>()?;
-                        variant
-                    }
-                };
-                Ok(SurrealIdInner(content))
-            }
-        }
-        deserializer.deserialize_any(InnerVisitor)
+impl<'de> de::DeserializeSeed<'de> for UniversalSeed {
+    type Value = serde_json::Value;
+    fn deserialize<D: serde::Deserializer<'de>>(self, d: D) -> Result<serde_json::Value, D::Error> {
+        d.deserialize_any(UniversalVisitor)
     }
 }
 
-struct IdVisitor;
-
-impl<'de> Visitor<'de> for IdVisitor {
-    type Value = String;
+impl<'de> Visitor<'de> for UniversalVisitor {
+    type Value = serde_json::Value;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a string, a map with tb/id, or a Thing enum")
+        formatter.write_str("any value (String, Object, Seq, or Enum)")
     }
 
-    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        Ok(value.to_string())
+    fn visit_bool<E>(self, v: bool) -> Result<Self::Value, E> {
+        Ok(serde_json::Value::Bool(v))
     }
-    fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        Ok(value)
+    fn visit_i64<E>(self, v: i64) -> Result<Self::Value, E> {
+        Ok(serde_json::json!(v))
+    }
+    fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E> {
+        Ok(serde_json::json!(v))
+    }
+    fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E> {
+        Ok(serde_json::json!(v))
+    }
+    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E> {
+        Ok(serde_json::Value::String(v.to_string()))
+    }
+    fn visit_string<E>(self, v: String) -> Result<Self::Value, E> {
+        Ok(serde_json::Value::String(v))
+    }
+    fn visit_none<E>(self) -> Result<Self::Value, E> {
+        Ok(serde_json::Value::Null)
+    }
+    fn visit_unit<E>(self) -> Result<Self::Value, E> {
+        Ok(serde_json::Value::Null)
     }
 
-    fn visit_map<M>(self, mut map: M) -> Result<Self::Value, M::Error>
+    fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
     where
-        M: de::MapAccess<'de>,
+        A: de::SeqAccess<'de>,
     {
-        let mut tb = None;
-        let mut id = None;
+        let mut arr = Vec::new();
+        // Use UniversalSeed so SurrealDB Things (enums) inside arrays are handled recursively
+        while let Some(val) = seq.next_element_seed(UniversalSeed)? {
+            arr.push(val);
+        }
+        Ok(serde_json::Value::Array(arr))
+    }
 
+    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+    where
+        A: de::MapAccess<'de>,
+    {
+        let mut obj = serde_json::Map::new();
         while let Some(key) = map.next_key::<String>()? {
-            if key == "tb" {
-                tb = Some(map.next_value::<String>()?);
-            } else if key == "id" {
-                let val: SurrealIdInner = map.next_value()?;
-                id = Some(val.0);
-            } else {
-                let _ = map.next_value::<de::IgnoredAny>()?;
-            }
+            // Use UniversalSeed so SurrealDB Things (enums) inside maps are handled recursively
+            let val = map.next_value_seed(UniversalSeed)?;
+            obj.insert(key, val);
         }
-
-        let id_str = id.unwrap_or_default();
-        if let Some(t) = tb {
-            Ok(format!("{}:{}", t, id_str))
-        } else {
-            Ok(id_str)
-        }
+        Ok(serde_json::Value::Object(obj))
     }
 
     fn visit_enum<A>(self, data: A) -> Result<Self::Value, A::Error>
     where
         A: de::EnumAccess<'de>,
     {
-        let (variant, variant_access) = data.variant::<String>()?;
         use serde::de::VariantAccess;
-        match variant.as_str() {
-            "String" | "Uuid" => variant_access.newtype_variant(),
-            _ => {
-                let val = variant_access
-                    .newtype_variant::<String>()
-                    .unwrap_or_else(|_| variant);
+        let (tag, variant) = data.variant::<String>()?;
+        println!("[DEBUG] UniversalVisitor::visit_enum tag: {}", tag);
+        match tag.as_str() {
+            "Thing" => {
+                let t: Thing = variant.newtype_variant()?;
+                let mut obj = serde_json::Map::new();
+                obj.insert("tb".to_string(), t.tb.into());
+                obj.insert("id".to_string(), t.id.to_string().into());
+                Ok(serde_json::Value::Object(obj))
+            }
+            "Strand" | "String" | "Uuid" | "Number" | "Int" | "Float" | "Decimal" | "Array"
+            | "Object" => {
+                // These are common data-carrying variants in SurrealDB's Id and Value enums.
+                // We use UniversalSeed to recursively handle any nested enums.
+                let val: serde_json::Value = variant.newtype_variant_seed(UniversalSeed)?;
                 Ok(val)
             }
+            "None" | "Null" => {
+                let _ = variant.unit_variant()?;
+                Ok(serde_json::Value::Null)
+            }
+            _ => {
+                // For other enums, we assume they are simple unit variants (like categories).
+                // If they carry data, we might miss it here, but this prevents "moved value" errors.
+                match variant.unit_variant() {
+                    Ok(_) => Ok(serde_json::Value::String(tag)),
+                    Err(e) => {
+                        // If it's not a unit variant, try to capture it as a newtype variant (last resort)
+                        // Note: we can't retry the variant access easily if it failed once,
+                        // but this part is already quite deep in the fallback.
+                        eprintln!(
+                            "[ERROR] UniversalVisitor::visit_enum fallback failed for tag {}: {}",
+                            tag, e
+                        );
+                        Ok(serde_json::Value::String(format!("{}:[DATA]", tag)))
+                    }
+                }
+            }
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for SurrealId {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let val = deserializer.deserialize_any(UniversalVisitor)?;
+        match val {
+            serde_json::Value::String(s) => Ok(SurrealId(s)),
+            serde_json::Value::Object(ref obj) => {
+                if let (Some(tb), Some(id)) = (obj.get("tb"), obj.get("id")) {
+                    let tb_str = tb.as_str().unwrap_or("");
+                    let id_str = match id {
+                        serde_json::Value::String(s) => s.clone(),
+                        _ => id.to_string(),
+                    };
+                    Ok(SurrealId(format!("{}:{}", tb_str, id_str)))
+                } else {
+                    Ok(SurrealId(val.to_string()))
+                }
+            }
+            _ => Ok(SurrealId(val.to_string())),
         }
     }
 }
@@ -169,197 +160,130 @@ pub fn deserialize_id<'de, D>(deserializer: D) -> Result<String, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    deserializer.deserialize_any(IdVisitor)
+    SurrealId::deserialize(deserializer).map(|s| s.0)
 }
 
 pub fn deserialize_id_opt<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    struct OptionIdVisitor;
-    impl<'de> Visitor<'de> for OptionIdVisitor {
-        type Value = Option<String>;
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("an optional string, map, or Thing")
-        }
-        fn visit_none<E>(self) -> Result<Self::Value, E>
-        where
-            E: de::Error,
-        {
-            Ok(None)
-        }
-        fn visit_some<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
-        where
-            D: serde::Deserializer<'de>,
-        {
-            deserialize_id(deserializer).map(Some)
-        }
-        fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-        where
-            E: de::Error,
-        {
-            if value.is_empty() {
+    let val = deserializer.deserialize_any(UniversalVisitor)?;
+    match val {
+        serde_json::Value::Null => Ok(None),
+        serde_json::Value::String(ref s) => {
+            if s.is_empty() {
                 Ok(None)
             } else {
-                Ok(Some(value.to_string()))
+                Ok(Some(s.clone()))
             }
         }
-        fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
-        where
-            E: de::Error,
-        {
-            if value.is_empty() {
-                Ok(None)
+        serde_json::Value::Object(ref obj) => {
+            if let (Some(tb), Some(id)) = (obj.get("tb"), obj.get("id")) {
+                let tb_str = tb.as_str().unwrap_or("");
+                let id_str = match id {
+                    serde_json::Value::String(ref s) => s.clone(),
+                    _ => id.to_string(),
+                };
+                Ok(Some(format!("{}:{}", tb_str, id_str)))
             } else {
-                Ok(Some(value))
+                Ok(Some(val.to_string()))
             }
         }
+        _ => Ok(Some(val.to_string())),
     }
-    deserializer.deserialize_option(OptionIdVisitor)
+}
+
+#[allow(dead_code)]
+fn surreal_to_json(v: SurrealValue) -> serde_json::Value {
+    match v {
+        SurrealValue::None | SurrealValue::Null => serde_json::Value::Null,
+        SurrealValue::Bool(b) => serde_json::Value::Bool(b),
+        SurrealValue::Number(n) => match n {
+            surrealdb::sql::Number::Int(i) => serde_json::json!(i),
+            surrealdb::sql::Number::Float(f) => serde_json::json!(f),
+            surrealdb::sql::Number::Decimal(d) => serde_json::json!(d.to_string()),
+            _ => serde_json::Value::Null,
+        },
+        SurrealValue::Strand(s) => serde_json::Value::String(s.0),
+        SurrealValue::Array(a) => {
+            serde_json::Value::Array(a.0.into_iter().map(surreal_to_json).collect())
+        }
+        SurrealValue::Object(o) => {
+            let mut obj = serde_json::Map::new();
+            for (k, v) in o.0 {
+                obj.insert(k, surreal_to_json(v));
+            }
+            serde_json::Value::Object(obj)
+        }
+        SurrealValue::Thing(t) => {
+            let mut obj = serde_json::Map::new();
+            obj.insert("tb".to_string(), t.tb.into());
+            obj.insert("id".to_string(), t.id.to_string().into());
+            serde_json::Value::Object(obj)
+        }
+        SurrealValue::Uuid(u) => u.to_string().into(),
+        SurrealValue::Datetime(d) => d.to_string().into(),
+        _ => serde_json::Value::String(v.to_string()),
+    }
 }
 
 pub fn deserialize_as_json<'de, D>(deserializer: D) -> Result<serde_json::Value, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    struct JsonValueVisitor;
+    deserializer.deserialize_any(UniversalVisitor)
+}
 
-    // Wrapper to allow recursion using our custom visitor instead of default serde_json::Value impl
-    struct JsonWrapper(serde_json::Value);
-    impl<'de> Deserialize<'de> for JsonWrapper {
-        fn deserialize<Dr>(deserializer: Dr) -> Result<Self, Dr::Error>
-        where
-            Dr: serde::Deserializer<'de>,
-        {
-            deserialize_as_json(deserializer).map(JsonWrapper)
-        }
+/// A wrapper for serde_json::Value that uses our custom robust deserializer.
+/// This is essential when fetching raw data from SurrealDB that contains Record IDs (Things),
+/// as the default serde_json::Value deserializer does not support the enum-based representation
+/// used by the SurrealDB Rust driver.
+#[derive(Debug, Serialize, Clone, Default)]
+pub struct SurrealJson(pub serde_json::Value);
+
+impl<'de> Deserialize<'de> for SurrealJson {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserialize_as_json(deserializer).map(SurrealJson)
     }
-
-    impl<'de> Visitor<'de> for JsonValueVisitor {
-        type Value = serde_json::Value;
-
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("any JSON value")
-        }
-
-        fn visit_bool<E>(self, v: bool) -> Result<Self::Value, E> {
-            Ok(serde_json::Value::Bool(v))
-        }
-        fn visit_i64<E>(self, v: i64) -> Result<Self::Value, E> {
-            Ok(serde_json::json!(v))
-        }
-        fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E> {
-            Ok(serde_json::json!(v))
-        }
-        fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E> {
-            Ok(serde_json::json!(v))
-        }
-        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E> {
-            Ok(serde_json::Value::String(v.to_string()))
-        }
-        fn visit_string<E>(self, v: String) -> Result<Self::Value, E> {
-            Ok(serde_json::Value::String(v))
-        }
-        fn visit_none<E>(self) -> Result<Self::Value, E> {
-            Ok(serde_json::Value::Null)
-        }
-        fn visit_unit<E>(self) -> Result<Self::Value, E> {
-            Ok(serde_json::Value::Null)
-        }
-
-        fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
-        where
-            A: de::SeqAccess<'de>,
-        {
-            let mut vec = Vec::new();
-            while let Some(wrapper) = seq.next_element::<JsonWrapper>()? {
-                vec.push(wrapper.0);
-            }
-            Ok(serde_json::Value::Array(vec))
-        }
-
-        fn visit_map<M>(self, mut map: M) -> Result<Self::Value, M::Error>
-        where
-            M: de::MapAccess<'de>,
-        {
-            let mut obj = serde_json::Map::new();
-            while let Some(key) = map.next_key::<String>()? {
-                let wrapper = map.next_value::<JsonWrapper>()?;
-                obj.insert(key, wrapper.0);
-            }
-            Ok(serde_json::Value::Object(obj))
-        }
-
-        fn visit_enum<A>(self, data: A) -> Result<Self::Value, A::Error>
-        where
-            A: de::EnumAccess<'de>,
-        {
-            let (variant, variant_access) = data.variant::<String>()?;
-            use serde::de::VariantAccess;
-            match variant.as_str() {
-                "String" | "Uuid" => {
-                    let s: String = variant_access.newtype_variant()?;
-                    Ok(serde_json::Value::String(s))
-                }
-                "Number" | "Int" | "Float" => {
-                    // Try as f64 first
-                    if let Ok(n) = variant_access.newtype_variant::<f64>() {
-                        Ok(serde_json::json!(n))
-                    } else {
-                        Ok(serde_json::Value::Null)
-                    }
-                }
-                "None" | "Null" => {
-                    let _ = variant_access.unit_variant();
-                    Ok(serde_json::Value::Null)
-                }
-                "Array" => {
-                    let wrapper: JsonWrapper = variant_access.newtype_variant()?;
-                    Ok(wrapper.0)
-                }
-                "Object" => {
-                    let wrapper: JsonWrapper = variant_access.newtype_variant()?;
-                    Ok(wrapper.0)
-                }
-                _ => {
-                    // Fallback: try newtype, if fails return string representation
-                    match variant_access.newtype_variant::<JsonWrapper>() {
-                        Ok(wrapper) => Ok(wrapper.0),
-                        Err(_) => Ok(serde_json::Value::String(variant)),
-                    }
-                }
-            }
-        }
-    }
-    deserializer.deserialize_any(JsonValueVisitor)
 }
 
 pub fn deserialize_vec_id<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    struct VecIdVisitor;
-    impl<'de> Visitor<'de> for VecIdVisitor {
-        type Value = Vec<String>;
-
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("a sequence of strings, maps, or Things")
-        }
-
-        fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
-        where
-            A: de::SeqAccess<'de>,
-        {
-            let mut vec = Vec::new();
-            while let Some(wrapper) = seq.next_element::<SurrealIdInner>()? {
-                vec.push(wrapper.0);
+    let val = deserializer.deserialize_any(UniversalVisitor)?;
+    match val {
+        serde_json::Value::Array(ref arr) => {
+            let mut result = Vec::new();
+            for item in arr {
+                match item {
+                    serde_json::Value::String(s) => result.push(s.clone()),
+                    serde_json::Value::Object(ref obj) => {
+                        if let (Some(tb), Some(id)) = (obj.get("tb"), obj.get("id")) {
+                            let tb_str = tb.as_str().unwrap_or("");
+                            let id_str = match id {
+                                serde_json::Value::String(s) => s.clone(),
+                                _ => id.to_string(),
+                            };
+                            result.push(format!("{}:{}", tb_str, id_str));
+                        } else {
+                            result.push(item.to_string());
+                        }
+                    }
+                    _ => result.push(item.to_string()),
+                }
             }
-            Ok(vec)
+            Ok(result)
         }
+        serde_json::Value::String(s) => Ok(vec![s]),
+        _ => Ok(Vec::new()),
     }
-    deserializer.deserialize_any(VecIdVisitor)
 }
 
+pub mod dto;
 pub mod irpf;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -395,6 +319,26 @@ pub struct UserProfile {
     pub utc_offset: i32, // Offset in minutes (e.g., -180 for Brasilia)
 }
 
+impl ToDto for UserProfile {
+    type Dto = dto::UserProfileDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::UserProfileDto {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            email: self.email.clone(),
+            phone: self.phone.clone(),
+            cpf: self.cpf.clone(),
+            theme: self.theme.clone(),
+            language: self.language.clone(),
+            timezone: self.timezone.clone(),
+            main_currency: self.main_currency.clone(),
+            avatar: self.avatar.clone(),
+            onboarding_completed: self.onboarding_completed,
+            birth_date: self.birth_date.clone(),
+        }
+    }
+}
+
 fn default_utc_offset() -> i32 {
     -180
 }
@@ -428,6 +372,22 @@ pub struct Account {
     pub custom_logo: Option<String>,
 }
 
+impl ToDto for Account {
+    type Dto = dto::AccountDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::AccountDto {
+            id: self.id.clone(),
+            nickname: self.nickname.clone(),
+            account_type: self.account_type.clone(),
+            broker: self.broker.clone(),
+            account_number: self.account_number.clone(),
+            currency: self.currency.clone(),
+            balance: self.balance,
+            custom_logo: self.custom_logo.clone(),
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Currency {
     #[serde(deserialize_with = "deserialize_id")]
@@ -455,6 +415,18 @@ pub struct Market {
     pub trading_sessions: Vec<TradingSession>,
 }
 
+impl ToDto for Market {
+    type Dto = dto::MarketDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::MarketDto {
+            id: self.id.clone(),
+            code: self.code.clone(),
+            name: self.name.clone(),
+            timezone: self.timezone.clone(),
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AssetType {
     #[serde(deserialize_with = "deserialize_id")]
@@ -471,6 +443,21 @@ pub struct AssetType {
     pub result_type: String, // "points" | "currency"
 }
 
+impl ToDto for AssetType {
+    type Dto = dto::AssetTypeDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::AssetTypeDto {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            code: self.code.clone(),
+            market_id: self.market_id.clone(),
+            unit_label: self.unit_label.clone(),
+            result_type: self.result_type.clone(),
+            tax_profile_id: self.tax_profile_id.clone(),
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Asset {
     #[serde(deserialize_with = "deserialize_id")]
@@ -484,6 +471,20 @@ pub struct Asset {
     pub default_fee_id: Option<String>,
     #[serde(default, deserialize_with = "deserialize_id_opt")]
     pub tax_profile_id: Option<String>,
+}
+
+impl ToDto for Asset {
+    type Dto = dto::AssetDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::AssetDto {
+            id: self.id.clone(),
+            symbol: self.symbol.clone(),
+            name: self.name.clone(),
+            asset_type_id: self.asset_type_id.clone(),
+            point_value: self.point_value,
+            tax_profile_id: self.tax_profile_id.clone(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -549,6 +550,20 @@ pub struct CashTransaction {
     pub system_linked: Option<bool>,
 }
 
+impl ToDto for CashTransaction {
+    type Dto = dto::CashTransactionDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::CashTransactionDto {
+            id: self.id.clone(),
+            date: self.date.clone(),
+            amount: self.amount,
+            r#type: self.r#type.clone(),
+            description: self.description.clone(),
+            account_id: self.account_id.clone(),
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct JournalEntry {
     #[serde(deserialize_with = "deserialize_id")]
@@ -567,6 +582,19 @@ pub struct JournalEntry {
     pub market_context: String,
     #[serde(default)]
     pub daily_score: i32,
+}
+
+impl ToDto for JournalEntry {
+    type Dto = dto::JournalEntryDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::JournalEntryDto {
+            id: self.id.clone(),
+            date: self.date.clone(),
+            content: self.content.clone(),
+            emotional_state_id: self.emotional_state_id.clone(),
+            daily_score: self.daily_score,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -631,8 +659,8 @@ pub struct Trade {
     pub lessons_learned: String,
     #[serde(default)]
     pub images: Vec<String>,
-    #[serde(default, deserialize_with = "crate::models::deserialize_as_json")]
-    pub partial_exits: serde_json::Value,
+    #[serde(default)]
+    pub partial_exits: crate::models::SurrealJson,
     #[serde(default, deserialize_with = "crate::models::deserialize_id_opt")]
     pub asset_id: Option<String>,
     #[serde(default, deserialize_with = "crate::models::deserialize_id_opt")]
@@ -643,6 +671,32 @@ pub struct Trade {
     pub take_profit: Option<f64>,
     #[serde(default)]
     pub intensity: f64,
+}
+
+impl ToDto for Trade {
+    type Dto = dto::TradeDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::TradeDto {
+            id: self.id.clone(),
+            date: self.date.clone(),
+            asset_symbol: self.asset_symbol.clone(),
+            asset_type_id: self.asset_type_id.clone(),
+            strategy_id: self.strategy_id.clone(),
+            account_id: self.account_id.clone(),
+            result: self.result,
+            quantity: self.quantity,
+            direction: self.direction.clone(),
+            entry_price: self.entry_price,
+            exit_price: self.exit_price,
+            exit_date: self.exit_date.clone(),
+            fee_total: self.fee_total,
+            notes: self.notes.clone(),
+            timeframe: self.timeframe.clone(),
+            followed_plan: self.followed_plan,
+            asset_id: self.asset_id.clone(),
+            modality_id: self.modality_id.clone(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -761,6 +815,17 @@ pub struct Modality {
     pub description: String,
 }
 
+impl ToDto for Modality {
+    type Dto = dto::ModalityDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::ModalityDto {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            description: self.description.clone(),
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Tag {
     #[serde(deserialize_with = "deserialize_id")]
@@ -822,6 +887,24 @@ pub struct TaxRule {
     pub revenue_code: String, // e.g., "6015", "3317"
 }
 
+impl ToDto for TaxRule {
+    type Dto = dto::TaxRuleDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::TaxRuleDto {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            tax_rate: self.tax_rate,
+            withholding_rate: self.withholding_rate,
+            exemption_threshold: self.exemption_threshold,
+            basis: self.basis.clone(),
+            cumulative_losses: self.cumulative_losses,
+            trade_type: self.trade_type.clone(),
+            withholding_basis: self.withholding_basis.clone(),
+            revenue_code: self.revenue_code.clone(),
+        }
+    }
+}
+
 fn default_trade_type() -> String {
     "SwingTrade".to_string()
 }
@@ -841,12 +924,35 @@ pub struct TaxMapping {
     pub tax_rule_id: String,
 }
 
+impl ToDto for TaxMapping {
+    type Dto = dto::TaxMappingDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::TaxMappingDto {
+            id: self.id.clone(),
+            asset_type_id: self.asset_type_id.clone(),
+            modality_id: self.modality_id.clone(),
+            tax_rule_id: self.tax_rule_id.clone(),
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TaxProfile {
     #[serde(deserialize_with = "deserialize_id")]
     pub id: String,
     pub name: String,
     pub description: Option<String>,
+}
+
+impl ToDto for TaxProfile {
+    type Dto = dto::TaxProfileDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::TaxProfileDto {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            description: self.description.clone(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -861,7 +967,20 @@ pub struct TaxProfileEntry {
     pub tax_rule_id: String,
 }
 
+impl ToDto for TaxProfileEntry {
+    type Dto = dto::TaxProfileEntryDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::TaxProfileEntryDto {
+            id: self.id.clone(),
+            tax_profile_id: self.tax_profile_id.clone(),
+            modality_id: self.modality_id.clone(),
+            tax_rule_id: self.tax_rule_id.clone(),
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[allow(dead_code)]
 pub struct TaxPayment {
     #[serde(deserialize_with = "deserialize_id")]
     pub id: String,

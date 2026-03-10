@@ -45,7 +45,7 @@ pub async fn seed_user_profile(db: &Surreal<Db>) -> Result<(), String> {
     }
 
     // Use raw query for robust serialization
-    db.query("UPSERT user_profile:main CONTENT $data")
+    db.query("UPSERT user_profile:main CONTENT $data RETURN NONE")
         .bind(("data", json_data))
         .await
         .map_err(|e| e.to_string())?;

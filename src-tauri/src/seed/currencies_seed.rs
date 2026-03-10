@@ -31,7 +31,7 @@ pub async fn seed_currencies(db: &Surreal<Db>) -> Result<(), String> {
         }
 
         // Use raw query for robust serialization
-        db.query("UPSERT type::thing('currency', $id) CONTENT $data")
+        db.query("UPSERT type::thing('currency', $id) CONTENT $data RETURN NONE")
             .bind(("id", id))
             .bind(("data", json_data))
             .await

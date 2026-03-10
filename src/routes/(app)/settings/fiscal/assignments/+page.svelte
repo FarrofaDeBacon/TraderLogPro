@@ -14,7 +14,9 @@
             <h3 class="text-lg font-medium">
                 {$t("settings.fiscal.assignments.title")}
             </h3>
-            {$t("settings.fiscal.assignments.description")}
+            <p class="text-sm text-muted-foreground">
+                {$t("settings.fiscal.assignments.description")}
+            </p>
         </div>
         <Button
             onclick={() => goto("/settings/asset-types")}

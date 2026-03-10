@@ -63,6 +63,7 @@ class RTDStore {
     private async initListener() {
         console.log("[RTDStore] Initializing Tauri event listener for 'rtd-update'...");
         await listen<string>('rtd-update', (event) => {
+            // console.log("[RTDStore] 'rtd-update' received:", event.payload.substring(0, 50) + "...");
             this.parseCSV(event.payload);
         });
     }

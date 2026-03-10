@@ -51,8 +51,8 @@
     let isDeleteModalOpen = $state(false);
     let darfToDelete = $state<any>(null);
 
-    // Payment Modal State
     let isPayModalOpen = $state(false);
+    let isSaving = $state(false); // Global saving state for financial operations
     let paymentData = $state({
         id: "",
         principal: 0,
@@ -100,12 +100,16 @@
             toast.error($t("fiscal.darf.accountError"));
             return;
         }
+        if (isSaving) return; // Prevent double trigger
+        
+        isSaving = true;
         try {
             const idStr = irpfStore.getId(paymentData.id);
 
             // Append current time with high precision for chronological sorting
             const fullIsoDate = formatLocalISO(paymentData.date);
 
+            console.log("[DARF_PAGE] Marking DARF as paid:", { idStr, date: fullIsoDate });
             await irpfStore.markDarfPaid(
                 idStr,
                 fullIsoDate,
@@ -116,7 +120,10 @@
             );
             isPayModalOpen = false;
         } catch (error) {
-            // Handled in store
+            console.error("[DARF_PAGE] Payment failed:", error);
+            // Error handled in store's toast
+        } finally {
+            isSaving = false;
         }
     }
 
@@ -206,7 +213,16 @@
                 // Filter by year strictly for history (Parse MM/YYYY manually)
                 const parts = d.period.split("/");
                 const darfYear = parts.length > 1 ? parseInt(parts[1]) : 0;
-                return darfYear === irpfStore.selectedYear;
+
+                // Also include if paid in THIS selected year (regardless of period)
+                const paymentYear = d.payment_date
+                    ? parseInt(d.payment_date.split("-")[0])
+                    : 0;
+
+                return (
+                    darfYear === irpfStore.selectedYear ||
+                    paymentYear === irpfStore.selectedYear
+                );
             })
             .sort((a, b) => {
                 // Sort by period descending (MM/YYYY)
@@ -769,10 +785,14 @@
                     >
                     <Button
                         class="neon-glow bg-primary text-black font-bold"
-                        disabled={!paymentData.accountId}
+                        disabled={!paymentData.accountId || isSaving}
                         onclick={confirmPayment}
                     >
-                        <CheckCircle class="w-4 h-4 mr-2" />
+                        {#if isSaving}
+                            <div class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-black"></div>
+                        {:else}
+                            <CheckCircle class="w-4 h-4 mr-2" />
+                        {/if}
                         {$t("fiscal.darf.buttons.confirmPay")}
                     </Button>
                 </Dialog.Footer>

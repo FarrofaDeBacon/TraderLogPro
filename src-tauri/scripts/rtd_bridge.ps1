@@ -45,7 +45,12 @@ while ($true) {
         $excel = [Runtime.InteropServices.Marshal]::GetActiveObject("Excel.Application")
         if ($excel) {
             $workbook = $null
-            $targetPath = if ($ExcelPath) { $ExcelPath } else { "C:\PROJETOS\TraderLogPro\Profit_RTD.xlsx" }
+            if ([string]::IsNullOrWhiteSpace($ExcelPath)) {
+                "[$(Get-Date -Format 'HH:mm:ss')] ERROR: Nenhuma Planilha RTD foi selecionada no aplicativo. Abortando ponte." | Out-File -FilePath $debugLog -Append
+                Start-Sleep -Seconds 5
+                continue
+            }
+            $targetPath = $ExcelPath
             
             foreach ($wb in $excel.Workbooks) {
                 if ($wb.FullName -eq $targetPath -or $wb.Name -match "Profit_RTD") {
@@ -104,7 +109,7 @@ while ($true) {
                             }
                         }
 
-                        $msg = "[$(Get-Date -Format 'HH:mm:ss')] DEBUG: Header Mapping for $rawName: $($colMap | ConvertTo-Json -Compress)"
+                        $msg = "[$(Get-Date -Format 'HH:mm:ss')] DEBUG: Header Mapping for $($rawName): $($colMap | ConvertTo-Json -Compress)"
                         $msg | Out-File -FilePath $debugLog -Append
 
                         $maxR = $data.GetUpperBound(0)
@@ -127,7 +132,7 @@ while ($true) {
                                 # Log trade count change if noticed
                                 $prevTrades = $script:lastTradesMap[$sym]
                                 if ($null -ne $prevTrades -and $trades -gt $prevTrades) {
-                                    $msg = "[$(Get-Date -Format 'HH:mm:ss')] !!! TRADE DETECTED: $sym ($prevTrades -> $trades)"
+                                    $msg = "[$(Get-Date -Format 'HH:mm:ss')] TRADE DETECTED: $sym ($prevTrades -> $trades)"
                                     $msg | Out-File -FilePath $debugLog -Append
                                 }
                                 $script:lastTradesMap[$sym] = $trades
@@ -149,7 +154,7 @@ while ($true) {
                                     # Log position change for debugging
                                     $prevQty = $script:lastQtyMap[$sym]
                                     if ($null -ne $prevQty -and $absQty -ne $prevQty) {
-                                        $msg = "[$(Get-Date -Format 'HH:mm:ss')] !!! NTSL POSITION CHANGE: $sym ($prevQty -> $absQty)"
+                                        $msg = "[$(Get-Date -Format 'HH:mm:ss')] POSITION CHANGE NTSL: $sym ($prevQty -> $absQty)"
                                         $msg | Out-File -FilePath $debugLog -Append
                                     }
                                     $script:lastQtyMap[$sym] = $absQty

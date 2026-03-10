@@ -37,42 +37,56 @@
     async function loadDarf() {
         loading = true;
         try {
-            console.log("[DARF DIALOG] Loading details...", {
+            console.log("[DARF DIALOG] loadDarf event triggered", {
                 darfId,
                 transactionId,
                 appraisalId,
             });
 
             if (darfId) {
-                darf = await irpfStore.getDarfById(darfId);
+                console.log("[DARF DIALOG] Fetching DARF by ID:", darfId);
+                darf = await irpfStore.getDarfById(darfId).catch(err => {
+                    console.error("[DARF DIALOG] Failed to fetch DARF by ID:", err);
+                    return null;
+                });
             } else if (transactionId) {
-                darf = await irpfStore.getDarfByTransaction(transactionId);
+                console.log("[DARF DIALOG] Fetching DARF by Transaction:", transactionId);
+                darf = await irpfStore.getDarfByTransaction(transactionId).catch(err => {
+                    console.error("[DARF DIALOG] Failed to fetch DARF by Transaction:", err);
+                    return null;
+                });
             }
 
             if (darf) {
-                console.log("[DARF DIALOG] DARF found:", darf);
+                console.log("[DARF DIALOG] DARF data received:", darf);
                 if (darf.appraisal_id) {
-                    appraisal = await irpfStore.getAppraisalById(
-                        darf.appraisal_id,
-                    );
+                    console.log("[DARF DIALOG] Fetching associated Appraisal:", darf.appraisal_id);
+                    appraisal = await irpfStore.getAppraisalById(darf.appraisal_id).catch(err => {
+                        console.error("[DARF DIALOG] Failed to fetch associated Appraisal:", err);
+                        return null;
+                    });
                 }
                 isComplementary = darf.is_complementary;
             } else if (appraisalId) {
-                console.log(
-                    "[DARF DIALOG] No DARF, loading appraisal directly:",
-                    appraisalId,
-                );
-                appraisal = await irpfStore.getAppraisalById(appraisalId);
+                console.log("[DARF DIALOG] Directly fetching Appraisal:", appraisalId);
+                appraisal = await irpfStore.getAppraisalById(appraisalId).catch(err => {
+                    console.error("[DARF DIALOG] Failed to fetch Appraisal directly:", err);
+                    return null;
+                });
                 if (appraisal) {
                     isComplementary = appraisal.is_complementary;
                 }
             } else {
-                console.warn(
-                    "[DARF DIALOG] No identifier provided or no data found",
-                );
+                console.warn("[DARF DIALOG] No valid identifiers provided for data loading");
             }
+
+            console.log("[DARF DIALOG] Data loading sequence completed", { 
+                hasDarf: !!darf, 
+                hasAppraisal: !!appraisal 
+            });
         } catch (e) {
-            console.error("[DARF DIALOG] Error loading DARF/Appraisal:", e);
+            console.error("[DARF DIALOG] CRITICAL: Unexpected error in loadDarf:", e);
+            toast.error($t("finance.darfDetails.errorMessage"));
         } finally {
             loading = false;
         }

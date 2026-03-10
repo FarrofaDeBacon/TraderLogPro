@@ -13,21 +13,6 @@
       "json": "Json"
     }
   },
-  "$lib/stores/settings": {
-    "svelte": "Svelte"
-  },
-  "(": "(",
-  "-": "-",
-  "/": "/",
-  "2023-12-25": "2023-12-25",
-  "2023-12-25T10:00:00": {
-    "000Z": "000Z"
-  },
-  ":": ":",
-  ";": ";",
-  "String:": "String:",
-  "T": "T",
-  "\\n": "\\n",
   "auth": {
     "login": {
       "createAccount": "Criar conta",
@@ -111,7 +96,8 @@
     "of": "de",
     "weekOf": "Semana de",
     "weekly": "Semanal",
-    "weeklyShort": "S"
+    "weeklyShort": "S",
+    "next": "Próximo"
   },
   "dashboard": {
     "charts": {
@@ -570,7 +556,8 @@
     },
     "weeks_upper": "SEMANAS",
     "weight": "peso",
-    "yes": "Yes"
+    "yes": "Sim",
+    "progress": "Progresso"
   },
   "header": {
     "searchPlaceholder": "Search Placeholder",
@@ -702,6 +689,25 @@
     "title": "Análise Psicológica"
   },
   "settings": {
+    "fiscal": {
+      "assignments": {
+        "title": "Atribuições Fiscais",
+        "description": "Vincule perfis tributários aos tipos de ativos para automatizar o cálculo de impostos.",
+        "goToAssetTypes": "Gerenciar Tipos de Ativos",
+        "table": {
+          "market": "Mercado",
+          "assetType": "Tipo de Ativo",
+          "fiscalProfile": "Perfil Tributário",
+          "unknownProfile": "Perfil Desconhecido",
+          "defaultExempt": "Isento (Padrão)",
+          "empty": "Nenhum tipo de ativo configurado."
+        },
+        "tip": {
+          "title": "Dica:",
+          "text": "A alteração do perfil fiscal afeta apenas novos cálculos e fechamentos de trades."
+        }
+      }
+    },
     "accounts": {
       "balance": "SALDO",
       "confirmDeduplicate": "Deseja realmente remover configurações duplicadas?",
@@ -1779,7 +1785,65 @@
       },
       "welcome": {
         "description": "Estamos configurando o seu espaço de trabalho.",
-        "title": "Bem-vindo ao TraderLog Pro"
+        "title": "Bem-vindo ao TraderLog Pro",
+        "select_language": "SELECIONE SEU IDIOMA",
+        "select_theme": "SELECIONE O TEMA VISUAL",
+        "dark": "Dark (Noite)",
+        "light": "Light (Dia)"
+      },
+      "common": {
+        "name": "Nome Completo",
+        "name_placeholder": "Seu nome",
+        "email": "E-mail",
+        "password": "Senha de Acesso",
+        "confirm_password": "Confirmar Senha",
+        "recovery_key_title": "Chave de Recuperação",
+        "recovery_key_desc": "Esta chave é a única forma de recuperar seu acesso caso esqueça a senha.",
+        "master_key": "MASTER KEY",
+        "copy_to_clipboard": "Toque para copiar",
+        "never_share": "⚠️ NUNCA compartilhe esta chave. Guarde-a em um local físico e seguro.",
+        "activation_title": "Ativação de Licença",
+        "activation_desc": "Se você já possui uma licença, importe o arquivo .lic abaixo.",
+        "active_license": "Licença Ativa!",
+        "plan": "Plano",
+        "import_lic": "IMPORTAR ARQUIVO .LIC",
+        "no_license_title": "NÃO TEM UMA LICENÇA?",
+        "no_license_desc": "Ao pular, você iniciará no modo TRIAL limitado.",
+        "currency_title": "Moeda Base",
+        "currency_desc": "Escolha a moeda oficial para a consolidação de todos os seus lucros e impostos.",
+        "markets_title": "Onde você opera?",
+        "markets_desc": "Selecione os mercados para habilitar as ferramentas corretas.",
+        "asset_types_title": "Tipos de Assets",
+        "asset_types_desc": "Quais instrumentos financeiros fazem parte do seu dia a dia?",
+        "rtd_title": "Conexão Real-Time (RTD)",
+        "rtd_desc": "Conecte o TraderLog Pro ao seu terminal de negociação via Excel.",
+        "rtd_active_now": "Ativar RTD agora",
+        "rtd_active_desc": "Detecte trades do Profit/Tryd instantaneamente.",
+        "rtd_select_sheet": "SELECIONAR PLANILHA",
+        "rtd_later_title": "Configurar Depois",
+        "rtd_later_desc": "Você pode ativar o RTD no menu de configurações a qualquer momento.",
+        "rtd_skip": "PULAR ESTE PASSO",
+        "mission_ready": "Missão Pronta!",
+        "mission_ready_desc": "Sua base de operações foi configurada com sucesso. Bons trades!",
+        "start_journey": "INICIAR JORNADA",
+        "configuring": "CONFIGURANDO...",
+        "markets": {
+          "M1": "B3 (Brasil)",
+          "M2": "NYSE (EUA)",
+          "M3": "NASDAQ (EUA)",
+          "M4": "CME Group",
+          "M5": "Forex",
+          "M6": "Cripto"
+        },
+        "assets": {
+          "T1": "Ações BR",
+          "T2": "Opções BR",
+          "T3": "Futuros BR",
+          "T4": "FIIs",
+          "T5": "Stocks US",
+          "T6": "Pares Forex",
+          "T7": "Criptomoedas"
+        }
       }
     }
   },

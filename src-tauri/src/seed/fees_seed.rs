@@ -92,7 +92,7 @@ pub async fn seed_fees(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Result<
         }
 
         // Use raw query for robust serialization
-        db.query("UPSERT type::thing('fee_profile', $id) CONTENT $data")
+        db.query("UPSERT type::thing('fee_profile', $id) CONTENT $data RETURN NONE")
             .bind(("id", id))
             .bind(("data", json))
             .await

@@ -12,12 +12,14 @@ use super::{
 /// Executa todos os seeds na ordem correta (respeitando dependências)
 
 /// Inicialização mínima (apenas perfil de usuário) para permitir o Onboarding
+#[allow(dead_code)]
 pub async fn run_minimal_seeds(db: &Surreal<Db>) -> Result<(), String> {
     println!("[SEED] 🏎️ Inicialização mínima...");
     user_profile_seed::seed_user_profile(db).await?;
     Ok(())
 }
 
+#[allow(dead_code)]
 pub async fn run_all_seeds(db: &Surreal<Db>) -> Result<(), String> {
     println!("\n[SEED] 🌱 Iniciando seeding do banco de dados...\n");
 
@@ -151,6 +153,7 @@ pub async fn force_reseed_all(db: &Surreal<Db>) -> Result<(), String> {
 }
 
 /// Executa apenas os seeds selecionados
+#[allow(dead_code)]
 pub async fn run_selective_seeds(db: &Surreal<Db>, selection: Vec<String>) -> Result<(), String> {
     println!("\n[SEED] 🧩 Iniciando seeding seletivo: {:?}\n", selection);
 
@@ -276,3 +279,50 @@ pub async fn run_selective_seeds(db: &Surreal<Db>, selection: Vec<String>) -> Re
     println!("\n[SEED] ✅ Seeding seletivo concluído!\n");
     Ok(())
 }
+
+/// Rotina de Seeding Customizado baseada nas seleções de Onboarding
+pub async fn run_custom_seeds(
+    db: &Surreal<Db>,
+    _currencies: Vec<String>,
+    markets: Vec<String>,
+    _asset_types: Vec<String>,
+) -> Result<(), String> {
+    println!("\n[SEED] 🛠️ Iniciando seeding CUSTOMIZADO (Onboarding)...\n");
+
+    // Nível 1: Moedas Selecionadas
+    currencies_seed::seed_currencies(db).await?; // A base de Currencies não tem filter no seed nativo hoje, então populo tudo para simplificar. 
+    // Em produção estrita, refinaríamos currencies_seed para aceitar `Some(currencies)`.
+    
+    // Nível 1: Infraestrutura Básica
+    emotional_states_seed::seed_emotional_states(db, None).await?;
+    modalities_seed::seed_modalities(db, None).await?;
+    timeframes_seed::seed_timeframes(db, None).await?;
+    user_profile_seed::seed_user_profile(db).await?;
+    tags_seed::seed_tags(db, None).await?;
+    chart_types_seed::seed_chart_types(db, None).await?;
+    fees_seed::seed_fees(db, None).await?;
+    risk_seed::seed_risk_profiles(db, None).await?;
+    tax_seed::seed_tax_rules(db).await?;
+
+    // Nível 2: Mercados Selecionados
+    let market_filters = if markets.is_empty() { None } else { Some(markets.clone()) };
+    markets_seed::seed_markets(db, market_filters.clone()).await?;
+
+    // Nível 3: Tipos de Ativo Selecionados
+    // Importante: asset_types_seed usa formatação `markets:m1` como ID nas checagens internas
+    // Então passamos os tipos de ativos ou mercados se já existirem na implementação atual
+    // Para ser assertivo com o custom picker, passaremos a lista de mercados como o filtro principal
+    // já que o seed de asset types atual depende do "market_id"
+    asset_types_seed::seed_asset_types(db, market_filters.clone()).await?;
+
+    // Nível 4: Ativos (Gera apenas os atrelados aos mercados escolhidos)
+    assets_seed::seed_assets(db, market_filters).await?;
+    
+    // Nível 5: Opcionais baseados em tipos
+    indicators_seed::seed_indicators(db, None).await?;
+    strategies_seed::seed_strategies(db, None).await?;
+
+    println!("\n[SEED] ✅ Seeding CUSTOMIZADO concluído!\n");
+    Ok(())
+}
+

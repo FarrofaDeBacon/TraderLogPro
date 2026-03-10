@@ -251,7 +251,9 @@ class IrpfStore {
     }
 
     async markDarfPaid(id: string, paymentDate: string, paidValue: number, accountId: string, fine?: number, interest?: number) {
+        this.loading = true;
         try {
+            console.log("[IRPF_STORE] markDarfPaid called", { id, paymentDate, paidValue, accountId });
             const transactionId = crypto.randomUUID();
             const updated = await invoke<TaxDarf>("mark_darf_paid", {
                 id,
@@ -269,8 +271,10 @@ class IrpfStore {
 
             // Refresh appraisals to update status
             const year = parseInt(updated.period.split('/')[1]);
-            this.loadAppraisals(year);
-            this.loadDarfs(year);
+            await Promise.all([
+                this.loadAppraisals(year),
+                this.loadDarfs(year)
+            ]);
 
             // REFRESH FINANCE HUB
             settingsStore.loadData();
@@ -280,6 +284,8 @@ class IrpfStore {
             console.error("Failed to mark DARF paid:", error);
             toast.error("Erro ao atualizar DARF: " + String(error));
             throw error;
+        } finally {
+            this.loading = false;
         }
     }
 
@@ -320,6 +326,7 @@ class IrpfStore {
     }
 
     async deleteDarf(id: string) {
+        this.loading = true;
         try {
             const darf = this.darfs.find(d => this.getId(d.id) === id);
             await invoke("delete_darf", { id });
@@ -330,18 +337,21 @@ class IrpfStore {
             if (darf) {
                 const year = parseInt(darf.period.split('/')[1]);
                 if (!isNaN(year)) {
-                    this.loadAppraisals(year);
+                    await this.loadAppraisals(year);
                 }
             } else {
-                this.loadAppraisals(this.selectedYear);
+                await this.loadAppraisals(this.selectedYear);
             }
         } catch (error) {
             console.error("Failed to delete DARF:", error);
             toast.error("Erro ao excluir DARF: " + String(error));
+        } finally {
+            this.loading = false;
         }
     }
 
     async unpayDarf(id: string) {
+        this.loading = true;
         try {
             const updated = await invoke<TaxDarf>("unpay_darf", { id });
 
@@ -354,8 +364,10 @@ class IrpfStore {
 
             // Refresh appraisals
             const year = parseInt(updated.period.split('/')[1]);
-            this.loadAppraisals(year);
-            this.loadDarfs(year);
+            await Promise.all([
+                this.loadAppraisals(year),
+                this.loadDarfs(year)
+            ]);
 
             // REFRESH FINANCE HUB
             settingsStore.loadData();
@@ -365,6 +377,8 @@ class IrpfStore {
             console.error("Failed to unpay DARF:", error);
             toast.error("Erro ao desfazer pagamento: " + String(error));
             throw error;
+        } finally {
+            this.loading = false;
         }
     }
 

@@ -6,15 +6,62 @@ use surrealdb::Surreal;
 pub async fn seed_markets(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Result<(), String> {
     println!("[SEED] Verificando Mercados...");
 
-    let markets = vec![(
-        "m1",
-        "B3",
-        "Brasil Bolsa Balcão",
-        "America/Sao_Paulo",
-        vec![1, 2, 3, 4, 5],
-        "09:00",
-        "18:00",
-    )];
+    let markets = vec![
+        (
+            "m1",
+            "B3",
+            "Brasil Bolsa Balcão",
+            "America/Sao_Paulo",
+            vec![1, 2, 3, 4, 5],
+            "09:00",
+            "18:00",
+        ),
+        (
+            "m2",
+            "NYSE",
+            "New York Stock Exchange",
+            "America/New_York",
+            vec![1, 2, 3, 4, 5],
+            "09:30",
+            "16:00",
+        ),
+        (
+            "m3",
+            "NASDAQ",
+            "Nasdaq Stock Market",
+            "America/New_York",
+            vec![1, 2, 3, 4, 5],
+            "09:30",
+            "16:00",
+        ),
+        (
+            "m4",
+            "CME",
+            "Chicago Mercantile Exchange",
+            "America/Chicago",
+            vec![1, 2, 3, 4, 5],
+            "17:00",
+            "16:00",
+        ),
+        (
+            "m5",
+            "Forex",
+            "Foreign Exchange Market",
+            "UTC",
+            vec![1, 2, 3, 4, 5],
+            "00:00",
+            "23:59",
+        ),
+        (
+            "m6",
+            "Crypto",
+            "Cryptocurrency Exchanges",
+            "UTC",
+            vec![0, 1, 2, 3, 4, 5, 6],
+            "00:00",
+            "23:59",
+        ),
+    ];
 
     for (id, code, name, timezone, trading_days, start, end) in markets {
         if let Some(ref f) = filter {
@@ -39,7 +86,7 @@ pub async fn seed_markets(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Resu
         }
 
         // Use raw query for robust serialization
-        db.query("UPSERT type::thing('market', $id) CONTENT $data")
+        db.query("UPSERT type::thing('market', $id) CONTENT $data RETURN NONE")
             .bind(("id", id))
             .bind(("data", market_json))
             .await

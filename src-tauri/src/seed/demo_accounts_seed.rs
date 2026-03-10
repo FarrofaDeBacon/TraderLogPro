@@ -4,53 +4,55 @@ use chrono::{Duration, Utc};
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
 
-pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Result<(), String> {
+pub async fn seed_accounts(db: &Surreal<Db>, _filter: Option<Vec<String>>) -> Result<(), String> {
     println!("[SEED] Criando Contas de Demonstração (B3 Only)...");
 
     let accounts = vec![
         (
-            "demo_b3_acoes",
-            "Conta B3 - Ações",
+            "sim_brl",
+            "Simulador (BRL)",
             "BRL",
             "Demo",
-            50000.0,
-            vec!["markets:m1"],
+            10000.0,
         ),
         (
-            "demo_b3_futuros",
-            "Conta B3 - Futuros",
-            "BRL",
+            "sim_usd",
+            "Simulador (USD)",
+            "USD",
             "Demo",
-            25000.0,
-            vec!["markets:m1"],
+            10000.0,
         ),
         (
-            "simulador",
-            "Conta Simulador",
-            "BRL",
+            "sim_usdt",
+            "Simulador (USDT)",
+            "USDT",
             "Demo",
-            100000.0,
-            vec![],
+            10000.0,
         ),
-        ("real", "Conta Real", "BRL", "Real", 0.0, vec![]),
-        ("teste", "Conta Teste", "BRL", "Demo", 100000.0, vec![]),
+        (
+            "real_brl",
+            "Conta Real (BRL)",
+            "BRL",
+            "Real",
+            0.0,
+        ),
+        (
+            "real_usd",
+            "Conta Real (USD)",
+            "USD",
+            "Real",
+            0.0,
+        ),
+        (
+            "real_usdt",
+            "Conta Real (USDT)",
+            "USDT",
+            "Real",
+            0.0,
+        ),
     ];
 
-    for (id_suffix, name, currency, account_type, balance, required_modules) in accounts {
-        if let Some(ref f) = filter {
-            let full_id = format!("account:{}", id_suffix);
-            let explicitly_requested = f.contains(&full_id) || f.contains(&id_suffix.to_string());
-            if !explicitly_requested {
-                if !required_modules.is_empty() {
-                    let has_required = required_modules.iter().any(|m| f.contains(&m.to_string()));
-                    if !has_required {
-                        continue;
-                    }
-                } else {
-                    continue;
-                }
-            }
-        }
+    for (id_suffix, name, currency, account_type, balance) in accounts {
         let id_part = format!("account:{}", id_suffix);
         let account = Account {
             id: id_part.clone().into(),
@@ -67,7 +69,6 @@ pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Res
         if let Some(obj) = account_json.as_object_mut() {
             obj.remove("id");
         }
-        let clean_id = id_suffix;
 
         // Use raw query for robust serialization
         db.query("UPSERT type::thing('account', $id) CONTENT $data")

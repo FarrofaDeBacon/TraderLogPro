@@ -125,8 +125,9 @@
             );
         }
 
-        // Save all at once
-        await settingsStore.loadData(); // Refresh to ensure sync
+        // Save all at once before refreshing
+        await settingsStore.saveAssets();
+        await settingsStore.loadData(true); // Refresh to ensure sync (silent mode)
 
         toast.success(`${toImport.length} ativos importados com sucesso!`);
         open = false;

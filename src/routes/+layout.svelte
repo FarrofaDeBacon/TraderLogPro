@@ -14,11 +14,6 @@
   import { listen } from "@tauri-apps/api/event";
 
   let isI18nReady = $state(false);
-
-  setupI18n().then(() => {
-    isI18nReady = true;
-  });
-
   let isBypassLoading = $state(false);
   let isSplashFinished = $state(false);
   let isDetached = $state(false);
@@ -36,16 +31,29 @@
   // Ctrl+scroll zoom handler reference for cleanup
   let _handleWheel: ((e: WheelEvent) => void) | null = null;
 
-  onMount(() => {
-    console.log("[Root Layout] Starting initial data load...");
-    Promise.all([settingsStore.loadData(), tradesStore.loadTrades()])
-      .then(() => {
-        console.log("[Root Layout] Initial data load complete.");
-      })
-      .catch((e) => {
-        console.error("[Root Layout] Error loading initial data:", e);
-        settingsStore.isLoadingData = false;
-      });
+  onMount(async () => {
+    console.log("[Root Layout] Starting initial data load sequence...");
+    try {
+      console.log("[Root Layout] Step 1: Loading setupI18n...");
+      await setupI18n();
+      isI18nReady = true;
+      console.log("[Root Layout] Step 1 complete: i18n ready.");
+
+      console.log("[Root Layout] Step 2: Loading settingsStore data...");
+      await settingsStore.loadData();
+      console.log("[Root Layout] Step 2 complete: Settings loaded.");
+
+      console.log("[Root Layout] Step 3: Loading tradesStore data...");
+      await tradesStore.loadTrades();
+      console.log("[Root Layout] Step 3 complete: Trades loaded.");
+
+      console.log("[Root Layout] All initial data load complete.");
+    } catch (e) {
+      console.error("[Root Layout] FATAL Error during initial load:", e);
+      // Fallback: force bypass loading to at least show something
+      isBypassLoading = true;
+      settingsStore.isLoadingData = false;
+    }
 
     // Fire-and-forget: listen for trade-saved from detached windows
     listen("trade-saved", () => {

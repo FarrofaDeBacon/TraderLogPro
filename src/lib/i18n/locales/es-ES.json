@@ -13,22 +13,7 @@
             "json": "Json"
         }
     },
-    "$lib/stores/settings": {
-        "svelte": "Svelte"
-    },
-    "(": "(",
-    "-": "-",
-    "/": "/",
-    "2023-12-25": "2023-12-25",
-    "2023-12-25T10:00:00": {
-        "000Z": "000Z"
-    },
-    ":": ":",
-    ";": ";",
-    "String:": "String:",
-    "T": "T",
-    "\\n": "\\n",
-    "auth": {
+  "auth": {
         "login": {
             "createAccount": "Crear cuenta",
             "description": "Ingresa tus credenciales para acceder a TraderLog Pro.",
@@ -111,7 +96,8 @@
         "of": "de",
         "weekOf": "Semana de",
         "weekly": "Semanal",
-        "weeklyShort": "S"
+        "weeklyShort": "S",
+        "next": "Siguiente"
     },
     "dashboard": {
         "charts": {
@@ -395,111 +381,111 @@
     },
     "fiscal": {
         "darf": {
-            "accountError": "Account Error",
-            "active": "Active",
+            "accountError": "Error de Cuenta",
+            "active": "Activo",
             "buttons": {
-                "cancel": "Cancel",
-                "confirmPay": "Confirm Payment",
-                "confirmUnpay": "Confirm Refund",
-                "delete": "Delete",
-                "pay": "Pay"
+                "cancel": "Cancelar",
+                "confirmPay": "Confirmar Pago",
+                "confirmUnpay": "Confirmar Reembolso",
+                "delete": "Eliminar",
+                "pay": "Pagar"
             },
-            "description": "Manage and store your tax collection vouchers.",
-            "emptyHistory": "No se encontraron DARFs.",
-            "fineInterest": "Fine & Interest",
-            "history": "DARF History",
+            "description": "Gestione y almacene sus comprobantes de recaudación de impuestos.",
+            "emptyHistory": "No se encontraron DARF.",
+            "fineInterest": "Multas e Intereses",
+            "history": "Historial de DARFs",
             "labels": {
-                "dueDate": "Due Date",
-                "fine": "Fine (R$)",
-                "interest": "Interest (R$)",
-                "paymentDate": "Payment Date",
+                "dueDate": "Vencimiento",
+                "fine": "Multa (R$)",
+                "interest": "Interés (R$)",
+                "paymentDate": "Fecha de Pago",
                 "principal": "Principal",
-                "totalPaid": "Total Value Paid",
-                "valueToPay": "Value to Pay"
+                "totalPaid": "Valor Total Pagado",
+                "valueToPay": "Valor a Pagar"
             },
             "messages": {
-                "emptyHistory": "No DARFs paid in {year}.",
-                "loading": "Loading..."
+                "emptyHistory": "No se pagaron DARFs en {year}.",
+                "loading": "Cargando..."
             },
             "modal": {
                 "delete": {
-                    "prompt": "Are you sure you want to delete this DARF?",
-                    "title": "Confirm Deletion"
+                    "prompt": "¿Está seguro de que desea eliminar este DARF?",
+                    "title": "Confirmar Eliminación"
                 },
                 "pay": {
-                    "description": "Enter the details to register the payment for this DARF.",
-                    "noAccount": "Select an account to debit.",
-                    "title": "Register Payment"
+                    "description": "Ingrese los detalles para registrar el pago de este DARF.",
+                    "noAccount": "Seleccione una cuenta para el débito.",
+                    "title": "Registrar Pago"
                 },
                 "unpay": {
-                    "descriptionLine1": "This will revert the DARF status to Pending and refund the amount of",
-                    "descriptionLine2": "to the source account.",
-                    "descriptionLine3": "The outgoing transaction will be removed from the Finance Hub.",
-                    "title": "Undo Payment"
+                    "descriptionLine1": "Esto revertirá el estado del DARF a Pendiente y reembolsará el monto de",
+                    "descriptionLine2": "a la cuenta de origen.",
+                    "descriptionLine3": "La transacción de salida será eliminada del Hub Financiero.",
+                    "title": "Deshacer Pago"
                 }
             },
-            "principalValue": "Principal Value",
-            "registerPayment": "Register Payment",
-            "revenueCode": "Revenue Code",
-            "selectAccount": "Select Account",
-            "sourceAccount": "Source Account",
+            "principalValue": "Valor Principal",
+            "registerPayment": "Registrar Pago",
+            "revenueCode": "Código de Ingreso",
+            "selectAccount": "Seleccionar Cuenta",
+            "sourceAccount": "Cuenta de Origen",
             "status": {
-                "late": "Late",
-                "paid": "Paid",
-                "pending": "Pending"
+                "late": "Atrasado",
+                "paid": "Pagado",
+                "pending": "Pendiente"
             },
             "table": {
-                "fineInterest": "Fines/Interest",
-                "period": "Period",
+                "fineInterest": "Multas/Intereses",
+                "period": "Período",
                 "principalValue": "Principal",
-                "revenueCode": "Rev. Code",
-                "status": "Status",
-                "totalPaid": "Total Paid"
+                "revenueCode": "Cód. Ingreso",
+                "status": "Estado",
+                "totalPaid": "Total Pagado"
             },
-            "title": "DARF Dashboard",
-            "totalPaid": "Total Paid"
+            "title": "Panel de DARFs",
+            "totalPaid": "Total Pagado"
         },
         "irpf": {
-            "calculate": "Calculate",
-            "calculating": "Calculating...",
-            "description": "Track and consolidate your monthly tax assessments (Day Trade and Swing).",
-            "evolution": "Tax Evolution",
-            "history": "Appraisal History",
+            "calculate": "Calcular",
+            "calculating": "Calculando...",
+            "description": "Siga y consolide sus liquidaciones mensuales de impuestos (Day Trade y Swing).",
+            "evolution": "Evolución Fiscal",
+            "history": "Historial de Liquidaciones",
             "kpis": {
-                "dueYearHint": "Accumulated payable this year.",
-                "losses": "Accumulated Losses",
-                "paidYearHint": "Sum of paid vouchers.",
-                "pending": "Pending Vouchers",
-                "pendingHint": "You have {count} pending DARF(s).",
-                "totalDue": "Tax Due",
-                "totalPaid": "Total Paid"
+                "dueYearHint": "Acumulado a pagar este año.",
+                "losses": "Pérdidas Acumuladas",
+                "paidYearHint": "Suma de comprobantes pagados.",
+                "pending": "Comprobantes Pendientes",
+                "pendingHint": "Tiene {count} DARF(s) pendiente(s).",
+                "totalDue": "Impuesto Debido",
+                "totalPaid": "Total Pagado"
             },
-            "manageDarfs": "Manage DARFs",
+            "manageDarfs": "Gestionar DARFs",
             "modal": {
-                "description": "Calculate the net isolated results for a specific month.",
-                "month": "Base Month",
-                "title": "New Appraisal",
-                "year": "Calendar Year"
+                "description": "Calcule los resultados netos aislados para un mes específico.",
+                "month": "Mes Base",
+                "title": "Nueva Liquidación",
+                "year": "Año Calendario"
             },
-            "newAppraisal": "New Appraisal",
-            "periodFilter": "Year Filter",
-            "saveBeforeDarf": "Save the appraisal before generating a DARF.",
+            "newAppraisal": "Nueva Liquidación",
+            "periodFilter": "Filtro de Año",
+            "saveBeforeDarf": "Guarde la liquidación antes de generar un DARF.",
             "table": {
-                "actions": "Actions",
-                "alreadyGenerated": "DARF Generated",
-                "cannotDelete": "Cannot delete",
-                "compensated": "Compensated",
-                "generateDarf": "Generate DARF",
-                "minTaxAlert": "Min. IRPF",
-                "minTaxHint": "Value lesser than or equal to R$ 10",
-                "netProfit": "Net Profit",
-                "ok": "No Tax",
-                "paid": "Paid",
-                "pending": "Pending",
-                "period": "Month/Year",
-                "status": "Status",
-                "toPay": "Tax Due",
-                "type": "Modality"
+                "actions": "Acciones",
+                "alreadyGenerated": "DARF Generado",
+                "cannotDelete": "No se puede eliminar",
+                "compensated": "Compensado",
+                "generateDarf": "Generar DARF",
+                "minTaxAlert": "IRPF Mín.",
+                "minTaxHint": "Valor menor o igual a R$ 10",
+                "netProfit": "Beneficio Neto",
+                "ok": "Sin Impuesto",
+                "paid": "Pagado",
+                "pending": "Pendiente",
+                "period": "Mes/Año",
+                "status": "Estado",
+                "toPay": "Impuesto Debido",
+                "type": "Modalidad"
             },
             "title": "IRPF Hub",
             "complementary": "Complementar"
@@ -570,7 +556,8 @@
         },
         "weeks_upper": "SEMANAS",
         "weight": "peso",
-        "yes": "Yes"
+        "yes": "Yes",
+        "progress": "Progreso"
     },
     "header": {
         "searchPlaceholder": "Search Placeholder",
@@ -702,6 +689,25 @@
         "title": "Análisis Psicológico"
     },
     "settings": {
+        "fiscal": {
+            "assignments": {
+                "title": "Asignaciones Fiscales",
+                "description": "Vincule perfiles fiscales a tipos de activos para automatizar los cálculos de impuestos.",
+                "goToAssetTypes": "Gestionar Tipos de Activos",
+                "table": {
+                    "market": "Mercado",
+                    "assetType": "Tipo de Activo",
+                    "fiscalProfile": "Perfil Fiscal",
+                    "unknownProfile": "Perfil Desconocido",
+                    "defaultExempt": "Exento (Predeterminado)",
+                    "empty": "No hay tipos de activos configurados."
+                },
+                "tip": {
+                    "title": "Sugerencia:",
+                    "text": "El cambio del perfil fiscal solo afecta a los nuevos cálculos y cierres de operaciones."
+                }
+            }
+        },
         "accounts": {
             "balance": "SALDO",
             "confirmDeduplicate": "¿Confirmar eliminación de duplicados?",
@@ -1778,8 +1784,66 @@
                 "title": "Title"
             },
             "welcome": {
-                "description": "Estamos configurando tu espacio de trabajo.",
-                "title": "Bienvenido a TraderLog Pro"
+                "description": "Estamos configurando su espacio de trabajo.",
+                "title": "Bienvenido a TraderLog Pro",
+                "select_language": "SELECCIONE SEU IDIOMA",
+                "select_theme": "SELECCIONE EL TEMA VISUAL",
+                "dark": "Dark (Noche)",
+                "light": "Light (Día)"
+            },
+            "common": {
+                "name": "Nombre Completo",
+                "name_placeholder": "Su nombre",
+                "email": "E-mail",
+                "password": "Contraseña de Acceso",
+                "confirm_password": "Confirmar Contraseña",
+                "recovery_key_title": "Clave de Recuperación",
+                "recovery_key_desc": "Esta clave es la única forma de recuperar su acceso si olvida la contraseña.",
+                "master_key": "MASTER KEY",
+                "copy_to_clipboard": "Toque para copiar",
+                "never_share": "⚠️ NUNCA compartas esta clave. Guárdala en un lugar seguro.",
+                "activation_title": "Activación de Licencia",
+                "activation_desc": "Si ya tienes una licencia, importa el archivo .lic abajo.",
+                "active_license": "¡Licencia Activa!",
+                "plan": "Plan",
+                "import_lic": "IMPORTAR ARCHIVO .LIC",
+                "no_license_title": "¿NO TIENE UNA LICENCIA?",
+                "no_license_desc": "Al saltar, iniciará en el modo TRIAL limitado.",
+                "currency_title": "Moneda Base",
+                "currency_desc": "Elija la moneda oficial para la consolidación de todos sus lucros e impostos.",
+                "markets_title": "¿Dónde opera?",
+                "markets_desc": "Seleccione los mercados para habilitar las herramientas correctas.",
+                "asset_types_title": "Tipos de Assets",
+                "asset_types_desc": "¿Qué instrumentos financieros forman parte de su día a día?",
+                "rtd_title": "Conexión Real-Time (RTD)",
+                "rtd_desc": "Conecte TraderLog Pro a su terminal de negociación vía Excel.",
+                "rtd_active_now": "Activar RTD ahora",
+                "rtd_active_desc": "Detecte trades de Profit/Tryd instantáneamente.",
+                "rtd_select_sheet": "SELECCIONAR PLANILLA",
+                "rtd_later_title": "Configurar Después",
+                "rtd_later_desc": "Puede activar el RTD en el menú de configuraciones en cualquier momento.",
+                "rtd_skip": "SALTAR ESTE PASO",
+                "mission_ready": "¡Misión Lista!",
+                "mission_ready_desc": "Su base de operaciones fue configurada con éxito. ¡Buenos trades!",
+                "start_journey": "INICIAR JORNADA",
+                "configuring": "CONFIGURANDO...",
+                "markets": {
+                    "M1": "B3 (Brasil)",
+                    "M2": "NYSE (EE. UU.)",
+                    "M3": "NASDAQ (EE. UU.)",
+                    "M4": "CME Group",
+                    "M5": "Forex",
+                    "M6": "Cripto"
+                },
+                "assets": {
+                    "T1": "Acciones BR",
+                    "T2": "Opciones BR",
+                    "T3": "Futuros BR",
+                    "T4": "FIIs",
+                    "T5": "Stocks US",
+                    "T6": "Pares Forex",
+                    "T7": "Criptomonedas"
+                }
             }
         }
     },
