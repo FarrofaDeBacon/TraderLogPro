@@ -50,6 +50,40 @@
                 <p class="text-muted-foreground">
                     {$t("strategy.list.description")}
                 </p>
+            </div>
+
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <div class="relative flex-1 md:w-64">
+                    <Search
+                        class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
+                    />
+                    <Input
+                        type="search"
+                        placeholder={$t("strategy.list.searchPlaceholder")}
+                        class="pl-8"
+                        bind:value={searchTerm}
+                    />
+                </div>
+
+                <Select.Root type="single" bind:value={selectedType}>
+                    <Select.Trigger class="w-[180px]">
+                        <Filter class="w-4 h-4 mr-2" />
+                        <Select.Value
+                            placeholder={settingsStore.assetTypes.find(
+                                (t) => t.id === selectedType,
+                            )?.name || $t("trades.placeholders.all_types")}
+                        />
+                    </Select.Trigger>
+                    <Select.Content>
+                        <Select.Item value="all"
+                            >{$t("trades.placeholders.all_types")}</Select.Item
+                        >
+                        {#each settingsStore.assetTypes as type}
+                            <Select.Item value={type.id}>{type.name}</Select.Item>
+                        {/each}
+                    </Select.Content>
+                </Select.Root>
+            </div>
         </div>
 
         <Separator />

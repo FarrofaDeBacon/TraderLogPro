@@ -1,5 +1,5 @@
 import { register, init, getLocaleFromNavigator, waitLocale } from 'svelte-i18n';
-import { browser } from '$app/environment';
+const browser = typeof window !== 'undefined';
 
 export const setupI18n = async () => {
     register('pt-BR', () => import('./locales/pt-BR.json'));
