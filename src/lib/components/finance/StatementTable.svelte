@@ -771,56 +771,61 @@
                             >
                                 <!-- Type badge -->
                                 <Table.Cell>
-                                    {#if tx.id && tx.id.includes("daily_closure_")}
+                                    {#if tx.category === 'TaxPayment'}
                                         <div
-                                            class="flex items-center text-blue-400 text-[10px] font-bold uppercase tracking-tighter bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 w-fit"
+                                            class="flex items-center text-indigo-400 text-[10px] font-black uppercase tracking-tighter bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20 w-fit"
                                         >
-                                            <CalendarCheck
-                                                class="w-3 h-3 mr-1"
-                                            />
-                                            {$t("finance.dailyClosure")}
+                                            <Coins class="w-3 h-3 mr-1" />
+                                            {$t("finance.statement.categories.tax_payment")}
+                                        </div>
+                                    {:else if tx.category === 'Trading' || (tx.id && tx.id.includes("daily_closure_"))}
+                                        <div
+                                            class="flex items-center text-blue-400 text-[10px] font-black uppercase tracking-tighter bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 w-fit"
+                                        >
+                                            <CalendarCheck class="w-3 h-3 mr-1" />
+                                            {$t("finance.statement.categories.trading")}
+                                        </div>
+                                    {:else if tx.category === 'Transfer'}
+                                        <div
+                                            class="flex items-center text-orange-400 text-[10px] font-black uppercase tracking-tighter bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20 w-fit"
+                                        >
+                                            <RefreshCw class="w-3 h-3 mr-1" />
+                                            {$t("finance.statement.categories.transfer")}
+                                        </div>
+                                    {:else if tx.category === 'TaxRefund'}
+                                        <div
+                                            class="flex items-center text-cyan-400 text-[10px] font-black uppercase tracking-tighter bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 w-fit"
+                                        >
+                                            <ArrowDownLeft class="w-3 h-3 mr-1" />
+                                            {$t("finance.statement.categories.tax_refund")}
+                                        </div>
+                                    {:else if tx.category === 'Adjustment' || tx.type === 'Adjustment'}
+                                        <div
+                                            class="flex items-center text-muted-foreground text-[10px] font-black uppercase tracking-tighter bg-muted/30 px-2 py-0.5 rounded border border-border/50 w-fit"
+                                        >
+                                            <RefreshCw class="w-3 h-3 mr-1" />
+                                            {$t("finance.statement.categories.adjustment")}
                                         </div>
                                     {:else if tx.type === "Deposit"}
                                         <div
                                             class="flex items-center text-emerald-500 text-[10px] font-bold uppercase tracking-tighter bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 w-fit"
                                         >
-                                            <ArrowDownLeft
-                                                class="w-3 h-3 mr-1"
-                                            />
-                                            {$t(
-                                                "finance.statement.types.deposit",
-                                            )}
+                                            <ArrowDownLeft class="w-3 h-3 mr-1" />
+                                            {$t("finance.statement.types.deposit")}
                                         </div>
                                     {:else if tx.type === "Withdraw"}
                                         <div
                                             class="flex items-center text-rose-500 text-[10px] font-bold uppercase tracking-tighter bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 w-fit"
                                         >
-                                            <ArrowUpRight
-                                                class="w-3 h-3 mr-1"
-                                            />
-                                            {$t(
-                                                "finance.statement.types.withdraw",
-                                            )}
-                                        </div>
-                                    {:else if tx.type === "DailyResult"}
-                                        <div
-                                            class="flex items-center text-muted-foreground text-[10px] font-mono font-bold uppercase tracking-tighter bg-muted/30 px-2 py-0.5 rounded border border-border/50 w-fit"
-                                        >
-                                            <CalendarCheck
-                                                class="w-3 h-3 mr-1"
-                                            />
-                                            {$t(
-                                                "finance.statement.types.result",
-                                            )}
+                                            <ArrowUpRight class="w-3 h-3 mr-1" />
+                                            {$t("finance.statement.types.withdraw")}
                                         </div>
                                     {:else}
                                         <div
                                             class="flex items-center text-blue-500 text-[10px] font-mono font-bold uppercase tracking-tighter bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 w-fit"
                                         >
                                             <RefreshCw class="w-3 h-3 mr-1" />
-                                            {$t(
-                                                "finance.statement.types.result",
-                                            )}
+                                            {$t("finance.statement.types.result")}
                                         </div>
                                     {/if}
                                 </Table.Cell>

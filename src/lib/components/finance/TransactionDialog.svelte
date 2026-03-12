@@ -169,6 +169,7 @@
                 amount: finalAmount,
                 date: fullIsoDate,
                 type: transactionType as any,
+                category: transactionType === "Adjustment" ? "Adjustment" : undefined,
                 description:
                     description ||
                     (transactionType === "Deposit"

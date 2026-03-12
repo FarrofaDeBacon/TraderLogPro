@@ -357,6 +357,13 @@
         "result": "RESULTADO",
         "transfer": "Transferência",
         "withdraw": "Retirada"
+      },
+      "categories": {
+        "tax_payment": "IMPOSTO",
+        "trading": "FECHAMENTO",
+        "transfer": "TRANSF.",
+        "tax_refund": "ESTORNO",
+        "adjustment": "AJUSTE"
       }
     },
     "title": "Hub Financeiro",

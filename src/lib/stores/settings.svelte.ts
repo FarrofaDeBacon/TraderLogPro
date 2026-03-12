@@ -1073,6 +1073,7 @@ class SettingsStore {
                 date,
                 amount: -amountParams.sourceAmount,
                 type: "Withdraw",
+                category: "Transfer",
                 description: description || "Transferência (Saída)",
                 account_id: fromAccountId
             });
@@ -1083,6 +1084,7 @@ class SettingsStore {
                 date,
                 amount: amountParams.destAmount,
                 type: "Deposit",
+                category: "Transfer",
                 description: description || "Transferência (Entrada)",
                 account_id: toAccountId
             });
