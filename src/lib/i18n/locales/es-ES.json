@@ -315,9 +315,11 @@
     "quickStats": {
       "activeAccounts": "Cuentas Activas",
       "balanceIn": "Saldo en {currency}",
+      "breakdownDesc": "Resumen de las cuentas vinculadas a esta moneda.",
+      "breakdownTitle": "Detalle de {currency}",
       "consolidated": "Consolidado",
       "monthlyResult": "Resultado del Mes",
-      "monthlyResultDesc": "Monthly Result Desc",
+      "monthlyResultDesc": "Resumen de rendimiento del mes",
       "totalBalance": "Saldo Total (Est.)",
       "totalEquity": "Patrimonio Total",
       "viewBreakdown": "Ver Detalles"
@@ -357,6 +359,13 @@
         "result": "RESULTADO",
         "transfer": "Transferencia",
         "withdraw": "Retiro"
+      },
+      "categories": {
+        "tax_payment": "IMPUESTO",
+        "trading": "CIERRE",
+        "transfer": "TRANSF.",
+        "tax_refund": "REEMBOLSO",
+        "adjustment": "AJUSTE"
       }
     },
     "title": "Hub Financiero",

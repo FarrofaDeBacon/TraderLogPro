@@ -315,9 +315,11 @@
     "quickStats": {
       "activeAccounts": "Comptes Actifs",
       "balanceIn": "Solde en {currency}",
+      "breakdownDesc": "Résumé des comptes liés à cette devise.",
+      "breakdownTitle": "Détail de {currency}",
       "consolidated": "Consolidé",
       "monthlyResult": "Résultat du Mois",
-      "monthlyResultDesc": "Monthly Result Desc",
+      "monthlyResultDesc": "Résumé des performances mensuelles",
       "totalBalance": "Solde Total (Est.)",
       "totalEquity": "Capitaux Totaux",
       "viewBreakdown": "Voir les détails"
@@ -357,6 +359,13 @@
         "result": "RÉSULTAT",
         "transfer": "Transfert",
         "withdraw": "Retrait"
+      },
+      "categories": {
+        "tax_payment": "IMPÔT",
+        "trading": "CLÔTURE",
+        "transfer": "TRANSF.",
+        "tax_refund": "REMBOURSEMENT",
+        "adjustment": "AJUSTEMENT"
       }
     },
     "title": "Pôle Financier",

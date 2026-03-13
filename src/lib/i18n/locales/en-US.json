@@ -315,6 +315,8 @@
     "quickStats": {
       "activeAccounts": "Active Accounts",
       "balanceIn": "Balance in {currency}",
+      "breakdownDesc": "Summary of accounts linked to this currency.",
+      "breakdownTitle": "Breakdown of {currency}",
       "consolidated": "Consolidated",
       "monthlyResult": "Monthly Result",
       "monthlyResultDesc": "Monthly performance summary",
@@ -357,6 +359,13 @@
         "result": "RESULT",
         "transfer": "Transfer",
         "withdraw": "Withdrawal"
+      },
+      "categories": {
+        "tax_payment": "TAX",
+        "trading": "CLOSURE",
+        "transfer": "TRANSF.",
+        "tax_refund": "REFUND",
+        "adjustment": "ADJUSTMENT"
       }
     },
     "title": "Financial Hub",
@@ -1583,119 +1592,119 @@
       },
       "form": {
         "accounts": {
-          "noneSelected": "Nenhuma conta selecionada. O perfil não será aplicado a nenhuma conta.",
-          "title": "Vincular Contas"
+          "noneSelected": "No account selected. The profile will not be applied to any account.",
+          "title": "Link Accounts"
         },
         "presets": {
-          "aggressive": "Agressivo",
-          "conservative": "Conservador",
-          "moderate": "Moderado",
-          "title": "Predefinições de Perfil"
+          "aggressive": "Aggressive",
+          "conservative": "Conservative",
+          "moderate": "Moderate",
+          "title": "Profile Presets"
         },
         "tabs": {
-          "engine": "Motor de Risco",
-          "general": "Geral",
+          "engine": "Risk Engine",
+          "general": "General",
           "growth": "Roadmap"
         }
       },
       "growthPlan": {
         "actions": {
-          "demote": "Retornar Fase",
-          "promote": "Avançar Fase"
+          "demote": "Demote Phase",
+          "promote": "Promote Phase"
         },
-        "activeStatus": "Plano de Crescimento Ativo",
-        "addPhase": "Adicionar Nova Fase",
-        "consistency": "Consistência de",
-        "dailyLoss": "Limite de Perda",
-        "dailyLossLabel": "Limite Diário",
-        "drawdown": "Drawdown Máximo",
-        "enable": "Habilitar Plano de Crescimento",
-        "enableDesc": "Gerenciamento automático de lotes e limites baseado em performance.",
-        "lossLabel": "Loss Limite",
-        "maxLotLabel": "Lotes Máx",
-        "maxLots": "Máximo de Lotes",
-        "maxLotsLabel": "Máximo de Lotes",
-        "noPhases": "Nenhuma fase configurada",
-        "phases": "Fases do Plano",
-        "phasesTitle": "Estrutura de Fases",
-        "profitTarget": "Meta de Lucro",
-        "progression": "Critérios de Avanço",
-        "regression": "Critérios de Regressão",
+        "activeStatus": "Active Growth Plan",
+        "addPhase": "Add New Phase",
+        "consistency": "Consistency of",
+        "dailyLoss": "Loss Limit",
+        "dailyLossLabel": "Daily Limit",
+        "drawdown": "Maximum Drawdown",
+        "enable": "Enable Growth Plan",
+        "enableDesc": "Automatic management of lots and limits based on performance.",
+        "lossLabel": "Loss Limit",
+        "maxLotLabel": "Max Lots",
+        "maxLots": "Maximum Lots",
+        "maxLotsLabel": "Maximum Lots",
+        "noPhases": "No phases configured",
+        "phases": "Plan Phases",
+        "phasesTitle": "Phase Structure",
+        "profitTarget": "Profit Target",
+        "progression": "Progression Criteria",
+        "regression": "Regression Criteria",
         "requirements": {
-          "days": "Sessões Positivas",
-          "demote": "Critérios de Regressão",
-          "drawdown": "Drawdown Máximo",
-          "lossStreak": "Sequência de Loss",
-          "profit": "Meta de Lucro",
-          "promote": "Requisitos para Avançar"
+          "days": "Positive Sessions",
+          "demote": "Regression Criteria",
+          "drawdown": "Maximum Drawdown",
+          "lossStreak": "Loss Streak",
+          "profit": "Profit Target",
+          "promote": "Requirements to Advance"
         },
         "status": {
-          "approved": "Aprovado p/ Próxima Fase",
-          "inProgress": "Em Andamento",
-          "regression": "Alerta de Regressão",
-          "title": "Status da Fase"
+          "approved": "Approved for Next Phase",
+          "inProgress": "In Progress",
+          "regression": "Regression Alert",
+          "title": "Phase Status"
         },
-        "title": "Plano de Crescimento",
+        "title": "Growth Plan",
         "toasts": {
-          "demote": "Atenção: Você retornou para a fase: {name}",
-          "promote": "Parabéns! Você avançou para a fase: {name}"
+          "demote": "Attention: You returned to phase: {name}",
+          "promote": "Congratulations! You advanced to phase: {name}"
         },
-        "tradingSessions": "Sessões"
+        "tradingSessions": "Sessions"
       },
-      "lockOnLoss": "Bloquear Plataforma ao Atingir Loss",
-      "lockOnLossShort": "Bloqueia Plataforma (Loss)",
-      "lockWarning": "O usuário não poderá abrir novas ordens até o dia seguinte.",
-      "maxRiskPerTrade": "Risco Máx por Trade",
-      "maxRiskPerTradeShort": "Risco/Trade",
-      "maxTradesDay": "Máximo de Operações/Dia",
-      "minRiskReward": "Risco:Retorno Mínimo",
-      "name": "Nome do Perfil",
-      "namePlaceholder": "Ex: Conservador",
+      "lockOnLoss": "Lock Platform on Loss",
+      "lockOnLossShort": "Lock Platform (Loss)",
+      "lockWarning": "The user will not be able to open new orders until the next day.",
+      "maxRiskPerTrade": "Max Risk per Trade",
+      "maxRiskPerTradeShort": "Risk/Trade",
+      "maxTradesDay": "Max Trades/Day",
+      "minRiskReward": "Min Risk:Reward",
+      "name": "Profile Name",
+      "namePlaceholder": "Ex: Conservative",
       "new": "New Profile",
-      "platformLock": "Trava da Plataforma",
+      "platformLock": "Platform Lock",
       "profiles": {
-        "activate": "Ativar Perfil",
-        "active": "Ativo",
-        "dailyLoss": "Loss Diário",
-        "dailyTarget": "Meta Diária"
+        "activate": "Activate Profile",
+        "active": "Active",
+        "dailyLoss": "Daily Loss",
+        "dailyTarget": "Daily Target"
       },
       "title": "Risk Management",
-      "upside": "Objetivos (Upside)"
+      "upside": "Goals (Upside)"
     },
     "strategies": {
       "description": "Register your trading strategies and their characteristics.",
       "edit": "Edit Strategy",
       "empty": "No strategy found",
       "form": {
-        "addImage": "Adicionar",
-        "assetTypes": "Tipos de Ativo",
-        "cancel": "Cancelar",
+        "addImage": "Add",
+        "assetTypes": "Asset Types",
+        "cancel": "Cancel",
         "description": "Description",
         "descriptionPlaceholder": "Describe the strategy...",
-        "entryPlaceholder": "O que define a entrada?",
-        "entryTriggers": "1. Gatilhos de Entrada",
-        "indicators": "Indicadores",
-        "linkedMarkets": "Mercados Vinculados",
-        "management": "3. Condução / Gestão",
+        "entryPlaceholder": "What defines the entry?",
+        "entryTriggers": "1. Entry Triggers",
+        "indicators": "Indicators",
+        "linkedMarkets": "Linked Markets",
+        "management": "3. Management",
         "managementPlaceholder": "Trailing stop? Breakeven?",
         "name": "Name",
         "namePlaceholder": "Ex: Price Action, Scalping...",
-        "noMarketSelected": "Nenhum mercado selecionado.",
-        "operationalContext": "Contexto Operacional",
+        "noMarketSelected": "No market selected.",
+        "operationalContext": "Operational Context",
         "partials": {
-          "placeholder": "Descreva a regra da parcial...",
-          "switch": "Realizar Saídas Parciais?"
+          "placeholder": "Describe the partial rule...",
+          "switch": "Perform Partial Exits?"
         },
         "save": "Save",
-        "select": "Selecionar",
-        "specificAssets": "Ativos Específicos",
-        "stopExit": "2. Stop / Saída",
-        "stopPlaceholder": "Onde fica o stop?",
+        "select": "Select",
+        "specificAssets": "Specific Assets",
+        "stopExit": "2. Stop / Exit",
+        "stopPlaceholder": "Where is the stop?",
         "timeframes": "Timeframes",
         "tips": {
-          "noImages": "Sem imagens"
+          "noImages": "No images"
         },
-        "visualExamples": "Exemplos Visuais"
+        "visualExamples": "Visual Examples"
       },
       "new": "New Strategy",
       "title": "Strategies"
@@ -1708,7 +1717,7 @@
         "color": "Color",
         "name": "Name",
         "namePlaceholder": "Ex: Breakout, Reversal...",
-        "preview": "Preview da Tag",
+        "preview": "Tag Preview",
         "save": "Save"
       },
       "new": "New Tag",
@@ -1717,14 +1726,14 @@
     },
     "timeframes": {
       "description": "Define the timeframes you use for analysis (M1, M5, D1, etc.).",
-      "displayName": "Nome de Exibição",
+      "displayName": "Display Name",
       "edit": "Edit Timeframe",
       "empty": "No timeframe found",
-      "namePlaceholder": "Ex: 5 Minutos",
-      "new": "New Timeframe",
+      "namePlaceholder": "Ex: 5 Minutes",
+      "new": "New Interval",
       "searchPlaceholder": "Search timeframe...",
       "title": "Timeframes",
-      "value": "Valor / Código",
+      "value": "Value / Code",
       "valuePlaceholder": "Ex: 5m, 1H, 1D"
     }
   },

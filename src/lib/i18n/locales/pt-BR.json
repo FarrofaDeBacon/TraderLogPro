@@ -315,9 +315,11 @@
     "quickStats": {
       "activeAccounts": "Contas Ativas",
       "balanceIn": "Saldo em {currency}",
+      "breakdownDesc": "Resumo das contas vinculadas a esta moeda.",
+      "breakdownTitle": "Detalhamento de {currency}",
       "consolidated": "Consolidado",
       "monthlyResult": "Resultado do Mês",
-      "monthlyResultDesc": "Monthly Result Desc",
+      "monthlyResultDesc": "Resumo de desempenho no mês",
       "totalBalance": "Saldo Total (Est.)",
       "totalEquity": "Patrimônio Total",
       "viewBreakdown": "Ver Detalhes"
@@ -1929,6 +1931,27 @@
       "totalResult": "Resultado Total",
       "tradesSuffix": "trades",
       "viewAnalysis": "Ver Análise Completa"
+    },
+    "gann": {
+      "adherence": "Aderência",
+      "accuracy": "Acurácia",
+      "alignment": "Alinhamento",
+      "alignmentDesc": "Entradas em Níveis SQ9",
+      "angleScore": "Pontuação de Ângulo",
+      "analyticalConfluence": "Confluência Analítica",
+      "confluenceDesc": "Como esta estratégia reage às Leis Matemáticas de Gann",
+      "cycleWatch": "Vigilância de Ciclo",
+      "cycleWatchDesc": "Taxa de Acerto em Datas Naturais",
+      "geometricPrecision": "Precisão Geométrica",
+      "geometryLaw": "Lei da Geometria",
+      "geometryLawDesc": "A Aderência ao Ângulo representa o equilíbrio entre Preço e Tempo. Estratégias que respeitam os ângulos geométricos (como 45°) são consideradas estáveis e sustentáveis ao longo do Ciclo Mestre.",
+      "mastery": "Gann Mastery",
+      "mathematicalConfluence": "Confluência Matemática",
+      "success": "Sucesso",
+      "timeLaw": "Lei do Tempo",
+      "timeLawDesc": "A Taxa de Sucesso do Ciclo revela se esta estratégia é \"sazonal\". Gann acreditava que o tempo é o fator mais importante; esta pontuação indica se a borda da estratégia é amplificada durante as Mudanças de Estação.",
+      "vibrationLaw": "Lei da Vibração",
+      "vibrationLawDesc": "O alinhamento da estratégia com as vibrações do Quadrado de Nove mede a qualidade de suas entradas. Uma pontuação alta sugere que a estratégia encontra naturalmente liquidez nos pontos de expansão matemática de Gann."
     },
     "dashboard": {
       "charts": {
