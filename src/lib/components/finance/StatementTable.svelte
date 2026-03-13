@@ -817,7 +817,7 @@
                                         </div>
                                     {:else if tx.type === "Withdraw"}
                                         <div
-                                            class="flex items-center text-rose-500 text-[10px] font-bold uppercase tracking-tighter bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 w-fit"
+                                            class="flex items-center text-white text-[10px] font-black uppercase tracking-tighter bg-rose-500 px-2 py-0.5 rounded border border-rose-600 shadow-sm shadow-rose-500/10 w-fit"
                                         >
                                             <ArrowUpRight class="w-3 h-3 mr-1" />
                                             {$t("finance.statement.types.withdraw")}
@@ -1150,7 +1150,7 @@
             </div>
 
             <TradeDetailView 
-                trades={selectedTransaction.trade_ids?.map(id => findTradeById(id)).filter(Boolean) || []} 
+                trades={selectedTransaction.trade_ids?.map((id: string) => findTradeById(id)).filter(Boolean) || []} 
                 currency={acc?.currency || "BRL"} 
             />
         </div>

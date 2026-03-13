@@ -1028,11 +1028,38 @@ pub async fn get_darf_by_transaction(
     db: State<'_, DbState>,
     transaction_id: String,
 ) -> Result<Option<crate::models::dto::TaxDarfDto>, String> {
-    // Robust normalization: handle backticks and table prefix
-    let clean_tx_id = transaction_id.replace('`', "").split(':').last().unwrap_or(&transaction_id).to_string();
+    // Robust normalization: handle backticks, angle brackets and table prefix
+    let clean_tx_id = transaction_id
+        .replace('`', "")
+        .replace('⟨', "")
+        .replace('⟩', "")
+        .split(':')
+        .last()
+        .unwrap_or(&transaction_id)
+        .to_string();
+        
     println!("[DEBUG] get_darf_by_transaction: Searching for normalized tx_id='{}' (original='{}')", clean_tx_id, transaction_id);
     
-    let darf: Option<TaxDarf> = find_one_robust(&db.0, "tax_darf", "transaction_id", &clean_tx_id).await?;
+    // More flexible query to handle varied ID storage formats (Thing vs String vs Prefixed String)
+    let sql = "SELECT * FROM tax_darf WHERE 
+        transaction_id = $val OR 
+        type::string(transaction_id) = $val OR 
+        transaction_id = type::thing('cash_transaction', $val) OR
+        type::string(transaction_id) CONTAINS $val
+        LIMIT 1";
+    
+    let mut result = db.0.query(sql)
+        .bind(("val", clean_tx_id))
+        .await
+        .map_err(|e| e.to_string())?;
+        
+    let darfs: Vec<TaxDarf> = result.take(0).map_err(|e| e.to_string())?;
+    let darf = darfs.into_iter().next();
+    
+    if darf.is_none() {
+        println!("[DEBUG] get_darf_by_transaction: NO DARF FOUND for {}", transaction_id);
+    }
+    
     Ok(darf.map(|d| crate::models::ToDto::to_dto(&d)))
 }
 

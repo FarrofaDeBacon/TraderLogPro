@@ -140,9 +140,9 @@
                 <Button
                     variant="destructive"
                     onclick={() => showUnpayConfirm = true}
-                    class="bg-rose-600/10 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-500/30 mr-auto group transition-all font-bold uppercase text-[10px]"
+                    class="bg-rose-600 hover:bg-rose-700 text-white border-rose-600 mr-auto transition-all font-black uppercase text-[10px] shadow-sm shadow-rose-500/10"
                 >
-                    <Undo2 class="w-3 h-3 mr-2 text-rose-500 group-hover:text-white" />
+                    <Undo2 class="w-3.5 h-3.5 mr-2" />
                     {$t("finance.darfDetails.unpayAction")}
                 </Button>
             {/if}

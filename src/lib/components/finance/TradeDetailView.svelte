@@ -50,7 +50,7 @@
                                     "text-[9px] font-black uppercase tracking-widest px-2 py-0.5",
                                     trade.direction === "Buy"
                                         ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                                        : "bg-rose-500/10 text-rose-500 border-rose-500/20",
+                                        : "bg-rose-500 text-white border-rose-600 shadow-sm shadow-rose-500/20",
                                 )}
                             >
                                 {trade.direction.toUpperCase()}

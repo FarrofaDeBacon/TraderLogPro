@@ -47,7 +47,7 @@
                 {#if darf.status === "Paid"}
                     <Badge
                         variant="outline"
-                        class="bg-green-500/10 text-green-500 border-green-500/20 px-3 py-1 font-black uppercase text-[10px]"
+                        class="bg-green-500 text-white border-green-600 px-3 py-1 font-black uppercase text-[10px] shadow-sm shadow-green-500/10"
                     >
                         <CheckCircle2 class="w-3.5 h-3.5 mr-1.5" />
                         {$t("finance.darfDetails.statusPaid")}
@@ -55,7 +55,7 @@
                 {:else}
                     <Badge
                         variant="outline"
-                        class="bg-amber-500/10 text-amber-500 border-amber-500/20 px-3 py-1 font-black uppercase text-[10px]"
+                        class="bg-amber-500 text-white border-amber-600 px-3 py-1 font-black uppercase text-[10px] shadow-sm shadow-amber-500/10"
                     >
                         <Info class="w-3.5 h-3.5 mr-1.5" />
                         {$t("finance.darfDetails.statusPending")}
@@ -121,7 +121,7 @@
                     <span class="text-[10px] text-muted-foreground uppercase font-bold opacity-70">
                         {$t("finance.darfDetails.grossResult")}
                     </span>
-                    <p class="text-sm font-black font-mono {appraisal.gross_profit >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
+                    <p class="text-sm font-black font-mono {appraisal.gross_profit >= 0 ? 'text-emerald-500' : 'text-rose-600'}">
                         {formatCurrency(appraisal.gross_profit)}
                     </p>
                 </div>

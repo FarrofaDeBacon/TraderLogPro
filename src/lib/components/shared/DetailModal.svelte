@@ -12,10 +12,10 @@
         loading = false,
         size = "default", // default, lg, xl
         children,
-        footer,
+        footer = null,
     } = $props();
 
-    const sizeClasses = {
+    const sizeClasses: Record<string, string> = {
         default: "sm:max-w-[500px]",
         lg: "sm:max-w-[700px]",
         xl: "sm:max-w-[900px]",
