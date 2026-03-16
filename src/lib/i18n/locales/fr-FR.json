@@ -843,7 +843,14 @@
           "withholdingBasisOptions": {
             "profit": "Sur le Profit",
             "sales": "Sur le Montant de la Vente"
-          }
+          },
+          "name": "Nom",
+          "namePlaceholder": "Ex: Règle Day Trade",
+          "rate": "Taux",
+          "rateHint": "Pourcentage d'impôt dû",
+          "exemption": "Exonération",
+          "exemptionHint": "Montant exonéré d'impôt",
+          "modality": "Modalité"
         },
         "new": "Nouvelle Règle",
         "title": "Title"

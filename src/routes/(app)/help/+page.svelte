@@ -6,7 +6,7 @@
     import { Input } from "$lib/components/ui/input";
     import { Search, Book, ChevronRight, X } from "lucide-svelte";
     import { ScrollArea } from "$lib/components/ui/scroll-area";
-    import { t } from "svelte-i18n";
+    import { t, locale } from "svelte-i18n";
 
     interface HelpSection {
         id: string;
@@ -31,45 +31,78 @@
     let activeSectionId = $state("");
     let selectedImage = $state<string | null>(null);
 
+    let currentLocale = "";
+
+    function getFileNameForLocale(loc: string) {
+        // Map short locale codes to our physical file names if needed
+        const localeMap: Record<string, string> = {
+            "en": "en-US",
+            "en-US": "en-US",
+            "pt": "pt-BR",
+            "pt-BR": "pt-BR",
+            "es": "es-ES",
+            "es-ES": "es-ES",
+            "fr": "fr-FR",
+            "fr-FR": "fr-FR"
+        };
+        const mapped = localeMap[loc] || "pt-BR";
+        return `USER_MANUAL_${mapped}.md`;
+    }
+
+    // Async loading logic
+    async function loadManual(loc: string) {
+        if (!loc) return;
+        
+        try {
+            // Fetch from static folder which is served at /docs/
+            const fileName = getFileNameForLocale(loc);
+            const response = await fetch(`/docs/${fileName}`);
+            if (!response.ok) throw new Error(`Manual not found in static/docs/${fileName}`);
+            
+            const content = await response.text();
+            rawMarkdown = content;
+            parseMarkdown(content);
+
+            // Sync with URL query parameter
+            const q = $page.url.searchParams.get("q");
+            if (q) {
+                searchQuery = q;
+            }
+        } catch (error) {
+            console.error("Failed to load user manual via fetch, trying FS:", error);
+            try {
+                // Fallback to Tauri FS if fetch fails
+                const fileName = getFileNameForLocale(loc);
+                const content = await readTextFile(`docs/${fileName}`);
+                rawMarkdown = content;
+                parseMarkdown(content);
+            } catch (fsError) {
+                console.error("FS fallback also failed:", fsError);
+                // Fallback to Portuguese if the requested locale is missing
+                if (loc !== "pt-BR" && loc !== "pt") {
+                    loadManual("pt-BR");
+                }
+            }
+        }
+    }
+
+    // Highly reliable reactive locale subscription
     onMount(() => {
+        const unsubscribe = locale.subscribe((value) => {
+            if (value && value !== currentLocale) {
+                currentLocale = value;
+                loadManual(value);
+            }
+        });
+
         // Event listener for images in markdown
         const handleOpenImage = (e: any) => {
             selectedImage = e.detail;
         };
         window.addEventListener('open-help-image', handleOpenImage);
 
-        // Async loading logic
-        async function loadManual() {
-            try {
-                // Fetch from static folder which is served at /docs/
-                const response = await fetch("/docs/USER_MANUAL.md");
-                if (!response.ok) throw new Error("Manual not found in static/docs/");
-                
-                const content = await response.text();
-                rawMarkdown = content;
-                parseMarkdown(content);
-
-                // Sync with URL query parameter
-                const q = $page.url.searchParams.get("q");
-                if (q) {
-                    searchQuery = q;
-                }
-            } catch (error) {
-                console.error("Failed to load user manual via fetch, trying FS:", error);
-                try {
-                    // Fallback to Tauri FS if fetch fails
-                    const content = await readTextFile("docs/USER_MANUAL.md");
-                    rawMarkdown = content;
-                    parseMarkdown(content);
-                } catch (fsError) {
-                    console.error("FS fallback also failed:", fsError);
-                }
-            }
-        }
-
-        loadManual();
-
         return () => {
+            unsubscribe();
             window.removeEventListener('open-help-image', handleOpenImage);
         };
     });
@@ -104,13 +137,19 @@
         if (sections.length > 0) activeSectionId = sections[0].id;
     }
 
-    // Simple markdown highlighting for specific tags
+    // Advanced markdown parser for custom rendering
     function formatContent(text: string) {
-        return text
+        let html = text
+            // Blockquotes
+            .replace(/^>\s+(.*)$/gm, '<blockquote class="border-l-4 border-primary/50 pl-4 py-1 italic my-6 text-muted-foreground">$1</blockquote>')
+            // Horizontal Rules
+            .replace(/^\s*---\s*$/gm, '<hr class="my-10 border-border" />')
+            // First protect bold
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            // Then italic (making sure not to capture list asterisks by enforcing word boundaries or non-space after first *)
+            .replace(/(?<!\*)\*(?!\s)(.*?)(?<!\s)\*(?!\*)/g, '<em>$1</em>')
+            // Images
             .replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, src) => {
-                // If it's a relative path starting with ./ or assets/
                 let cleanSrc = src;
                 if (src.startsWith("./")) {
                     cleanSrc = "/docs/" + src.substring(2);
@@ -118,7 +157,7 @@
                     cleanSrc = "/docs/" + src;
                 }
                 
-                return `<div class="my-10 flex flex-col items-center gap-4 group">
+                return `<div class="my-12 flex flex-col items-center gap-4 group">
                     <div class="relative overflow-hidden rounded-xl border border-border shadow-sm bg-muted/20">
                         <img 
                             src="${cleanSrc}" 
@@ -130,8 +169,38 @@
                     <span class="text-xs font-bold uppercase tracking-widest text-muted-foreground/50 px-8">--- ${alt} ---</span>
                 </div>`;
             })
+            // Links
             .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-primary hover:underline font-bold">$1</a>')
-            .replace(/`(.*?)`/g, '<code class="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">$1</code>');
+            // Inline code
+            .replace(/`/g, '<code class="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">$1</code>');
+
+        // Parse unordered lists (* or -)
+        html = html.replace(/^(?:\s*)(?:[\*\-])\s+(.*(?:(?:\n(?!\s*[\*\-]\s).*)*))/gm, '<li class="ml-6 list-disc mb-2 pl-2">$1</li>');
+        // Wrap consecutive unordered li's in ul
+        html = html.replace(/(<li class="ml-6 list-disc[^>]*>.*?<\/li>\n*)+/g, '<ul class="my-6">$&</ul>');
+
+        // Parse ordered lists (1., 2., 3.)
+        html = html.replace(/^(?:\s*)\d+\.\s+(.*(?:(?:\n(?!\s*\d+\.\s).*)*))/gm, '<li class="ml-6 list-decimal mb-2 pl-2">$1</li>');
+        // Wrap consecutive ordered li's in ol
+        html = html.replace(/(<li class="ml-6 list-decimal[^>]*>.*?<\/li>\n*)+/g, '<ol class="my-6">$&</ol>');
+
+        // Paragraphs
+        const blocks = html.split(/\n\s*\n/);
+        html = blocks.map(block => {
+            const trimmed = block.trim();
+            if (!trimmed) return '';
+            
+            // Check if it's already an HTML block element that we generated
+            const isHTMLBlock = /^(<(div|ul|ol|li|blockquote|hr|h[1-6]))/i.test(trimmed);
+            if (isHTMLBlock) {
+                return trimmed;
+            }
+            
+            // Otherwise, it's a normal text paragraph
+            return `<p class="mb-6 leading-relaxed">${trimmed}</p>`;
+        }).join('\n');
+
+        return html;
     }
 
     function scrollToSection(id: string) {
@@ -167,7 +236,7 @@
                 <Book class="h-4 w-4" />
                 {$t("help.topics")}
             </div>
-            <ScrollArea class="flex-1 pr-4">
+            <div class="flex-1 overflow-y-auto pr-4 pb-12">
                 <nav class="flex flex-col gap-1.5">
                     {#each sections as section}
                         <button 
@@ -179,7 +248,7 @@
                         </button>
                     {/each}
                 </nav>
-            </ScrollArea>
+            </div>
         </aside>
 
         <!-- Content Area -->
@@ -211,7 +280,7 @@
                             <h5 class="text-lg font-bold mb-3 mt-6 text-foreground/70">{section.title}</h5>
                         {/if}
                         
-                        <div class="text-muted-foreground text-lg leading-relaxed whitespace-pre-wrap font-medium">
+                        <div class="text-foreground/90 text-lg font-medium">
                             {@html formatContent(section.content)}
                         </div>
                     </section>
@@ -252,7 +321,7 @@
     }
     
     :global(section code) {
-        font-family: 'JetBrains Mono', monospace;
+        font-family: var(--font-mono);
         font-size: 0.85em;
         padding: 0.2rem 0.4rem;
         background-color: hsl(var(--muted));

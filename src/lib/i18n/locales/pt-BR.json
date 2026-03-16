@@ -843,7 +843,14 @@
           "withholdingBasisOptions": {
             "profit": "Sobre o Lucro",
             "sales": "Sobre o Valor da Venda"
-          }
+          },
+          "name": "Nome",
+          "namePlaceholder": "Ex: Regra de Day Trade",
+          "rate": "Alíquota",
+          "rateHint": "Percentual do imposto devido",
+          "exemption": "Isenção",
+          "exemptionHint": "Valor isento de imposto",
+          "modality": "Modalidade"
         },
         "new": "Nova Regra",
         "title": "Regras de Imposto"

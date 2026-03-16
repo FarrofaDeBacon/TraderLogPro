@@ -843,7 +843,14 @@
           "withholdingBasisOptions": {
             "profit": "Sobre el Beneficio",
             "sales": "Sobre el Valor de Venta"
-          }
+          },
+          "name": "Nombre",
+          "namePlaceholder": "Ej: Regla de Day Trade",
+          "rate": "Tasa",
+          "rateHint": "Porcentaje de impuesto a pagar",
+          "exemption": "Exención",
+          "exemptionHint": "Monto exento de impuestos",
+          "modality": "Modalidad"
         },
         "new": "Nueva Regla",
         "title": "Title"
@@ -1463,6 +1470,8 @@
         "profiles": "Profiles",
         "rules": "Rules"
       },
+      "general": "General",
+      "indicators": "Indicators",
       "integrations": "API e Integraciones",
       "license": "License",
       "markets": "Mercados Base",

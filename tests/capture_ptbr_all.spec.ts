@@ -63,6 +63,35 @@ test.describe('Capture pt-BR Screenshots', () => {
             }
             await page.waitForTimeout(2000); // Let echarts render fully
 
+            // Capture New Trade Wizard on Trades page
+            if (item.route === '/trades') {
+                try {
+                    console.log("Waiting for network idle before opening wizard...");
+                    await page.waitForLoadState('networkidle');
+                    await page.waitForTimeout(2000);
+                    
+                    console.log("Attempting to open New Trade Wizard...");
+                    const novoTradeBtn = page.locator('button:has-text("Novo Trade")').first();
+                    await novoTradeBtn.waitFor({ state: 'visible', timeout: 5000 });
+                    await novoTradeBtn.click({ force: true });
+                    
+                    // Wait for the Shadcn dialog content to appear
+                    const dialogContent = page.locator('[role="dialog"], .bg-background.border.shadow-lg').first();
+                    await dialogContent.waitFor({ state: 'visible', timeout: 5000 });
+                    await page.waitForTimeout(1500); // Let animation finish
+                    
+                    // Take screenshot of the exact dialog component
+                    await dialogContent.screenshot({ path: path.join(ASSETS_DIR, 'modal_add_trade.png') });
+                    console.log(`Saved screenshot: modal_add_trade.png`);
+                    
+                    // Close the modal
+                    await page.keyboard.press('Escape');
+                    await page.waitForTimeout(1000);
+                } catch (e: any) {
+                    console.error("Failed to capture New Trade Wizard:", e.message);
+                }
+            }
+
             // For strategy detail
             if (item.route === '/strategies') {
                 try {
@@ -92,8 +121,19 @@ test.describe('Capture pt-BR Screenshots', () => {
             }
 
             const dest = path.join(ASSETS_DIR, item.filename);
-            await page.screenshot({ path: dest, fullPage: true });
-            console.log(`Saved screenshot: ${item.filename}`);
+            
+            if (item.route.includes('/settings/')) {
+                // For settings pages, capture just the content container to avoid huge empty margins
+                const settingsContainer = page.locator('.flex-1').first();
+                await settingsContainer.waitFor({ state: 'visible' });
+                // We add a tiny timeout just in case animations are still running inside
+                await page.waitForTimeout(1000);
+                await settingsContainer.screenshot({ path: dest });
+                console.log(`Saved screenshot (cropped): ${item.filename}`);
+            } else {
+                await page.screenshot({ path: dest, fullPage: true });
+                console.log(`Saved screenshot: ${item.filename}`);
+            }
         });
     }
 });

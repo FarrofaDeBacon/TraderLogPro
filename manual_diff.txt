@@ -1,0 +1,604 @@
+﻿diff --git a/old_manual.md b/docs/USER_MANUAL.md
+index 9f6dd2a..1e574d1 100644
+--- a/old_manual.md
++++ b/docs/USER_MANUAL.md
+@@ -1,118 +1,118 @@
+-´╗┐# Manual do UsuÔö£├¡rio - TraderLog Pro v1.1
++# Manual do Usu├írio - TraderLog Pro v1.1
+ 
+-## 1. VisÔö£├║o Geral e Conceitos Fundamentais
++## 1. Vis├úo Geral e Conceitos Fundamentais
+ 
+-O **TraderLog Pro** nÔö£├║o Ôö£┬« apenas um diÔö£├¡rio de trades; Ôö£┬« uma estaÔö£┬║Ôö£├║o de inteligÔö£┬¼ncia financeira desenhada para profissionalizar o trader pessoa fÔö£┬ísica. Nossa filosofia baseia-se na centralizaÔö£┬║Ôö£├║o de dados para transformar "sentimento" em estatÔö£┬ística acionÔö£├¡vel.
++O **TraderLog Pro** n├úo ├® apenas um di├írio de trades; ├® uma esta├º├úo de intelig├¬ncia financeira desenhada para profissionalizar o trader pessoa f├¡sica. Nossa filosofia baseia-se na centraliza├º├úo de dados para transformar "sentimento" em estat├¡stica acion├ível.
+ 
+-### 1.1. Os TrÔö£┬¼s Pilares do Sucesso
+-Para atingir a consistÔö£┬¼ncia, o software atua simultaneamente em trÔö£┬¼s frentes:
+-1.  **Pilar Operacional (The Engine)**: AutomaÔö£┬║Ôö£├║o completa do journaling via RTD. VocÔö£┬¼ opera, nÔö£Ôöés registramos, calculamos e classificamos em tempo real.
+-2.  **Pilar PsicolÔö£Ôöégico (The Mind)**: Onde a matemÔö£├¡tica encontra a emoÔö£┬║Ôö£├║o. Rastreamos seu estado mental para identificar se suas perdas sÔö£├║o tÔö£┬«cnicas ou comportamentais.
+-3.  **Pilar Fiscal (The Compliance)**: SeguranÔö£┬║a jurÔö£┬ídica e tributÔö£├¡ria. Geramos suas DARFs e controlamos isenÔö£┬║Ôö£├ües automaticamente, eliminando o medo da malha fina.
++### 1.1. Os Tr├¬s Pilares do Sucesso
++Para atingir a consist├¬ncia, o software atua simultaneamente em tr├¬s frentes:
++1.  **Pilar Operacional (The Engine)**: Automa├º├úo completa do journaling via RTD. Voc├¬ opera, n├│s registramos, calculamos e classificamos em tempo real.
++2.  **Pilar Psicol├│gico (The Mind)**: Onde a matem├ítica encontra a emo├º├úo. Rastreamos seu estado mental para identificar se suas perdas s├úo t├®cnicas ou comportamentais.
++3.  **Pilar Fiscal (The Compliance)**: Seguran├ºa jur├¡dica e tribut├íria. Geramos suas DARFs e controlamos isen├º├Áes automaticamente, eliminando o medo da malha fina.
+ 
+ ### 1.2. Arquitetura Local-First (Privacidade por Design)
+ Diferente de plataformas web, o TraderLog Pro opera sob o modelo **Local-First**:
+-- **Privacidade Total**: Seus dados financeiros e estratÔö£┬«gias nunca saem da sua mÔö£├¡quina. NÔö£├║o existem servidores centrais que possam ser invadidos ou que vendam seus dados.
+-- **Criptografia de Elite**: Tudo Ôö£┬« armazenado no **SurrealDB** local, protegido por criptografia **AES-256**.
+-- **Performance Offline**: O app funciona 100% sem internet para consulta e anÔö£├¡lise de dados histÔö£Ôöéricos.
++- **Privacidade Total**: Seus dados financeiros e estrat├®gias nunca saem da sua m├íquina. N├úo existem servidores centrais que possam ser invadidos ou que vendam seus dados.
++- **Criptografia de Elite**: Tudo ├® armazenado no **SurrealDB** local, protegido por criptografia **AES-256**.
++- **Performance Offline**: O app funciona 100% sem internet para consulta e an├ílise de dados hist├│ricos.
+ 
+-### 1.3. IntegraÔö£┬║Ôö£├║o Real-Time (RTD Bridge)
+-A peÔö£┬║a central da nossa automaÔö£┬║Ôö£├║o Ôö£┬« a **PowerShell Bridge**. Ela atua como um tradutor universal que escuta sua plataforma (ProfitChart, MetaTrader, etc) e alimenta o TraderLog Pro em milissegundos, eliminando o erro humano e a preguiÔö£┬║a de preencher planilhas.
++### 1.3. Integra├º├úo Real-Time (RTD Bridge)
++A pe├ºa central da nossa automa├º├úo ├® a **PowerShell Bridge**. Ela atua como um tradutor universal que escuta sua plataforma (ProfitChart, MetaTrader, etc) e alimenta o TraderLog Pro em milissegundos, eliminando o erro humano e a pregui├ºa de preencher planilhas.
+ 
+ ### 1.3. Setup Engine (Guia de 9 Passos)
+-Ao iniciar pela primeira vez, o assistente guiarÔö£├¡ vocÔö£┬¼ por:
+-1. **PreferÔö£┬¼ncias Visuais**: Idioma e Tema.
+-![Passo 1: PreferÔö£┬¼ncias Visuais](./assets/setup/setup_step_1.png)
+-2. **Perfil e SeguranÔö£┬║a**: CriaÔö£┬║Ôö£├║o de senha criptogrÔö£├¡fica.
++Ao iniciar pela primeira vez, o assistente guiar├í voc├¬ por:
++1. **Prefer├¬ncias Visuais**: Idioma e Tema.
++![Passo 1: Prefer├¬ncias Visuais](./assets/setup/setup_step_1.png)
++2. **Perfil e Seguran├ºa**: Cria├º├úo de senha criptogr├ífica.
+ ![Passo 2: Perfil](./assets/setup/setup_step_2.png)
+ 3. **Master Key**: Gere e guarde sua chave de 24 palavras.
+ ![Passo 3: Master Key](./assets/setup/setup_step_3.png)
+-4. **LicenÔö£┬║a**: Ative seu acesso Premium.
+-![Passo 4: LicenÔö£┬║a](./assets/setup/setup_step_4.png)
++4. **Licen├ºa**: Ative seu acesso Premium.
++![Passo 4: Licen├ºa](./assets/setup/setup_step_4.png)
+ 5. **Moeda Base**: Defina a moeda da sua vida financeira.
+ ![Passo 5: Moeda Base](./assets/setup/setup_step_5.png)
+-6. **Mercados**: Selecione onde vocÔö£┬¼ opera.
++6. **Mercados**: Selecione onde voc├¬ opera.
+ ![Passo 6: Mercados](./assets/setup/setup_step_6.png)
+-7. **Tipos de Ativos**: AÔö£┬║Ôö£├ües, Futuros, OpÔö£┬║Ôö£├ües.
++7. **Tipos de Ativos**: A├º├Áes, Futuros, Op├º├Áes.
+ ![Passo 7: Tipos de Ativos](./assets/setup/setup_step_7.png)
+-8. **ConexÔö£├║o RTD**: Ative o monitoramento automÔö£├¡tico.
+-![Passo 8: ConexÔö£├║o RTD](./assets/setup/setup_step_8.png)
+-9. **FinalizaÔö£┬║Ôö£├║o**: InÔö£┬ício da jornada.
+-![Passo 9: FinalizaÔö£┬║Ôö£├║o](./assets/setup/setup_step_9.png)
++8. **Conex├úo RTD**: Ative o monitoramento autom├ítico.
++![Passo 8: Conex├úo RTD](./assets/setup/setup_step_8.png)
++9. **Finaliza├º├úo**: In├¡cio da jornada.
++![Passo 9: Finaliza├º├úo](./assets/setup/setup_step_9.png)
+ 
+ ---
+ 
+-## 2. ConfiguraÔö£┬║Ôö£├ües do Sistema (Fluxo PÔö£Ôöés-InÔö£┬ício)
++## 2. Configura├º├Áes do Sistema (Fluxo P├│s-In├¡cio)
+ 
+-A Ôö£├¡rea de ConfiguraÔö£┬║Ôö£├ües estÔö£├¡ dividida em seÔö£┬║Ôö£├ües lÔö£Ôöégicas para facilitar o gerenciamento. Acesse pelo Ôö£┬ícone de engrenagem no rodapÔö£┬« do menu lateral.
++A ├írea de Configura├º├Áes est├í dividida em se├º├Áes l├│gicas para facilitar o gerenciamento. Acesse pelo ├¡cone de engrenagem no rodap├® do menu lateral.
+ 
+ ### 2.1. GERAL
+ 
+ #### 2.1.1. Perfil
+-Gerencie informaÔö£┬║Ôö£├ües pessoais (Nome, CPF) e preferÔö£┬¼ncias de idioma e fuso horÔö£├¡rio.
+-![Perfil do UsuÔö£├¡rio](./assets/settings/profile/view.png)
++Gerencie informa├º├Áes pessoais (Nome, CPF) e prefer├¬ncias de idioma e fuso hor├írio.
++![Perfil do Usu├írio](./assets/settings/profile/view.png)
+ 
+-#### 2.1.2. LicenÔö£┬║a
++#### 2.1.2. Licen├ºa
+ Acompanhe o status e validade da sua assinatura.
+ ![Licenciamento](./assets/settings/license/view.png)
+ 
+ ### 2.2. CADASTROS
+ 
+ #### 2.2.1. Contas
+-Cadastre suas corretoras ou mesas proprietÔö£├¡rias. **ObrigatÔö£Ôöério para registrar trades.**
++Cadastre suas corretoras ou mesas propriet├írias. **Obrigat├│rio para registrar trades.**
+ 
+ **Como adicionar:**
+-1. Clique no botÔö£├║o **"Novo"** no topo da lista.
+-2. Preencha o nome da corretora, nÔö£Ôòæmero da conta e selecione a moeda.
++1. Clique no bot├úo **"Novo"** no topo da lista.
++2. Preencha o nome da corretora, n├║mero da conta e selecione a moeda.
+ 3. Clique em **"Salvar"**.
+ 
+ ![Lista de Contas](./assets/settings/accounts/list.png)
+-![FormulÔö£├¡rio de Conta](./assets/settings/accounts/modal_add.png)
++![Formul├írio de Conta](./assets/settings/accounts/modal_add.png)
+ 
+ #### 2.2.2. Moedas
+-Gerencie moedas e taxas de cÔö£├│mbio contra sua moeda base.
++Gerencie moedas e taxas de c├ómbio contra sua moeda base.
+ 
+ **Como adicionar:**
+ 1. Clique em **"Novo"**.
+-2. Defina o cÔö£Ôöédigo (Ex: USD, EUR), nome e a taxa de conversÔö£├║o atual.
++2. Defina o c├│digo (Ex: USD, EUR), nome e a taxa de convers├úo atual.
+ 3. Clique em **"Salvar"**.
+ 
+ ![Lista de Moedas](./assets/settings/currencies/list.png)
+-![FormulÔö£├¡rio de Moeda](./assets/settings/currencies/modal_add.png)
++![Formul├írio de Moeda](./assets/settings/currencies/modal_add.png)
+ 
+ #### 2.2.3. Mercados
+-Defina fuso horÔö£├¡rio e janelas de pregÔö£├║o (B3, NYSE, etc).
++Defina fuso hor├írio e janelas de preg├úo (B3, NYSE, etc).
+ 
+ **Como adicionar:**
+ 1. Clique em **"Novo"**.
+-2. Informe o nome (Ex: B3), fuso horÔö£├¡rio e os horÔö£├¡rios de abertura e fechamento.
++2. Informe o nome (Ex: B3), fuso hor├írio e os hor├írios de abertura e fechamento.
+ 3. Clique em **"Salvar"**.
+ 
+ ![Lista de Mercados](./assets/settings/markets/list.png)
+-![FormulÔö£├¡rio de Mercado](./assets/settings/markets/modal_add.png)
++![Formul├írio de Mercado](./assets/settings/markets/modal_add.png)
+ 
+ #### 2.2.4. Tipos de Ativos
+-Categorize os papÔö£┬«is e defina se o PnL serÔö£├¡ em financeiro ou pontos.
++Categorize os pap├®is e defina se o PnL ser├í em financeiro ou pontos.
+ 
+ **Como adicionar:**
+ 1. Clique em **"Novo Tipo"** no topo da lista.
+-2. Defina o nome (Ex: AÔö£┬║Ôö£├ües, Ôö£├¼ndice), o mercado e como o resultado deve ser exibido (Financeiro ou Pontos).
++2. Defina o nome (Ex: A├º├Áes, ├ìndice), o mercado e como o resultado deve ser exibido (Financeiro ou Pontos).
+ 3. Clique em **"Salvar"**.
+ 
+ ![Lista de Tipos de Ativos](./assets/settings/asset-types/list.png)
+-![FormulÔö£├¡rio de Tipo de Ativo](./assets/settings/asset-types/modal_add.png)
++![Formul├írio de Tipo de Ativo](./assets/settings/asset-types/modal_add.png)
+ 
+ #### 2.2.5. Ativos
+ Cadastre tickers individuais (PETR4, WDO) e defina o peso do ponto.
+ 
+ **Como adicionar:**
+ 1. Clique em **"Novo Ativo"** no topo da lista.
+-2. Informe o SÔö£┬ímbolo (Ticker), Nome amigÔö£├¡vel e selecione o Tipo de Ativo.
+-3. Configure o Valor do Ponto (necessÔö£├¡rio para cÔö£├¡lculo de PnL em contratos).
++2. Informe o S├¡mbolo (Ticker), Nome amig├ível e selecione o Tipo de Ativo.
++3. Configure o Valor do Ponto (necess├írio para c├ílculo de PnL em contratos).
+ 4. Clique em **"Salvar"**.
+ 
+ ![Lista de Ativos](./assets/settings/assets/list.png)
+-![FormulÔö£├¡rio de Ativo](./assets/settings/assets/modal_add.png)
++![Formul├írio de Ativo](./assets/settings/assets/modal_add.png)
+ 
+ #### 2.2.6. Taxas & Emolumentos
+ Configure custos de corretagem e emolumentos da bolsa.
+@@ -120,217 +120,344 @@ Configure custos de corretagem e emolumentos da bolsa.
+ **Como adicionar:**
+ 1. Clique em **"Nova Taxa"**.
+ 2. Defina um nome para o perfil de taxas.
+-3. Informe os valores de corretagem (por ordem ou contrato) e as alÔö£┬íquotas de emolumentos e ISS.
++3. Informe os valores de corretagem (por ordem ou contrato) e as al├¡quotas de emolumentos e ISS.
+ 4. Clique em **"Salvar"**.
+ 
+ ![Lista de Taxas](./assets/settings/fees/list.png)
+-![FormulÔö£├¡rio de Taxas](./assets/settings/fees/modal_add.png)
++![Formul├írio de Taxas](./assets/settings/fees/modal_add.png)
+ 
+ ### 2.3. FISCAL
+ 
+ #### 2.3.1. Regras Fiscais
+-Defina alÔö£┬íquotas (Day Trade 20%, Swing 15%) e limites de isenÔö£┬║Ôö£├║o.
++Defina al├¡quotas (Day Trade 20%, Swing 15%) e limites de isen├º├úo.
+ 
+ **Como adicionar:**
+ 1. Clique em **"Nova Regra"**.
+ 2. Escolha o Mercado e o Tipo de Ativo.
+-3. Defina as alÔö£┬íquotas de Day Trade e Swing Trade.
+-4. Informe o cÔö£Ôöédigo de receita (DARF) e limites de isenÔö£┬║Ôö£├║o se houver.
++3. Defina as al├¡quotas de Day Trade e Swing Trade.
++4. Informe o c├│digo de receita (DARF) e limites de isen├º├úo se houver.
+ 5. Clique em **"Salvar"**.
+ 
+-![Lista de Regras Fiscais](./assets/settings/fiscal/rules/list.png)
+-![FormulÔö£├¡rio de Regra Fiscal](./assets/settings/fiscal/rules/modal_add.png)
+-
++![Formul├írio de Regra Fiscal](./assets/settings/fiscal/rules/modal_add.png)
+ #### 2.3.2. Perfis Fiscais
+-Agrupe regras em perfis (Ex: "PadrÔö£├║o Brasil").
++Agrupe regras em perfis (Ex: "Padr├úo Brasil").
+ 
+ **Como adicionar:**
+ 1. Clique em **"Novo Perfil"**.
+-2. Defina um nome (Ex: Swing Trade AÔö£┬║Ôö£├ües).
+-3. Selecione as regras fiscais que compÔö£├üem este perfil.
++2. Defina um nome (Ex: Swing Trade A├º├Áes).
++3. Selecione as regras fiscais que comp├Áem este perfil.
+ 4. Clique em **"Salvar"**.
+ 
+ ![Perfis Fiscais](./assets/settings/fiscal/profiles/list.png)
+-![FormulÔö£├¡rio de Perfil Fiscal](./assets/settings/fiscal/profiles/modal.png)
++![Formul├írio de Perfil Fiscal](./assets/settings/fiscal/profiles/modal.png)
+ 
+-#### 2.3.3. AtribuiÔö£┬║Ôö£├ües
+-Vincule perfis fiscais a contas ou tipos de ativos especÔö£┬íficos.
++#### 2.3.3. Atribui├º├Áes
++Vincule perfis fiscais a contas ou tipos de ativos espec├¡ficos.
+ 
+-![AtribuiÔö£┬║Ôö£├ües Fiscais](./assets/settings/fiscal/assignments/list.png)
++![Atribui├º├Áes Fiscais](./assets/settings/fiscal/assignments/list.png)
+ 
+ ### 2.4. OPERACIONAL
+ 
+ #### 2.4.1. Perfil de Risco
+-Defina Stop Loss DiÔö£├¡rio, Metas e o **Growth Plan** (Plano de Crescimento) para proteger seu capital.
++Defina Stop Loss Di├írio, Metas e o **Growth Plan** (Plano de Crescimento) para proteger seu capital.
+ 
+ **Como adicionar:**
+ 1. Clique em **"Novo Perfil"** na tela de Perfis de Risco.
+-2. No formulÔö£├¡rio, preencha as configuraÔö£┬║Ôö£├ües divididas em trÔö£┬¼s abas: Geral, Motor de Risco e Crescimento.
++2. No formul├írio, preencha as configura├º├Áes divididas em tr├¬s abas: Geral, Motor de Risco e Crescimento.
+ 3. Clique em **"Salvar"** para aplicar as regras.
+ 
+ ![Lista de Perfis de Risco](./assets/settings/risk/view.png)
+ 
+ **Aba: Geral**  
+-ConfiguraÔö£┬║Ôö£├ües bÔö£├¡sicas de limites e objetivos.
++Configura├º├Áes b├ísicas de limites e objetivos.
+ 
+-*   **Limite de Perda DiÔö£├¡ria:** Valor mÔö£├¡ximo que vocÔö£┬¼ aceita perder no dia. Ao atingir, a plataforma pode travar novas operaÔö£┬║Ôö£├ües.
+-*   **Meta DiÔö£├¡ria:** Objetivo de ganho para o dia.
+-*   **Risco MÔö£├¡ximo por OperaÔö£┬║Ôö£├║o (%):** Limite de perda aceitÔö£├¡vel em uma Ôö£Ôòænica entrada.
+-*   **Quantidade MÔö£├¡xima de Trades:** Limite de operaÔö£┬║Ôö£├ües por dia para evitar overtrading.
+-*   **Travar ao Atingir Perda:** Se ativado, impede a abertura de novas ordens apÔö£Ôöés o stop diÔö£├¡rio.
++*   **Limite de Perda Di├íria:** Valor m├íximo que voc├¬ aceita perder no dia. Ao atingir, a plataforma pode travar novas opera├º├Áes.
++*   **Meta Di├íria:** Objetivo de ganho para o dia.
++*   **Risco M├íximo por Opera├º├úo (%):** Limite de perda aceit├ível em uma ├║nica entrada.
++*   **Quantidade M├íxima de Trades:** Limite de opera├º├Áes por dia para evitar overtrading.
++*   **Travar ao Atingir Perda:** Se ativado, impede a abertura de novas ordens ap├│s o stop di├írio.
+ 
+-![FormulÔö£├¡rio de Risco - Geral](./assets/settings/risk/modal_add_general.png)
++![Formul├írio de Risco - Geral](./assets/settings/risk/modal_add_general.png)
+ 
+ ***
+ 
+ **Aba: Motor de Risco**  
+-Recursos avanÔö£┬║ados de inteligÔö£┬¼ncia e disciplina.
++Recursos avan├ºados de intelig├¬ncia e disciplina.
+ 
+-*   **Acoplamento PsicolÔö£Ôöégico:** Reduz o tamanho da mÔö£├║o automaticamente se detectar uma sequÔö£┬¼ncia de perdas ou comportamento errÔö£├¡tico.
+-*   **RegressÔö£├║o de Outliers:** Identifica ganhos fora do comum que podem gerar excesso de confianÔö£┬║a e ajusta o risco.
+-*   **Modo Sniper:** Aumenta a seletividade exigida para novas entradas com base no seu histÔö£Ôöérico.
++*   **Acoplamento Psicol├│gico:** Reduz o tamanho da m├úo automaticamente se detectar uma sequ├¬ncia de perdas ou comportamento err├ítico.
++*   **Regress├úo de Outliers:** Identifica ganhos fora do comum que podem gerar excesso de confian├ºa e ajusta o risco.
++*   **Modo Sniper:** Aumenta a seletividade exigida para novas entradas com base no seu hist├│rico.
+ 
+-![FormulÔö£├¡rio de Risco - Motor](./assets/settings/risk/modal_add_engine.png)
++![Formul├írio de Risco - Motor](./assets/settings/risk/modal_add_engine.png)
+ 
+ ***
+ 
+ **Aba: Plano de Crescimento**  
+-Escale seus lotes de forma matemÔö£├¡tica e segura.
++Escale seus lotes de forma matem├ítica e segura.
+ 
+-*   **Habilitar Plano:** Ativa a progressÔö£├║o automÔö£├¡tica de lotes.
+-*   **Fases:** Defina quantos contratos/lotes operar em cada nÔö£┬ível e quais as regras para subir ou descer de fase (Ex: 5 dias positivos para subir).
++*   **Habilitar Plano:** Ativa a progress├úo autom├ítica de lotes.
++*   **Fases:** Defina quantos contratos/lotes operar em cada n├¡vel e quais as regras para subir ou descer de fase (Ex: 5 dias positivos para subir).
+ 
+-![FormulÔö£├¡rio de Risco - Crescimento](./assets/settings/risk/modal_add_growth.png)
++![Formul├írio de Risco - Crescimento](./assets/settings/risk/modal_add_growth.png)
+ 
+ #### 2.4.2. Modalidades
+-Categorize o tempo das operaÔö£┬║Ôö£├ües (Scalping, Swing, DT). **Vital para o cÔö£├¡lculo fiscal.**
++Categorize o tempo das opera├º├Áes (Scalping, Swing, DT). **Vital para o c├ílculo fiscal.**
+ 
+ **Como adicionar:**
+ 1. Clique em **"Nova Modalidade"**.
+ 2. Informe o nome (Ex: Scalping, Day Trade).
+-3. Selecione o tipo de cÔö£├¡lculo fiscal correspondente.
++3. Selecione o tipo de c├ílculo fiscal correspondente.
+ 4. Clique em **"Salvar"**.
+ 
+ ![Lista de Modalidades](./assets/settings/modalities/list.png)
+-![FormulÔö£├¡rio de Modalidade](./assets/settings/modalities/modal_add.png)
++![Formul├írio de Modalidade](./assets/settings/modalities/modal_add.png)
+ 
+-### 2.5. ANÔö£├╝LISE
++### 2.5. AN├üLISE
+ 
+ #### 2.5.1. Estados Emocionais
+-Mapeie seu humor (Foco, Ansiedade, VinganÔö£┬║a) e o peso no seu resultado.
++Mapeie seu humor (Foco, Ansiedade, Vingan├ºa) e o peso no seu resultado.
+ 
+ **Como adicionar:**
+ 1. Clique em **"Novo Estado"**.
+-2. DÔö£┬¼ um nome ao estado emocional.
+-3. Defina um Ôö£┬ícone e o impacto (Positivo, Neutro ou Negativo).
++2. D├¬ um nome ao estado emocional.
++3. Defina um ├¡cone e o impacto (Positivo, Neutro ou Negativo).
+ 4. Clique em **"Salvar"**.
+ 
+ ![Estados Emocionais](./assets/settings/emotional-states/list.png)
+-![FormulÔö£├¡rio de Estado Emocional](./assets/settings/emotional-states/modal_add.png)
++![Formul├írio de Estado Emocional](./assets/settings/emotional-states/modal_add.png)
+ 
+ #### 2.5.2. Tags
+-Etiquetas livres para contexto (NotÔö£┬ícia, Erro Operacional).
++Etiquetas livres para contexto (Not├¡cia, Erro Operacional).
+ 
+ **Como adicionar:**
+ 1. Clique em **"Nova Tag"**.
+ 2. Informe o nome da tag.
+-3. Escolha uma cor para identificaÔö£┬║Ôö£├║o visual.
++3. Escolha uma cor para identifica├º├úo visual.
+ 4. Clique em **"Salvar"**.
+ 
+ ![Tags](./assets/settings/tags/list.png)
+-![FormulÔö£├¡rio de Tag](./assets/settings/tags/modal_add.png)
++![Formul├írio de Tag](./assets/settings/tags/modal_add.png)
+ 
+ #### 2.5.3. Indicadores
+-Documente as ferramentas tÔö£┬«cnicas (VWAP, MÔö£┬«dias) usadas nos setups.
++Documente as ferramentas t├®cnicas (VWAP, M├®dias) usadas nos setups.
+ 
+ **Como adicionar:**
+ 1. Clique em **"Novo Indicador"**.
+-2. Nomeie o indicador tÔö£┬«cnico.
+-3. (Opcional) Adicione uma breve descriÔö£┬║Ôö£├║o tÔö£┬«cnica.
++2. Nomeie o indicador t├®cnico.
++3. (Opcional) Adicione uma breve descri├º├úo t├®cnica.
+ 4. Clique em **"Salvar"**.
+ 
+ ![Indicadores](./assets/settings/indicators/list.png)
+-![FormulÔö£├¡rio de Indicador](./assets/settings/indicators/modal_add.png)
++![Formul├írio de Indicador](./assets/settings/indicators/modal_add.png)
+ 
+ #### 2.5.4. Timeframes
+-Defina os tempos grÔö£├¡ficos (1min, 5min, 60min).
++Defina os tempos gr├íficos (1min, 5min, 60min).
+ 
+ **Como adicionar:**
+ 1. Clique em **"Novo Timeframe"**.
+-2. Defina o valor numÔö£┬«rico e a unidade (Minutos, Horas, Dias).
++2. Defina o valor num├®rico e a unidade (Minutos, Horas, Dias).
+ 3. Clique em **"Salvar"**.
+ 
+ ![Timeframes](./assets/settings/timeframes/list.png)
+-![FormulÔö£├¡rio de Timeframe](./assets/settings/timeframes/modal_add.png)
++![Formul├írio de Timeframe](./assets/settings/timeframes/modal_add.png)
+ 
+-#### 2.5.5. Tipos de GrÔö£├¡fico
+-Escolha a forma de leitura de preÔö£┬║o (Candle, Renko, Fluxo).
++#### 2.5.5. Tipos de Gr├ífico
++Escolha a forma de leitura de pre├ºo (Candle, Renko, Fluxo).
+ 
+ **Como adicionar:**
+ 1. Clique em **"Novo Tipo"**.
+-2. Nomeie o estilo de grÔö£├¡fico (Ex: Renko 10R).
++2. Nomeie o estilo de gr├ífico (Ex: Renko 10R).
+ 3. Clique em **"Salvar"**.
+ 
+-![Tipos de GrÔö£├¡fico](./assets/settings/chart-types/list.png)
+-![FormulÔö£├¡rio de Tipo de GrÔö£├¡fico](./assets/settings/chart-types/modal_add.png)
++![Tipos de Gr├ífico](./assets/settings/chart-types/list.png)
++![Formul├írio de Tipo de Gr├ífico](./assets/settings/chart-types/modal_add.png)
+ 
+-#### 2.5.6. EstratÔö£┬«gias
+-Documente seus setups com gatilhos, checklists e exemplos visuais para manter a consistÔö£┬¼ncia operacional.
++#### 2.5.6. Estrat├®gias
++Documente seus setups com gatilhos, checklists e exemplos visuais para manter a consist├¬ncia operacional.
+ 
+ **Como adicionar:**
+-1. Clique em **"Nova EstratÔö£┬«gia"**.
+-2. Defina o nome do operacional (Ex: Rompimento de Pivot, ReversÔö£├║o de MÔö£┬«dias).
+-3. Preencha o checklist de entrada e as regras de saÔö£┬ída (Gain/Loss).
+-4. (Opcional) Anexe uma imagem de exemplo do setup ideal.
+-5. Clique em **"Salvar"**.
++1. Clique em **"Nova Estrat├®gia"**.
++2. Defina o **Nome** (Ex: Rompimento de Pivot) e uma breve **Descri├º├úo**.
++3. Selecione os **Mercados**, **Timeframes**, **Tipos de Ativos** e **Ativos Espec├¡ficos** (opcional) onde a estrat├®gia se aplica.
++4. V├í para a aba **Checklist de Valida├º├úo** e defina os Crit├®rios de Entrada, Crit├®rios de Sa├¡da e Regras de Condu├º├úo.
++5. Se a estrat├®gia possuir realiza├º├Áes parciais, ative a op├º├úo **"Permite Realiza├º├úo Parcial"** e descreva as metas.
++6. (Opcional) Na aba **Exemplos Visuais**, carregue imagens de refer├¬ncia (m├íx: 5).
++7. Clique em **"Salvar"**.
+ 
+-![Lista de EstratÔö£┬«gias](./assets/settings/strategies/list.png)
+-![FormulÔö£├¡rio de EstratÔö£┬«gia](./assets/settings/strategies/modal_add.png)
++![Lista de Estrat├®gias](./assets/settings/strategies/list.png)
++![Formul├írio de Estrat├®gia](./assets/settings/strategies_modal_1920x1080.png)
+ 
+-### 2.6. SISTEMA
+-
+-#### 2.6.1. IntegraÔö£┬║Ôö£├ües
+-Configure chaves de API para dados externos.
+-![IntegraÔö£┬║Ôö£├ües de API - Lista](./assets/settings/api-integrations/list.png)
+ 
+-#### 2.6.2. Banco de Dados
+-GestÔö£├║o e backup dos dados locais criptografados.
+-![GestÔö£├║o de Banco de Dados - Lista](./assets/settings/database/list.png)
+ 
+ ---
+ 
+-## 3. NavegaÔö£┬║Ôö£├║o e Interface (O Cockpit)
++## 3. Navega├º├úo e Interface (O Cockpit)
+ 
+ ### 3.1. Dashboard (Painel Principal)
+-VisÔö£├║o 360Ôö¼Ôòæ da sua saÔö£Ôòæde financeira. Inclui Equity Curve, CalendÔö£├¡rio SemafÔö£Ôöérico e os 4 Kash Cards (Saldo, Net PnL, Win Rate e Disciplina).
+-![VisÔö£├║o Geral do Dashboard](./assets/page_dashboard.png)
++Vis├úo 360┬║ da sua sa├║de financeira. Inclui Equity Curve, Calend├írio Semaf├│rico e os 4 Kash Cards (Saldo, Net PnL, Win Rate e Disciplina).
++![Vis├úo Geral do Dashboard](./assets/page_dashboard.png)
+ 
+ ### 3.2. Sidebar (Menu Lateral)
+-NavegaÔö£┬║Ôö£├║o dividida entre NÔö£Ôòæcleo Operacional (Trades/Mente), Tesouraria (Bancos/Ativos), Malha Fina (Fiscal) e Casa de MÔö£├¡quinas (ConfiguraÔö£┬║Ôö£├ües).
++Navega├º├úo dividida entre N├║cleo Operacional (Trades/Mente), Tesouraria (Bancos/Ativos), Malha Fina (Fiscal) e Casa de M├íquinas (Configura├º├Áes).
+ 
+ ---
+ 
+-## 4. Ecossistema Operacional (Uso DiÔö£├¡rio)
++## 4. Ecossistema Operacional (Uso Di├írio)
++
++### 4.1. Negocia├º├Áes (Trades)
++A ├írvore cronol├│gica onde o Auto-Journaling centraliza suas opera├º├Áes importadas via RTD ou lan├ºadas manualmente.
++
++![P├ígina de Negocia├º├Áes](./assets/page_trades.png)
++
++**Como adicionar manualmente:**
++Na tela de Negocia├º├Áes, clique no bot├úo **"Novo Trade"** para abrir o formul├írio inteligente em 5 etapas:
++
++**Aba 1: B├ísico (Contexto da Opera├º├úo)**
++O primeiro passo define o "Onde, O que e Quando" da sua opera├º├úo. Preencha os detalhes fundamentais para que o sistema possa calcular e catalogar o trade:
++* **Conta:** A corretora ou banco onde a opera├º├úo foi executada (ex: XP, BTG).
++* **Estrat├®gia:** O setup operacional que motivou a entrada (ex: Cruzamento de M├®dias, Breakout).
++* **Tempo Gr├ífico:** O tempo do gr├ífico (Timeframe) utilizado para a leitura da entrada (ex: 5m, 60m, Di├írio).
++* **Volatilidade:** A sua percep├º├úo de como estava o mercado (Normal, Alta, Extrema).
++* **Tipo de Ativo:** Um filtro r├ípido para facilitar a busca do ativo (A├º├Áes, Futuros, Forex).
++* **Ativo / Contrato:** O ticker negociado (ex: WINM26, PETR4, EURUSD). 
++* **Dire├º├úo:** Se a opera├º├úo foi iniciada na ponta Compradora (Long) ou Vendedora (Short).
++* **Data e Hora:** O momento exato em que a ordem foi executada na corretora.
++* **Pre├ºo de Entrada:** O pre├ºo m├®dio inicial preenchido na boleta.
++* **QTD (Quantidade):** O n├║mero de a├º├Áes, minicontratos ou lotes negociados.
++* **Emocional:** A emo├º├úo ou sentimento que voc├¬ estava experimentando instantes antes de clicar no bot├úo.
++* **Modalidade:** O perfil de risco tribut├írio e temporal (Day Trade para opera├º├Áes iniciadas e encerradas no mesmo dia, ou Swing Trade).
++* **Stop Loss (Opcional):** O seu pre├ºo de defesa m├íxima posicionado na corretora.
++* **Take Profit (Opcional):** O alvo final projetado para ganho.
++
++![Formul├írio de Novo Trade - Aba 1](./assets/modal_add_trade_tab1.png)
++
++**Aba 2: Condu├º├úo (Gest├úo de Parciais e Sa├¡da)**
++O segundo passo ├® focado no gerenciamento de risco durante o trade e na liquida├º├úo da opera├º├úo. Detalhe como voc├¬ lidou com a posi├º├úo e encerre o registro:
++* **Volume Executado / Restantes:** Monitora quantos contratos/lotes da sua posi├º├úo principal j├í foram encerrados e quantos continuam pendentes.
++* **Toggle Sa├¡da / Adi├º├úo:** Escolha o tipo de parcial que deseja registrar. "Sa├¡da" para realiza├º├Áes de lucro (Take Profit parcial) ou redu├º├úo de perda. "Adi├º├úo" para aumentos de posi├º├úo (Pre├ºo M├®dio a favor ou contra).
++* **Bot├úo + Adicionar Parcial:** Abre um sub-formul├írio para preencher a Data/Hora, Pre├ºo, Quantidade e Observa├º├Áes da perna registrada.
++* **Tabela de Parciais:** Hist├│rico em grade listando cronologicamente todas as pernas da sua opera├º├úo, calculando o seu Novo Pre├ºo M├®dio e o Resultado financeiro individual de cada parcial.
++* **Toggle Aberto / Fechado (Dados de Fechamento):** A chave mestre do trade. Marcando como "Fechado", a plataforma liquida qualquer saldo restante na sua posi├º├úo e exibe os campos definitivos de fechamento:
++  * **Data e Hora de Sa├¡da:** Momento da liquida├º├úo final.
++  * **Pre├ºo de Sa├¡da:** Pre├ºo que zerou a posi├º├úo principal.
++  * **Custos / Taxas:** Preenchimento de taxas operacionais da corretora/bolsa (caso seu Perfil Fiscal j├í n├úo tenha autocalculado).
++* **Card de Resultado L├¡quido:** Um painel em tempo real que consolida a matem├ítica das suas entradas, adi├º├Áes, sa├¡das parciais e sa├¡da final, exibindo seu Lucro ou Preju├¡zo projetado.
++
++![Formul├írio de Novo Trade - Aba 2](./assets/modal_add_trade_tab2.png)
++
++**Aba 3: Psicologia (An├ílise Contextual)**
++O "Di├írio de Bordo" (Journaling). Esta etapa qualitativa ├® crucial para que os algoritmos de cruzamento comportamental consigam identificar o que d├í dinheiro e o que gera perdas nas suas emo├º├Áes. Preencha:
++* **Racional da Entrada:** Um texto livre explicando o *porqu├¬* voc├¬ decidiu abrir a opera├º├úo.
++* **Sinais de Confirma├º├úo:** Detalhe t├®cnico. Quais gatilhos exatos o seu setup validou?
++* **Contexto do Mercado / Not├¡cias:** Qual era o sentimento macro no momento? A favor da tend├¬ncia? Teve influ├¬ncia de alguma not├¡cia? 
++* **O que funcionou / Melhorias:** Uma avalia├º├úo p├│s-trade do que sobrou de aprendizado pr├ítico da execu├º├úo.
++* **Intensidade Emocional:** Um slider de impacto (0 a 10). O qu├úo forte estava a emo├º├úo (Leve, Moderada, Extrema) que voc├¬ registrou l├í na Aba 1? Ex: Uma Ansiedade n├¡vel 10 destruir├í sua paci├¬ncia para segurar um gain.
++
++![Formul├írio de Novo Trade - Aba 3](./assets/modal_add_trade_tab3.png)
++
++**Aba 4: M├¡dia (Evid├¬ncias Visuais)**
++Um reposit├│rio de provas visuais do seu operacional. Registre imagens para facilitar auditorias e estudos no futuro.
++* **├ürea de Upload (Arraste ou Clique):** Permite adicionar at├® 5 Megabytes (Max 5MB) de capturas de tela. Ideal para upar os prints do ProfitChart ou TradingView demonstrando exatamente onde voc├¬ entrou, onde estava o stop, e onde saiu.
++
++![Formul├írio de Novo Trade - Aba 4](./assets/modal_add_trade_tab4.png)
++
++**Aba 5: Revis├úo (Resumo Final)**
++A ├║ltima etapa atua como uma auditoria fria antes de voc├¬ consolidar os dados no banco de origem.
++* **Quadro de Resumo:**
++  * **Ativo / Dire├º├úo:** Valida o ticker e se foi Compra/Venda.
++  * **Resultado:** O PnL financeiro final j├í processado.
++  * **Data & Estrat├®gia:** Confirma├º├úo de calend├írio e m├®todo utilizado.
++  * **Imagens:** Quantidade de anexos salvos na Aba 4.
++  * **Seguiu o Plano?:** Um check vital! O sistema usa essa vari├ível booleana (Sim ou N├úo) para alimentar as estat├¡sticas de Ader├¬ncia e Disciplina do Dashboard de Estrat├®gias!
++* **Mem├│ria de C├ílculo:**
++  * **Resultado Bruto vs Taxas:** O sistema demonstra quanto dinheiro ficou no mercado atrav├®s de taxas operacionais frente ao que foi realmente ganho na varia├º├úo do ativo (Saldo L├¡quido = Bruto - Taxas).
++* **Bot├úo Salvar / Finalizar:** Conclui e insere definitivamente a opera├º├úo no seu hist├│rico.
++
++![Formul├írio de Novo Trade - Aba 5](./assets/modal_add_trade_tab5.png)
++
++### 4.2. Estrat├®gias Hub
++O hub central de intelig├¬ncia de setups. ├ë aqui que voc├¬ analisa estatisticamente qual setup realmente paga suas contas, permitindo descartar o que n├úo funciona e alavancar o que d├í resultado.
++
++![P├ígina de Estrat├®gias](./assets/page_strategies.png)
++
++**Dashboard da Estrat├®gia (An├ílise Profunda)**
++Ao clicar em uma estrat├®gia espec├¡fica, voc├¬ acessa um Raio-X matem├ítico focado puramente nas m├®tricas derivadas das opera├º├Áes onde esta estrat├®gia foi aplicada. A tela ├® composta pelos seguintes m├│dulos:
++
++* **Gr├ífico Capital (Estrat├®gia):** A curva de patrim├┤nio (Equity Curve) gerada exclusivamente pelas execu├º├Áes desse setup.
++* **Gr├ífico Drawdown:** Exibe os vales de perda da estrat├®gia, auxiliando a medir o risco e o tempo de recupera├º├úo entre os topos de capital.
++* **Mapa de Calor (P&L):** Uma matriz de Hor├írio vs Dia da Semana que revela exatamente em quais hor├írios ou dias a estrat├®gia ├® estatisticamente mais lucrativa (pontos verdes) ou mais perigosa (pontos vermelhos).
++* **M├®tricas Principais (Coluna Lateral):**
++  * **Resultado L├¡quido:** O saldo financeiro total (lucro menos perdas e custos) da estrat├®gia.
++  * **Taxa de Acerto (Win Rate):** O percentual de vezes que a estrat├®gia fechou no lucro.
++  * **Profit Factor:** Raz├úo entre o lucro bruto e o preju├¡zo bruto. (M├®tricas acima de 1 indicam lucro).
++  * **Payoff:** A m├®dia de ganho nas vit├│rias dividida pela m├®dia de perda nas derrotas. 
++  * **Expectativa Matem├ítica:** O valor financeiro que voc├¬ pode estatisticamente projetar como retorno esperado a cada nova execu├º├úo.
++  * **Max Drawdown:** O maior rebaixamento financeiro hist├│rico que este setup j├í sofreu.
++  * **Fator de Recupera├º├úo:** O qu├úo r├ípido a estrat├®gia recupera o capital ap├│s atingir o Max Drawdown.
++  * **Ader├¬ncia ao Plano:** Qualidade da execu├º├úo do trader. Das vezes em que essa estrat├®gia foi acionada, qual a taxa de obedi├¬ncia ao planejamento inicial (calculada a partir do preenchimento da aba Psicologia).
++* **Indicadores Secund├írios (Rodap├®):**
++  * **Total de Trades / Trades Vencedores:** Volume total de amostra e contagem absoluta de wins.
++  * **Melhor Trade / Pior Trade:** Os extremos financeiros (maior gain e maior loss) da amostra.
++  * **Dura├º├úo M├®dia (Lucro / Preju├¡zo):** Compara se as opera├º├Áes vencedoras duram mais que as perdedoras, indicando reten├º├úo de lucro x hesita├º├úo em estopar.
++  * **Tempo M├®dio Entre Trades:** O intervalo de frequ├¬ncia de exibi├º├úo desse setup no mercado.
++
++![Dashboard de Detalhes da Estrat├®gia](./assets/page_strategies_detail.png)
+ 
+-### 4.1. NegociaÔö£┬║Ôö£├ües (Trades)
+-A Ôö£├¡rvore cronolÔö£Ôöégica onde o Auto-Journaling centraliza suas operaÔö£┬║Ôö£├ües importadas via RTD.
+-![PÔö£├¡gina de NegociaÔö£┬║Ôö£├ües](./assets/page_trades.png)
++### 4.3. Hub Financeiro (Tesouraria)
++A gest├úo centralizada do capital que alimenta suas contas de trade. Controle de aportes, retiradas e a margem operada entre diferentes corretores. A tela exibe:
+ 
+-### 4.2. EstratÔö£┬«gias Hub
+-Onde vocÔö£┬¼ analisa estatisticamente qual setup paga suas contas atravÔö£┬«s de checklists de disciplina.
+-![PÔö£├¡gina de EstratÔö£┬«gias](./assets/page_strategies.png)
++* **M├®tricas Principais (Top KPIs):**
++  * **Patrim├┤nio Total (BRL):** A soma consolidada de todo o capital dispon├¡vel nas suas contas, convertido para Reais.
++  * **Saldo em BRL / Saldo em USD:** O saldo dispon├¡vel segregado por moeda.
++  * **Resultado do M├¬s:** Resumo do desempenho financeiro no m├¬s corrente.
++* **Gr├ífico de Evolu├º├úo:** Exibe uma curva da Evolu├º├úo do Patrim├┤nio e Aportes, permitindo aplicar filtros r├ípidos por corretora (ex: Ita├║, XP, Interactive Brokers) para isolar o crescimento de cada conta.
++* **Extrato de Movimenta├º├Áes:** Uma listagem hier├írquica e agrupada por M├¬s e Semana com todas as transa├º├Áes, trade a trade ou aportes/retiradas. Inclui filtros por Conta, Tipo de Lan├ºamento (Entrada/Sa├¡da), e busca por descri├º├úo.
+ 
+-### 4.3. Hub Financeiro (Tesouraria)
+-GestÔö£├║o de entradas, saÔö£┬ídas e controle de margem entre bancos e corretoras.
+ ![Hub Financeiro](./assets/page_finance.png)
+ 
+ ### 4.4. Psicologia (Mente)
+-O cruzamento matemÔö£├¡tico entre seus estados emocionais e seu PnL real.
++O cruzamento matem├ítico entre seus estados emocionais e seu PnL real. Entenda como suas emo├º├Áes impactam (positivamente ou negativamente) o seu resultado financeiro.
++
++* **M├®tricas Comportamentais:**
++  * **Melhor Estado Mental:** A emo├º├úo na qual seu desempenho ├® estatisticamente o mais lucrativo.
++  * **Pior Estado Mental:** A emo├º├úo atrelada ao maior ac├║mulo de preju├¡zo financeiro.
++  * **O Custo do Tilt:** A soma exata em dinheiro dos seus preju├¡zos quando operando fora da zona de controle ou dominado por emo├º├Áes negativas.
++  * **Registros de Di├írio:** O n├║mero total de avalia├º├Áes psicol├│gicas preenchidas na plataforma.
++* **An├ílises Gr├íficas:**
++  * **Resultado Financeiro por Emo├º├úo:** Gr├ífico de barras que quantifica o saldo gerado associado a cada emo├º├úo (Ex: Paci├¬ncia vs Ansiedade vs Raiva).
++  * **Efici├¬ncia %:** Gr├ífico percentual mostrando a concentra├º├úo de vit├│rias por estado emocional.
++  * **Correla├º├úo: Emo├º├úo x Resultado Di├írio:** Gr├ífico combinando o sobe-e-desce da linha de intensidade emocional versus as barras de Resultado Di├írio.
++* **Tabelas de Acompanhamento:**
++  * **Mapeamento Comportamental:** Lista agrupada por m├¬s/semana exibindo o *Score* predominante e a Emo├º├úo dominante do per├¡odo.
++  * **Registros e Entradas Diretas:** Tabela detalhada de cada registro de trade com Data, Estado Interno, Intensidade, Nota (0-10) de ader├¬ncia.
++
+ ![Psicologia](./assets/page_psicologia.png)
+ 
+-### 4.5. Fiscal (O Motor Fiscal B3)
+-GeraÔö£┬║Ôö£├║o automÔö£├¡tica de DARFs, controle de isenÔö£┬║Ôö£├║o de 20k e relatÔö£Ôöérios mensais/anuais.
+-![MÔö£Ôöédulo Fiscal](./assets/page_fiscal.png)
++### 4.5. Fiscal (Central de IRPF)
++O motor tribut├írio para o mercado brasileiro (B3). Acompanhe e consolide suas notas e reten├º├Áes mensais, separando Day Trade e Swing Trade.
++
++* **Dashboard de Tributos (KPIs):**
++  * **Imposto Devido (Ano):** O valor acumulado a pagar neste exerc├¡cio baseado no seu lucro l├¡quido pass├¡vel de tributa├º├úo.
++  * **Total Pago (Ano):** O somat├│rio das guias j├í quitadas.
++  * **Guias Pendentes:** Alerta do n├║mero de guias em atraso ou que requerem nossa aten├º├úo, com bot├úo para "Verificar".
++  * **Preju├¡zos Acumulados:** Uma quebra dos seus saldos devedores atuais (direitos a abater futuramente), separados puramente em "Day Trade" ou "Swing Trade".
++* **Evolu├º├úo Tribut├íria (Gr├ífico):** Controle visual mensal ao longo de todo o ano sobrepondo o IR Devido versus o volume Quitado.
++* **Painel de DARFs:** Acesso ├á sua gest├úo de boletos consolidados para armazenamento de comprovantes (upload e gest├úo de documentos).
++* **Hist├│rico de Apura├º├Áes:** Tabela mensal das apura├º├Áes geradas no ano especificado com status, busca textual e filtragem.
++
++![M├│dulo Fiscal](./assets/page_fiscal.png)
++
++---
++
++## 5. Configura├º├Áes de Sistema
++
++### 5.1. Integra├º├Áes
++Configure chaves de API para dados externos.
++![Integra├º├Áes de API - Lista](./assets/settings/api-integrations/list.png)
++
++### 5.2. Banco de Dados
++Gest├úo e backup dos dados locais criptografados.
++![Gest├úo de Banco de Dados - Lista](./assets/settings/database/list.png)
+ 
+ ---
+ *(Fim do Manual - v1.1 - Padronizado)*
