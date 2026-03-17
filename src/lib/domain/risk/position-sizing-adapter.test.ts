@@ -10,14 +10,14 @@ describe('Position Sizing Adapter', () => {
         capital_source: 'Fixed',
         fixed_capital: 10000,
         growth_plan_enabled: true,
-        current_phase_index: 0
+        current_phase_index: 0,
+        default_stop_points: 150
     };
 
     const baseAsset: Partial<Asset> = {
         point_value: 0.20,
         min_contracts: 1,
-        max_contracts: 100,
-        default_stop_points: 150
+        max_contracts: 100
     };
 
     const basePhase: Partial<GrowthPhase> = {
@@ -80,8 +80,10 @@ describe('Position Sizing Adapter', () => {
             // No min/max/stop limits
         };
 
+        const emptyProfile: Partial<RiskProfile> = { ...baseProfile, default_stop_points: undefined };
+
         const input = adaptPositionSizingInput(
-            baseProfile as RiskProfile, 
+            emptyProfile as RiskProfile, 
             emptyAsset as Asset,
             undefined, 
             undefined 

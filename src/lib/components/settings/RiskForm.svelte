@@ -90,6 +90,7 @@
         psychological_search_strategy: data?.psychological_search_strategy ?? "Strict",
         account_ids: data?.account_ids ?? [],
         active: data?.active ?? false,
+        default_stop_points: data?.default_stop_points ?? undefined,
     });
 
     function applyPreset(key: string) {
@@ -148,6 +149,7 @@
                     fd.psychological_search_strategy ?? "Strict",
                 account_ids: fd.account_ids ?? [],
                 active: fd.active ?? false,
+                default_stop_points: fd.default_stop_points ?? undefined,
             };
             selectedPreset = "custom";
         }
@@ -267,7 +269,15 @@
     }
 
     function save() {
-        onSave(formData);
+        if (formData.default_stop_points !== undefined && formData.default_stop_points < 0) {
+            import("svelte-sonner").then(m => m.toast.error("O Stop Padrão não pode ser negativo."));
+            return;
+        }
+
+        onSave({
+            ...formData,
+            default_stop_points: formData.default_stop_points,
+        });
     }
 </script>
 
@@ -421,11 +431,11 @@
                     </div>
                 </div>
 
-                <!-- Upside Targets -->
+                <!-- Upside Targets & Sizing -->
                 <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
                     <h3 class="flex items-center gap-2 font-bold text-emerald-500">
                         <Target class="w-4 h-4" />
-                        {$t("settings.risk.upside")}
+                        {$t("settings.risk.upside")} & Sizing
                     </h3>
                     <div class="space-y-2.5">
                         <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.dailyGoal")}</Label>
@@ -440,6 +450,15 @@
                             type="number"
                             step="0.1"
                             bind:value={formData.min_risk_reward}
+                        />
+                    </div>
+                    <div class="space-y-2.5 pt-2 border-t border-border/10">
+                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Stop Padrão (Sizing)</Label>
+                        <Input
+                            type="number"
+                            step="0.5"
+                            bind:value={formData.default_stop_points}
+                            placeholder="Em pontos. Ex: 10"
                         />
                     </div>
                 </div>
@@ -819,7 +838,7 @@
                                     </div>
                                 </Card.Header>
                                 <Card.Content class="p-5 pt-3 space-y-5">
-                                    <div class="grid grid-cols-2 gap-5">
+                                    <div class="grid grid-cols-1 gap-5">
                                         <div class="space-y-2.5">
                                             <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                                                 >{$t(
@@ -829,21 +848,7 @@
                                             <Input
                                                 type="number"
                                                 class="h-9 text-sm"
-                                                bind:value={phase.max_lots}
-                                            />
-                                        </div>
-                                        <div class="space-y-2.5">
-                                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-                                                >{$t(
-                                                    "settings.risk.growthPlan.dailyLoss",
-                                                )}</Label
-                                            >
-                                            <Input
-                                                type="number"
-                                                class="h-9 text-sm"
-                                                bind:value={
-                                                    phase.max_daily_loss
-                                                }
+                                                bind:value={phase.lot_size}
                                             />
                                         </div>
                                     </div>

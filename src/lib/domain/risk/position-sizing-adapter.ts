@@ -34,10 +34,11 @@ export function adaptPositionSizingInput(
 
     // 2. Extrair Regras do Ativo (Fonte de Verdade)
     const pointValue = asset.point_value;
-    const stopPoints = asset.default_stop_points ?? 0; // Default zero vai falhar no engine controladamente.
-    
     const minContracts = asset.min_contracts;
     const maxContracts = asset.max_contracts;
+
+    // 2.5 Regras Operacionais do Trader (Perfil de Risco)
+    const stopPoints = profile.default_stop_points ?? 0; // Default zero vai falhar no engine controladamente.
 
     // 3. Extrair Regras da Fase Ativa de Crescimento
     const maxContractsPhase = (profile.growth_plan_enabled && currentPhase) 

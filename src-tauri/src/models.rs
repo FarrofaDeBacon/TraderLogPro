@@ -545,8 +545,7 @@ pub struct Asset {
     pub min_contracts: Option<i32>,
     #[serde(default)]
     pub max_contracts: Option<i32>,
-    #[serde(default)]
-    pub default_stop_points: Option<f64>,
+    pub max_contracts: Option<i32>,
 }
 
 impl ToDto for Asset {
@@ -564,7 +563,6 @@ impl ToDto for Asset {
             contract_size: self.contract_size,
             min_contracts: self.min_contracts,
             max_contracts: self.max_contracts,
-            default_stop_points: self.default_stop_points,
         }
     }
 }
@@ -885,10 +883,12 @@ pub struct RiskProfile {
     pub psychological_threshold: i32,
     #[serde(default = "default_lot_reduction")]
     pub lot_reduction_multiplier: f64,
-    #[serde(default = "default_psyc_strategy")]
+    #[serde(default)]
     pub psychological_search_strategy: String, // "Strict" | "Sequence"
     #[serde(default)]
     pub active: bool,
+    #[serde(default)]
+    pub default_stop_points: Option<f64>,
 }
 
 fn default_target_type() -> String {

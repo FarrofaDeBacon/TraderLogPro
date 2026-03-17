@@ -97,7 +97,6 @@ pub struct AssetDto {
     pub contract_size: Option<f64>,
     pub min_contracts: Option<i32>,
     pub max_contracts: Option<i32>,
-    pub default_stop_points: Option<f64>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

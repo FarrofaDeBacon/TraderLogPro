@@ -245,7 +245,6 @@ async fn get_or_create_asset(db: &Surreal<Db>, symbol: &str) -> Result<String, S
         contract_size: None,
         min_contracts: None,
         max_contracts: None,
-        default_stop_points: None,
     };
 
     let mut asset_json = serde_json::to_value(&new_asset).map_err(|e| e.to_string())?;

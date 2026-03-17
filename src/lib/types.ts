@@ -354,6 +354,8 @@ export type RiskProfile = {
     lot_reduction_multiplier: number;
     psychological_search_strategy: 'Strict' | 'Sequence';
     active: boolean;
+    /** @deprecated Use default_stop_points on RiskProfile instead */
+    default_stop_points?: number;
 };
 
 

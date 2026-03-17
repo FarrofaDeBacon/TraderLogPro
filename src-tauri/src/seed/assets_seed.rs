@@ -30,7 +30,6 @@ pub async fn seed_assets(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Resul
             contract_size: None,
             min_contracts: None,
             max_contracts: None,
-            default_stop_points: None,
         };
 
         let mut json_data = serde_json::to_value(&asset_data).unwrap();
