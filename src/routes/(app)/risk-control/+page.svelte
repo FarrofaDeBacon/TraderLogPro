@@ -6,8 +6,9 @@
     import EChart from "$lib/components/ui/echart.svelte";
     import { settingsStore } from "$lib/stores/settings.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
+    import { riskStore } from "$lib/stores/riskStore.svelte";
     import { formatCurrency } from "$lib/utils";
-    import { evaluateCondition, evaluateGrowthPhase, computeRiskStats } from "$lib/utils/riskLogic";
+    import { evaluateCondition, computeRiskStats } from "$lib/utils/riskLogic";
     import { toast } from "svelte-sonner";
 
     let activeProfiles = $derived(
@@ -41,8 +42,15 @@
     let cockpitData = $derived(() => {
         if (!currentProfile) return null;
 
+        // TODO:[REFATORAÇÃO] Migrar as métricas visuais remanescentes (winRate geral, eChart series) 
+        // para saírem estritamente de `riskData`. Mantendo computeRiskStats ativo apenas para a UI não quebrar.
         const stats = computeRiskStats(tradesStore.trades, currentProfile);
-        const evaluation = evaluateGrowthPhase(currentProfile, stats);
+        
+        const riskData = riskStore.riskCockpitState;
+
+        // /* Código legado substituído pelo novo Domínio Puro:
+        // const evaluation = evaluateGrowthPhase(currentProfile, stats);
+        // */
 
         const curve = stats.dailyEquityCurve;
         const lastValue = curve[curve.length - 1]?.value ?? 0;
@@ -95,8 +103,8 @@
 
         return {
             profile: currentProfile,
-            stats,
-            evaluation,
+            stats, // TODO: Substituir por riskData assim que gráficos/sumário histórico suportarem
+            riskData,
             chartOptions
         };
     });
@@ -185,9 +193,14 @@
                     <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50 pointer-events-none"></div>
                     
                     <div class="p-5 flex-1 relative z-10 space-y-5">
-                        <div class="flex items-center gap-2 mb-2">
-                           <Gauge class="w-5 h-5 text-primary" />
-                           <h3 class="text-sm font-bold uppercase tracking-widest text-muted-foreground/80">Capital & Limites</h3>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                               <Gauge class="w-5 h-5 text-primary" />
+                               <h3 class="text-sm font-bold uppercase tracking-widest text-muted-foreground/80">Capital & Limites</h3>
+                            </div>
+                            <div class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest {data.riskData?.dailyRiskStatus.isLocked ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' : 'bg-primary/10 text-primary border border-primary/20'}">
+                                {data.riskData?.dailyRiskStatus.statusLabel.replace(/_/g, ' ') || 'RUNNING'}
+                            </div>
                         </div>
 
                         <!-- Capital base -->
@@ -209,6 +222,7 @@
                         <div class="p-4 rounded-xl border border-border/10 bg-black/20 shadow-inner space-y-3">
                             <div class="flex justify-between items-center text-sm">
                                 <span class="text-muted-foreground font-medium uppercase tracking-widest text-[10px]">Tolerância Diária Utilizada</span>
+                                <!-- TODO: Substituir data.stats.currentDrawdown pela métrica pura de drawdon diário assim que disponível no dailyRiskStatus -->
                                 <span class="font-bold font-mono tracking-tight text-rose-500">
                                     {data.profile.target_type === 'Financial' ? formatCurrency(data.stats.currentDrawdown, getProfileCurrencyCode(data.profile)) : `${data.stats.currentDrawdown} pts`} 
                                     <span class="text-muted-foreground/40 font-normal">
@@ -232,12 +246,18 @@
                     <div class="grid grid-cols-2 divide-x divide-border/10 border-t border-border/10 bg-black/20 p-2 z-10 relative">
                         <div class="p-2 text-center flex flex-col items-center">
                             <span class="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-1">Win Rate Geral</span>
+                            <!-- TODO: Extrair o winRate do growthEvaluation ou criar um historical parser no engine -->
                             <span class="font-mono text-lg font-black tabular-nums {data.stats.winRate >= 50 ? 'text-emerald-500' : 'text-rose-500'}">{data.stats.winRate}%</span>
                         </div>
-                        <div class="p-2 text-center flex flex-col items-center">
-                            <span class="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-1">Resultado (Base)</span>
-                            <span class="font-mono text-lg font-black tabular-nums {data.stats.totalProfit >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
-                                {data.profile.target_type === 'Financial' ? formatCurrency(data.stats.totalProfit, getProfileCurrencyCode(data.profile)) : `${data.stats.totalProfit}pts`}
+                        <div class="p-2 text-center flex flex-col items-center group relative">
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-1 flex items-center gap-1">
+                                Resultado Diário
+                                {#if data.riskData?.dailyRiskStatus.dailyTargetHit}
+                                    <Target class="w-3 h-3 text-emerald-500" />
+                                {/if}
+                            </span>
+                            <span class="font-mono text-lg font-black tabular-nums {data.riskData?.dailyRiskStatus.dailyTargetHit ? 'text-emerald-500 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]' : ((data.riskData?.dailyRiskStatus.dailyPnL ?? 0) >= 0 ? 'text-emerald-500' : 'text-rose-500')}">
+                                {data.profile.target_type === 'Financial' ? formatCurrency(data.riskData?.dailyRiskStatus.dailyPnL || 0, getProfileCurrencyCode(data.profile)) : `${data.riskData?.dailyRiskStatus.dailyPnLPoints || 0}pts`}
                             </span>
                         </div>
                     </div>
@@ -278,29 +298,40 @@
                             </div>
                         </div>
 
-                         <!-- Stat 2 -->
-                        <div class="flex items-center p-4 rounded-xl border border-border/10 bg-black/20 gap-4 shadow-sm group hover:bg-black/30 transition-colors">
-                            <div class="w-10 h-10 rounded-full bg-muted/10 flex items-center justify-center">
-                                <Activity class="w-6 h-6 text-muted-foreground" />
+                         <!-- Stat 2: Consuming DOMAIN disciplineEvaluation -->
+                        <div class="flex items-center p-4 rounded-xl border {data.riskData?.disciplineEvaluation?.overtradingDetected ? 'border-rose-500/30 bg-rose-500/10' : 'border-border/10 bg-black/20'} gap-4 shadow-sm group hover:border-border/30 transition-colors">
+                            <div class="w-10 h-10 rounded-full {data.riskData?.disciplineEvaluation?.overtradingDetected ? 'bg-rose-500/20' : 'bg-muted/10'} flex items-center justify-center">
+                                {#if data.riskData?.disciplineEvaluation?.overtradingDetected}
+                                    <AlertTriangle class="w-6 h-6 text-rose-500 filter drop-shadow-[0_0_2px_rgba(244,63,94,0.8)]" />
+                                {:else}
+                                    <Activity class="w-6 h-6 text-muted-foreground" />
+                                {/if}
                             </div>
                             <div class="flex flex-col">
-                                <span class="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/60">Trades Máximo/Dia</span>
-                                <span class="font-mono text-xl font-black text-foreground">{data.profile.max_trades_per_day} <span class="text-xs font-medium text-muted-foreground lowercase tracking-normal">limite</span></span>
+                                <span class="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/60 flex gap-1 items-center">
+                                    Trades Máximo/Dia
+                                </span>
+                                <!-- TODO: O tradeCount em si ainda não vem do dailyRiskStatus diretamente. Substituir a leitura data.stats no futuro -->
+                                <span class="font-mono text-xl font-black {data.riskData?.disciplineEvaluation?.overtradingDetected ? 'text-rose-500' : 'text-foreground'}">
+                                    {data.profile.max_trades_per_day} <span class="text-xs font-medium text-muted-foreground lowercase tracking-normal">limite</span>
+                                </span>
                             </div>
                         </div>
 
-                         <!-- Stat 3 -->
-                        <div class="flex items-center p-4 rounded-xl border {data.stats.currentDrawdown >= data.profile.max_daily_loss ? 'border-rose-500/30 bg-rose-500/10' : 'border-emerald-500/20 bg-emerald-500/5'} gap-4 shadow-sm">
-                            <div class="w-10 h-10 rounded-full {data.stats.currentDrawdown >= data.profile.max_daily_loss ? 'bg-rose-500/20' : 'bg-emerald-500/20'} flex items-center justify-center">
-                                {#if data.stats.currentDrawdown >= data.profile.max_daily_loss}
+                         <!-- Stat 3: Consuming DOMAIN riskData -->
+                        <div class="flex items-center p-4 rounded-xl border {data.riskData?.dailyRiskStatus.dailyLossHit ? 'border-rose-500/30 bg-rose-500/10' : (data.riskData?.dailyRiskStatus.isLocked ? 'border-amber-500/30 bg-amber-500/10' : 'border-emerald-500/20 bg-emerald-500/5')} gap-4 shadow-sm">
+                            <div class="w-10 h-10 rounded-full {data.riskData?.dailyRiskStatus.dailyLossHit ? 'bg-rose-500/20' : (data.riskData?.dailyRiskStatus.isLocked ? 'bg-amber-500/20' : 'bg-emerald-500/20')} flex items-center justify-center">
+                                {#if data.riskData?.dailyRiskStatus.dailyLossHit}
                                     <XCircle class="w-6 h-6 text-rose-500 filter drop-shadow-[0_0_2px_rgba(244,63,94,0.8)]" />
+                                {:else if data.riskData?.dailyRiskStatus.isLocked}
+                                    <Shield class="w-6 h-6 text-amber-500 filter drop-shadow-[0_0_2px_rgba(245,158,11,0.8)]" />
                                 {:else}
                                     <CheckCircle2 class="w-6 h-6 text-emerald-500 filter drop-shadow-[0_0_2px_rgba(16,185,129,0.8)]" />
                                 {/if}
                             </div>
                             <div class="flex flex-col">
                                 <span class="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/60">Sobrevivência Diária</span>
-                                <span class="font-mono text-xl font-black {data.stats.currentDrawdown >= data.profile.max_daily_loss ? 'text-rose-500' : 'text-emerald-500'}">{data.stats.currentDrawdown >= data.profile.max_daily_loss ? 'STOPPADO' : 'OPERACIONAL'}</span>
+                                <span class="font-mono text-xl font-black {data.riskData?.dailyRiskStatus.dailyLossHit ? 'text-rose-500' : (data.riskData?.dailyRiskStatus.isLocked ? 'text-amber-500' : 'text-emerald-500')}">{data.riskData?.dailyRiskStatus.dailyLossHit ? 'STOPPADO' : (data.riskData?.dailyRiskStatus.isLocked ? 'BLOQUEADO' : 'OPERACIONAL')}</span>
                             </div>
                         </div>
                     </div>
@@ -336,17 +367,25 @@
                                          <span class="text-xl font-bold font-mono tracking-tight text-primary">{data.profile.current_phase_index + 1}<span class="text-xs text-muted-foreground font-normal">/{data.profile.growth_phases.length}</span></span>
                                      </div>
                                      <div class="flex flex-col gap-2">
+                                         <!-- Consuming DOMAIN growthEvaluation -->
                                          <Button size="sm" variant="outline"
-                                             class="h-8 text-xs border-emerald-500/40 text-emerald-500 hover:bg-emerald-500/10 hover:border-emerald-500 disabled:opacity-30"
-                                             disabled={data.profile.current_phase_index >= data.profile.growth_phases.length - 1}
+                                             class="h-8 text-xs border-emerald-500/40 text-emerald-500 hover:bg-emerald-500/10 hover:border-emerald-500 disabled:opacity-30 relative"
+                                             disabled={data.profile.current_phase_index >= data.profile.growth_phases.length - 1 || data.riskData?.growthEvaluation?.canPromote === false}
                                              onclick={promotePhase}>
                                              <ChevronRight class="w-4 h-4 mr-1" /> Promover
+                                             {#if data.riskData?.growthEvaluation?.canPromote}
+                                                <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse blur-[1px]"></div>
+                                             {/if}
                                          </Button>
                                          <Button size="sm" variant="outline"
-                                             class="h-8 text-xs border-rose-500/40 text-rose-500 hover:bg-rose-500/10 hover:border-rose-500 disabled:opacity-30"
-                                             disabled={data.profile.current_phase_index <= 0}
+                                             class="h-8 text-xs border-rose-500/40 text-rose-500 hover:bg-rose-500/10 hover:border-rose-500 disabled:opacity-30 relative"
+                                             disabled={data.profile.current_phase_index <= 0 || data.riskData?.growthEvaluation?.shouldRegress === false}
                                              onclick={demotePhase}>
                                              <ChevronLeft class="w-4 h-4 mr-1" /> Regredir
+                                             <!-- TODO: Caso deseje auto-regressão, o store precisaria despachar essa mutação de profile -->
+                                             {#if data.riskData?.growthEvaluation?.shouldRegress}
+                                                <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse blur-[1px]"></div>
+                                             {/if}
                                          </Button>
                                      </div>
                                 </div>
@@ -363,6 +402,7 @@
                                                 Avanço Manual (Sem regras automáticas criadas).
                                             </div>
                                         {:else}
+                                            <!-- TODO: A UI ainda usa iterate condition individual, mapear motivos do growthEvaluation reasons string array no futuro -->
                                             {#each currentPhase.conditions_to_advance as rule}
                                                 {@const evalResult = evaluateCondition(data.stats, rule)}
                                                 <div class="flex items-center justify-between p-3 rounded-lg border border-border/10 bg-black/20 group hover:border-emerald-500/30 transition-colors">
@@ -385,7 +425,10 @@
 
                                 <!-- Rules to demote -->
                                 <div>
-                                    <h4 class="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5"><TrendingDown class="w-3 h-3 text-rose-500"/> Alertas de Regressão (Demote)</h4>
+                                    <h4 class="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5">
+                                        <TrendingDown class="w-3 h-3 text-rose-500"/> Alertas de Regressão (Demote)
+                                        <!-- TODO: O GrowthEvaluation retorna array de reasons, futuramente mapear para cards no lugar da rule engine antiga -->
+                                    </h4>
                                     <div class="space-y-2">
                                         {#if !currentPhase.conditions_to_demote || currentPhase.conditions_to_demote.length === 0}
                                             <div class="p-4 rounded-lg bg-muted/5 border border-dashed border-border/20 text-center text-sm font-medium text-muted-foreground/60">
