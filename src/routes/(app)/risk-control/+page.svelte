@@ -42,8 +42,7 @@
     let cockpitData = $derived(() => {
         if (!currentProfile) return null;
 
-        // TODO:[REFATORAÇÃO] Migrar as métricas visuais remanescentes (winRate geral, eChart series) 
-        // para saírem estritamente de `riskData`. Mantendo computeRiskStats ativo apenas para a UI não quebrar.
+        // TODO: migrar este trecho para riskStore/riskCockpitState
         const stats = computeRiskStats(tradesStore.trades, currentProfile);
         
         const riskData = riskStore.riskCockpitState;
@@ -103,7 +102,8 @@
 
         return {
             profile: currentProfile,
-            stats, // TODO: Substituir por riskData assim que gráficos/sumário histórico suportarem
+            // TODO: migrar este trecho para riskStore/riskCockpitState
+            stats,
             riskData,
             chartOptions
         };
@@ -222,7 +222,7 @@
                         <div class="p-4 rounded-xl border border-border/10 bg-black/20 shadow-inner space-y-3">
                             <div class="flex justify-between items-center text-sm">
                                 <span class="text-muted-foreground font-medium uppercase tracking-widest text-[10px]">Tolerância Diária Utilizada</span>
-                                <!-- TODO: Substituir data.stats.currentDrawdown pela métrica pura de drawdon diário assim que disponível no dailyRiskStatus -->
+                                <!-- TODO: migrar este trecho para riskStore/riskCockpitState -->
                                 <span class="font-bold font-mono tracking-tight text-rose-500">
                                     {data.profile.target_type === 'Financial' ? formatCurrency(data.stats.currentDrawdown, getProfileCurrencyCode(data.profile)) : `${data.stats.currentDrawdown} pts`} 
                                     <span class="text-muted-foreground/40 font-normal">
@@ -246,7 +246,7 @@
                     <div class="grid grid-cols-2 divide-x divide-border/10 border-t border-border/10 bg-black/20 p-2 z-10 relative">
                         <div class="p-2 text-center flex flex-col items-center">
                             <span class="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-1">Win Rate Geral</span>
-                            <!-- TODO: Extrair o winRate do growthEvaluation ou criar um historical parser no engine -->
+                            <!-- TODO: migrar este trecho para riskStore/riskCockpitState -->
                             <span class="font-mono text-lg font-black tabular-nums {data.stats.winRate >= 50 ? 'text-emerald-500' : 'text-rose-500'}">{data.stats.winRate}%</span>
                         </div>
                         <div class="p-2 text-center flex flex-col items-center group relative">
@@ -294,6 +294,7 @@
                             </div>
                             <div class="flex flex-col">
                                 <span class="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/60">Dias de Lucro</span>
+                                <!-- TODO: migrar este trecho para riskStore/riskCockpitState -->
                                 <span class="font-mono text-xl font-black text-foreground">{data.stats.daysPositive} <span class="text-xs font-medium text-muted-foreground lowercase tracking-normal">dias positivos</span></span>
                             </div>
                         </div>
@@ -311,7 +312,7 @@
                                 <span class="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/60 flex gap-1 items-center">
                                     Trades Máximo/Dia
                                 </span>
-                                <!-- TODO: O tradeCount em si ainda não vem do dailyRiskStatus diretamente. Substituir a leitura data.stats no futuro -->
+                                <!-- TODO: migrar este trecho para riskStore/riskCockpitState -->
                                 <span class="font-mono text-xl font-black {data.riskData?.disciplineEvaluation?.overtradingDetected ? 'text-rose-500' : 'text-foreground'}">
                                     {data.profile.max_trades_per_day} <span class="text-xs font-medium text-muted-foreground lowercase tracking-normal">limite</span>
                                 </span>
@@ -382,7 +383,6 @@
                                              disabled={data.profile.current_phase_index <= 0 || data.riskData?.growthEvaluation?.shouldRegress === false}
                                              onclick={demotePhase}>
                                              <ChevronLeft class="w-4 h-4 mr-1" /> Regredir
-                                             <!-- TODO: Caso deseje auto-regressão, o store precisaria despachar essa mutação de profile -->
                                              {#if data.riskData?.growthEvaluation?.shouldRegress}
                                                 <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse blur-[1px]"></div>
                                              {/if}
@@ -402,7 +402,7 @@
                                                 Avanço Manual (Sem regras automáticas criadas).
                                             </div>
                                         {:else}
-                                            <!-- TODO: A UI ainda usa iterate condition individual, mapear motivos do growthEvaluation reasons string array no futuro -->
+                                            <!-- TODO: migrar este trecho para riskStore/riskCockpitState -->
                                             {#each currentPhase.conditions_to_advance as rule}
                                                 {@const evalResult = evaluateCondition(data.stats, rule)}
                                                 <div class="flex items-center justify-between p-3 rounded-lg border border-border/10 bg-black/20 group hover:border-emerald-500/30 transition-colors">
@@ -427,7 +427,7 @@
                                 <div>
                                     <h4 class="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5">
                                         <TrendingDown class="w-3 h-3 text-rose-500"/> Alertas de Regressão (Demote)
-                                        <!-- TODO: O GrowthEvaluation retorna array de reasons, futuramente mapear para cards no lugar da rule engine antiga -->
+                                        <!-- TODO: migrar este trecho para riskStore/riskCockpitState -->
                                     </h4>
                                     <div class="space-y-2">
                                         {#if !currentPhase.conditions_to_demote || currentPhase.conditions_to_demote.length === 0}
@@ -435,6 +435,7 @@
                                                 Nenhuma regra de regressão criada para esta fase.
                                             </div>
                                         {:else}
+                                            <!-- TODO: migrar este trecho para riskStore/riskCockpitState -->
                                             {#each currentPhase.conditions_to_demote as rule}
                                                 {@const evalResult = evaluateCondition(data.stats, rule)}
                                                 <!-- For Demote, passing means BAD (condition met means demote triggers) -->
