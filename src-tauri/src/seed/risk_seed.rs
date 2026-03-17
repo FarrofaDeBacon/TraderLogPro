@@ -126,6 +126,7 @@ pub async fn seed_risk_profiles(
             lot_reduction_multiplier: 0.5,
             psychological_search_strategy: "Strict".to_string(),
             active: name == "Conservador", // Default one as active
+            default_stop_points: None,
         };
         let mut json = serde_json::to_value(&data).unwrap();
         if let Some(obj) = json.as_object_mut() {

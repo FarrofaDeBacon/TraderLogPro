@@ -545,7 +545,6 @@ pub struct Asset {
     pub min_contracts: Option<i32>,
     #[serde(default)]
     pub max_contracts: Option<i32>,
-    pub max_contracts: Option<i32>,
 }
 
 impl ToDto for Asset {
