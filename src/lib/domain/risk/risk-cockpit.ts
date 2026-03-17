@@ -38,16 +38,26 @@ export function buildRiskCockpitState(
 ): RiskCockpitState {
     
     // 1. Motor Financeiro Diário
-    const dailyRiskStatus = calculateDailyRiskStatus(profile, trades);
+    const dailyRiskStatus = calculateDailyRiskStatus(
+        profile, 
+        trades
+    );
     
     // 2. Motor Comportamental e Disciplinar
-    const disciplineEvaluation = evaluateDiscipline(profile, trades);
+    const disciplineEvaluation = evaluateDiscipline(
+        profile, 
+        trades
+    );
     
     // 3. Motor de Plano de Crescimento
     let growthEvaluation: GrowthEvaluationResult | undefined;
     
     if (growthPhase && startingCapital !== undefined) {
-        growthEvaluation = evaluateGrowthPhase(growthPhase, trades, startingCapital);
+        growthEvaluation = evaluateGrowthPhase(
+            growthPhase, 
+            trades, 
+            startingCapital
+        );
     }
 
     return {
