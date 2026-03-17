@@ -13,3 +13,5 @@ export * from './risk-engine';
 export * from './growth-engine';
 export * from './discipline-engine';
 export * from './risk-cockpit';
+export * from './position-sizing-adapter';
+export * from './position-sizing-engine';

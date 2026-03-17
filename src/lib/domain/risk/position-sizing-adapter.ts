@@ -1,0 +1,56 @@
+import type { RiskProfile, Asset, GrowthPhase } from '$lib/types';
+import type { PositionSizingInput } from './position-sizing-engine';
+
+/**
+ * Adaptador sujo (Lê os dados brutos e complexos do App / DB) -> Posição Limpa (Engine Puro)
+ * 
+ * @param profile O Perfil de Risco atual do usuário.
+ * @param asset O ativo que ele selecionou para operar.
+ * @param currentPhase Se o Growth Plan estiver ativo, é a fase na qual ele está atualmente.
+ * @param dynamicBalanceFallback Se a fonte de capital for LinkedAccount, deve ser injetado o Account Balance via store aqui fora do engine.
+ * @returns {PositionSizingInput|null} Retorna null se for impossível processar por falta violenta de dados de config.
+ */
+export function adaptPositionSizingInput(
+    profile: RiskProfile,
+    asset: Asset,
+    currentPhase?: GrowthPhase,
+    dynamicBalanceFallback?: number
+): PositionSizingInput | null {
+    
+    // 1. Resolver Capital Base
+    let capital = 0;
+    if (profile.capital_source === 'Fixed') {
+        capital = profile.fixed_capital ?? 0;
+    } else if (profile.capital_source === 'LinkedAccount') {
+        if (dynamicBalanceFallback === undefined) {
+             // Conta lincada, mas não achamos o saldo.
+             return null;
+        }
+        capital = dynamicBalanceFallback;
+    }
+
+    // Se o setup explícito do RiskProfile capou o RiskPerTrade
+    const riskPercent = profile.max_risk_per_trade_percent ?? 0;
+
+    // 2. Extrair Regras do Ativo (Fonte de Verdade)
+    const pointValue = asset.point_value;
+    const stopPoints = asset.default_stop_points ?? 0; // Default zero vai falhar no engine controladamente.
+    
+    const minContracts = asset.min_contracts;
+    const maxContracts = asset.max_contracts;
+
+    // 3. Extrair Regras da Fase Ativa de Crescimento
+    const maxContractsPhase = (profile.growth_plan_enabled && currentPhase) 
+        ? currentPhase.lot_size 
+        : undefined;
+
+    return {
+        capital,
+        riskPerTradePercent: riskPercent,
+        pointValue,
+        stopPoints,
+        minContracts,
+        maxContracts,
+        maxContractsPhase
+    };
+}

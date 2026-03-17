@@ -94,6 +94,10 @@ pub struct AssetDto {
     pub tax_profile_id: Option<String>,
     pub is_root: bool,
     pub root_id: Option<String>,
+    pub contract_size: Option<f64>,
+    pub min_contracts: Option<i32>,
+    pub max_contracts: Option<i32>,
+    pub default_stop_points: Option<f64>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

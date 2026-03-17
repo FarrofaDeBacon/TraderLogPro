@@ -538,6 +538,15 @@ pub struct Asset {
     pub is_root: bool,
     #[serde(default, deserialize_with = "deserialize_id_opt")]
     pub root_id: Option<String>,
+    // Position Sizing Engine Configurations
+    #[serde(default)]
+    pub contract_size: Option<f64>,
+    #[serde(default)]
+    pub min_contracts: Option<i32>,
+    #[serde(default)]
+    pub max_contracts: Option<i32>,
+    #[serde(default)]
+    pub default_stop_points: Option<f64>,
 }
 
 impl ToDto for Asset {
@@ -552,6 +561,10 @@ impl ToDto for Asset {
             tax_profile_id: self.tax_profile_id.clone(),
             is_root: self.is_root,
             root_id: self.root_id.clone(),
+            contract_size: self.contract_size,
+            min_contracts: self.min_contracts,
+            max_contracts: self.max_contracts,
+            default_stop_points: self.default_stop_points,
         }
     }
 }

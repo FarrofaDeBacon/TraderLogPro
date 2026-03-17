@@ -64,6 +64,11 @@ export type Asset = {
     name: string;
     asset_type_id: string;
     point_value: number;
+    // Position Sizing Config
+    contract_size?: number;
+    min_contracts?: number;
+    max_contracts?: number;
+    default_stop_points?: number;
     default_fee_id?: string;
     tax_profile_id?: string;
     is_root: boolean;
