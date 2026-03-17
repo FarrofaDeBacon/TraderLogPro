@@ -358,7 +358,7 @@
                 </Card.Root>
 
                 <!-- Widget 3: Discipline Checklist (Full Width List) -->
-                <Card.Root class="lg:col-span-12 border-border/10 shadow-lg card-glass p-5">
+                <Card.Root class="lg:col-span-8 border-border/10 shadow-lg card-glass p-5">
                     <div class="flex items-center gap-2 mb-6 border-b border-border/10 pb-4">
                         <Shield class="w-5 h-5 text-primary" />
                         <h3 class="text-sm font-bold uppercase tracking-widest text-foreground">Checklist de Disciplina do Perfil</h3>
