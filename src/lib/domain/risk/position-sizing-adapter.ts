@@ -32,13 +32,13 @@ export function adaptPositionSizingInput(
     // Se o setup explícito do RiskProfile capou o RiskPerTrade
     const riskPercent = profile.max_risk_per_trade_percent ?? 0;
 
-    // 2. Extrair Regras do Ativo (Fonte de Verdade)
+    // 2. Extrair Regras do Ativo (Fonte de Verdade Estrutural)
     const pointValue = asset.point_value;
-    const minContracts = asset.min_contracts;
-    const maxContracts = asset.max_contracts;
 
     // 2.5 Regras Operacionais do Trader (Perfil de Risco)
     const stopPoints = profile.default_stop_points ?? 0; // Default zero vai falhar no engine controladamente.
+    const minContracts = profile.min_contracts;
+    const maxContracts = profile.max_contracts;
 
     // 3. Extrair Regras da Fase Ativa de Crescimento
     const maxContractsPhase = (profile.growth_plan_enabled && currentPhase) 

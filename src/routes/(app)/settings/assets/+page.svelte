@@ -45,8 +45,6 @@
         asset_type_id: "",
         point_value: 1,
         contract_size: 1,
-        min_contracts: 1,
-        max_contracts: 100,
         default_fee_id: "",
         tax_profile_id: "",
         is_root: false,
@@ -149,8 +147,6 @@
             asset_type_id: "",
             point_value: 1,
             contract_size: 1,
-            min_contracts: 1,
-            max_contracts: 100,
             default_fee_id: "",
             tax_profile_id: "",
             is_root: false,
@@ -167,8 +163,6 @@
             asset_type_id: item.asset_type_id,
             point_value: item.point_value,
             contract_size: item.contract_size ?? 1,
-            min_contracts: item.min_contracts ?? 1,
-            max_contracts: item.max_contracts ?? 100,
             default_fee_id: item.default_fee_id,
             tax_profile_id: item.tax_profile_id || "",
             is_root: item.is_root || false,
@@ -183,17 +177,11 @@
             toast.error("O valor do ponto deve ser maior que zero.");
             return;
         }
-        if (formData.min_contracts !== undefined && formData.max_contracts !== undefined && formData.min_contracts > formData.max_contracts) {
-            toast.error("O mínimo de contratos não pode ser maior que o máximo.");
-            return;
-        }
 
         const dataToSave = {
             ...formData,
             root_id: formData.root_id === "none" ? undefined : formData.root_id,
             contract_size: formData.contract_size,
-            min_contracts: formData.min_contracts,
-            max_contracts: formData.max_contracts,
         };
 
         if (editingId) {
@@ -459,23 +447,6 @@
                     bind:value={formData.contract_size}
                     class="col-span-3"
                     placeholder="Ex: 1 (B3) ou 100000 (Forex)"
-                />
-            </div>
-
-            <div class="grid grid-cols-4 items-center gap-4">
-                <Label class="text-right">Contratos Mínimos</Label>
-                <Input
-                    type="number"
-                    step="1"
-                    bind:value={formData.min_contracts}
-                    class="col-span-1"
-                />
-                <Label class="text-right">Máximos</Label>
-                <Input
-                    type="number"
-                    step="1"
-                    bind:value={formData.max_contracts}
-                    class="col-span-1"
                 />
             </div>
 

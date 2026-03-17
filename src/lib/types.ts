@@ -66,8 +66,11 @@ export type Asset = {
     point_value: number;
     // Position Sizing Config
     contract_size?: number;
+    /** @deprecated Use min_contracts on RiskProfile instead */
     min_contracts?: number;
+    /** @deprecated Use max_contracts on RiskProfile instead */
     max_contracts?: number;
+    /** @deprecated Use default_stop_points on RiskProfile instead */
     default_stop_points?: number;
     default_fee_id?: string;
     tax_profile_id?: string;
@@ -354,8 +357,9 @@ export type RiskProfile = {
     lot_reduction_multiplier: number;
     psychological_search_strategy: 'Strict' | 'Sequence';
     active: boolean;
-    /** @deprecated Use default_stop_points on RiskProfile instead */
     default_stop_points?: number;
+    min_contracts?: number;
+    max_contracts?: number;
 };
 
 

@@ -541,10 +541,6 @@ pub struct Asset {
     // Position Sizing Engine Configurations
     #[serde(default)]
     pub contract_size: Option<f64>,
-    #[serde(default)]
-    pub min_contracts: Option<i32>,
-    #[serde(default)]
-    pub max_contracts: Option<i32>,
 }
 
 impl ToDto for Asset {
@@ -560,8 +556,6 @@ impl ToDto for Asset {
             is_root: self.is_root,
             root_id: self.root_id.clone(),
             contract_size: self.contract_size,
-            min_contracts: self.min_contracts,
-            max_contracts: self.max_contracts,
         }
     }
 }
@@ -888,6 +882,10 @@ pub struct RiskProfile {
     pub active: bool,
     #[serde(default)]
     pub default_stop_points: Option<f64>,
+    #[serde(default)]
+    pub min_contracts: Option<i32>,
+    #[serde(default)]
+    pub max_contracts: Option<i32>,
 }
 
 fn default_target_type() -> String {
