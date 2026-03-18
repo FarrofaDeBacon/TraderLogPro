@@ -1626,9 +1626,10 @@
           "title": "Ajustes Predefinidos"
         },
         "tabs": {
-          "engine": "Motor de Riesgo",
+          "deskConfig": "Mesa y Vínculos",
+          "engine": "Reglas Avanzadas",
           "general": "General",
-          "growth": "Hoja de Ruta"
+          "growth": "Roadmap"
         }
       },
       "growthPlan": {

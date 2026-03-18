@@ -352,14 +352,17 @@
     </div>
 
     <Tabs.Root value="general" class="w-full">
-        <Tabs.List class="grid w-full grid-cols-3">
-            <Tabs.Trigger value="general"
+        <Tabs.List class="flex overflow-x-auto sm:grid sm:grid-cols-4 w-full justify-start sm:justify-center p-1">
+            <Tabs.Trigger value="general" class="whitespace-nowrap"
                 >{$t("settings.risk.form.tabs.general")}</Tabs.Trigger
             >
-            <Tabs.Trigger value="risk-engine"
-                >{$t("settings.risk.form.tabs.engine")}</Tabs.Trigger
+            <Tabs.Trigger value="desk-config" class="whitespace-nowrap"
+                >{$t("settings.risk.form.tabs.deskConfig") ?? "Mesa & Vínculos"}</Tabs.Trigger
             >
-            <Tabs.Trigger value="growth"
+            <Tabs.Trigger value="risk-engine" class="whitespace-nowrap"
+                >{$t("settings.risk.form.tabs.engine") ?? "Regras Avançadas"}</Tabs.Trigger
+            >
+            <Tabs.Trigger value="growth" class="whitespace-nowrap"
                 >{$t("settings.risk.form.tabs.growth")}</Tabs.Trigger
             >
         </Tabs.List>
@@ -595,8 +598,11 @@
                 {/if}
             </div>
 
+        </Tabs.Content>
+
+        <Tabs.Content value="desk-config" class="space-y-6 pt-4">
             <!-- Linked Asset Profiles -->
-            <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm mt-6">
+            <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
                 <div class="flex items-center justify-between">
                     <h3 class="flex items-center gap-2 font-bold text-muted-foreground">
                         <Link class="w-4 h-4" />

@@ -1628,7 +1628,8 @@
           "title": "Profile Presets"
         },
         "tabs": {
-          "engine": "Risk Engine",
+          "deskConfig": "Desk & Links",
+          "engine": "Advanced Rules",
           "general": "General",
           "growth": "Roadmap"
         }
