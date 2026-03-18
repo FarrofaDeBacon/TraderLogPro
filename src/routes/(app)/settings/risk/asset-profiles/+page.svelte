@@ -13,6 +13,7 @@
     import { Textarea } from "$lib/components/ui/textarea";
 
     import type { GrowthPhase } from "$lib/domain/risk/types";
+    import GrowthPhasesEditor from "$lib/components/settings/GrowthPhasesEditor.svelte";
 
     let isDialogOpen = $state(false);
     let editingId = $state<string | null>(null);
@@ -84,28 +85,6 @@
             current_phase_index: item.current_phase_index ?? 0
         };
         isDialogOpen = true;
-    }
-
-    function addPhase() {
-        if (!formData.growth_phases_override) {
-            formData.growth_phases_override = [];
-        }
-        formData.growth_phases_override = [
-            ...formData.growth_phases_override,
-            {
-                level: formData.growth_phases_override.length + 1,
-                lot_size: 1,
-                conditions_to_advance: [],
-                conditions_to_demote: [],
-            },
-        ];
-    }
-
-    function removePhase(index: number) {
-        if (!formData.growth_phases_override) return;
-        formData.growth_phases_override = formData.growth_phases_override.filter((_, i) => i !== index);
-        // Correct levels
-        formData.growth_phases_override = formData.growth_phases_override.map((p, i) => ({ ...p, level: i + 1 }));
     }
 
     function confirmDelete(id: string) {
@@ -372,46 +351,7 @@
                 </div>
 
                 {#if formData.growth_override_enabled}
-                    <div class="mt-4 space-y-3">
-                        <div class="flex items-center justify-between">
-                            <h5 class="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                                {$t("settings.risk.assetProfiles.overridePhases") || "Fases Específicas"}
-                            </h5>
-                            <Button size="sm" variant="outline" class="h-7 text-xs border-dashed" onclick={addPhase}>
-                                <Plus class="w-3 h-3 mr-1" />
-                                Adicionar Fase
-                            </Button>
-                        </div>
-
-                        {#if formData.growth_phases_override && formData.growth_phases_override.length > 0}
-                            <div class="space-y-2">
-                                {#each formData.growth_phases_override as phase, index}
-                                    <div class="flex items-center gap-2 p-2 rounded-lg border bg-black/5">
-                                        <div class="w-6 h-6 rounded-full bg-amber-500/10 flex items-center justify-center text-xs font-bold text-amber-500">
-                                            {index + 1}
-                                        </div>
-                                        <div class="flex-1 grid grid-cols-2 gap-2">
-                                            <div class="flex items-center gap-2">
-                                                <Label class="text-[10px] uppercase text-muted-foreground shrink-0">Máx Lotes</Label>
-                                                <Input type="number" min="1" class="h-7 text-xs px-2" bind:value={phase.lot_size} />
-                                            </div>
-                                            <div class="flex items-center gap-2">
-                                                <Label class="text-[10px] uppercase text-muted-foreground shrink-0">Nome (Opc)</Label>
-                                                <Input class="h-7 text-xs px-2" bind:value={phase.name} placeholder="Opcional" />
-                                            </div>
-                                        </div>
-                                        <Button variant="ghost" size="icon" class="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0" onclick={() => removePhase(index)}>
-                                            <Trash2 class="w-3 h-3" />
-                                        </Button>
-                                    </div>
-                                {/each}
-                            </div>
-                        {:else}
-                            <div class="p-4 rounded-lg bg-black/5 border border-dashed text-center">
-                                <span class="text-xs text-muted-foreground">Adicione ao menos 1 fase para override.</span>
-                            </div>
-                        {/if}
-                    </div>
+                    <GrowthPhasesEditor bind:phases={formData.growth_phases_override} simpleMode={true} />
                 {/if}
             </div>
         </div>
