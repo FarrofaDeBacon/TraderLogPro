@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { settingsStore } from './settings.svelte';
+import { assetsStore } from './assets.svelte';
 
 // Mock Tauri
 vi.mock('@tauri-apps/api/core', () => ({
@@ -88,7 +89,7 @@ describe('SettingsStore Unit Tests', () => {
             { id: 'type_index', name: 'Contrato Futuro', code: 'INDEX' },
             { id: 'type_stock', name: 'Ações', code: 'STK' }
         ] as any;
-        settingsStore.assets = [];
+        assetsStore.clearAssets();
 
         // Mock crypto.randomUUID
         const uuidSpy = vi.spyOn(crypto, 'randomUUID').mockReturnValue('mock-uuid' as any);
@@ -352,7 +353,8 @@ describe('SettingsStore Unit Tests', () => {
                 psychological_search_strategy: 'Strict',
                 account_type_applicability: 'All',
                 account_ids: [],
-                linked_asset_risk_profile_ids: [sharedAssetProfileId]
+                linked_asset_risk_profile_ids: [sharedAssetProfileId],
+                growth_phases: []
             }];
 
             const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
