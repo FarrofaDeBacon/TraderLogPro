@@ -4,6 +4,7 @@ import { accountsStore } from './accounts.svelte';
 import { currenciesStore } from './currencies.svelte';
 import { marketsStore } from './markets.svelte';
 import { assetTypesStore } from './asset-types.svelte';
+import { modalitiesStore } from './modalities.svelte';
 import { settingsStore } from './settings.svelte';
 import { assetsStore } from './assets.svelte';
 import { riskSettingsStore } from './risk-settings.svelte';

@@ -18,6 +18,7 @@ import { accountsStore } from "./accounts.svelte";
 import { currenciesStore } from "./currencies.svelte";
 import { marketsStore } from "./markets.svelte";
 import { assetTypesStore } from "./asset-types.svelte";
+import { modalitiesStore } from "./modalities.svelte";
 
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
@@ -32,7 +33,7 @@ class SettingsStore {
     get assets() { return assetsStore.assets; }
     get riskProfiles() { return riskSettingsStore.riskProfiles; }
     get assetRiskProfiles() { return riskSettingsStore.assetRiskProfiles; }
-    modalities = $state<Modality[]>([]);
+    get modalities() { return modalitiesStore.modalities; }
     userProfile = $state<UserProfile>({
         id: "main",
         name: "",
@@ -267,7 +268,7 @@ class SettingsStore {
                     account_ids: rp.account_ids ?? []
                 }));
             }
-            if (modalitiesRes) this.modalities = modalitiesRes;
+            if (modalitiesRes) modalitiesStore.modalities = modalitiesRes;
             if (tagsRes) this.tags = tagsRes;
             if (indicatorsRes) this.indicators = indicatorsRes;
             if (timeframesRes) this.timeframes = timeframesRes;
@@ -373,15 +374,7 @@ class SettingsStore {
         }
     }
 
-    private async saveModalities() {
-        for (const modality of this.modalities) {
-            try {
-                await invoke("save_modality", { modality: $state.snapshot(modality) });
-            } catch (e) {
-                console.error("[SettingsStore] Error saving modality:", e);
-            }
-        }
-    }
+
 
     private async saveTags() {
         for (const tag of this.tags) {
@@ -689,17 +682,13 @@ class SettingsStore {
 
     // Modalities
     addModality(item: Omit<Modality, "id">) {
-        this.modalities.push({ ...item, id: crypto.randomUUID() });
-        this.saveModalities();
+        return modalitiesStore.addModality(item);
     }
     updateModality(id: string, item: Partial<Modality>) {
-        this.modalities = this.modalities.map(m => m.id === id ? { ...m, ...item } : m);
-        this.saveModalities();
+        return modalitiesStore.updateModality(id, item);
     }
     async deleteModality(id: string): Promise<{ success: boolean; error?: string }> {
-        await invoke("delete_modality", { id });
-        this.modalities = this.modalities.filter(m => m.id !== id);
-        return { success: true };
+        return modalitiesStore.deleteModality(id);
     }
 
     async addTaxRule(item: Omit<TaxRule, "id">) {
@@ -1156,7 +1145,7 @@ class SettingsStore {
 
     clearDatabase() {
         marketsStore.clearMarkets(); assetTypesStore.clearAssetTypes(); assetsStore.clearAssets(); accountsStore.clearAccounts(); currenciesStore.clearCurrencies();
-        this.fees = []; this.strategies = []; riskSettingsStore.clearRiskSettings(); this.modalities = [];
+        this.fees = []; this.strategies = []; riskSettingsStore.clearRiskSettings(); modalitiesStore.clearModalities();
         this.emotionalStates = []; this.tags = []; this.indicators = []; this.timeframes = [];
         this.chartTypes = [];
     }
