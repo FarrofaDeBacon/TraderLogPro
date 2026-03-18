@@ -5,6 +5,7 @@ import { marketsStore } from './markets.svelte';
 import { assetTypesStore } from './asset-types.svelte';
 import { modalitiesStore } from './modalities.svelte';
 import { timeframesStore } from './timeframes.svelte';
+import { chartTypesStore } from './chart-types.svelte';
 import { settingsStore } from './settings.svelte';
 import { riskSettingsStore } from './risk-settings.svelte';
 import { assetsStore } from './assets.svelte';

@@ -20,6 +20,7 @@ import { marketsStore } from "./markets.svelte";
 import { assetTypesStore } from "./asset-types.svelte";
 import { modalitiesStore } from "./modalities.svelte";
 import { timeframesStore } from "./timeframes.svelte";
+import { chartTypesStore } from "./chart-types.svelte";
 
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
@@ -64,7 +65,7 @@ class SettingsStore {
     tags = $state<Tag[]>([]);
     indicators = $state<Indicator[]>([]);
     get timeframes() { return timeframesStore.timeframes; }
-    chartTypes = $state<ChartType[]>([]);
+    get chartTypes() { return chartTypesStore.chartTypes; }
     cashTransactions = $state<CashTransaction[]>([]);
     journalEntries = $state<JournalEntry[]>([]);
     apiConfigs = $state<ApiConfig[]>([]);
@@ -273,7 +274,7 @@ class SettingsStore {
             if (tagsRes) this.tags = tagsRes;
             if (indicatorsRes) this.indicators = indicatorsRes;
             if (timeframesRes) timeframesStore.timeframes = timeframesRes;
-            if (chartTypesRes) this.chartTypes = chartTypesRes;
+            if (chartTypesRes) chartTypesStore.chartTypes = chartTypesRes;
             if (taxRulesRes) this.taxRules = taxRulesRes;
             if (taxMappingsRes) this.taxMappings = taxMappingsRes;
             if (taxProfilesRes) this.taxProfiles = taxProfilesRes;
@@ -399,15 +400,7 @@ class SettingsStore {
 
 
 
-    private async saveChartTypes() {
-        for (const chartType of this.chartTypes) {
-            try {
-                await invoke("save_chart_type", { chartType: $state.snapshot(chartType) });
-            } catch (e) {
-                console.error("[SettingsStore] Error saving chart type:", e);
-            }
-        }
-    }
+
 
     private async saveJournal() {
         for (const entry of this.journalEntries) {
@@ -983,17 +976,13 @@ class SettingsStore {
 
     // Chart Types
     addChartType(item: Omit<ChartType, "id">) {
-        this.chartTypes.push({ ...item, id: crypto.randomUUID() });
-        this.saveChartTypes();
+        return chartTypesStore.addChartType(item);
     }
     updateChartType(id: string, item: Partial<ChartType>) {
-        this.chartTypes = this.chartTypes.map(c => c.id === id ? { ...c, ...item } : c);
-        this.saveChartTypes();
+        return chartTypesStore.updateChartType(id, item);
     }
     async deleteChartType(id: string): Promise<{ success: boolean; error?: string }> {
-        await invoke("delete_chart_type", { id });
-        this.chartTypes = this.chartTypes.filter(c => c.id !== id);
-        return { success: true };
+        return chartTypesStore.deleteChartType(id);
     }
 
     // API & RTD
@@ -1136,7 +1125,7 @@ class SettingsStore {
         marketsStore.clearMarkets(); assetTypesStore.clearAssetTypes(); assetsStore.clearAssets(); accountsStore.clearAccounts(); currenciesStore.clearCurrencies();
         this.fees = []; this.strategies = []; riskSettingsStore.clearRiskSettings(); modalitiesStore.clearModalities();
         this.emotionalStates = []; this.tags = []; this.indicators = []; timeframesStore.clearTimeframes();
-        this.chartTypes = [];
+        chartTypesStore.clearChartTypes();
     }
 
     async login(_email: string, pass: string): Promise<boolean> {
