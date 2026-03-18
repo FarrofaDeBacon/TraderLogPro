@@ -57,19 +57,24 @@ describe('RiskStore Position Sizing Integration', () => {
             fixed_capital: 5000,
             growth_plan_enabled: false,
             current_phase_index: 0,
-            growth_phases: []
+            growth_phases: [],
+            linked_asset_risk_profile_ids: ['profile-wdo']
         } as any];
 
         settingsStore.assets = [{
             id: 'WDO',
             symbol: 'WDO',
             name: 'Mini Dólar',
-            point_value: 10.0,
+            point_value: 10.0
+        } as any];
+
+        settingsStore.assetRiskProfiles = [{
+            id: 'profile-wdo',
+            asset_id: 'WDO',
+            name: 'WDO Base',
             default_stop_points: 5,
             min_contracts: 1,
-            max_contracts: 10,
-            is_root: false,
-            asset_type_id: 'x'
+            max_contracts: 10
         } as any];
 
         riskStore.activeAssetId = 'WDO';
@@ -91,13 +96,22 @@ describe('RiskStore Position Sizing Integration', () => {
             active: true, 
             max_risk_per_trade_percent: 1,
             capital_source: 'Fixed',
-            fixed_capital: 1000
+            fixed_capital: 1000,
+            linked_asset_risk_profile_ids: ['profile-win']
         } as any];
 
         settingsStore.assets = [{
             id: 'WIN',
-            point_value: 0.20,
-            default_stop_points: 0 // NO STOP GIVEN!
+            point_value: 0.20
+        } as any];
+
+        settingsStore.assetRiskProfiles = [{
+            id: 'profile-win',
+            asset_id: 'WIN',
+            name: 'WIN No Stop',
+            default_stop_points: 0, // NO STOP GIVEN!
+            min_contracts: 1,
+            max_contracts: 10
         } as any];
 
         riskStore.activeAssetId = 'WIN';
@@ -108,5 +122,55 @@ describe('RiskStore Position Sizing Integration', () => {
         expect(result?.isValid).toBe(false);
         expect(result?.allowedContracts).toBe(0);
         expect(result?.reasons).toContain("Distância do Stop (stopPoints) deve ser maior que zero.");
+    });
+
+    describe('resolvedGrowthContext', () => {
+        it('returns null if there is no active growth plan', () => {
+            settingsStore.riskProfiles = [{ 
+                id: '1', active: true, growth_plan_enabled: false,
+                linked_asset_risk_profile_ids: ['profile-wdo']
+            } as any];
+            settingsStore.assets = [{ id: 'WDO' } as any];
+            settingsStore.assetRiskProfiles = [{ id: 'profile-wdo', asset_id: 'WDO' } as any];
+            riskStore.activeAssetId = 'WDO';
+            
+            expect(riskStore.resolvedGrowthContext).toBeNull();
+        });
+
+        it('returns null if there is no active asset profile linked to the asset', () => {
+            settingsStore.riskProfiles = [{ 
+                id: '1', active: true, growth_plan_enabled: true, growth_phases: [{}], current_phase_index: 0,
+                linked_asset_risk_profile_ids: [] // Missing link
+            } as any];
+            settingsStore.assets = [{ id: 'WDO' } as any];
+            settingsStore.assetRiskProfiles = [{ id: 'profile-wdo', asset_id: 'WDO' } as any];
+            riskStore.activeAssetId = 'WDO';
+            
+            expect(riskStore.resolvedGrowthContext).toBeNull();
+        });
+
+        it('returns the full bounded context chain when valid', () => {
+            const phaseMock = { level: 1, lot_size: 5 };
+            const profileMock = { 
+                id: '1', active: true, growth_plan_enabled: true, 
+                growth_phases: [phaseMock], current_phase_index: 0,
+                linked_asset_risk_profile_ids: ['profile-wdo']
+            };
+            const assetMock = { id: 'WDO' };
+            const assetProfileMock = { id: 'profile-wdo', asset_id: 'WDO' };
+
+            settingsStore.riskProfiles = [profileMock as any];
+            settingsStore.assets = [assetMock as any];
+            settingsStore.assetRiskProfiles = [assetProfileMock as any];
+            riskStore.activeAssetId = 'WDO';
+            
+            const context = riskStore.resolvedGrowthContext;
+            
+            expect(context).not.toBeNull();
+            expect(context?.asset.id).toBe('WDO');
+            expect(context?.assetRiskProfile.id).toBe('profile-wdo');
+            expect(context?.riskProfile.id).toBe('1');
+            expect(context?.growthPhase.level).toBe(1);
+        });
     });
 });

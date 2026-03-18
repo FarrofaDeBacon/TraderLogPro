@@ -373,7 +373,12 @@ export type AssetRiskProfile = {
     notes?: string;
 };
 
-
+export type ResolvedGrowthContext = {
+    asset: Asset;
+    assetRiskProfile: AssetRiskProfile;
+    riskProfile: RiskProfile;
+    growthPhase: GrowthPhase;
+};
 
 export type TaxPayment = {
     id: string;

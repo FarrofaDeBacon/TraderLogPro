@@ -88,6 +88,40 @@ class RiskStore {
     }
 
     /**
+     * Retorna o contexto completo de Growth Plan associado ao Perfil ativo e Ativo selecionado.
+     * Segue a hierarquia: Ativo -> AssetRiskProfile -> RiskProfile -> GrowthPhase.
+     */
+    get resolvedGrowthContext() {
+        const activeProfile = settingsStore.activeProfile;
+        if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
+
+        const asset = settingsStore.assets.find(a => a.id === this.activeAssetId);
+        if (!asset) return null;
+
+        const assetRiskProfile = this.resolvedAssetRiskProfile;
+        
+        // Exige vínculo explícito: sem perfil de ativo, sem avaliação de growth pra este ativo
+        if (!assetRiskProfile) return null;
+
+        if (!activeProfile.growth_plan_enabled || !activeProfile.growth_phases || activeProfile.growth_phases.length === 0) {
+            return null; // O plano não está ativado
+        }
+
+        const currentPhaseIndex = activeProfile.current_phase_index || 0;
+        if (currentPhaseIndex >= activeProfile.growth_phases.length) return null;
+
+        const currentPhase = activeProfile.growth_phases[currentPhaseIndex];
+        
+        // Monta o encadeamento restrito (ResolvedGrowthContext struct)
+        return {
+            asset,
+            assetRiskProfile,
+            riskProfile: activeProfile,
+            growthPhase: currentPhase
+        };
+    }
+
+    /**
      * Motor de Position Sizing (Entrada Pura formatada pelo Adapter)
      */
     get positionSizingInput(): PositionSizingInput | null {
