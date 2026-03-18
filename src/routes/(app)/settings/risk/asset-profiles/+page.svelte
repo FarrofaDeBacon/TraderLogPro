@@ -9,7 +9,10 @@
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";
+    import { Switch } from "$lib/components/ui/switch";
     import { Textarea } from "$lib/components/ui/textarea";
+
+    import type { GrowthPhase } from "$lib/domain/risk/types";
 
     let isDialogOpen = $state(false);
     let editingId = $state<string | null>(null);
@@ -25,6 +28,9 @@
         min_contracts: 1,
         max_contracts: 1,
         notes: "",
+        growth_override_enabled: false,
+        growth_phases_override: [],
+        current_phase_index: 0,
     });
 
     let searchQuery = $state("");
@@ -62,14 +68,44 @@
             min_contracts: 1,
             max_contracts: 1,
             notes: "",
+            growth_override_enabled: false,
+            growth_phases_override: [],
+            current_phase_index: 0,
         };
         isDialogOpen = true;
     }
 
     function openEdit(item: AssetRiskProfile) {
         editingId = item.id || null;
-        formData = { ...item };
+        formData = { 
+            ...item, 
+            growth_override_enabled: item.growth_override_enabled ?? false,
+            growth_phases_override: item.growth_phases_override ? [...item.growth_phases_override] : [],
+            current_phase_index: item.current_phase_index ?? 0
+        };
         isDialogOpen = true;
+    }
+
+    function addPhase() {
+        if (!formData.growth_phases_override) {
+            formData.growth_phases_override = [];
+        }
+        formData.growth_phases_override = [
+            ...formData.growth_phases_override,
+            {
+                level: formData.growth_phases_override.length + 1,
+                lot_size: 1,
+                conditions_to_advance: [],
+                conditions_to_demote: [],
+            },
+        ];
+    }
+
+    function removePhase(index: number) {
+        if (!formData.growth_phases_override) return;
+        formData.growth_phases_override = formData.growth_phases_override.filter((_, i) => i !== index);
+        // Correct levels
+        formData.growth_phases_override = formData.growth_phases_override.map((p, i) => ({ ...p, level: i + 1 }));
     }
 
     function confirmDelete(id: string) {
@@ -105,6 +141,12 @@
         if (formData.min_contracts > formData.max_contracts) {
             toast.error($t("general.form.invaildContracts") || "Mínimo de contratos não pode ser maior que o máximo");
             return;
+        }
+        if (formData.growth_override_enabled) {
+            if (!formData.growth_phases_override || formData.growth_phases_override.length === 0) {
+                toast.error($t("settings.risk.assetProfiles.noOverridePhases") || "Pelo menos 1 fase é necessária quando a Sobrescrita está ativada.");
+                return;
+            }
         }
 
         if (editingId) {
@@ -222,7 +264,7 @@
 
 <!-- Modal Create/Edit -->
 <Dialog.Root bind:open={isDialogOpen}>
-    <Dialog.Content class="sm:max-w-[425px]">
+    <Dialog.Content class="sm:max-w-[480px] max-h-[85vh] overflow-y-auto">
         <Dialog.Header>
             <Dialog.Title>
                 {editingId
@@ -311,8 +353,66 @@
                     bind:value={formData.notes}
                     class="col-span-3"
                     placeholder="Observações opcionais"
-                    rows={3}
+                    rows={2}
                 />
+            </div>
+
+            <!-- Growth Override Section -->
+            <div class="border-t pt-4 mt-2">
+                <div class="flex items-center justify-between p-3 rounded-lg border border-border/10 bg-amber-500/5 shadow-sm cursor-pointer" onclick={() => formData.growth_override_enabled = !formData.growth_override_enabled}>
+                    <div class="space-y-0.5">
+                        <h4 class="font-bold text-sm text-amber-500">
+                            {$t("settings.risk.assetProfiles.growthOverride") || "Sobrescrita de Crescimento"}
+                        </h4>
+                        <p class="text-[10px] text-muted-foreground/80 font-medium">
+                            {$t("settings.risk.assetProfiles.growthOverrideDesc") || "Define regras de crescimento ignorando o plano global."}
+                        </p>
+                    </div>
+                    <Switch bind:checked={formData.growth_override_enabled} />
+                </div>
+
+                {#if formData.growth_override_enabled}
+                    <div class="mt-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h5 class="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                                {$t("settings.risk.assetProfiles.overridePhases") || "Fases Específicas"}
+                            </h5>
+                            <Button size="sm" variant="outline" class="h-7 text-xs border-dashed" onclick={addPhase}>
+                                <Plus class="w-3 h-3 mr-1" />
+                                Adicionar Fase
+                            </Button>
+                        </div>
+
+                        {#if formData.growth_phases_override && formData.growth_phases_override.length > 0}
+                            <div class="space-y-2">
+                                {#each formData.growth_phases_override as phase, index}
+                                    <div class="flex items-center gap-2 p-2 rounded-lg border bg-black/5">
+                                        <div class="w-6 h-6 rounded-full bg-amber-500/10 flex items-center justify-center text-xs font-bold text-amber-500">
+                                            {index + 1}
+                                        </div>
+                                        <div class="flex-1 grid grid-cols-2 gap-2">
+                                            <div class="flex items-center gap-2">
+                                                <Label class="text-[10px] uppercase text-muted-foreground shrink-0">Máx Lotes</Label>
+                                                <Input type="number" min="1" class="h-7 text-xs px-2" bind:value={phase.lot_size} />
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <Label class="text-[10px] uppercase text-muted-foreground shrink-0">Nome (Opc)</Label>
+                                                <Input class="h-7 text-xs px-2" bind:value={phase.name} placeholder="Opcional" />
+                                            </div>
+                                        </div>
+                                        <Button variant="ghost" size="icon" class="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0" onclick={() => removePhase(index)}>
+                                            <Trash2 class="w-3 h-3" />
+                                        </Button>
+                                    </div>
+                                {/each}
+                            </div>
+                        {:else}
+                            <div class="p-4 rounded-lg bg-black/5 border border-dashed text-center">
+                                <span class="text-xs text-muted-foreground">Adicione ao menos 1 fase para override.</span>
+                            </div>
+                        {/if}
+                    </div>
+                {/if}
             </div>
         </div>
 

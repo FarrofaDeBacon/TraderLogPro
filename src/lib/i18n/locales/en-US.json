@@ -1706,7 +1706,11 @@
         "maxContracts": "Max. Allowed Contracts",
         "notes": "Notes (Optional)",
         "empty": "No Asset Risk Profile found",
-        "search": "Search profile..."
+        "search": "Search profile...",
+        "growthOverride": "Growth Plan Override",
+        "growthOverrideDesc": "Set exclusive growth rules for this asset, ignoring the global plan.",
+        "enableGrowthOverride": "Enable Override",
+        "overridePhases": "Specific Phases"
       },
       "management": {
         "linkedAssetProfiles": "Linked Asset Profiles",

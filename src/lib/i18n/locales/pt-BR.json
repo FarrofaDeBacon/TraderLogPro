@@ -1706,7 +1706,11 @@
         "maxContracts": "Máximo de Contratos",
         "notes": "Notas (Opcional)",
         "empty": "Nenhum Perfil de Risco de Ativo encontrado",
-        "search": "Buscar perfil..."
+        "search": "Buscar perfil...",
+        "growthOverride": "Sobrescrita de Crescimento",
+        "growthOverrideDesc": "Define regras de crescimento exclusivas para este ativo, ignorando o plano global.",
+        "enableGrowthOverride": "Ativar Sobrescrita",
+        "overridePhases": "Fases Específicas"
       },
       "management": {
         "linkedAssetProfiles": "Perfis de Ativo Vinculados",
