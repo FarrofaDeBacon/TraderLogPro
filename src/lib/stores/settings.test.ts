@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { accountsStore } from './accounts.svelte';
 import { currenciesStore } from './currencies.svelte';
 import { marketsStore } from './markets.svelte';
+import { assetTypesStore } from './asset-types.svelte';
 import { settingsStore } from './settings.svelte';
 import { riskSettingsStore } from './risk-settings.svelte';
 import { assetsStore } from './assets.svelte';
@@ -89,7 +90,7 @@ describe('SettingsStore Unit Tests', () => {
 
     it('should auto-detect asset types and point values in ensureAssetExists', () => {
         // Mock dependencies
-        settingsStore.assetTypes = [
+        assetTypesStore.assetTypes = [
             { id: 'type_index', name: 'Contrato Futuro', code: 'INDEX' },
             { id: 'type_stock', name: 'Ações', code: 'STK' }
         ] as any;

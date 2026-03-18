@@ -17,6 +17,7 @@ import { riskSettingsStore } from "./risk-settings.svelte";
 import { accountsStore } from "./accounts.svelte";
 import { currenciesStore } from "./currencies.svelte";
 import { marketsStore } from "./markets.svelte";
+import { assetTypesStore } from "./asset-types.svelte";
 
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
@@ -26,8 +27,8 @@ export type {
 } from "$lib/types";
 
 class SettingsStore {
-    markets = $state<Market[]>([]);
-    assetTypes = $state<AssetType[]>([]);
+    get markets() { return marketsStore.markets; }
+    get assetTypes() { return assetTypesStore.assetTypes; }
     get assets() { return assetsStore.assets; }
     get riskProfiles() { return riskSettingsStore.riskProfiles; }
     get assetRiskProfiles() { return riskSettingsStore.assetRiskProfiles; }
@@ -250,7 +251,7 @@ class SettingsStore {
             if (accountsRes) accountsStore.accounts = accountsRes;
             if (currenciesRes) currenciesStore.currencies = currenciesRes;
             if (marketsRes) marketsStore.markets = marketsRes;
-            if (assetTypesRes) this.assetTypes = assetTypesRes;
+            if (assetTypesRes) assetTypesStore.assetTypes = assetTypesRes;
             
             if (emotionalStatesRes) {
                 this.emotionalStates = emotionalStatesRes;
@@ -346,15 +347,7 @@ class SettingsStore {
 
 
 
-    private async saveAssetTypes() {
-        for (const assetType of this.assetTypes) {
-            try {
-                await invoke("save_asset_type", { assetType: $state.snapshot(assetType) });
-            } catch (e) {
-                console.error("[SettingsStore] Error saving asset type:", e);
-            }
-        }
-    }
+    
 
     async saveAssets() {
         return assetsStore.saveAssets();
@@ -545,25 +538,16 @@ class SettingsStore {
 
     // Asset Types
     addAssetType(item: Omit<AssetType, "id">) {
-        const id = crypto.randomUUID();
-        this.assetTypes.push({ ...item, id });
-        this.saveAssetTypes();
+        return assetTypesStore.addAssetType(item);
     }
     updateAssetType(id: string, item: Partial<AssetType>) {
-        this.assetTypes = this.assetTypes.map(at => at.id === id ? { ...at, ...item } : at);
-        this.saveAssetTypes();
+        return assetTypesStore.updateAssetType(id, item);
     }
     async deleteAssetType(id: string): Promise<{ success: boolean; error?: string }> {
-        if (this.assets.some(a => a.asset_type_id === id)) {
+        if (assetsStore.assets.some(a => a.asset_type_id === id)) {
             return { success: false, error: "This Asset Type is associated with existing Assets." };
         }
-        try {
-            await invoke("delete_asset_type", { id });
-            this.assetTypes = this.assetTypes.filter(at => at.id !== id);
-            return { success: true };
-        } catch (e) {
-            return { success: false, error: String(e) };
-        }
+        return assetTypesStore.deleteAssetType(id);
     }
     getAssetTypeCode(id: string): string {
         const item = this.assetTypes.find(at => at.id === id);
@@ -1171,7 +1155,7 @@ class SettingsStore {
     }
 
     clearDatabase() {
-        marketsStore.clearMarkets(); this.assetTypes = []; assetsStore.clearAssets(); accountsStore.clearAccounts(); currenciesStore.clearCurrencies();
+        marketsStore.clearMarkets(); assetTypesStore.clearAssetTypes(); assetsStore.clearAssets(); accountsStore.clearAccounts(); currenciesStore.clearCurrencies();
         this.fees = []; this.strategies = []; riskSettingsStore.clearRiskSettings(); this.modalities = [];
         this.emotionalStates = []; this.tags = []; this.indicators = []; this.timeframes = [];
         this.chartTypes = [];

@@ -1,0 +1,47 @@
+import { invoke } from "@tauri-apps/api/core";
+import type { AssetType } from "$lib/types";
+
+export class AssetTypesStore {
+    assetTypes = $state<AssetType[]>([]);
+
+    async saveAssetTypes() {
+        for (const assetType of this.assetTypes) {
+            try {
+                await invoke("save_asset_type", { asset_type: $state.snapshot(assetType) });
+            } catch (e) {
+                console.error("[AssetTypesStore] Error saving asset type:", e);
+            }
+        }
+    }
+
+    addAssetType(item: Omit<AssetType, "id">) {
+        this.assetTypes.push({ ...item, id: crypto.randomUUID() });
+        this.saveAssetTypes();
+    }
+
+    updateAssetType(id: string, item: Partial<AssetType>) {
+        this.assetTypes = this.assetTypes.map(at => at.id === id ? { ...at, ...item } : at);
+        this.saveAssetTypes();
+    }
+
+    async deleteAssetType(id: string): Promise<{ success: boolean; error?: string }> {
+        try {
+            await invoke("delete_asset_type", { id });
+            this.assetTypes = this.assetTypes.filter(at => at.id !== id);
+            return { success: true };
+        } catch (e) {
+            return { success: false, error: String(e) };
+        }
+    }
+
+    getAssetTypeName(id: string): string {
+        const item = this.assetTypes.find(at => at.id === id);
+        return item ? item.name : "N/A";
+    }
+
+    clearAssetTypes() {
+        this.assetTypes = [];
+    }
+}
+
+export const assetTypesStore = new AssetTypesStore();

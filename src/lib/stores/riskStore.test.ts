@@ -3,6 +3,7 @@ import { riskStore } from './riskStore.svelte';
 import { accountsStore } from './accounts.svelte';
 import { currenciesStore } from './currencies.svelte';
 import { marketsStore } from './markets.svelte';
+import { assetTypesStore } from './asset-types.svelte';
 import { settingsStore } from './settings.svelte';
 import { assetsStore } from './assets.svelte';
 import { riskSettingsStore } from './risk-settings.svelte';
