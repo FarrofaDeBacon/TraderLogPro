@@ -15,6 +15,7 @@
         Zap,
         Brain,
         Target as TargetIcon,
+        Link,
     } from "lucide-svelte";
     import { t } from "svelte-i18n";
     import type { RiskProfile, GrowthPhase } from "$lib/types";
@@ -93,6 +94,7 @@
         default_stop_points: data?.default_stop_points ?? undefined,
         min_contracts: data?.min_contracts ?? undefined,
         max_contracts: data?.max_contracts ?? undefined,
+        linked_asset_risk_profile_ids: data?.linked_asset_risk_profile_ids ?? [],
     });
 
     function applyPreset(key: string) {
@@ -154,6 +156,7 @@
                 default_stop_points: fd.default_stop_points ?? undefined,
                 min_contracts: fd.min_contracts ?? undefined,
                 max_contracts: fd.max_contracts ?? undefined,
+                linked_asset_risk_profile_ids: fd.linked_asset_risk_profile_ids ?? [],
             };
             selectedPreset = "custom";
         }
@@ -602,6 +605,69 @@
                         {$t("settings.risk.lockWarning")}
                     </p>
                 {/if}
+            </div>
+
+            <!-- Linked Asset Profiles -->
+            <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm mt-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="flex items-center gap-2 font-bold text-muted-foreground">
+                        <Link class="w-4 h-4" />
+                        {$t("risk.management.linkedAssetProfiles") || "Perfis de Ativo Vinculados"}
+                    </h3>
+                </div>
+                <p class="text-xs text-muted-foreground">
+                    {$t("risk.management.linkedAssetProfilesDesc") || "Aplica as regras globais de risco a perfis de negociação específicos de um ativo."}
+                </p>
+
+                <div class="space-y-3 pt-2">
+                    <div class="flex gap-2">
+                        <Select.Root
+                            type="single"
+                            onValueChange={(val) => {
+                                if (val && !formData.linked_asset_risk_profile_ids?.includes(val)) {
+                                    formData.linked_asset_risk_profile_ids = [...(formData.linked_asset_risk_profile_ids || []), val];
+                                }
+                            }}
+                        >
+                            <Select.Trigger class="w-full md:w-[350px]">
+                                {$t("risk.management.assetProfileSelector") || "Selecione um Perfil de Ativo..."}
+                            </Select.Trigger>
+                            <Select.Content>
+                                {#each settingsStore.assetRiskProfiles.filter((ap) => !formData.linked_asset_risk_profile_ids?.includes(ap.id as string)) as ap}
+                                    <Select.Item value={ap.id as string}>{ap.name}</Select.Item>
+                                {/each}
+                            </Select.Content>
+                        </Select.Root>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
+                        {#if !formData.linked_asset_risk_profile_ids || formData.linked_asset_risk_profile_ids.length === 0}
+                            <div class="col-span-1 md:col-span-2 p-3 text-center border border-dashed rounded text-sm text-muted-foreground">
+                                {$t("risk.management.noLinkedAssetProfiles") || "Nenhum perfil de ativo vinculado."}
+                            </div>
+                        {:else}
+                            {#each formData.linked_asset_risk_profile_ids as apId}
+                                {@const profile = settingsStore.assetRiskProfiles.find((p) => p.id === apId)}
+                                {#if profile}
+                                    <div class="flex items-center justify-between p-2 rounded border bg-background/50 text-sm">
+                                        <span class="font-medium truncate">{profile.name}</span>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            class="h-8 text-destructive hover:bg-destructive/10"
+                                            onclick={() => {
+                                                formData.linked_asset_risk_profile_ids = formData.linked_asset_risk_profile_ids?.filter((id) => id !== apId);
+                                            }}
+                                        >
+                                            <Trash2 class="w-4 h-4 mr-2" />
+                                            {$t("risk.management.removeAssetProfile") || "Remover"}
+                                        </Button>
+                                    </div>
+                                {/if}
+                            {/each}
+                        {/if}
+                    </div>
+                </div>
             </div>
         </Tabs.Content>
 

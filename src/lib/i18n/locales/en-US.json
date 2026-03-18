@@ -1707,6 +1707,14 @@
         "notes": "Notes (Optional)",
         "empty": "No Asset Risk Profile found",
         "search": "Search profile..."
+      },
+      "management": {
+        "linkedAssetProfiles": "Linked Asset Profiles",
+        "linkedAssetProfilesDesc": "Applies global risk rules to specific asset trading profiles.",
+        "addAssetProfile": "Add Link",
+        "removeAssetProfile": "Remove",
+        "noLinkedAssetProfiles": "No linked asset profile.",
+        "assetProfileSelector": "Select an Asset Profile..."
       }
     },
     "strategies": {

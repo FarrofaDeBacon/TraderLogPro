@@ -917,6 +917,8 @@ pub struct RiskProfile {
     pub min_contracts: Option<i32>,
     #[serde(default)]
     pub max_contracts: Option<i32>,
+    #[serde(default)]
+    pub linked_asset_risk_profile_ids: Option<Vec<String>>,
 }
 
 fn default_target_type() -> String {

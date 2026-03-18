@@ -1707,6 +1707,14 @@
         "notes": "Notas (Opcional)",
         "empty": "Nenhum Perfil de Risco de Ativo encontrado",
         "search": "Buscar perfil..."
+      },
+      "management": {
+        "linkedAssetProfiles": "Perfis de Ativo Vinculados",
+        "linkedAssetProfilesDesc": "Aplica as regras globais de risco a perfis de negociação específicos de um ativo.",
+        "addAssetProfile": "Adicionar Vínculo",
+        "removeAssetProfile": "Remover",
+        "noLinkedAssetProfiles": "Nenhum perfil de ativo vinculado.",
+        "assetProfileSelector": "Selecione um Perfil de Ativo..."
       }
     },
     "strategies": {

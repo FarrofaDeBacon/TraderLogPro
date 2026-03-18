@@ -360,6 +360,7 @@ export type RiskProfile = {
     default_stop_points?: number;
     min_contracts?: number;
     max_contracts?: number;
+    linked_asset_risk_profile_ids?: string[];
 };
 
 export type AssetRiskProfile = {
