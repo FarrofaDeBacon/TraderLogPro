@@ -21,6 +21,7 @@ import { assetTypesStore } from "./asset-types.svelte";
 import { modalitiesStore } from "./modalities.svelte";
 import { timeframesStore } from "./timeframes.svelte";
 import { chartTypesStore } from "./chart-types.svelte";
+import { indicatorsStore } from "./indicators.svelte";
 
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
@@ -63,7 +64,7 @@ class SettingsStore {
 
     emotionalStates = $state<EmotionalState[]>([]);
     tags = $state<Tag[]>([]);
-    indicators = $state<Indicator[]>([]);
+    get indicators() { return indicatorsStore.indicators; }
     get timeframes() { return timeframesStore.timeframes; }
     get chartTypes() { return chartTypesStore.chartTypes; }
     cashTransactions = $state<CashTransaction[]>([]);
@@ -272,7 +273,7 @@ class SettingsStore {
             }
             if (modalitiesRes) modalitiesStore.modalities = modalitiesRes;
             if (tagsRes) this.tags = tagsRes;
-            if (indicatorsRes) this.indicators = indicatorsRes;
+            if (indicatorsRes) indicatorsStore.indicators = indicatorsRes;
             if (timeframesRes) timeframesStore.timeframes = timeframesRes;
             if (chartTypesRes) chartTypesStore.chartTypes = chartTypesRes;
             if (taxRulesRes) this.taxRules = taxRulesRes;
@@ -388,15 +389,7 @@ class SettingsStore {
         }
     }
 
-    private async saveIndicators() {
-        for (const indicator of this.indicators) {
-            try {
-                await invoke("save_indicator", { indicator: $state.snapshot(indicator) });
-            } catch (e) {
-                console.error("[SettingsStore] Error saving indicator:", e);
-            }
-        }
-    }
+
 
 
 
@@ -950,17 +943,13 @@ class SettingsStore {
 
     // Indicators
     addIndicator(item: Omit<Indicator, "id">) {
-        this.indicators.push({ ...item, id: crypto.randomUUID() });
-        this.saveIndicators();
+        return indicatorsStore.addIndicator(item);
     }
     updateIndicator(id: string, item: Partial<Indicator>) {
-        this.indicators = this.indicators.map(i => i.id === id ? { ...i, ...item } : i);
-        this.saveIndicators();
+        return indicatorsStore.updateIndicator(id, item);
     }
     async deleteIndicator(id: string): Promise<{ success: boolean; error?: string }> {
-        await invoke("delete_indicator", { id });
-        this.indicators = this.indicators.filter(i => i.id !== id);
-        return { success: true };
+        return indicatorsStore.deleteIndicator(id);
     }
 
     // Timeframes
@@ -1124,7 +1113,7 @@ class SettingsStore {
     clearDatabase() {
         marketsStore.clearMarkets(); assetTypesStore.clearAssetTypes(); assetsStore.clearAssets(); accountsStore.clearAccounts(); currenciesStore.clearCurrencies();
         this.fees = []; this.strategies = []; riskSettingsStore.clearRiskSettings(); modalitiesStore.clearModalities();
-        this.emotionalStates = []; this.tags = []; this.indicators = []; timeframesStore.clearTimeframes();
+        this.emotionalStates = []; this.tags = []; indicatorsStore.clearIndicators(); timeframesStore.clearTimeframes();
         chartTypesStore.clearChartTypes();
     }
 
