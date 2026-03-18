@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { riskStore } from './riskStore.svelte';
 import { accountsStore } from './accounts.svelte';
+import { currenciesStore } from './currencies.svelte';
 import { settingsStore } from './settings.svelte';
 import { assetsStore } from './assets.svelte';
 import { riskSettingsStore } from './risk-settings.svelte';

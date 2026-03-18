@@ -15,6 +15,7 @@ import type {
 import { assetsStore } from "./assets.svelte";
 import { riskSettingsStore } from "./risk-settings.svelte";
 import { accountsStore } from "./accounts.svelte";
+import { currenciesStore } from "./currencies.svelte";
 
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
@@ -63,7 +64,7 @@ class SettingsStore {
     cashTransactions = $state<CashTransaction[]>([]);
     journalEntries = $state<JournalEntry[]>([]);
     apiConfigs = $state<ApiConfig[]>([]);
-    currencies = $state<Currency[]>([]);
+    get currencies() { return currenciesStore.currencies; }
     get accounts() { return accountsStore.accounts; }
     fees = $state<FeeProfile[]>([]);
     taxRules = $state<TaxRule[]>([]);
@@ -246,7 +247,7 @@ class SettingsStore {
             if (hwid) this.hardwareId = hwid;
             if (apiConfigsRes) this.apiConfigs = apiConfigsRes;
             if (accountsRes) accountsStore.accounts = accountsRes;
-            if (currenciesRes) this.currencies = currenciesRes;
+            if (currenciesRes) currenciesStore.currencies = currenciesRes;
             if (marketsRes) this.markets = marketsRes;
             if (assetTypesRes) this.assetTypes = assetTypesRes;
             
@@ -340,15 +341,7 @@ class SettingsStore {
 
 
 
-    private async saveCurrencies() {
-        for (const currency of this.currencies) {
-            try {
-                await invoke("save_currency", { currency: $state.snapshot(currency) });
-            } catch (e) {
-                console.error("[SettingsStore] Error saving currency:", e);
-            }
-        }
-    }
+
 
     private async saveMarkets() {
         for (const market of this.markets) {
@@ -610,51 +603,20 @@ class SettingsStore {
 
     // Currencies
     async syncExchangeRates() {
-        const existingCodes = this.currencies.map(c => c.code.toUpperCase()).filter(code => code !== "BRL");
-        if (existingCodes.length === 0) return;
-        const pairs = existingCodes.map(code => `${code}-BRL`).join(",");
-        const baseUrl = this.userProfile.currency_api_url || "https://economia.awesomeapi.com.br/last/";
-        const url = `${baseUrl}${pairs}`;
-
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-            const data = await response.json();
-            let updatedCount = 0;
-            this.currencies = this.currencies.map(currency => {
-                const code = currency.code.toUpperCase();
-                const pairKey = `${code}BRL`;
-                if (data[pairKey]) {
-                    updatedCount++;
-                    return { ...currency, exchange_rate: parseFloat(data[pairKey].bid) };
-                }
-                return currency;
-            });
-            if (updatedCount > 0) {
-                await this.saveCurrencies();
-                return { success: true, count: updatedCount };
-            }
-        } catch (error) {
-            console.error("[SettingsStore] Failed to sync exchange rates:", error);
-            return { success: false, error: String(error) };
-        }
+        return currenciesStore.syncExchangeRates(this.userProfile.currency_api_url);
     }
 
     addCurrency(item: Omit<Currency, "id">) {
-        this.currencies.push({ ...item, id: crypto.randomUUID() });
-        this.saveCurrencies();
+        return currenciesStore.addCurrency(item);
     }
     updateCurrency(id: string, item: Partial<Currency>) {
-        this.currencies = this.currencies.map(c => c.id === id ? { ...c, ...item } : c);
-        this.saveCurrencies();
+        return currenciesStore.updateCurrency(id, item);
     }
     async deleteCurrency(id: string): Promise<{ success: boolean; error?: string }> {
         if (this.accounts.some(a => a.currency === id || a.currency === this.currencies.find(c => c.id === id)?.code)) {
             return { success: false, error: "This Currency is associated with existing accounts." };
         }
-        await invoke("delete_currency", { id });
-        this.currencies = this.currencies.filter(c => c.id !== id);
-        return { success: true };
+        return currenciesStore.deleteCurrency(id);
     }
 
     getMarketAssets(marketId: string | null): Asset[] {
@@ -666,8 +628,7 @@ class SettingsStore {
     }
 
     getCurrencySymbol(code: string): string {
-        const currency = this.currencies.find(c => c.code.toUpperCase() === (code || "BRL").toUpperCase());
-        return currency?.symbol || "R$";
+        return currenciesStore.getCurrencySymbol(code);
     }
 
     // Accounts
@@ -1226,7 +1187,7 @@ class SettingsStore {
     }
 
     clearDatabase() {
-        this.markets = []; this.assetTypes = []; assetsStore.clearAssets(); accountsStore.clearAccounts();
+        this.markets = []; this.assetTypes = []; assetsStore.clearAssets(); accountsStore.clearAccounts(); currenciesStore.clearCurrencies();
         this.fees = []; this.strategies = []; riskSettingsStore.clearRiskSettings(); this.modalities = [];
         this.emotionalStates = []; this.tags = []; this.indicators = []; this.timeframes = [];
         this.chartTypes = [];
