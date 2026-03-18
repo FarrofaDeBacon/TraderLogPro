@@ -877,6 +877,31 @@ pub struct CombinedRiskRule {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct DeskConfig {
+    pub enabled: bool,
+    #[serde(default)]
+    pub plan_name: Option<String>,
+    #[serde(default)]
+    pub allowed_asset_ids: Option<Vec<String>>,
+    #[serde(default)]
+    pub max_combined_exposure: Option<i32>,
+    #[serde(default)]
+    pub max_total_loss: Option<f64>,
+    #[serde(default)]
+    pub profit_target: Option<f64>,
+    #[serde(default)]
+    pub day_trade_only: Option<bool>,
+    #[serde(default)]
+    pub close_before_market_close_minutes: Option<i32>,
+    #[serde(default)]
+    pub consistency_mode: Option<String>,
+    #[serde(default)]
+    pub max_single_day_profit_share: Option<f64>,
+    #[serde(default)]
+    pub mdr_mode: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RiskProfile {
     #[serde(deserialize_with = "deserialize_id")]
     pub id: String,
@@ -933,6 +958,8 @@ pub struct RiskProfile {
     pub linked_asset_risk_profile_ids: Option<Vec<String>>,
     #[serde(default)]
     pub combined_rules: Option<Vec<CombinedRiskRule>>,
+    #[serde(default)]
+    pub desk_config: Option<DeskConfig>,
 }
 
 fn default_target_type() -> String {

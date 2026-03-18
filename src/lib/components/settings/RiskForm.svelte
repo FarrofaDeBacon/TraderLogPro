@@ -23,6 +23,7 @@
     import * as Card from "$lib/components/ui/card";
     import GrowthPhasesEditor from "$lib/components/settings/GrowthPhasesEditor.svelte";
     import CombinedRulesSection from "./risk/CombinedRulesSection.svelte";
+    import DeskConfigSection from "./risk/DeskConfigSection.svelte";
 
     import { Badge } from "$lib/components/ui/badge";
 
@@ -660,6 +661,12 @@
                 <CombinedRulesSection
                     bind:rules={formData.combined_rules}
                     availableAssetProfiles={settingsStore.assetRiskProfiles.filter(ap => formData.linked_asset_risk_profile_ids?.includes(ap.id as string))}
+                />
+
+                <!-- Desk Config Component Injection -->
+                <DeskConfigSection
+                    bind:config={formData.desk_config}
+                    availableAssetProfiles={settingsStore.assetRiskProfiles}
                 />
 
             </div>

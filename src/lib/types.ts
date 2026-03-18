@@ -365,6 +365,21 @@ export type RiskProfile = {
     max_contracts?: number;
     linked_asset_risk_profile_ids?: string[];
     combined_rules?: CombinedRiskRule[];
+    desk_config?: DeskConfig;
+};
+
+export type DeskConfig = {
+    enabled: boolean;
+    plan_name?: string;
+    allowed_asset_ids?: string[];
+    max_combined_exposure?: number;
+    max_total_loss?: number;
+    profit_target?: number;
+    day_trade_only?: boolean;
+    close_before_market_close_minutes?: number;
+    consistency_mode?: 'none' | '5days_3positive' | '10days_5positive';
+    max_single_day_profit_share?: number;
+    mdr_mode?: 'none' | 'fixed' | 'percent_of_margin';
 };
 
 export type CombinedRiskRule = {

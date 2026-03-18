@@ -130,6 +130,8 @@ pub async fn seed_risk_profiles(
             min_contracts: None,
             max_contracts: None,
             linked_asset_risk_profile_ids: None,
+            combined_rules: None,
+            desk_config: None,
         };
         let mut json = serde_json::to_value(&data).unwrap();
         if let Some(obj) = json.as_object_mut() {

@@ -64,7 +64,7 @@
     }
 
     function removeRule(index: number) {
-        rules = rules.filter((_, i) => i !== index);
+        rules = rules.filter((_: CombinedRiskRule, i: number) => i !== index);
     }
 
     function toggleAssetProfile(profileId: string) {
@@ -95,14 +95,14 @@
     {#if editingIndex !== null}
         <!-- Form de Edição / Criação -->
         <div class="p-4 rounded-lg border bg-background/50 space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-4">
                 <div class="space-y-2">
                     <Label>{$t("risk.management.ruleName") || "Nome da Regra"}</Label>
                     <Input bind:value={draftRule.name} placeholder="Ex: Max Semanal WIN+WDO" />
                 </div>
                 <div class="space-y-2">
                     <Label>{$t("risk.management.ruleType") || "Tipo de Regra"}</Label>
-                    <Select.Root disabled value="sum_contracts">
+                    <Select.Root disabled type="single" value="sum_contracts">
                         <Select.Trigger>
                             {$t("risk.management.sumContracts") || "Soma de Contratos"}
                         </Select.Trigger>
@@ -133,7 +133,7 @@
                 {/if}
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-4">
                 <div class="space-y-2">
                     <Label>{$t("general.operator") || "Operador"}</Label>
                     <Select.Root
@@ -177,7 +177,7 @@
             <div class="p-6 text-center border border-dashed rounded-lg bg-background/30 text-muted-foreground text-sm">
                 {$t("risk.management.noCombinedRules") || "Nenhuma regra combinada criada. Use regras combinadas para cruzar limites entre ativos."}
             </div>
-        {/else}
+        {:else}
             <div class="grid grid-cols-1 gap-3">
                 {#each rules as rule, idx}
                     <div class="flex flex-col md:flex-row md:items-center justify-between p-3 rounded-lg border bg-background/50 hover:border-primary/50 transition-colors gap-3">
@@ -192,7 +192,7 @@
                             <div class="flex items-center gap-1 flex-wrap">
                                 <span class="text-xs text-muted-foreground">Ativos:</span>
                                 {#each rule.asset_risk_profile_ids as apId}
-                                    {@const ap = availableAssetProfiles.find(p => p.id === apId)}
+                                    {@const ap = availableAssetProfiles.find((p: AssetRiskProfile) => p.id === apId)}
                                     <span class="text-xs font-medium px-1.5 py-0.5 rounded bg-muted">
                                         {ap ? ap.name : apId}
                                     </span>
@@ -214,4 +214,5 @@
                 {/each}
             </div>
         {/if}
+    {/if}
 </div>
