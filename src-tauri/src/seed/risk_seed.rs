@@ -11,6 +11,35 @@ pub async fn seed_risk_profiles(
 ) -> Result<(), String> {
     println!("[SEED] Verificando Perfis de Risco...");
 
+    // Seed WIN/WDO AssetRiskProfiles for the Prop Firm Mock
+    let arp_win = crate::models::AssetRiskProfile {
+        id: Some("asset_risk_profile:win_book4k".to_string()),
+        name: "WIN (Book 4k)".to_string(),
+        asset_id: surrealdb::sql::Thing::from(("asset".to_string(), "win".to_string())),
+        default_stop_points: 150.0,
+        min_contracts: 1,
+        max_contracts: 30,
+        notes: Some("Limites da Mesa".to_string()),
+    };
+    db.query("UPSERT type::thing('asset_risk_profile', 'win_book4k') CONTENT $data")
+        .bind(("data", serde_json::to_value(&arp_win).unwrap()))
+        .await
+        .map_err(|e| e.to_string())?;
+
+    let arp_wdo = crate::models::AssetRiskProfile {
+        id: Some("asset_risk_profile:wdo_book4k".to_string()),
+        name: "WDO (Book 4k)".to_string(),
+        asset_id: surrealdb::sql::Thing::from(("asset".to_string(), "wdo".to_string())),
+        default_stop_points: 10.0,
+        min_contracts: 1,
+        max_contracts: 30,
+        notes: Some("Limites da Mesa".to_string()),
+    };
+    db.query("UPSERT type::thing('asset_risk_profile', 'wdo_book4k') CONTENT $data")
+        .bind(("data", serde_json::to_value(&arp_wdo).unwrap()))
+        .await
+        .map_err(|e| e.to_string())?;
+
     let profiles = vec![
         (
             "r1",
@@ -38,6 +67,18 @@ pub async fn seed_risk_profiles(
             false,
             "All",
             true,
+        ),
+        (
+            "r4",
+            "Mesa 5PI Book 4k",
+            4000.0,
+            4000.0,
+            1.0,
+            50,
+            1.0,
+            true,
+            "Prop",
+            false,
         ),
     ];
 
@@ -98,6 +139,24 @@ pub async fn seed_risk_profiles(
             vec![]
         };
 
+        let desk_config = if id == "r4" {
+            Some(crate::models::DeskConfig {
+                enabled: true,
+                plan_name: Some("5PI Book 4k".to_string()),
+                allowed_asset_ids: Some(vec!["asset_risk_profile:win_book4k".to_string(), "asset_risk_profile:wdo_book4k".to_string()]),
+                max_combined_exposure: Some(30),
+                max_total_loss: Some(4000.0),
+                profit_target: Some(4000.0),
+                day_trade_only: Some(true),
+                close_before_market_close_minutes: Some(30),
+                consistency_mode: Some("5days_3positive".to_string()),
+                max_single_day_profit_share: Some(0.50),
+                mdr_mode: Some("none".to_string()),
+            })
+        } else {
+            None
+        };
+
         let data = RiskProfile {
             id: id.into(),
             name: name.into(),
@@ -129,9 +188,25 @@ pub async fn seed_risk_profiles(
             default_stop_points: None,
             min_contracts: None,
             max_contracts: None,
-            linked_asset_risk_profile_ids: None,
-            combined_rules: None,
-            desk_config: None,
+            linked_asset_risk_profile_ids: if id == "r4" {
+                Some(vec!["asset_risk_profile:win_book4k".to_string(), "asset_risk_profile:wdo_book4k".to_string()])
+            } else {
+                None
+            },
+            combined_rules: if id == "r4" {
+                Some(vec![crate::models::CombinedRiskRule {
+                    id: "cr_1".to_string(),
+                    name: "Limite 30 Contratos (WIN+WDO)".to_string(),
+                    enabled: true,
+                    rule_type: "sum_contracts".to_string(),
+                    asset_risk_profile_ids: vec!["asset_risk_profile:win_book4k".to_string(), "asset_risk_profile:wdo_book4k".to_string()],
+                    operator: "<=".to_string(),
+                    limit_value: 30.0,
+                }])
+            } else {
+                None
+            },
+            desk_config,
         };
         let mut json = serde_json::to_value(&data).unwrap();
         if let Some(obj) = json.as_object_mut() {

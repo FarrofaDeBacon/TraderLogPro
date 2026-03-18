@@ -9,7 +9,10 @@ import {
     adaptPositionSizingInput,
     calculatePositionSizing,
     type PositionSizingInput,
-    type PositionSizingResult
+    type PositionSizingResult,
+    validateTradeContext,
+    type DeskValidationContext,
+    type DeskValidationResult
 } from '$lib/domain/risk';
 import { 
     adaptSettingsProfileToDomain, 
@@ -212,6 +215,38 @@ export class RiskStore {
         const input = this.positionSizingInput;
         if (!input) return null;
         return calculatePositionSizing(input);
+    }
+
+    /**
+     * Auditoria de Mesa Operacional (Prop Firm Desk Validation)
+     */
+    get deskValidationResult(): DeskValidationResult | null {
+        const activeProfile = settingsStore.activeProfile;
+        if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
+
+        const assetRiskProfile = this.resolvedAssetRiskProfile;
+        
+        let combinedExposure = 0;
+        // Basic calculation of current open contracts across the linked allowed profiles
+        // In this step we assume combined Exposure might be pulled from tradesStore open position logic,
+        // but for now we set up the context properly.
+        if (activeProfile.combined_rules) {
+            // Future step: tally actual open contracts. For mock UI, defaults to 0.
+            combinedExposure = 0; 
+        }
+
+        const context: DeskValidationContext = {
+            assetRiskProfileId: assetRiskProfile?.id as string | undefined,
+            isSwingTrade: undefined, // UI context would be needed to decide if the pending trade is Swing
+            currentTimeMinutes: new Date().getHours() * 60 + new Date().getMinutes(),
+            combinedExposure
+        };
+
+        return validateTradeContext(
+            activeProfile.desk_config,
+            context,
+            activeProfile.combined_rules || []
+        );
     }
 }
 

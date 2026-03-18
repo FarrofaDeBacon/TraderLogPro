@@ -2532,6 +2532,16 @@
     "reasons": "Motivo do Bloqueio:"
   },
   "risk": {
+    "deskValidation": {
+      "title": "Validação da Mesa",
+      "allowed": "Operação Permitida",
+      "blocked": "Operação Bloqueada",
+      "allowedAsset": "Ativo Permitido",
+      "combinedExposure": "Exposição Média",
+      "dayTradeOnly": "Modo Day Trade",
+      "closeBeforeMarketClose": "Tempo Finalizado",
+      "missingContext": "Aviso: Sem contexto"
+    },
     "management": {
       "deskConfig": "Configuração da Mesa",
       "enableDeskConfig": "Ativar Configuração da Mesa",

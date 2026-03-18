@@ -93,7 +93,7 @@
                     <Label>{$t("risk.management.allowedAssets") || "Ativos permitidos"}</Label>
                     {#if availableAssetProfiles.length === 0}
                         <p class="text-xs text-muted-foreground p-2 border border-dashed rounded bg-background/50">
-                            Nenhum perfil de ativo disponível.
+                            Nenhum perfil de ativo disponível no sistema.
                         </p>
                     {:else}
                         <div class="flex flex-wrap gap-2 p-2 rounded-md border min-h-10 bg-background/50">
@@ -102,6 +102,7 @@
                                     type="button"
                                     class="text-xs px-2 py-1 rounded border transition-colors {config.allowed_asset_ids?.includes(profile.id || '') ? 'bg-primary/20 border-primary text-primary' : 'bg-muted/50 border-input text-muted-foreground hover:bg-muted'}"
                                     onclick={() => profile.id && toggleAssetProfile(profile.id)}
+                                    title={profile.name}
                                 >
                                     {profile.name}
                                 </button>

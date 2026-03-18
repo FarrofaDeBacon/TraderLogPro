@@ -465,6 +465,35 @@
                                     </ul>
                                 </div>
                             {/if}
+
+                            <!-- Desk Validation Result -->
+                            {#if riskStore.deskValidationResult && !riskStore.deskValidationResult.allowed}
+                                <div class="mt-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-md space-y-1 flex flex-col relative overflow-hidden">
+                                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-rose-500"></div>
+                                     <div class="flex items-center gap-2 text-rose-500 font-bold text-xs uppercase tracking-wider mb-2 ml-1">
+                                         <Lock class="w-3 h-3" />
+                                         {$_('risk.deskValidation.title')} - {$_('risk.deskValidation.blocked')}
+                                     </div>
+                                     <ul class="text-xs text-rose-400/90 list-disc pl-5 space-y-1">
+                                         {#each riskStore.deskValidationResult.reasons as reason}
+                                             <li>{reason}</li>
+                                         {/each}
+                                     </ul>
+                                </div>
+                            {:else if riskStore.deskValidationResult && riskStore.deskValidationResult.warnings.length > 0}
+                                <div class="mt-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-md space-y-1 flex flex-col relative overflow-hidden">
+                                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-500"></div>
+                                     <div class="flex items-center gap-2 text-amber-500 font-bold text-xs uppercase tracking-wider mb-2 ml-1">
+                                         <AlertTriangle class="w-3 h-3" />
+                                         {$_('risk.deskValidation.title')} - Avisos Operacionais
+                                     </div>
+                                     <ul class="text-xs text-amber-400/90 list-disc pl-5 space-y-1">
+                                         {#each riskStore.deskValidationResult.warnings as warning}
+                                             <li>{warning}</li>
+                                         {/each}
+                                     </ul>
+                                </div>
+                            {/if}
                         {:else}
                              <div class="text-sm text-muted-foreground">
                                 Dados insuficientes para calcular dimensionamento (sem parâmetros no ativo).

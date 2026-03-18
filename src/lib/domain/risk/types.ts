@@ -156,3 +156,30 @@ export interface ConditionEvaluation {
     passed: boolean;
     actual: number;
 }
+
+export type DeskValidationContext = {
+    /** The active AssetRiskProfile (e.g. from the selected asset map) */
+    assetRiskProfileId?: string;
+    /** Whether the current trade or context is considered a Swing Trade */
+    isSwingTrade?: boolean;
+    /** Current time in minutes since midnight (0-1439), or undefined if not calculable */
+    currentTimeMinutes?: number;
+    /** Combined exposure matching the rules in the desk config logic */
+    combinedExposure?: number;
+};
+
+export type DeskValidationResult = {
+    /** True if the context is allowed by the Desk Config */
+    allowed: boolean;
+    /** Explicit rejection reasons preventing execution */
+    reasons: string[];
+    /** Operational warnings (e.g. missing context to validate time logic) */
+    warnings: string[];
+    /** Granular flag check results */
+    checks: {
+        allowedAsset: boolean;
+        combinedExposure: boolean;
+        dayTradeOnly: boolean;
+        closeBeforeMarketClose: boolean;
+    };
+};

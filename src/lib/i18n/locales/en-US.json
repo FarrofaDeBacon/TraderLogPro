@@ -2532,6 +2532,16 @@
     "reasons": "Block Reason:"
   },
   "risk": {
+    "deskValidation": {
+      "title": "Prop Firm Validation",
+      "allowed": "Trade Allowed",
+      "blocked": "Trade Blocked",
+      "allowedAsset": "Allowed Asset",
+      "combinedExposure": "Average Exposure",
+      "dayTradeOnly": "Day Trade Mode",
+      "closeBeforeMarketClose": "Time Expired",
+      "missingContext": "Warning: Missing context"
+    },
     "management": {
       "deskConfig": "Prop Firm Configuration",
       "enableDeskConfig": "Enable Prop Firm Logic",
