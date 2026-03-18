@@ -423,7 +423,7 @@
             ) {
                 assetTypesList = [...settingsStore.assetTypes];
             }
-            if (assetsList.length === 0 && settingsStore.assets.length > 0) {
+            if (assetsList.length !== settingsStore.assets.length && settingsStore.assets.length > 0) {
                 assetsList = [...settingsStore.assets];
             }
             if (

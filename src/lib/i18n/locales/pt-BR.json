@@ -2528,5 +2528,23 @@
     "contracts": "Contratos Mensurados",
     "blocked": "Bloqueado / Inválido",
     "reasons": "Motivo do Bloqueio:"
+  },
+  "risk": {
+    "management": {
+      "combinedRules": "Regras Combinadas",
+      "addCombinedRule": "Adicionar Regra",
+      "ruleName": "Nome da Regra",
+      "ruleType": "Tipo de Regra",
+      "sumContracts": "Soma de Contratos",
+      "limitValue": "Valor Limite",
+      "linkedAssetProfilesForRule": "Perfis de Ativo Envolvidos",
+      "noCombinedRules": "Nenhuma regra combinada criada. Use regras combinadas para cruzar limites entre ativos.",
+      "removeCombinedRule": "Remover Regra",
+      "linkedAssetProfiles": "Perfis de Ativo Vinculados",
+      "linkedAssetProfilesDesc": "Aplica as regras globais de risco a perfis de negociação específicos de um ativo.",
+      "assetProfileSelector": "Selecione um Perfil de Ativo...",
+      "noLinkedAssetProfiles": "Nenhum perfil de ativo vinculado.",
+      "removeAssetProfile": "Remover"
+    }
   }
 }

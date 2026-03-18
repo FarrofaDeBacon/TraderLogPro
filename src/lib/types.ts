@@ -364,6 +364,17 @@ export type RiskProfile = {
     /** @deprecated Superseded by AssetRiskProfile context */
     max_contracts?: number;
     linked_asset_risk_profile_ids?: string[];
+    combined_rules?: CombinedRiskRule[];
+};
+
+export type CombinedRiskRule = {
+    id: string;
+    name: string;
+    enabled: boolean;
+    rule_type: 'sum_contracts';
+    asset_risk_profile_ids: string[];
+    operator: '<=' | '>=' | '=' | '<' | '>';
+    limit_value: number;
 };
 
 export type AssetRiskProfile = {

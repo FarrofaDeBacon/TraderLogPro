@@ -865,6 +865,18 @@ pub struct GrowthPhase {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct CombinedRiskRule {
+    pub id: String,
+    pub name: String,
+    pub enabled: bool,
+    pub rule_type: String, // "sum_contracts"
+    #[serde(default)]
+    pub asset_risk_profile_ids: Vec<String>,
+    pub operator: String, // "<=", ">=", "=", "<", ">"
+    pub limit_value: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RiskProfile {
     #[serde(deserialize_with = "deserialize_id")]
     pub id: String,
@@ -919,6 +931,8 @@ pub struct RiskProfile {
     pub max_contracts: Option<i32>,
     #[serde(default)]
     pub linked_asset_risk_profile_ids: Option<Vec<String>>,
+    #[serde(default)]
+    pub combined_rules: Option<Vec<CombinedRiskRule>>,
 }
 
 fn default_target_type() -> String {

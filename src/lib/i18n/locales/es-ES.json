@@ -1693,7 +1693,47 @@
         "dailyTarget": "Meta Diaria"
       },
       "title": "Gestión de Riesgo",
-      "upside": "Metas (Upside)"
+      "upside": "Metas (Upside)",
+      "assetProfiles": {
+        "title": "Perfiles de Riesgo de Activos",
+        "new": "Nuevo Perfil de Activo",
+        "edit": "Editar Perfil",
+        "delete": "Eliminar Perfil",
+        "name": "Nombre",
+        "asset": "Activo Vinculado",
+        "defaultStop": "Stop Predeterminado (Puntos/Ticks)",
+        "minContracts": "Mínimo de Contratos",
+        "maxContracts": "Máximo de Contratos",
+        "notes": "Notas (Opcional)",
+        "empty": "No se encontraron Perfiles de Riesgo de Activos",
+        "search": "Buscar perfil...",
+        "growthOverride": "Sobrescribir Crecimiento",
+        "growthOverrideDesc": "Define reglas de crecimiento exclusivas para este activo, ignorando el plan global.",
+        "enableGrowthOverride": "Habilitar Sobrescritura",
+        "overridePhases": "Fases Específicas"
+      },
+      "management": {
+        "linkedAssetProfiles": "Perfiles de Activos Vinculados",
+        "linkedAssetProfilesDesc": "Aplica reglas globales de riesgo a perfiles de trading específicos de un activo.",
+        "addAssetProfile": "Añadir Vínculo",
+        "removeAssetProfile": "Eliminar",
+        "noLinkedAssetProfiles": "Ningún perfil de activo vinculado.",
+        "assetProfileSelector": "Seleccione un Perfil de Activo...",
+        "noLinkedAssetProfileForThisAsset": "Ningún Perfil de Activo vinculado para este activo.",
+        "linkedProfile": "Perfil Vinculado",
+        "duplicate": "Duplicar Perfil",
+        "createFromTemplate": "Crear desde Plantilla",
+        "copyOf": "Copia de",
+        "startBlank": "Crear en Blanco",
+        "baseTemplate": "Plantilla Base"
+      },
+      "growth": {
+        "selectAssetToView": "Seleccione un Activo arriba para visualizar las reglas del Plan de Crecimiento.",
+        "noProfileLinked": "Sin perfil compatible.",
+        "noProfileLinkedDesc": "El activo seleccionado no tiene un Perfil de Activo vinculado a este Perfil de Riesgo. Las reglas de Crecimiento no se aplican.",
+        "sourceGlobal": "Plan Global",
+        "sourceAsset": "Específico del Activo"
+      }
     },
     "strategies": {
       "description": "Documenta tus setups, reglas de entrada, salida y gestión.",
@@ -2473,5 +2513,20 @@
     "fiscal": {
       "irpf": "Impuesto a la Renta"
     }
+  },
+  "riskContext": {
+    "title": "Composición Activa",
+    "asset": "Activo Operativo",
+    "unlinked": "Sin Perfil Vinculado",
+    "riskProfile": "Perfil de Riesgo",
+    "growthSource": "Fuente de Growth",
+    "globalPlan": "Plan Global",
+    "overridePlan": "Específico (Override)",
+    "currentPhase": "Fase Actual",
+    "noPhase": "Ninguna / Manual",
+    "sizing": "Sizing Permitido",
+    "contracts": "Contratos Mensurables",
+    "blocked": "Bloqueado / Inválido",
+    "reasons": "Motivo del Bloqueo:"
   }
 }

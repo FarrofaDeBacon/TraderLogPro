@@ -31,15 +31,21 @@ async fn upsert_record(
     id: &str,
     data: serde_json::Value,
 ) -> Result<(), String> {
-    println!("[DB] Standard Upsert for {}:{}", table, id);
+    let clean_id = id.replace("⟨", "").replace("⟩", "").replace("`", "");
+    println!("[DB] Standard Upsert for {}:{}", table, clean_id);
 
     // Use ⟨⟩ angle brackets to escape UUID hyphens in SurrealQL Record IDs
     // Result: UPSERT trade:⟨ccd50e28-cb72-...⟩ CONTENT $data
-    let full_id = format!("{}:⟨{}⟩", table, id);
+    let full_id = format!("{}:⟨{}⟩", table, clean_id);
     let query = format!("UPSERT {} CONTENT $data RETURN NONE", full_id);
 
-    db.query(&query).bind(("data", data)).await.map_err(|e| {
+    let mut response = db.query(&query).bind(("data", data)).await.map_err(|e| {
         println!("[DB] SDK Upsert ERROR for {}. Error: {}", full_id, e);
+        e.to_string()
+    })?;
+    
+    response.check().map_err(|e| {
+        println!("[DB] SDK Upsert Check ERROR for {}. Error: {}", full_id, e);
         e.to_string()
     })?;
 
@@ -48,8 +54,15 @@ async fn upsert_record(
 
 /// Helper: DELETE a record by table:id using ⟨UUID⟩ angle-bracket notation.
 async fn delete_record(db: &Surreal<Db>, table: &str, id: &str) -> Result<(), String> {
-    let query = format!("DELETE {}:⟨{}⟩ RETURN NONE", table, id);
-    db.query(&query).await.map_err(|e| e.to_string())?;
+    let clean_id = id.replace("⟨", "").replace("⟩", "").replace("`", "");
+    let query = format!("DELETE FROM {}:⟨{}⟩ RETURN NONE", table, clean_id);
+    
+    let mut response = db.query(&query).await.map_err(|e| {
+        e.to_string()
+    })?;
+    
+    response.check().map_err(|e| e.to_string())?;
+    
     Ok(())
 }
 
@@ -250,8 +263,10 @@ pub async fn save_api_config(db: State<'_, DbState>, config: ApiConfig) -> Resul
     if let Some(obj) = json.as_object_mut() {
         obj.remove("id");
     }
-    let clean_id = id.split(':').last().unwrap_or(&id);
-    upsert_record(&db.0, "api_config", clean_id, json).await
+    let clean_id = id.split(':').last().unwrap_or(&id)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    upsert_record(&db.0, "api_config", &clean_id, json).await
 }
 
 // --- Accounts ---
@@ -267,10 +282,10 @@ pub async fn get_accounts(db: State<'_, DbState>) -> Result<Vec<Account>, String
                 account_type, 
                 broker, 
                 account_number, 
-                type::string(currency_id) as currency_id, 
+                (IF currency_id THEN type::string(currency_id) ELSE null END) as currency_id, 
                 balance, 
                 custom_logo, 
-                currency_id.code as currency 
+                (IF currency_id THEN currency_id.code ELSE null END) as currency 
             FROM account")
             .await
             .map_err(|e| e.to_string())?;
@@ -313,7 +328,18 @@ pub async fn save_account(db: State<'_, DbState>, mut account: Account) -> Resul
         .replace("⟨", "")
         .replace("⟩", "");
         
-    upsert_record(&db.0, "account", &clean_id, json).await
+    upsert_record(&db.0, "account", &clean_id, json).await?;
+
+    let full_id = format!("account:⟨{}⟩", clean_id);
+    let sql = format!("
+        UPDATE {} SET 
+            currency_id = (IF type::string(currency_id) != \"\" AND currency_id != null THEN type::thing(currency_id) ELSE null END)
+        WHERE id = {};
+    ", full_id, full_id);
+
+    db.0.query(&sql).await.map_err(|e| e.to_string())?;
+    
+    Ok(())
 }
 
 #[tauri::command]
@@ -346,14 +372,18 @@ pub async fn save_currency(db: State<'_, DbState>, currency: Currency) -> Result
     if let Some(obj) = json.as_object_mut() {
         obj.remove("id");
     }
-    let clean_id = id.split(':').last().unwrap_or(&id);
-    upsert_record(&db.0, "currency", clean_id, json).await
+    let clean_id = id.split(':').last().unwrap_or(&id)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    upsert_record(&db.0, "currency", &clean_id, json).await
 }
 
 #[tauri::command]
 pub async fn delete_currency(db: State<'_, DbState>, id: String) -> Result<(), String> {
-    let clean_id = id.split(':').last().unwrap_or(&id);
-    delete_record(&db.0, "currency", clean_id).await
+    let clean_id = id.split(':').last().unwrap_or(&id)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    delete_record(&db.0, "currency", &clean_id).await
 }
 
 // --- Markets ---
@@ -422,13 +452,28 @@ pub async fn save_asset_type(db: State<'_, DbState>, asset_type: AssetType) -> R
     }
     let id_str = asset_type.id.clone().unwrap_or_default();
     let clean_id = id_str.split(':').last().unwrap_or(&id_str);
-    upsert_record(&db.0, "asset_type", clean_id, json).await
+    upsert_record(&db.0, "asset_type", clean_id, json).await?;
+
+    let full_id = format!("asset_type:⟨{}⟩", clean_id);
+    let sql = format!("
+        UPDATE {} SET 
+            market_id = (IF type::string(market_id) != \"\" AND market_id != null THEN type::thing(market_id) ELSE null END),
+            default_fee_id = (IF type::string(default_fee_id) != \"\" AND default_fee_id != null THEN type::thing(default_fee_id) ELSE null END),
+            tax_profile_id = (IF type::string(tax_profile_id) != \"\" AND tax_profile_id != null THEN type::thing(tax_profile_id) ELSE null END)
+        WHERE id = {};
+    ", full_id, full_id);
+
+    db.0.query(&sql).await.map_err(|e| e.to_string())?;
+    
+    Ok(())
 }
 
 #[tauri::command]
 pub async fn delete_asset_type(db: State<'_, DbState>, id: String) -> Result<(), String> {
-    let clean_id = id.split(':').last().unwrap_or(&id);
-    delete_record(&db.0, "asset_type", clean_id).await
+    let clean_id = id.split(':').last().unwrap_or(&id)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    delete_record(&db.0, "asset_type", &clean_id).await
 }
 
 // --- Assets ---
@@ -584,8 +629,10 @@ pub async fn save_emotional_state(
 
 #[tauri::command]
 pub async fn delete_emotional_state(db: State<'_, DbState>, id: String) -> Result<(), String> {
-    let clean_id = id.split(':').last().unwrap_or(&id);
-    delete_record(&db.0, "emotional_state", clean_id).await
+    let clean_id = id.split(':').last().unwrap_or(&id)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    delete_record(&db.0, "emotional_state", &clean_id).await
 }
 
 // --- Strategies ---
@@ -1322,8 +1369,10 @@ pub async fn save_fee(db: State<'_, DbState>, fee: FeeProfile) -> Result<(), Str
 
 #[tauri::command]
 pub async fn delete_fee(db: State<'_, DbState>, id: String) -> Result<(), String> {
-    let clean_id = id.split(':').last().unwrap_or(&id);
-    delete_record(&db.0, "fee_profile", clean_id).await
+    let clean_id = id.split(':').last().unwrap_or(&id)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    delete_record(&db.0, "fee_profile", &clean_id).await
 }
 
 // --- Risk Profiles ---
@@ -1356,8 +1405,10 @@ pub async fn save_risk_profile(db: State<'_, DbState>, profile: RiskProfile) -> 
 
 #[tauri::command]
 pub async fn delete_risk_profile(db: State<'_, DbState>, id: String) -> Result<(), String> {
-    let clean_id = id.split(':').last().unwrap_or(&id);
-    delete_record(&db.0, "risk_profile", clean_id).await
+    let clean_id = id.split(':').last().unwrap_or(&id)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    delete_record(&db.0, "risk_profile", &clean_id).await
 }
 
 // --- Modalities ---

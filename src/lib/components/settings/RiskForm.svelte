@@ -22,6 +22,7 @@
     import * as Tabs from "$lib/components/ui/tabs";
     import * as Card from "$lib/components/ui/card";
     import GrowthPhasesEditor from "$lib/components/settings/GrowthPhasesEditor.svelte";
+    import CombinedRulesSection from "./risk/CombinedRulesSection.svelte";
 
     import { Badge } from "$lib/components/ui/badge";
 
@@ -93,6 +94,7 @@
         account_ids: data?.account_ids ?? [],
         active: data?.active ?? false,
         linked_asset_risk_profile_ids: data?.linked_asset_risk_profile_ids ?? [],
+        combined_rules: data?.combined_rules ?? [],
     });
 
     function applyPreset(key: string) {
@@ -152,6 +154,7 @@
                 account_ids: fd.account_ids ?? [],
                 active: fd.active ?? false,
                 linked_asset_risk_profile_ids: fd.linked_asset_risk_profile_ids ?? [],
+                combined_rules: fd.combined_rules ? [...fd.combined_rules] : [],
             };
             selectedPreset = "custom";
         }
@@ -652,6 +655,13 @@
                         {/if}
                     </div>
                 </div>
+
+                <!-- Combined Rules Component Injection -->
+                <CombinedRulesSection
+                    bind:rules={formData.combined_rules}
+                    availableAssetProfiles={settingsStore.assetRiskProfiles.filter(ap => formData.linked_asset_risk_profile_ids?.includes(ap.id as string))}
+                />
+
             </div>
         </Tabs.Content>
 

@@ -1693,7 +1693,47 @@
         "dailyTarget": "Objectif Quotidien"
       },
       "title": "Risque & Objectifs",
-      "upside": "Objectifs (Gain)"
+      "upside": "Objectifs (Gain)",
+      "assetProfiles": {
+        "title": "Profils de Risque par Actif",
+        "new": "Nouveau Profil d'Actif",
+        "edit": "Modifier le Profil",
+        "delete": "Supprimer le Profil",
+        "name": "Nom",
+        "asset": "Actif Lié",
+        "defaultStop": "Stop par Défaut (Points/Ticks)",
+        "minContracts": "Minimum de Contrats",
+        "maxContracts": "Maximum de Contrats",
+        "notes": "Notes (Optionnel)",
+        "empty": "Aucun Profil de Risque d'Actif trouvé",
+        "search": "Rechercher un profil...",
+        "growthOverride": "Remplacement de Croissance",
+        "growthOverrideDesc": "Définit des règles de croissance exclusives à cet actif, ignorant le plan global.",
+        "enableGrowthOverride": "Activer le Remplacement",
+        "overridePhases": "Phases Spécifiques"
+      },
+      "management": {
+        "linkedAssetProfiles": "Profils d'Actifs Liés",
+        "linkedAssetProfilesDesc": "Applique des règles globales de risque à des profils de trading spécifiques d'un actif.",
+        "addAssetProfile": "Ajouter un Lien",
+        "removeAssetProfile": "Supprimer",
+        "noLinkedAssetProfiles": "Aucun profil d'actif lié.",
+        "assetProfileSelector": "Sélectionnez un Profil d'Actif...",
+        "noLinkedAssetProfileForThisAsset": "Aucun Profil d'Actif lié pour cet actif.",
+        "linkedProfile": "Profil Lié",
+        "duplicate": "Dupliquer le Profil",
+        "createFromTemplate": "Créer à partir d'un Modèle",
+        "copyOf": "Copie de",
+        "startBlank": "Créer à Blanc",
+        "baseTemplate": "Modèle de Base"
+      },
+      "growth": {
+        "selectAssetToView": "Sélectionnez un Actif ci-dessus pour visualiser les règles du Plan de Croissance.",
+        "noProfileLinked": "Aucun profil compatible.",
+        "noProfileLinkedDesc": "L'actif sélectionné n'a pas de Profil d'Actif lié à ce Profil de Risque. Les règles de Croissance ne s'appliquent pas.",
+        "sourceGlobal": "Plan Global",
+        "sourceAsset": "Spécifique à l'Actif"
+      }
     },
     "strategies": {
       "description": "Documentez vos setups, règles d'entrée, sortie et gestion.",
@@ -2473,5 +2513,20 @@
     "fiscal": {
       "irpf": "Income Tax"
     }
+  },
+  "riskContext": {
+    "title": "Composition Active",
+    "asset": "Actif Opérationnel",
+    "unlinked": "Aucun Profil Lié",
+    "riskProfile": "Profil de Risque",
+    "growthSource": "Source du Growth",
+    "globalPlan": "Plan Global",
+    "overridePlan": "Spécifique (Override)",
+    "currentPhase": "Phase Actuelle",
+    "noPhase": "Aucune / Manuel",
+    "sizing": "Sizing Autorisé",
+    "contracts": "Contrats Mesurables",
+    "blocked": "Bloqué / Invalide",
+    "reasons": "Motif du Blocage :"
   }
 }

@@ -41,13 +41,20 @@ export class AssetsStore {
             ...item, 
             id: crypto.randomUUID(),
             is_root: item.is_root ?? false,
-            root_id: item.root_id ?? undefined 
+            root_id: item.root_id === "" || item.root_id === "none" ? undefined : item.root_id,
+            tax_profile_id: item.tax_profile_id === "" ? undefined : item.tax_profile_id,
+            default_fee_id: item.default_fee_id === "" ? undefined : item.default_fee_id
         });
         if (autoSave) await this.saveAssets();
     }
 
     updateAsset(id: string, item: Partial<Asset>) {
-        this.assets = this.assets.map(a => a.id === id ? { ...a, ...item } : a);
+        const cleanItem = { ...item };
+        if (cleanItem.root_id === "" || cleanItem.root_id === "none") cleanItem.root_id = undefined;
+        if (cleanItem.tax_profile_id === "") cleanItem.tax_profile_id = undefined;
+        if (cleanItem.default_fee_id === "") cleanItem.default_fee_id = undefined;
+
+        this.assets = this.assets.map(a => a.id === id ? { ...a, ...cleanItem } : a);
         this.saveAssets();
     }
 

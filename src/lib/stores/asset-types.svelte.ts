@@ -7,9 +7,10 @@ export class AssetTypesStore {
     async saveAssetTypes() {
         for (const assetType of this.assetTypes) {
             try {
-                await invoke("save_asset_type", { asset_type: $state.snapshot(assetType) });
+                await invoke("save_asset_type", { assetType: $state.snapshot(assetType) });
             } catch (e) {
                 console.error("[AssetTypesStore] Error saving asset type:", e);
+                alert("[DEBUG] Error saving asset type: " + String(e));
             }
         }
     }

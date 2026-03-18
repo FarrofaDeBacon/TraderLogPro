@@ -50,9 +50,9 @@
             .sort((a, b) => a.name.localeCompare(b.name))
     );
 
-    // Get only root assets for the dropdown
-    let rootAssets = $derived(
-        settingsStore.assets.filter((a) => a.is_root).sort((a, b) => a.symbol.localeCompare(b.symbol))
+    // Get all assets for the dropdown
+    let availableAssets = $derived(
+        [...settingsStore.assets].sort((a, b) => a.symbol.localeCompare(b.symbol))
     );
 
     function getAssetSymbol(assetId: string) {
@@ -277,7 +277,7 @@
                             {getAssetSymbol(formData.asset_id) || "Selecione o ativo"}
                         </Select.Trigger>
                         <Select.Content>
-                            {#each rootAssets as asset}
+                            {#each availableAssets as asset}
                                 <Select.Item value={asset.id}>{asset.symbol} - {asset.name}</Select.Item>
                             {/each}
                         </Select.Content>

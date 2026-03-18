@@ -2528,5 +2528,23 @@
     "contracts": "Measured Contracts",
     "blocked": "Blocked / Invalid",
     "reasons": "Block Reason:"
+  },
+  "risk": {
+    "management": {
+      "combinedRules": "Combined Rules",
+      "addCombinedRule": "Add Rule",
+      "ruleName": "Rule Name",
+      "ruleType": "Rule Type",
+      "sumContracts": "Sum Contracts",
+      "limitValue": "Limit Value",
+      "linkedAssetProfilesForRule": "Involved Asset Profiles",
+      "noCombinedRules": "No combined rules created yet. Use them to cross boundaries between assets.",
+      "removeCombinedRule": "Remove Rule",
+      "linkedAssetProfiles": "Linked Asset Profiles",
+      "linkedAssetProfilesDesc": "Applies the global risk rules to specific asset trade profiles.",
+      "assetProfileSelector": "Select an Asset Profile...",
+      "noLinkedAssetProfiles": "No asset profile linked.",
+      "removeAssetProfile": "Remove"
+    }
   }
 }

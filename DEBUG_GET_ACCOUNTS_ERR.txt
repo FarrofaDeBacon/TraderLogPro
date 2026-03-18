@@ -1,0 +1,6 @@
+Db(
+    ConvertTo {
+        from: None,
+        into: "string",
+    },
+)
