@@ -16,6 +16,7 @@ import { assetsStore } from "./assets.svelte";
 import { riskSettingsStore } from "./risk-settings.svelte";
 import { accountsStore } from "./accounts.svelte";
 import { currenciesStore } from "./currencies.svelte";
+import { marketsStore } from "./markets.svelte";
 
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
@@ -248,7 +249,7 @@ class SettingsStore {
             if (apiConfigsRes) this.apiConfigs = apiConfigsRes;
             if (accountsRes) accountsStore.accounts = accountsRes;
             if (currenciesRes) currenciesStore.currencies = currenciesRes;
-            if (marketsRes) this.markets = marketsRes;
+            if (marketsRes) marketsStore.markets = marketsRes;
             if (assetTypesRes) this.assetTypes = assetTypesRes;
             
             if (emotionalStatesRes) {
@@ -343,15 +344,7 @@ class SettingsStore {
 
 
 
-    private async saveMarkets() {
-        for (const market of this.markets) {
-            try {
-                await invoke("save_market", { market: $state.snapshot(market) });
-            } catch (e) {
-                console.error("[SettingsStore] Error saving market:", e);
-            }
-        }
-    }
+
 
     private async saveAssetTypes() {
         for (const assetType of this.assetTypes) {
@@ -534,25 +527,16 @@ class SettingsStore {
 
     // Markets
     addMarket(item: Omit<Market, "id">) {
-        const id = crypto.randomUUID();
-        this.markets.push({ ...item, id });
-        this.saveMarkets();
+        return marketsStore.addMarket(item);
     }
     updateMarket(id: string, item: Partial<Market>) {
-        this.markets = this.markets.map(m => m.id === id ? { ...m, ...item } : m);
-        this.saveMarkets();
+        return marketsStore.updateMarket(id, item);
     }
     async deleteMarket(id: string): Promise<{ success: boolean; error?: string }> {
         if (this.assetTypes.some(at => at.market_id === id)) {
             return { success: false, error: "This Market is associated with existing Asset Types." };
         }
-        try {
-            await invoke("delete_market", { id });
-            this.markets = this.markets.filter(m => m.id !== id);
-            return { success: true };
-        } catch (e) {
-            return { success: false, error: String(e) };
-        }
+        return marketsStore.deleteMarket(id);
     }
     getMarketCode(id: string): string {
         const item = this.markets.find(m => m.id === id);
@@ -1187,7 +1171,7 @@ class SettingsStore {
     }
 
     clearDatabase() {
-        this.markets = []; this.assetTypes = []; assetsStore.clearAssets(); accountsStore.clearAccounts(); currenciesStore.clearCurrencies();
+        marketsStore.clearMarkets(); this.assetTypes = []; assetsStore.clearAssets(); accountsStore.clearAccounts(); currenciesStore.clearCurrencies();
         this.fees = []; this.strategies = []; riskSettingsStore.clearRiskSettings(); this.modalities = [];
         this.emotionalStates = []; this.tags = []; this.indicators = []; this.timeframes = [];
         this.chartTypes = [];

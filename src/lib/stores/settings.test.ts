@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { accountsStore } from './accounts.svelte';
 import { currenciesStore } from './currencies.svelte';
+import { marketsStore } from './markets.svelte';
 import { settingsStore } from './settings.svelte';
 import { riskSettingsStore } from './risk-settings.svelte';
 import { assetsStore } from './assets.svelte';
@@ -95,6 +96,7 @@ describe('SettingsStore Unit Tests', () => {
         assetsStore.clearAssets();
         accountsStore.clearAccounts();
         currenciesStore.clearCurrencies();
+        marketsStore.clearMarkets();
         riskSettingsStore.clearRiskSettings();
 
         // Mock crypto.randomUUID
