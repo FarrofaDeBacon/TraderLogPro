@@ -13,6 +13,7 @@ import type {
     ChartType, ApiConfig, CashTransaction, TaxRule, TaxMapping, TaxProfile, TaxProfileEntry, AssetRiskProfile
 } from "$lib/types";
 import { assetsStore } from "./assets.svelte";
+import { riskSettingsStore } from "./risk-settings.svelte";
 
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
@@ -25,8 +26,8 @@ class SettingsStore {
     markets = $state<Market[]>([]);
     assetTypes = $state<AssetType[]>([]);
     get assets() { return assetsStore.assets; }
-    riskProfiles = $state<RiskProfile[]>([]);
-    assetRiskProfiles = $state<AssetRiskProfile[]>([]);
+    get riskProfiles() { return riskSettingsStore.riskProfiles; }
+    get assetRiskProfiles() { return riskSettingsStore.assetRiskProfiles; }
     modalities = $state<Modality[]>([]);
     userProfile = $state<UserProfile>({
         id: "main",
@@ -72,7 +73,7 @@ class SettingsStore {
     hardwareId = $state<string>("");
     licenseDetails = $state<LicenseData | null>(null);
     isLoadingData = $state<boolean>(false);
-    activeProfile = $derived(this.riskProfiles.find(p => p.active) || this.riskProfiles[0]);
+    get activeProfile() { return riskSettingsStore.activeProfile; }
     isLoggedIn = $state<boolean>(
         typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false
     );
@@ -259,7 +260,7 @@ class SettingsStore {
             if (transactionsRes) this.cashTransactions = transactionsRes;
             if (feesRes) this.fees = feesRes;
             if (riskProfilesRes) {
-                this.riskProfiles = riskProfilesRes.map(rp => ({
+                riskSettingsStore.riskProfiles = riskProfilesRes.map(rp => ({
                     ...rp,
                     account_ids: rp.account_ids ?? []
                 }));
@@ -273,7 +274,7 @@ class SettingsStore {
             if (taxMappingsRes) this.taxMappings = taxMappingsRes;
             if (taxProfilesRes) this.taxProfiles = taxProfilesRes;
             if (taxProfileEntriesRes) this.taxProfileEntries = taxProfileEntriesRes;
-            if (assetRiskProfilesRes) this.assetRiskProfiles = assetRiskProfilesRes;
+            if (assetRiskProfilesRes) riskSettingsStore.assetRiskProfiles = assetRiskProfilesRes;
 
             if (journalEntriesRes) {
                 this.journalEntries = journalEntriesRes;
@@ -490,25 +491,7 @@ class SettingsStore {
         }
     }
 
-    private async saveRiskProfiles() {
-        for (const profile of this.riskProfiles) {
-            try {
-                await invoke("save_risk_profile", { profile: $state.snapshot(profile) });
-            } catch (e) {
-                console.error("[SettingsStore] Error saving risk profile:", e);
-            }
-        }
-    }
 
-    private async saveAssetRiskProfiles() {
-        for (const profile of this.assetRiskProfiles) {
-            try {
-                await invoke("save_asset_risk_profile", { profile: $state.snapshot(profile) });
-            } catch (e) {
-                console.error("[SettingsStore] Error saving asset risk profile:", e);
-            }
-        }
-    }
 
     // --- Public Logic Methods ---
 
@@ -763,86 +746,39 @@ class SettingsStore {
 
     // Risk Profiles
     addRiskProfile(item: Omit<RiskProfile, "id">) {
-        this.riskProfiles.push({ ...item, id: crypto.randomUUID() });
-        this.saveRiskProfiles();
+        riskSettingsStore.addRiskProfile(item);
     }
     updateRiskProfile(id: string, item: Partial<RiskProfile>) {
-        this.riskProfiles = this.riskProfiles.map(r => r.id === id ? { ...r, ...item } : r);
-        this.saveRiskProfiles();
+        riskSettingsStore.updateRiskProfile(id, item);
     }
     async deleteRiskProfile(id: string): Promise<{ success: boolean; error?: string }> {
-        await invoke("delete_risk_profile", { id });
-        this.riskProfiles = this.riskProfiles.filter(r => r.id !== id);
-        return { success: true };
+        return riskSettingsStore.deleteRiskProfile(id);
     }
     updateRiskProfilePhase(id: string, newPhaseIndex: number) {
-        this.riskProfiles = this.riskProfiles.map(r => r.id === id ? { ...r, current_phase_index: newPhaseIndex } : r);
-        this.saveRiskProfiles();
+        riskSettingsStore.updateRiskProfilePhase(id, newPhaseIndex);
     }
 
     async duplicateRiskProfile(id: string): Promise<string | null> {
-        const original = this.riskProfiles.find(r => r.id === id);
-        if (!original) return null;
-
-        const newProfileId = crypto.randomUUID();
-        
-        // Clone Global Growth Phases generating new IDs
-        const clonedPhases = original.growth_phases?.map(p => ({
-            ...p,
-            id: crypto.randomUUID()
-        })) || [];
-
-        const clonedProfile: RiskProfile = {
-            ...original,
-            id: newProfileId,
-            name: `${original.name} (Cópia)`,
-            active: false,
-            growth_phases: clonedPhases,
-            linked_asset_risk_profile_ids: [...(original.linked_asset_risk_profile_ids || [])]
-        };
-
-        this.riskProfiles.push(clonedProfile);
-        this.saveRiskProfiles();
-        return newProfileId;
+        return riskSettingsStore.duplicateRiskProfile(id);
     }
 
     createRiskProfileTemplate(baseId: string): Omit<RiskProfile, "id"> | null {
-        const base = this.riskProfiles.find((r) => r.id === baseId);
-        if (!base) return null;
-
-        return {
-            ...base,
-            name: `${base.name} (Template)`,
-            active: false,
-            linked_account_id: null,
-            linked_asset_risk_profile_ids: [...(base.linked_asset_risk_profile_ids || [])],
-            growth_phases: base.growth_phases
-                ? base.growth_phases.map((p) => ({ ...p, id: crypto.randomUUID() }))
-                : [],
-        } as Omit<RiskProfile, "id">;
+        return riskSettingsStore.createRiskProfileTemplate(baseId);
     }
 
     // Asset Risk Profiles
     addAssetRiskProfile(item: Omit<AssetRiskProfile, "id">) {
-        this.assetRiskProfiles.push({ ...item, id: crypto.randomUUID() });
-        this.saveAssetRiskProfiles();
+        riskSettingsStore.addAssetRiskProfile(item);
     }
     updateAssetRiskProfile(id: string, item: Partial<AssetRiskProfile>) {
-        this.assetRiskProfiles = this.assetRiskProfiles.map(r => r.id === id ? { ...r, ...item } : r);
-        this.saveAssetRiskProfiles();
+        riskSettingsStore.updateAssetRiskProfile(id, item);
     }
     async deleteAssetRiskProfile(id: string): Promise<{ success: boolean; error?: string }> {
-        await invoke("delete_asset_risk_profile", { id });
-        this.assetRiskProfiles = this.assetRiskProfiles.filter(r => r.id !== id);
-        return { success: true };
+        return riskSettingsStore.deleteAssetRiskProfile(id);
     }
 
     setActiveRiskProfile(id: string) {
-        this.riskProfiles = this.riskProfiles.map(r => ({
-            ...r,
-            active: r.id === id
-        }));
-        this.saveRiskProfiles();
+        riskSettingsStore.setActiveRiskProfile(id);
     }
 
 
@@ -1315,7 +1251,7 @@ class SettingsStore {
 
     clearDatabase() {
         this.markets = []; this.assetTypes = []; assetsStore.clearAssets(); this.accounts = [];
-        this.fees = []; this.strategies = []; this.riskProfiles = []; this.modalities = [];
+        this.fees = []; this.strategies = []; riskSettingsStore.clearRiskSettings(); this.modalities = [];
         this.emotionalStates = []; this.tags = []; this.indicators = []; this.timeframes = [];
         this.chartTypes = [];
     }

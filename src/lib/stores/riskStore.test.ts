@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { riskStore } from './riskStore.svelte';
 import { settingsStore } from './settings.svelte';
+import { assetsStore } from './assets.svelte';
+import { riskSettingsStore } from './risk-settings.svelte';
 
 // Mock the Tauri APIs that might get called on settingsStore initialization
 vi.mock('@tauri-apps/api/core', () => ({
@@ -18,19 +20,19 @@ describe('RiskStore Position Sizing Integration', () => {
         vi.clearAllMocks();
         // Reset state
         riskStore.activeAssetId = null;
-        settingsStore.riskProfiles = [];
-        settingsStore.assets = [];
+        riskSettingsStore.riskProfiles = [];
+        assetsStore.assets = [];
         settingsStore.accounts = [];
     });
 
     it('returns null if there is no active profile', () => {
-        settingsStore.riskProfiles = []; 
+        riskSettingsStore.riskProfiles = []; 
         expect(riskStore.positionSizingInput).toBeNull();
         expect(riskStore.positionSizingResult).toBeNull();
     });
 
     it('returns null if there is no active asset selected', () => {
-        settingsStore.riskProfiles = [{ 
+        riskSettingsStore.riskProfiles = [{ 
             id: '1', 
             name: 'Test', 
             active: true, 
@@ -48,7 +50,7 @@ describe('RiskStore Position Sizing Integration', () => {
     });
 
     it('assembles the input correctly based on selected asset and profile', () => {
-        settingsStore.riskProfiles = [{ 
+        riskSettingsStore.riskProfiles = [{ 
             id: '1', 
             name: 'Test', 
             active: true, 
@@ -61,14 +63,14 @@ describe('RiskStore Position Sizing Integration', () => {
             linked_asset_risk_profile_ids: ['profile-wdo']
         } as any];
 
-        settingsStore.assets = [{
+        assetsStore.assets = [{
             id: 'WDO',
             symbol: 'WDO',
             name: 'Mini Dólar',
             point_value: 10.0
         } as any];
 
-        settingsStore.assetRiskProfiles = [{
+        riskSettingsStore.assetRiskProfiles = [{
             id: 'profile-wdo',
             asset_id: 'WDO',
             name: 'WDO Base',
@@ -92,7 +94,7 @@ describe('RiskStore Position Sizing Integration', () => {
     });
 
     it('computes result securely from the pure engine returning invalid state if stop is zero', () => {
-        settingsStore.riskProfiles = [{ 
+        riskSettingsStore.riskProfiles = [{ 
             active: true, 
             max_risk_per_trade_percent: 1,
             capital_source: 'Fixed',
@@ -100,12 +102,12 @@ describe('RiskStore Position Sizing Integration', () => {
             linked_asset_risk_profile_ids: ['profile-win']
         } as any];
 
-        settingsStore.assets = [{
+        assetsStore.assets = [{
             id: 'WIN',
             point_value: 0.20
         } as any];
 
-        settingsStore.assetRiskProfiles = [{
+        riskSettingsStore.assetRiskProfiles = [{
             id: 'profile-win',
             asset_id: 'WIN',
             name: 'WIN No Stop',
@@ -126,13 +128,13 @@ describe('RiskStore Position Sizing Integration', () => {
 
     describe('Risk Flow Integration Tests (ETAPA 10)', () => {
         it('Scenario A: Asset selected, NO AssetRiskProfile linked', () => {
-            settingsStore.riskProfiles = [{ 
+            riskSettingsStore.riskProfiles = [{ 
                 id: 'global-1', active: true, growth_plan_enabled: true, growth_phases: [{}], current_phase_index: 0,
                 // Missing link to 'profile-wdo'
                 linked_asset_risk_profile_ids: [] 
             } as any];
-            settingsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10 } as any];
-            settingsStore.assetRiskProfiles = [{ id: 'profile-wdo', asset_id: 'WDO' } as any];
+            assetsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10 } as any];
+            riskSettingsStore.assetRiskProfiles = [{ id: 'profile-wdo', asset_id: 'WDO' } as any];
             
             riskStore.activeAssetId = 'WDO';
             
@@ -142,13 +144,13 @@ describe('RiskStore Position Sizing Integration', () => {
         });
 
         it('Scenario B: Asset selected, AssetRiskProfile linked, Global Growth', () => {
-            settingsStore.riskProfiles = [{ 
+            riskSettingsStore.riskProfiles = [{ 
                 id: 'global-1', active: true, growth_plan_enabled: true, 
                 growth_phases: [{ level: 1, lot_size: 5 }], current_phase_index: 0,
                 linked_asset_risk_profile_ids: ['profile-wdo']
             } as any];
-            settingsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10 } as any];
-            settingsStore.assetRiskProfiles = [{ 
+            assetsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10 } as any];
+            riskSettingsStore.assetRiskProfiles = [{ 
                 id: 'profile-wdo', asset_id: 'WDO', 
                 growth_override_enabled: false 
             } as any];
@@ -160,13 +162,13 @@ describe('RiskStore Position Sizing Integration', () => {
         });
 
         it('Scenario C: Asset selected, AssetRiskProfile linked, Override Growth', () => {
-            settingsStore.riskProfiles = [{ 
+            riskSettingsStore.riskProfiles = [{ 
                 id: 'global-1', active: true, growth_plan_enabled: true, 
                 growth_phases: [{ level: 1, lot_size: 5 }], current_phase_index: 0,
                 linked_asset_risk_profile_ids: ['profile-wdo']
             } as any];
-            settingsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10 } as any];
-            settingsStore.assetRiskProfiles = [{ 
+            assetsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10 } as any];
+            riskSettingsStore.assetRiskProfiles = [{ 
                 id: 'profile-wdo', asset_id: 'WDO', 
                 growth_override_enabled: true,
                 growth_phases_override: [{ level: 1, lot_size: 15 }], // Override
@@ -180,12 +182,12 @@ describe('RiskStore Position Sizing Integration', () => {
         });
 
         it('Scenario D: Asset selected, valid config, output isValid = true with allowedContracts', () => {
-             settingsStore.riskProfiles = [{ 
+             riskSettingsStore.riskProfiles = [{ 
                 id: 'global-1', active: true, max_risk_per_trade_percent: 2.0, capital_source: 'Fixed', fixed_capital: 10000,
                 linked_asset_risk_profile_ids: ['profile-wdo']
             } as any];
-            settingsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10.0 } as any];
-            settingsStore.assetRiskProfiles = [{ 
+            assetsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10.0 } as any];
+            riskSettingsStore.assetRiskProfiles = [{ 
                 id: 'profile-wdo', asset_id: 'WDO', default_stop_points: 10, min_contracts: 1, max_contracts: 50
             } as any];
             
@@ -202,12 +204,12 @@ describe('RiskStore Position Sizing Integration', () => {
         });
 
         it('Scenario E: Asset selected, missing stop, output isValid = false with reasons', () => {
-             settingsStore.riskProfiles = [{ 
+             riskSettingsStore.riskProfiles = [{ 
                 id: 'global-1', active: true, max_risk_per_trade_percent: 1.0, capital_source: 'Fixed', fixed_capital: 1000,
                 linked_asset_risk_profile_ids: ['profile-win']
             } as any];
-            settingsStore.assets = [{ id: 'WIN', symbol: 'WIN', point_value: 0.20 } as any];
-            settingsStore.assetRiskProfiles = [{ id: 'profile-win', asset_id: 'WIN', default_stop_points: 0, min_contracts: 1, max_contracts: 10 } as any];
+            assetsStore.assets = [{ id: 'WIN', symbol: 'WIN', point_value: 0.20 } as any];
+            riskSettingsStore.assetRiskProfiles = [{ id: 'profile-win', asset_id: 'WIN', default_stop_points: 0, min_contracts: 1, max_contracts: 10 } as any];
             
             riskStore.activeAssetId = 'WIN';
             
@@ -219,17 +221,17 @@ describe('RiskStore Position Sizing Integration', () => {
         });
 
         it('Scenario F: Asset change triggers context switch', () => {
-            settingsStore.riskProfiles = [{ 
+            riskSettingsStore.riskProfiles = [{ 
                 id: 'global-1', active: true, growth_plan_enabled: true, growth_phases: [{ level: 1, lot_size: 5 }], current_phase_index: 0,
                 linked_asset_risk_profile_ids: ['profile-wdo', 'profile-win']
             } as any];
             
-            settingsStore.assets = [
+            assetsStore.assets = [
                 { id: 'WDO', symbol: 'WDO', point_value: 10 } as any,
                 { id: 'WIN', symbol: 'WIN', point_value: 0.20 } as any
             ];
             
-            settingsStore.assetRiskProfiles = [
+            riskSettingsStore.assetRiskProfiles = [
                 { id: 'profile-wdo', asset_id: 'WDO', growth_override_enabled: false } as any, // Uses global
                 { id: 'profile-win', asset_id: 'WIN', growth_override_enabled: true, growth_phases_override: [{ level: 1, lot_size: 99 }], current_phase_index: 0 } as any // Uses override
             ];
@@ -259,7 +261,7 @@ describe('RiskStore Persistence (activeAssetId)', () => {
             removeItem: (key: string) => { delete mockStore[key]; },
             clear: () => { mockStore = {}; },
         });
-        settingsStore.assets = [];
+        assetsStore.assets = [];
     });
 
     afterEach(() => {
@@ -278,7 +280,7 @@ describe('RiskStore Persistence (activeAssetId)', () => {
     it('cleans activeAssetId if the linked asset no longer exists in settingsStore', async () => {
         mockStore['risk_activeAssetId'] = 'DEAD_ASSET';
         
-        settingsStore.assets = [
+        assetsStore.assets = [
             { id: 'WDO', symbol: 'WDO', point_value: 10 } as any
         ];
         

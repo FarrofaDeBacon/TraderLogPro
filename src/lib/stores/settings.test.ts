@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { settingsStore } from './settings.svelte';
+import { riskSettingsStore } from './risk-settings.svelte';
 import { assetsStore } from './assets.svelte';
 
 // Mock Tauri
@@ -90,6 +91,7 @@ describe('SettingsStore Unit Tests', () => {
             { id: 'type_stock', name: 'Ações', code: 'STK' }
         ] as any;
         assetsStore.clearAssets();
+        riskSettingsStore.clearRiskSettings();
 
         // Mock crypto.randomUUID
         const uuidSpy = vi.spyOn(crypto, 'randomUUID').mockReturnValue('mock-uuid' as any);
@@ -120,7 +122,7 @@ describe('SettingsStore Unit Tests', () => {
             const originalProfileId = crypto.randomUUID();
             const originalAssetProfileId = crypto.randomUUID();
 
-            settingsStore.assetRiskProfiles = [{
+            riskSettingsStore.assetRiskProfiles = [{
                 id: originalAssetProfileId,
                 asset_id: 'asset1',
                 name: 'Original Asset Profile',
@@ -130,7 +132,7 @@ describe('SettingsStore Unit Tests', () => {
                 growth_override_enabled: false
             }];
 
-            settingsStore.riskProfiles = [{
+            riskSettingsStore.riskProfiles = [{
                 id: originalProfileId,
                 name: 'Original Profile',
                 active: true,
@@ -225,7 +227,7 @@ describe('SettingsStore Unit Tests', () => {
             const baseId = crypto.randomUUID();
             const assetProfileId = crypto.randomUUID();
 
-            settingsStore.riskProfiles = [{
+            riskSettingsStore.riskProfiles = [{
                 id: baseId,
                 name: 'Base Template',
                 active: true,
@@ -304,7 +306,7 @@ describe('SettingsStore Unit Tests', () => {
         it('editing an AssetRiskProfile shared by multiple RiskProfiles does not create new asset profiles (TESTE C1)', () => {
             const sharedAssetProfileId = crypto.randomUUID();
             
-            settingsStore.assetRiskProfiles = [{
+            riskSettingsStore.assetRiskProfiles = [{
                 id: sharedAssetProfileId,
                 asset_id: 'asset1',
                 name: 'Shared Profile',
@@ -326,7 +328,7 @@ describe('SettingsStore Unit Tests', () => {
             const originalProfileId = crypto.randomUUID();
             const sharedAssetProfileId = crypto.randomUUID();
 
-            settingsStore.riskProfiles = [{
+            riskSettingsStore.riskProfiles = [{
                 id: originalProfileId,
                 name: 'Original',
                 active: true,
