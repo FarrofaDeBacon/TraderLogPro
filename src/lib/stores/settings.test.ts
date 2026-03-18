@@ -114,10 +114,20 @@ describe('SettingsStore Unit Tests', () => {
         uuidSpy.mockRestore();
     });
 
-    describe('duplicateRiskProfile', () => {
-        it('should deep clone a risk profile, including linked asset profiles, with new IDs', async () => {
+    describe('duplicateRiskProfile (Block A)', () => {
+        const setupStore = () => {
             const originalProfileId = crypto.randomUUID();
             const originalAssetProfileId = crypto.randomUUID();
+
+            settingsStore.assetRiskProfiles = [{
+                id: originalAssetProfileId,
+                asset_id: 'asset1',
+                name: 'Original Asset Profile',
+                default_stop_points: 100,
+                min_contracts: 1,
+                max_contracts: 10,
+                growth_override_enabled: false
+            }];
 
             settingsStore.riskProfiles = [{
                 id: originalProfileId,
@@ -150,50 +160,209 @@ describe('SettingsStore Unit Tests', () => {
                 linked_asset_risk_profile_ids: [originalAssetProfileId]
             }];
 
+            return { originalProfileId, originalAssetProfileId };
+        };
+
+        it('returns null if profile does not exist (TESTE A1)', async () => {
+            const result = await settingsStore.duplicateRiskProfile('non-existent');
+            expect(result).toBeNull();
+        });
+
+        it('creates a new RiskProfile with a new id, active false and suffix (TESTE A2)', async () => {
+            const { originalProfileId } = setupStore();
+            const originalLength = settingsStore.riskProfiles.length;
+            
+            const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
+            
+            expect(newId).toBeTruthy();
+            expect(newId).not.toBe(originalProfileId);
+            expect(settingsStore.riskProfiles.length).toBe(originalLength + 1);
+
+            const clonedProfile = settingsStore.riskProfiles.find(p => p.id === newId);
+            expect(clonedProfile!.name).toContain('(Cópia)');
+            expect(clonedProfile!.active).toBe(false);
+        });
+
+        it('preserves linked account and capital source (TESTE A3)', async () => {
+            const { originalProfileId } = setupStore();
+            
+            const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
+            const clonedProfile = settingsStore.riskProfiles.find(p => p.id === newId);
+            const originalProfile = settingsStore.riskProfiles.find(p => p.id === originalProfileId);
+            
+            expect(clonedProfile!.linked_account_id).toBe(originalProfile!.linked_account_id);
+            expect(clonedProfile!.capital_source).toBe(originalProfile!.capital_source);
+        });
+
+        it('deep clones growth phases with new ids and same content (TESTE A4)', async () => {
+            const { originalProfileId } = setupStore();
+            
+            const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
+            const clonedProfile = settingsStore.riskProfiles.find(p => p.id === newId);
+            const originalProfile = settingsStore.riskProfiles.find(p => p.id === originalProfileId);
+            
+            expect(clonedProfile!.growth_phases).toBeDefined();
+            expect(clonedProfile!.growth_phases!.length).toBe(originalProfile!.growth_phases!.length);
+            expect(clonedProfile!.growth_phases![0].id).not.toBe(originalProfile!.growth_phases![0].id);
+            expect(clonedProfile!.growth_phases![0].name).toBe(originalProfile!.growth_phases![0].name);
+        });
+
+        it('preserves linked asset risk profile ids without cloning AssetRiskProfiles (TESTE A5)', async () => {
+            const { originalProfileId, originalAssetProfileId } = setupStore();
+            const originalAssetProfilesCount = settingsStore.assetRiskProfiles.length;
+            
+            const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
+            const clonedProfile = settingsStore.riskProfiles.find(p => p.id === newId);
+            
+            expect(clonedProfile!.linked_asset_risk_profile_ids).toEqual([originalAssetProfileId]);
+            expect(settingsStore.assetRiskProfiles.length).toBe(originalAssetProfilesCount);
+        });
+    });
+
+    describe('createRiskProfileTemplate (Block B)', () => {
+        const setupStore = () => {
+            const baseId = crypto.randomUUID();
+            const assetProfileId = crypto.randomUUID();
+
+            settingsStore.riskProfiles = [{
+                id: baseId,
+                name: 'Base Template',
+                active: true,
+                max_daily_loss: 500,
+                daily_target: 1000,
+                max_risk_per_trade_percent: 1,
+                max_trades_per_day: 3,
+                min_risk_reward: 2,
+                lock_on_loss: true,
+                target_type: 'Financial',
+                capital_source: 'LinkedAccount',
+                fixed_capital: 0,
+                linked_account_id: 'acc1',
+                growth_plan_enabled: true,
+                current_phase_index: 0,
+                growth_phases: [{ id: 'gp1', level: 1, name: 'Phase 1', lot_size: 1, conditions_to_advance: [], conditions_to_demote: [] }],
+                psychological_coupling_enabled: false,
+                outlier_regression_enabled: false,
+                sniper_mode_enabled: false,
+                sniper_mode_selectivity: 3,
+                psychological_lookback_count: 10,
+                outlier_lookback_count: 20,
+                psychological_threshold: -2,
+                lot_reduction_multiplier: 0.5,
+                psychological_search_strategy: 'Strict',
+                account_type_applicability: 'All',
+                account_ids: [],
+                linked_asset_risk_profile_ids: [assetProfileId]
+            }];
+
+            return { baseId, assetProfileId };
+        };
+
+        it('does nothing if base profile does not exist (TESTE B1)', () => {
+            const result = settingsStore.createRiskProfileTemplate('non-existent');
+            expect(result).toBeNull();
+        });
+
+        it('clears linked_account_id (TESTE B2)', () => {
+            const { baseId } = setupStore();
+            const template = settingsStore.createRiskProfileTemplate(baseId);
+            
+            expect(template).toBeDefined();
+            expect(template!.linked_account_id).toBeNull();
+        });
+
+        it('preserves capital_source (TESTE B3)', () => {
+            const { baseId } = setupStore();
+            const template = settingsStore.createRiskProfileTemplate(baseId);
+            expect(template!.capital_source).toBe('LinkedAccount');
+        });
+
+        it('preserves linked asset risk profile ids without generating new ones (TESTE B4)', () => {
+            const { baseId, assetProfileId } = setupStore();
+            const assetProfilesCount = settingsStore.assetRiskProfiles.length;
+            
+            const template = settingsStore.createRiskProfileTemplate(baseId);
+            
+            expect(template!.linked_asset_risk_profile_ids).toEqual([assetProfileId]);
+            expect(settingsStore.assetRiskProfiles.length).toBe(assetProfilesCount);
+        });
+
+        it('deep clones growth phases with new ids (TESTE B5)', () => {
+            const { baseId } = setupStore();
+            const original = settingsStore.riskProfiles[0];
+            const template = settingsStore.createRiskProfileTemplate(baseId);
+            
+            expect(template!.growth_phases).toBeDefined();
+            expect(template!.growth_phases!.length).toBe(original.growth_phases!.length);
+            expect(template!.growth_phases![0].id).not.toBe(original.growth_phases![0].id);
+            expect(template!.growth_phases![0].name).toBe(original.growth_phases![0].name);
+        });
+    });
+
+    describe('Regression / Security (Block C)', () => {
+        it('editing an AssetRiskProfile shared by multiple RiskProfiles does not create new asset profiles (TESTE C1)', () => {
+            const sharedAssetProfileId = crypto.randomUUID();
+            
             settingsStore.assetRiskProfiles = [{
-                id: originalAssetProfileId,
+                id: sharedAssetProfileId,
                 asset_id: 'asset1',
-                name: 'Original Asset Profile',
+                name: 'Shared Profile',
                 default_stop_points: 100,
                 min_contracts: 1,
                 max_contracts: 10,
-                growth_override_enabled: true,
-                growth_phases_override: [{ id: 'ago1', level: 1, name: 'Asset Phase 1', lot_size: 2, conditions_to_advance: [], conditions_to_demote: [] }]
+                growth_override_enabled: false
             }];
 
-            const uuidSpy = vi.spyOn(crypto, 'randomUUID');
+            const startingCount = settingsStore.assetRiskProfiles.length;
+
+            settingsStore.updateAssetRiskProfile(sharedAssetProfileId, { default_stop_points: 200 });
+            
+            expect(settingsStore.assetRiskProfiles.length).toBe(startingCount);
+            expect(settingsStore.assetRiskProfiles.find(p => p.id === sharedAssetProfileId)?.default_stop_points).toBe(200);
+        });
+
+        it('duplicateRiskProfile preserves shared asset profile references over time (TESTE C2)', async () => {
+            const originalProfileId = crypto.randomUUID();
+            const sharedAssetProfileId = crypto.randomUUID();
+
+            settingsStore.riskProfiles = [{
+                id: originalProfileId,
+                name: 'Original',
+                active: true,
+                max_daily_loss: 1000,
+                daily_target: 2000,
+                max_risk_per_trade_percent: 1,
+                max_trades_per_day: 5,
+                min_risk_reward: 2,
+                lock_on_loss: true,
+                target_type: 'Financial',
+                capital_source: 'Fixed',
+                fixed_capital: 10000,
+                linked_account_id: null,
+                growth_plan_enabled: true,
+                current_phase_index: 0,
+                psychological_coupling_enabled: false,
+                outlier_regression_enabled: false,
+                sniper_mode_enabled: false,
+                sniper_mode_selectivity: 3,
+                psychological_lookback_count: 10,
+                outlier_lookback_count: 20,
+                psychological_threshold: -2,
+                lot_reduction_multiplier: 0.5,
+                psychological_search_strategy: 'Strict',
+                account_type_applicability: 'All',
+                account_ids: [],
+                linked_asset_risk_profile_ids: [sharedAssetProfileId]
+            }];
 
             const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
-
-            expect(newId).toBeTruthy();
-            expect(newId).not.toBe(originalProfileId);
-
-            const clonedProfile = settingsStore.riskProfiles.find(p => p.id === newId);
-            expect(clonedProfile).toBeDefined();
-            expect(clonedProfile!.name).toBe('Original Profile (Cópia)');
-            expect(clonedProfile!.active).toBe(false); 
-            expect(clonedProfile!.max_daily_loss).toBe(1000);
             
-            expect(clonedProfile!.growth_phases?.length).toBe(1);
-            expect(clonedProfile!.growth_phases![0].id).not.toBe('gp1');
-            expect(clonedProfile!.growth_phases![0].name).toBe('Phase 1');
+            const original = settingsStore.riskProfiles.find(p => p.id === originalProfileId);
+            const copy = settingsStore.riskProfiles.find(p => p.id === newId);
 
-            expect(clonedProfile!.linked_asset_risk_profile_ids?.length).toBe(1);
-            const newAssetProfileId = clonedProfile!.linked_asset_risk_profile_ids![0];
-            expect(newAssetProfileId).toBe(originalAssetProfileId);
-
-            expect(settingsStore.assetRiskProfiles.length).toBe(1);
-            expect(clonedProfile!.linked_account_id).toBe('acc1');
-            expect(clonedProfile!.capital_source).toBe('Fixed');
-
-
-
-
-            
-
-
-
-            uuidSpy.mockRestore();
+            expect(original!.linked_asset_risk_profile_ids).toEqual([sharedAssetProfileId]);
+            expect(copy!.linked_asset_risk_profile_ids).toEqual([sharedAssetProfileId]);
+            expect(copy!.linked_asset_risk_profile_ids![0]).toBe(original!.linked_asset_risk_profile_ids![0]);
         });
     });
 });

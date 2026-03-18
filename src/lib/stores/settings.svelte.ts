@@ -889,6 +889,22 @@ class SettingsStore {
         return newProfileId;
     }
 
+    createRiskProfileTemplate(baseId: string): Omit<RiskProfile, "id"> | null {
+        const base = this.riskProfiles.find((r) => r.id === baseId);
+        if (!base) return null;
+
+        return {
+            ...base,
+            name: `${base.name} (Template)`,
+            active: false,
+            linked_account_id: null,
+            linked_asset_risk_profile_ids: [...(base.linked_asset_risk_profile_ids || [])],
+            growth_phases: base.growth_phases
+                ? base.growth_phases.map((p) => ({ ...p, id: crypto.randomUUID() }))
+                : [],
+        } as Omit<RiskProfile, "id">;
+    }
+
     // Asset Risk Profiles
     addAssetRiskProfile(item: Omit<AssetRiskProfile, "id">) {
         this.assetRiskProfiles.push({ ...item, id: crypto.randomUUID() });

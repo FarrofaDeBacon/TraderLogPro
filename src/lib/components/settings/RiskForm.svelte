@@ -249,19 +249,11 @@
     }
 
     function applyTemplate(id: string) {
-        const base = settingsStore.riskProfiles.find((r) => r.id === id);
-        if (!base) return;
-        formData = {
-            ...base,
-            name: `${base.name} (Template)`,
-            active: false,
-            linked_account_id: null,
-            linked_asset_risk_profile_ids: [...(base.linked_asset_risk_profile_ids || [])],
-            growth_phases: base.growth_phases
-                ? base.growth_phases.map((p) => ({ ...p, id: crypto.randomUUID() }))
-                : [],
-        } as Omit<RiskProfile, "id">;
-        selectedPreset = "custom";
+        const template = settingsStore.createRiskProfileTemplate(id);
+        if (template) {
+            formData = template;
+            selectedPreset = "custom";
+        }
     }
 
     function save() {
