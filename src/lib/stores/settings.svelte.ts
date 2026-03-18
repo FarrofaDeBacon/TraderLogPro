@@ -881,36 +881,8 @@ class SettingsStore {
             name: `${original.name} (Cópia)`,
             active: false,
             growth_phases: clonedPhases,
-            linked_asset_risk_profile_ids: []
+            linked_asset_risk_profile_ids: [...(original.linked_asset_risk_profile_ids || [])]
         };
-
-        // Clone linked AssetRiskProfiles
-        if (original.linked_asset_risk_profile_ids && original.linked_asset_risk_profile_ids.length > 0) {
-            const newLinkedIds: string[] = [];
-            
-            for (const assetProfileId of original.linked_asset_risk_profile_ids) {
-                const originalAssetProfile = this.assetRiskProfiles.find(a => a.id === assetProfileId);
-                if (originalAssetProfile) {
-                    const newAssetProfileId = crypto.randomUUID();
-                    
-                    const clonedAssetPhases = originalAssetProfile.growth_phases_override?.map(p => ({
-                        ...p,
-                        id: crypto.randomUUID()
-                    }));
-
-                    const clonedAssetProfile: AssetRiskProfile = {
-                        ...originalAssetProfile,
-                        id: newAssetProfileId,
-                        growth_phases_override: clonedAssetPhases
-                    };
-                    
-                    this.assetRiskProfiles.push(clonedAssetProfile);
-                    newLinkedIds.push(newAssetProfileId);
-                }
-            }
-            clonedProfile.linked_asset_risk_profile_ids = newLinkedIds;
-            this.saveAssetRiskProfiles();
-        }
 
         this.riskProfiles.push(clonedProfile);
         this.saveRiskProfiles();

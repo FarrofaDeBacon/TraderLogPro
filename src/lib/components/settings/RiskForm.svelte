@@ -255,6 +255,7 @@
             ...base,
             name: `${base.name} (Template)`,
             active: false,
+            linked_account_id: null,
             linked_asset_risk_profile_ids: [],
             growth_phases: base.growth_phases
                 ? base.growth_phases.map((p) => ({ ...p, id: crypto.randomUUID() }))

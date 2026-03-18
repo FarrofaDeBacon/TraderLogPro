@@ -180,14 +180,18 @@ describe('SettingsStore Unit Tests', () => {
 
             expect(clonedProfile!.linked_asset_risk_profile_ids?.length).toBe(1);
             const newAssetProfileId = clonedProfile!.linked_asset_risk_profile_ids![0];
-            expect(newAssetProfileId).not.toBe(originalAssetProfileId);
+            expect(newAssetProfileId).toBe(originalAssetProfileId);
 
-            const clonedAssetProfile = settingsStore.assetRiskProfiles.find(a => a.id === newAssetProfileId);
-            expect(clonedAssetProfile).toBeDefined();
-            expect(clonedAssetProfile!.asset_id).toBe('asset1');
+            expect(settingsStore.assetRiskProfiles.length).toBe(1);
+            expect(clonedProfile!.linked_account_id).toBe('acc1');
+            expect(clonedProfile!.capital_source).toBe('Fixed');
+
+
+
+
             
-            expect(clonedAssetProfile!.growth_phases_override?.length).toBe(1);
-            expect(clonedAssetProfile!.growth_phases_override![0].id).not.toBe('ago1');
+
+
 
             uuidSpy.mockRestore();
         });
