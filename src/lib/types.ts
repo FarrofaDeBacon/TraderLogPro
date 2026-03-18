@@ -66,11 +66,11 @@ export type Asset = {
     point_value: number;
     // Position Sizing Config
     contract_size?: number;
-    /** @deprecated Use min_contracts on RiskProfile instead */
+    /** @deprecated Use min_contracts on AssetRiskProfile instead */
     min_contracts?: number;
-    /** @deprecated Use max_contracts on RiskProfile instead */
+    /** @deprecated Use max_contracts on AssetRiskProfile instead */
     max_contracts?: number;
-    /** @deprecated Use default_stop_points on RiskProfile instead */
+    /** @deprecated Use default_stop_points on AssetRiskProfile instead */
     default_stop_points?: number;
     default_fee_id?: string;
     tax_profile_id?: string;
@@ -357,8 +357,11 @@ export type RiskProfile = {
     lot_reduction_multiplier: number;
     psychological_search_strategy: 'Strict' | 'Sequence';
     active: boolean;
+    /** @deprecated Superseded by AssetRiskProfile context */
     default_stop_points?: number;
+    /** @deprecated Superseded by AssetRiskProfile context */
     min_contracts?: number;
+    /** @deprecated Superseded by AssetRiskProfile context */
     max_contracts?: number;
     linked_asset_risk_profile_ids?: string[];
 };

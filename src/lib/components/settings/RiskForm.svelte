@@ -92,9 +92,6 @@
         psychological_search_strategy: data?.psychological_search_strategy ?? "Strict",
         account_ids: data?.account_ids ?? [],
         active: data?.active ?? false,
-        default_stop_points: data?.default_stop_points ?? undefined,
-        min_contracts: data?.min_contracts ?? undefined,
-        max_contracts: data?.max_contracts ?? undefined,
         linked_asset_risk_profile_ids: data?.linked_asset_risk_profile_ids ?? [],
     });
 
@@ -154,9 +151,6 @@
                     fd.psychological_search_strategy ?? "Strict",
                 account_ids: fd.account_ids ?? [],
                 active: fd.active ?? false,
-                default_stop_points: fd.default_stop_points ?? undefined,
-                min_contracts: fd.min_contracts ?? undefined,
-                max_contracts: fd.max_contracts ?? undefined,
                 linked_asset_risk_profile_ids: fd.linked_asset_risk_profile_ids ?? [],
             };
             selectedPreset = "custom";
@@ -255,21 +249,8 @@
     }
 
     function save() {
-        if (formData.default_stop_points !== undefined && formData.default_stop_points < 0) {
-            import("svelte-sonner").then(m => m.toast.error("O Stop Padrão não pode ser negativo."));
-            return;
-        }
-        
-        if (formData.min_contracts !== undefined && formData.max_contracts !== undefined && formData.min_contracts > formData.max_contracts) {
-            import("svelte-sonner").then(m => m.toast.error("O número mínimo de contratos não pode ser maior que o máximo."));
-            return;
-        }
-
         onSave({
             ...formData,
-            default_stop_points: formData.default_stop_points,
-            min_contracts: formData.min_contracts,
-            max_contracts: formData.max_contracts,
         });
     }
 </script>
@@ -384,7 +365,7 @@
                             <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Selecionar Conta Vinculada</Label>
                             <Select.Root
                                 type="single"
-                                bind:value={formData.linked_account_id}
+                                bind:value={() => formData.linked_account_id || "", (v) => formData.linked_account_id = v || null}
                             >
                                 <Select.Trigger class="w-full">
                                     {settingsStore.accounts.find(a => a.id === formData.linked_account_id)?.nickname ?? "Selecione uma Conta"}
@@ -444,35 +425,6 @@
                             step="0.1"
                             bind:value={formData.min_risk_reward}
                         />
-                    </div>
-                    <div class="space-y-2.5 pt-2 border-t border-border/10">
-                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Sizing Base (Pontos de Stop)</Label>
-                        <Input
-                            type="number"
-                            step="0.5"
-                            bind:value={formData.default_stop_points}
-                            placeholder="Em pontos. Ex: 10"
-                        />
-                    </div>
-                    <div class="grid grid-cols-2 gap-5 pt-2 border-t border-border/10">
-                        <div class="space-y-2.5">
-                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Contratos Mínimos</Label>
-                            <Input
-                                type="number"
-                                step="1"
-                                bind:value={formData.min_contracts}
-                                placeholder="Ex: 1"
-                            />
-                        </div>
-                        <div class="space-y-2.5">
-                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Contratos Máximos</Label>
-                            <Input
-                                type="number"
-                                step="1"
-                                bind:value={formData.max_contracts}
-                                placeholder="Ex: 100"
-                            />
-                        </div>
                     </div>
                 </div>
             </div>
