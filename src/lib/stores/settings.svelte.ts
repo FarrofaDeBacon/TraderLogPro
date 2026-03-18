@@ -14,6 +14,7 @@ import type {
 } from "$lib/types";
 import { assetsStore } from "./assets.svelte";
 import { riskSettingsStore } from "./risk-settings.svelte";
+import { accountsStore } from "./accounts.svelte";
 
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
@@ -63,7 +64,7 @@ class SettingsStore {
     journalEntries = $state<JournalEntry[]>([]);
     apiConfigs = $state<ApiConfig[]>([]);
     currencies = $state<Currency[]>([]);
-    accounts = $state<Account[]>([]);
+    get accounts() { return accountsStore.accounts; }
     fees = $state<FeeProfile[]>([]);
     taxRules = $state<TaxRule[]>([]);
     taxMappings = $state<TaxMapping[]>([]);
@@ -244,9 +245,7 @@ class SettingsStore {
             // Assign results
             if (hwid) this.hardwareId = hwid;
             if (apiConfigsRes) this.apiConfigs = apiConfigsRes;
-            if (accountsRes) {
-                this.accounts = accountsRes;
-            }
+            if (accountsRes) accountsStore.accounts = accountsRes;
             if (currenciesRes) this.currencies = currenciesRes;
             if (marketsRes) this.markets = marketsRes;
             if (assetTypesRes) this.assetTypes = assetTypesRes;
@@ -339,15 +338,7 @@ class SettingsStore {
         }
     }
 
-    private async saveAccounts() {
-        for (const account of this.accounts) {
-            try {
-                await invoke("save_account", { account: $state.snapshot(account) });
-            } catch (e) {
-                console.error("[SettingsStore] Error saving account:", e);
-            }
-        }
-    }
+
 
     private async saveCurrencies() {
         for (const currency of this.currencies) {
@@ -681,36 +672,21 @@ class SettingsStore {
 
     // Accounts
     addAccount(item: Omit<Account, "id">) {
-        this.accounts.push({ ...item, id: crypto.randomUUID() });
-        this.saveAccounts();
+        return accountsStore.addAccount(item);
     }
     updateAccount(id: string, item: Partial<Account>) {
-        this.accounts = this.accounts.map(a => a.id === id ? { ...a, ...item } : a);
-        this.saveAccounts();
+        return accountsStore.updateAccount(id, item);
     }
     async deleteAccount(id: string): Promise<{ success: boolean; error?: string }> {
-        try {
-            await invoke("delete_account", { id });
-            this.accounts = this.accounts.filter(a => a.id !== id);
+        const result = await accountsStore.deleteAccount(id);
+        if (result.success) {
             this.cashTransactions = this.cashTransactions.filter(t => t.account_id !== id);
-            return { success: true };
-        } catch (e) {
-            return { success: false, error: String(e) };
         }
+        return result;
     }
 
     async deduplicateAccounts() {
-        const seenNicks = new Set<string>();
-        const toKeep: Account[] = [];
-        for (const acc of this.accounts) {
-            if (!seenNicks.has(acc.nickname)) {
-                seenNicks.add(acc.nickname);
-                toKeep.push(acc);
-            } else {
-                await invoke("delete_account", { id: acc.id }).catch(e => console.error(e));
-            }
-        }
-        this.accounts = toKeep;
+        return accountsStore.deduplicateAccounts();
     }
 
     // Fees
@@ -1250,7 +1226,7 @@ class SettingsStore {
     }
 
     clearDatabase() {
-        this.markets = []; this.assetTypes = []; assetsStore.clearAssets(); this.accounts = [];
+        this.markets = []; this.assetTypes = []; assetsStore.clearAssets(); accountsStore.clearAccounts();
         this.fees = []; this.strategies = []; riskSettingsStore.clearRiskSettings(); this.modalities = [];
         this.emotionalStates = []; this.tags = []; this.indicators = []; this.timeframes = [];
         this.chartTypes = [];

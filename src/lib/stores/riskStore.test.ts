@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { riskStore } from './riskStore.svelte';
+import { accountsStore } from './accounts.svelte';
 import { settingsStore } from './settings.svelte';
 import { assetsStore } from './assets.svelte';
 import { riskSettingsStore } from './risk-settings.svelte';
@@ -22,7 +23,7 @@ describe('RiskStore Position Sizing Integration', () => {
         riskStore.activeAssetId = null;
         riskSettingsStore.riskProfiles = [];
         assetsStore.assets = [];
-        settingsStore.accounts = [];
+        accountsStore.accounts = [];
     });
 
     it('returns null if there is no active profile', () => {
