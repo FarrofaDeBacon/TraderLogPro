@@ -19,6 +19,7 @@ import { currenciesStore } from "./currencies.svelte";
 import { marketsStore } from "./markets.svelte";
 import { assetTypesStore } from "./asset-types.svelte";
 import { modalitiesStore } from "./modalities.svelte";
+import { timeframesStore } from "./timeframes.svelte";
 
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
@@ -62,7 +63,7 @@ class SettingsStore {
     emotionalStates = $state<EmotionalState[]>([]);
     tags = $state<Tag[]>([]);
     indicators = $state<Indicator[]>([]);
-    timeframes = $state<Timeframe[]>([]);
+    get timeframes() { return timeframesStore.timeframes; }
     chartTypes = $state<ChartType[]>([]);
     cashTransactions = $state<CashTransaction[]>([]);
     journalEntries = $state<JournalEntry[]>([]);
@@ -271,7 +272,7 @@ class SettingsStore {
             if (modalitiesRes) modalitiesStore.modalities = modalitiesRes;
             if (tagsRes) this.tags = tagsRes;
             if (indicatorsRes) this.indicators = indicatorsRes;
-            if (timeframesRes) this.timeframes = timeframesRes;
+            if (timeframesRes) timeframesStore.timeframes = timeframesRes;
             if (chartTypesRes) this.chartTypes = chartTypesRes;
             if (taxRulesRes) this.taxRules = taxRulesRes;
             if (taxMappingsRes) this.taxMappings = taxMappingsRes;
@@ -396,15 +397,7 @@ class SettingsStore {
         }
     }
 
-    private async saveTimeframes() {
-        for (const timeframe of this.timeframes) {
-            try {
-                await invoke("save_timeframe", { timeframe: $state.snapshot(timeframe) });
-            } catch (e) {
-                console.error("[SettingsStore] Error saving timeframe:", e);
-            }
-        }
-    }
+
 
     private async saveChartTypes() {
         for (const chartType of this.chartTypes) {
@@ -979,17 +972,13 @@ class SettingsStore {
 
     // Timeframes
     addTimeframe(item: Omit<Timeframe, "id">) {
-        this.timeframes.push({ ...item, id: crypto.randomUUID() });
-        this.saveTimeframes();
+        return timeframesStore.addTimeframe(item);
     }
     updateTimeframe(id: string, item: Partial<Timeframe>) {
-        this.timeframes = this.timeframes.map(t => t.id === id ? { ...t, ...item } : t);
-        this.saveTimeframes();
+        return timeframesStore.updateTimeframe(id, item);
     }
     async deleteTimeframe(id: string): Promise<{ success: boolean; error?: string }> {
-        await invoke("delete_timeframe", { id });
-        this.timeframes = this.timeframes.filter(t => t.id !== id);
-        return { success: true };
+        return timeframesStore.deleteTimeframe(id);
     }
 
     // Chart Types
@@ -1146,7 +1135,7 @@ class SettingsStore {
     clearDatabase() {
         marketsStore.clearMarkets(); assetTypesStore.clearAssetTypes(); assetsStore.clearAssets(); accountsStore.clearAccounts(); currenciesStore.clearCurrencies();
         this.fees = []; this.strategies = []; riskSettingsStore.clearRiskSettings(); modalitiesStore.clearModalities();
-        this.emotionalStates = []; this.tags = []; this.indicators = []; this.timeframes = [];
+        this.emotionalStates = []; this.tags = []; this.indicators = []; timeframesStore.clearTimeframes();
         this.chartTypes = [];
     }
 
