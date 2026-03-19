@@ -10,7 +10,7 @@ import type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
     JournalEntry, Trade, EmotionalState, Strategy, UserProfile,
     FeeProfile, RiskProfile, Modality, Tag, Indicator, Timeframe,
-    ChartType, ApiConfig, CashTransaction, TaxRule, TaxMapping, TaxProfile, TaxProfileEntry, AssetRiskProfile
+    ChartType, ApiConfig, CashTransaction, TaxRule, TaxMapping, TaxProfile, TaxProfileEntry, AssetRiskProfile, GrowthPlan
 } from "$lib/types";
 import { assetsStore } from "./assets.svelte";
 import { riskSettingsStore } from "./risk-settings.svelte";
@@ -221,7 +221,8 @@ class SettingsStore {
                 taxMappingsRes,
                 taxProfilesRes,
                 taxProfileEntriesRes,
-                assetRiskProfilesRes
+                assetRiskProfilesRes,
+                growthPlansRes
             ] = await Promise.all([
                 safeInvoke<UserProfile>("get_user_profile", "User Profile"),
                 safeInvoke<string>("get_machine_id_cmd", "Hardware ID"),
@@ -246,7 +247,8 @@ class SettingsStore {
                 safeInvoke<TaxMapping[]>("get_tax_mappings", "Tax Mappings"),
                 safeInvoke<TaxProfile[]>("get_tax_profiles", "Tax Profiles"),
                 safeInvoke<TaxProfileEntry[]>("get_tax_profile_entries", "Tax Profile Entries"),
-                safeInvoke<AssetRiskProfile[]>("get_asset_risk_profiles", "Asset Risk Profiles")
+                safeInvoke<AssetRiskProfile[]>("get_asset_risk_profiles", "Asset Risk Profiles"),
+                safeInvoke<GrowthPlan[]>("get_growth_plans", "Growth Plans")
             ]);
 
             // Assign results
@@ -281,6 +283,7 @@ class SettingsStore {
             if (taxProfilesRes) this.taxProfiles = taxProfilesRes;
             if (taxProfileEntriesRes) this.taxProfileEntries = taxProfileEntriesRes;
             if (assetRiskProfilesRes) riskSettingsStore.assetRiskProfiles = assetRiskProfilesRes;
+            if (growthPlansRes) riskSettingsStore.growthPlans = growthPlansRes;
 
             if (journalEntriesRes) {
                 this.journalEntries = journalEntriesRes;

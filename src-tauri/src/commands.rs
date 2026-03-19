@@ -1,8 +1,8 @@
 use crate::db::DbState;
 use crate::models::{
     Account, ApiConfig, Asset, AssetType, CashTransaction, ChartType, Currency, EmotionalState,
-    FeeProfile, Indicator, JournalEntry, Market, Modality, RiskProfile, Strategy, Tag, Timeframe,
-    Trade, UserProfile, AssetRiskProfile,
+    FeeProfile, GrowthPlan, Indicator, JournalEntry, Market, Modality, RiskProfile, Strategy, Tag,
+    Timeframe, Trade, UserProfile, AssetRiskProfile,
 };
 use crate::models::dto::AssetRiskProfileDto;
 use bcrypt::{hash, verify, DEFAULT_COST};
@@ -1411,6 +1411,42 @@ pub async fn delete_risk_profile(db: State<'_, DbState>, id: String) -> Result<(
     delete_record(&db.0, "risk_profile", &clean_id).await
 }
 
+// --- Growth Plans ---
+
+#[tauri::command]
+pub async fn get_growth_plans(db: State<'_, DbState>) -> Result<Vec<GrowthPlan>, String> {
+    println!("[COMMAND] get_growth_plans called");
+    let mut result =
+        db.0.query("SELECT *, type::string(id) as id FROM growth_plan")
+            .await
+            .map_err(|e| e.to_string())?;
+    let plans: Vec<GrowthPlan> = result.take(0).map_err(|e| e.to_string())?;
+    println!(
+        "[COMMAND] get_growth_plans returning {} items",
+        plans.len()
+    );
+    Ok(plans)
+}
+
+#[tauri::command]
+pub async fn save_growth_plan(db: State<'_, DbState>, plan: GrowthPlan) -> Result<(), String> {
+    let id = plan.id.clone();
+    let mut json = serde_json::to_value(&plan).map_err(|e| e.to_string())?;
+    if let Some(obj) = json.as_object_mut() {
+        obj.remove("id");
+    }
+    let clean_id = id.split(':').last().unwrap_or(id.as_str());
+    upsert_record(&db.0, "growth_plan", clean_id, json).await
+}
+
+#[tauri::command]
+pub async fn delete_growth_plan(db: State<'_, DbState>, id: String) -> Result<(), String> {
+    let clean_id = id.split(':').last().unwrap_or(&id)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    delete_record(&db.0, "growth_plan", &clean_id).await
+}
+
 // --- Modalities ---
 
 #[tauri::command]
@@ -1584,6 +1620,7 @@ pub async fn factory_reset(db: State<'_, DbState>) -> Result<(), String> {
         "fee_profile",
         "emotional_state",
         "risk_profile",
+        "growth_plan",
         "timeframe",
         "chart_type",
         "asset",

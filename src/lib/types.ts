@@ -329,6 +329,15 @@ export type GrowthPhase = {
     conditions_to_demote: RiskCondition[];
 };
 
+export type GrowthPlan = {
+    id: string;
+    name: string;
+    enabled: boolean;
+    current_phase_index: number;
+    phases: GrowthPhase[];
+    risk_profile_id: string;
+};
+
 export type RiskProfile = {
     id: string;
     name: string;
@@ -344,8 +353,11 @@ export type RiskProfile = {
     capital_source: "Fixed" | "LinkedAccount";
     fixed_capital: number;
     linked_account_id: string | null;
+    /** @deprecated Use GrowthPlan entity via growth_plan_id instead */
     growth_plan_enabled: boolean;
+    /** @deprecated Use GrowthPlan entity via growth_plan_id instead */
     current_phase_index: number;
+    /** @deprecated Use GrowthPlan entity via growth_plan_id instead */
     growth_phases: GrowthPhase[];
     psychological_coupling_enabled: boolean;
     outlier_regression_enabled: boolean;
@@ -367,6 +379,7 @@ export type RiskProfile = {
     combined_rules?: CombinedRiskRule[];
     risk_rules?: RiskRule[];
     desk_config?: DeskConfig;
+    growth_plan_id?: string;
 };
 
 export type DeskConfig = {

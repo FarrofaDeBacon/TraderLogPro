@@ -207,6 +207,8 @@ pub async fn seed_risk_profiles(
                 None
             },
             desk_config,
+            risk_rules: None,
+            growth_plan_id: None,
         };
         let mut json = serde_json::to_value(&data).unwrap();
         if let Some(obj) = json.as_object_mut() {

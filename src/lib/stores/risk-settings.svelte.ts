@@ -1,9 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { RiskProfile, AssetRiskProfile } from "$lib/types";
+import type { RiskProfile, AssetRiskProfile, GrowthPlan } from "$lib/types";
 
 export class RiskSettingsStore {
     riskProfiles = $state<RiskProfile[]>([]);
     assetRiskProfiles = $state<AssetRiskProfile[]>([]);
+    growthPlans = $state<GrowthPlan[]>([]);
 
     get activeProfile() {
         return this.riskProfiles.find(p => p.active) || this.riskProfiles[0];
@@ -25,6 +26,16 @@ export class RiskSettingsStore {
                 await invoke("save_asset_risk_profile", { profile: $state.snapshot(profile) });
             } catch (e) {
                 console.error("[RiskSettingsStore] Error saving asset risk profile:", e);
+            }
+        }
+    }
+
+    async saveGrowthPlans() {
+        for (const plan of this.growthPlans) {
+            try {
+                await invoke("save_growth_plan", { plan: $state.snapshot(plan) });
+            } catch (e) {
+                console.error("[RiskSettingsStore] Error saving growth plan:", e);
             }
         }
     }
@@ -126,10 +137,39 @@ export class RiskSettingsStore {
         }
     }
 
+    // --- Growth Plans CRUD ---
+    addGrowthPlan(item: Omit<GrowthPlan, "id">) {
+        const plan: GrowthPlan = { ...item, id: crypto.randomUUID() };
+        this.growthPlans.push(plan);
+        this.saveGrowthPlans();
+        return plan.id;
+    }
+
+    updateGrowthPlan(id: string, item: Partial<GrowthPlan>) {
+        this.growthPlans = this.growthPlans.map(p => p.id === id ? { ...p, ...item } : p);
+        this.saveGrowthPlans();
+    }
+
+    async deleteGrowthPlan(id: string): Promise<{ success: boolean; error?: string }> {
+        try {
+            await invoke("delete_growth_plan", { id });
+            this.growthPlans = this.growthPlans.filter(p => p.id !== id);
+            return { success: true };
+        } catch (e) {
+            return { success: false, error: String(e) };
+        }
+    }
+
+    getGrowthPlanForProfile(riskProfileId: string): GrowthPlan | undefined {
+        return this.growthPlans.find(p => p.risk_profile_id === riskProfileId);
+    }
+
     clearRiskSettings() {
         this.riskProfiles = [];
         this.assetRiskProfiles = [];
+        this.growthPlans = [];
     }
 }
 
 export const riskSettingsStore = new RiskSettingsStore();
+

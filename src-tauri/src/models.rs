@@ -902,6 +902,34 @@ pub struct DeskConfig {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct RiskRule {
+    pub id: String,
+    pub name: String,
+    pub enabled: bool,
+    pub scope: String,       // "global" | "asset" | "combined"
+    pub target_type: String, // "sum_contracts" | "max_daily_loss" | etc.
+    pub operator: String,    // "<=" | ">=" | "=" | "<" | ">" | "between"
+    pub value: serde_json::Value, // number or boolean
+    #[serde(default)]
+    pub value_secondary: Option<f64>,
+    #[serde(default)]
+    pub asset_risk_profile_ids: Option<Vec<String>>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GrowthPlan {
+    #[serde(deserialize_with = "deserialize_id")]
+    pub id: String,
+    pub name: String,
+    pub enabled: bool,
+    #[serde(default)]
+    pub current_phase_index: i32,
+    #[serde(default)]
+    pub phases: Vec<GrowthPhase>,
+    pub risk_profile_id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RiskProfile {
     #[serde(deserialize_with = "deserialize_id")]
     pub id: String,
@@ -959,7 +987,11 @@ pub struct RiskProfile {
     #[serde(default)]
     pub combined_rules: Option<Vec<CombinedRiskRule>>,
     #[serde(default)]
+    pub risk_rules: Option<Vec<RiskRule>>,
+    #[serde(default)]
     pub desk_config: Option<DeskConfig>,
+    #[serde(default)]
+    pub growth_plan_id: Option<String>,
 }
 
 fn default_target_type() -> String {
