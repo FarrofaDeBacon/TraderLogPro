@@ -81,93 +81,12 @@
     {#if config?.enabled}
         <div class="p-6 rounded-lg border bg-background/30 space-y-6">
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Nome do Plano -->
                 <div class="space-y-2">
                     <Label>{$t("risk.management.planName") || "Nome do plano"}</Label>
                     <Input bind:value={config.plan_name} placeholder="Ex: 5PI Book 4k" />
                 </div>
 
-                <!-- Ativos Permitidos -->
-                <div class="space-y-2">
-                    <Label>{$t("risk.management.allowedAssets") || "Ativos permitidos"}</Label>
-                    {#if availableAssetProfiles.length === 0}
-                        <p class="text-xs text-muted-foreground p-2 border border-dashed rounded bg-background/50">
-                            Nenhum perfil de ativo disponível no sistema.
-                        </p>
-                    {:else}
-                        <div class="flex flex-wrap gap-2 p-2 rounded-md border min-h-10 bg-background/50">
-                            {#each availableAssetProfiles as profile}
-                                <button
-                                    type="button"
-                                    class="text-xs px-2 py-1 rounded border transition-colors {config.allowed_asset_ids?.includes(profile.id || '') ? 'bg-primary/20 border-primary text-primary' : 'bg-muted/50 border-input text-muted-foreground hover:bg-muted'}"
-                                    onclick={() => profile.id && toggleAssetProfile(profile.id)}
-                                    title={profile.name}
-                                >
-                                    {profile.name}
-                                </button>
-                            {/each}
-                        </div>
-                    {/if}
-                </div>
-
-                <!-- Exposição Máxima -->
-                <div class="space-y-2">
-                    <Label>{$t("risk.management.maxCombinedExposure") || "Exposição máxima combinada"}</Label>
-                    <Input type="number" min="0" bind:value={config.max_combined_exposure} />
-                </div>
-
-                <!-- Perda Máxima Total -->
-                <div class="space-y-2">
-                    <Label>{$t("risk.management.maxTotalLoss") || "Perda máxima total"}</Label>
-                    <Input type="number" min="0" step="0.01" bind:value={config.max_total_loss} />
-                </div>
-
-                <!-- Meta / Lucro Alvo -->
-                <div class="space-y-2">
-                    <Label>{$t("risk.management.profitTarget") || "Meta / Lucro alvo"}</Label>
-                    <Input type="number" min="0" step="0.01" bind:value={config.profit_target} />
-                </div>
-
-                <!-- X min. antes do fechamento -->
-                <div class="space-y-2">
-                    <Label>{$t("risk.management.closeBeforeMarketCloseMinutes") || "Encerrar mins. antes do fechamento"}</Label>
-                    <Input type="number" min="0" bind:value={config.close_before_market_close_minutes} />
-                </div>
-
-                <!-- Modo de Consistência -->
-                <div class="space-y-2">
-                    <Label>{$t("risk.management.consistencyMode") || "Modo de Consistência"}</Label>
-                    <Select.Root
-                        type="single"
-                        bind:value={config.consistency_mode}
-                    >
-                        <Select.Trigger>
-                            {#if config.consistency_mode === "10days_5positive"}
-                                {$t("risk.management.consistencyMode_10days_5positive") || "10 Dias (min. 5 Positivos)"}
-                            {:else if config.consistency_mode === "5days_3positive"}
-                                {$t("risk.management.consistencyMode_5days_3positive") || "5 Dias (min. 3 Positivos)"}
-                            {:else}
-                                {$t("risk.management.consistencyMode_none") || "Nenhum"}
-                            {/if}
-                        </Select.Trigger>
-                        <Select.Content>
-                            <Select.Item value="none">{$t("risk.management.consistencyMode_none") || "Nenhum"}</Select.Item>
-                            <Select.Item value="5days_3positive">{$t("risk.management.consistencyMode_5days_3positive") || "5 Dias (min. 3 Positivos)"}</Select.Item>
-                            <Select.Item value="10days_5positive">{$t("risk.management.consistencyMode_10days_5positive") || "10 Dias (min. 5 Positivos)"}</Select.Item>
-                        </Select.Content>
-                    </Select.Root>
-                </div>
-
-                <!-- Max lucro unico dia % -->
-                <div class="space-y-2">
-                    <Label>{$t("risk.management.maxSingleDayProfitShare") || "% máx. de lucro em único dia"}</Label>
-                    <div class="relative">
-                        <Input type="number" min="0" max="1" step="0.01" bind:value={config.max_single_day_profit_share} />
-                        <span class="absolute right-3 top-2.5 text-sm text-muted-foreground">% abs (0.0 a 1.0)</span>
-                    </div>
-                </div>
-                
                 <!-- MDR Mode -->
                 <div class="space-y-2">
                     <Label>{$t("risk.management.mdrMode") || "Modo de MDR"}</Label>
@@ -191,16 +110,6 @@
                         </Select.Content>
                     </Select.Root>
                 </div>
-
-                <!-- Day Trade Only -->
-                <div class="space-y-2 flex flex-col justify-end pb-2">
-                    <div class="flex items-center space-x-2">
-                        <Switch id="daytrade-only" bind:checked={config.day_trade_only} />
-                        <Label for="daytrade-only">{$t("risk.management.dayTradeOnly") || "Somente Day Trade"}</Label>
-                    </div>
-                </div>
-
             </div>
-        </div>
     {/if}
 </div>

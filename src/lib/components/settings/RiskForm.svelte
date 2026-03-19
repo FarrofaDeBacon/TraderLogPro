@@ -273,23 +273,23 @@
         />
     </div>
 
-    <Tabs.Root value="general" class="w-full">
+    <Tabs.Root value="base" class="w-full">
         <Tabs.List class="flex overflow-x-auto sm:grid sm:grid-cols-4 w-full justify-start sm:justify-center p-1">
-            <Tabs.Trigger value="general" class="whitespace-nowrap"
-                >{$t("settings.risk.form.tabs.general")}</Tabs.Trigger
+            <Tabs.Trigger value="base" class="whitespace-nowrap"
+                >{$t("settings.risk.form.tabs.base") || "Base"}</Tabs.Trigger
             >
             <Tabs.Trigger value="asset-profiles" class="whitespace-nowrap"
-                >{$t("settings.risk.form.tabs.assetProfiles")}</Tabs.Trigger
+                >{$t("settings.risk.form.tabs.assetProfiles") || "Ativos"}</Tabs.Trigger
             >
-            <Tabs.Trigger value="plan-rules" class="whitespace-nowrap"
-                >{$t("settings.risk.form.tabs.planRules")}</Tabs.Trigger
+            <Tabs.Trigger value="rules" class="whitespace-nowrap"
+                >{$t("settings.risk.form.tabs.rules") || "Regras"}</Tabs.Trigger
             >
-            <Tabs.Trigger value="growth" class="whitespace-nowrap"
-                >{$t("settings.risk.form.tabs.growth")}</Tabs.Trigger
+            <Tabs.Trigger value="motors" class="whitespace-nowrap"
+                >{$t("settings.risk.form.tabs.motors") || "Motores"}</Tabs.Trigger
             >
         </Tabs.List>
 
-        <Tabs.Content value="general" class="space-y-3 pt-2">
+        <Tabs.Content value="base" class="space-y-3 pt-2">
             
             <!-- Target Type & Capital Source -->
             <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
@@ -368,13 +368,6 @@
                         {$t("settings.risk.downside")}
                     </h3>
                     <div class="space-y-2.5">
-                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.dailyLossLimit")}</Label>
-                        <Input
-                            type="number"
-                            bind:value={formData.max_daily_loss}
-                        />
-                    </div>
-                    <div class="space-y-2.5">
                         <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.maxRiskPerTrade")}</Label>
                         <Input
                             type="number"
@@ -390,13 +383,6 @@
                         <Target class="w-4 h-4" />
                         {$t("settings.risk.upside")} & Sizing
                     </h3>
-                    <div class="space-y-2.5">
-                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.dailyGoal")}</Label>
-                        <Input
-                            type="number"
-                            bind:value={formData.daily_target}
-                        />
-                    </div>
                     <div class="space-y-2.5">
                         <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.minRiskReward")}</Label>
                         <Input
@@ -415,13 +401,6 @@
                     {$t("settings.risk.discipline")}
                 </h3>
                 <div class="grid grid-cols-2 gap-5">
-                    <div class="space-y-2.5">
-                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.maxTradesDay")}</Label>
-                        <Input
-                            type="number"
-                            bind:value={formData.max_trades_per_day}
-                        />
-                    </div>
                     <div class="space-y-2.5">
                         <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.applicability")}</Label>
                         <Select.Root
@@ -589,15 +568,9 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- TAB 3: REGRAS DO PLANO                             -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <Tabs.Content value="plan-rules" class="space-y-4 pt-2">
+        <Tabs.Content value="rules" class="space-y-4 pt-2">
 
-            <!-- SUB-BLOCK A: Regras Combinadas -->
-            <CombinedRulesSection
-                bind:rules={() => formData.combined_rules ?? [], (v) => formData.combined_rules = v}
-                availableAssetProfiles={settingsStore.assetRiskProfiles.filter(ap => formData.linked_asset_risk_profile_ids?.includes(ap.id as string))}
-            />
-
-            <!-- SUB-BLOCK B: Configuração da Mesa -->
+            <!-- SUB-BLOCK B: Configuração da Mesa (Visual/Marcador apenas) -->
             <DeskConfigSection
                 bind:config={formData.desk_config}
                 availableAssetProfiles={settingsStore.assetRiskProfiles}
@@ -610,8 +583,12 @@
                     assetRiskProfiles={settingsStore.assetRiskProfiles}
                 />
             </div>
+        </Tabs.Content>
 
-            <!-- SUB-BLOCK D: Motores de Risco (Psychological / Outlier / Sniper) -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- TAB 4: MOTORES                                     -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <Tabs.Content value="motors" class="space-y-4 pt-2">
             <div class="space-y-4">
                 <!-- Psychological Coupling -->
                 <div class="space-y-5 p-5 rounded-xl border border-indigo-500/20 bg-indigo-500/5 shadow-sm">
@@ -782,68 +759,6 @@
                     {/if}
                 </div>
             </div>
-        </Tabs.Content>
-
-        <Tabs.Content value="growth" class="space-y-3 pt-2">
-            <div class="flex items-center justify-between p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm cursor-pointer" onclick={() => formData.growth_plan_enabled = !formData.growth_plan_enabled}>
-                <div class="flex items-center gap-3">
-                    <div class="p-2 rounded-lg bg-primary/10"><TrendingUp class="w-5 h-5 text-primary" /></div>
-                    <div class="space-y-1">
-                        <h4 class="font-bold text-sm text-foreground">
-                            {$t("settings.risk.growthPlan.enable")}
-                        </h4>
-                        <p class="text-[10px] text-muted-foreground/80 uppercase tracking-widest font-semibold">
-                            {$t("settings.risk.growthPlan.enableDesc")}
-                        </p>
-                    </div>
-                </div>
-                <Switch bind:checked={formData.growth_plan_enabled} />
-            </div>
-
-            {#if formData.growth_plan_enabled}
-                <div class="space-y-6">
-                    <!-- Growth Presets Selection -->
-                    <div class="space-y-3 p-4 bg-black/5 rounded-xl border border-dashed border-border/20">
-                        <Label
-                            class="text-xs text-muted-foreground uppercase font-bold"
-                            >{$t("settings.risk.form.presets.title")}</Label
-                        >
-                        <div class="flex flex-wrap gap-2">
-                            {#each Object.entries(growthPresets) as [key, p]}
-                                <button
-                                    class="px-3 py-1.5 rounded-full text-xs font-medium border transition-all {selectedGrowthPreset ===
-                                    key
-                                        ? 'bg-primary text-primary-foreground border-primary'
-                                        : 'bg-background hover:bg-muted border-input'}"
-                                    onclick={() => applyGrowthPreset(key)}
-                                    title={p.description}
-                                >
-                                    {p.name}
-                                </button>
-                            {/each}
-                            <button
-                                class="px-3 py-1.5 rounded-full text-xs font-medium border transition-all {selectedGrowthPreset ===
-                                'custom'
-                                    ? 'bg-primary text-primary-foreground border-primary'
-                                    : 'bg-background hover:bg-muted border-input'}"
-                                onclick={() =>
-                                    (selectedGrowthPreset = "custom")}
-                            >
-                                {$t("general.custom") || "Personalizado"}
-                            </button>
-                        </div>
-                        {#if selectedGrowthPreset !== "custom"}
-                            <p class="text-xs text-muted-foreground italic">
-                                {growthPresets[
-                                    selectedGrowthPreset as keyof typeof growthPresets
-                                ].description}
-                            </p>
-                        {/if}
-                    </div>
-
-                    <GrowthPhasesEditor bind:phases={formData.growth_phases} onChange={() => selectedGrowthPreset = 'custom'} />
-                </div>
-            {/if}
         </Tabs.Content>
     </Tabs.Root>
 

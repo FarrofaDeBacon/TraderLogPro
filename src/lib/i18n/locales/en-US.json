@@ -1628,10 +1628,10 @@
           "title": "Profile Presets"
         },
         "tabs": {
-          "general": "General",
+          "base": "Base",
           "assetProfiles": "Asset Profiles",
-          "planRules": "Plan Rules",
-          "growth": "Growth"
+          "rules": "Rules",
+          "motors": "Motors"
         },
         "ruleBuilder": {
           "title": "Plan Rules",

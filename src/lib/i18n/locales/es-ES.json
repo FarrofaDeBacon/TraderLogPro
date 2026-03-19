@@ -1626,10 +1626,10 @@
           "title": "Ajustes Predefinidos"
         },
         "tabs": {
-          "general": "General",
-          "assetProfiles": "Perfiles de Activo",
-          "planRules": "Reglas del Plan",
-          "growth": "Growth"
+          "base": "Base",
+          "assetProfiles": "Perfiles de Activos",
+          "rules": "Reglas",
+          "motors": "Motores"
         },
         "ruleBuilder": {
           "title": "Reglas del Plan",
