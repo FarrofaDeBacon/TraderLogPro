@@ -38,7 +38,7 @@ export function adaptSettingsProfileToDomain(profile: RiskProfile): RiskProfileC
         emotionalLookbackTrades: profile.psychological_lookback_count,
         emotionalPenaltyThreshold: profile.psychological_threshold,
         
-        growthPlanEnabled: profile.growth_plan_enabled
+        growthPlanEnabled: !!profile.growth_plan_id
     };
 }
 

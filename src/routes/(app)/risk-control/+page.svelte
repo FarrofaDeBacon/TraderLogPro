@@ -51,20 +51,26 @@
         activeProfiles.find(p => p.id === selectedProfileId) || activeProfiles[0]
     );
 
+    let currentPlan = $derived(
+        currentProfile?.growth_plan_id ? settingsStore.getGrowthPlanForProfile(currentProfile.id) : null
+    );
+
     /** Promote the growth plan phase by 1 */
     async function promotePhase() {
-        if (!currentProfile) return;
-        const next = Math.min(currentProfile.current_phase_index + 1, currentProfile.growth_phases.length - 1);
-        await settingsStore.updateRiskProfile(currentProfile.id, { ...currentProfile, current_phase_index: next });
-        toast.success(`Promovido para a Fase ${next + 1}: ${currentProfile.growth_phases[next]?.name}`);
+        if (!currentPlan) return;
+        const next = Math.min(currentPlan.current_phase_index + 1, currentPlan.phases.length - 1);
+        currentPlan.current_phase_index = next;
+        await settingsStore.updateGrowthPlan(currentPlan.id, currentPlan);
+        toast.success(`Promovido para a Fase ${next + 1}: ${currentPlan.phases[next]?.name || `Fase ${next + 1}`}`);
     }
 
     /** Demote the growth plan phase by 1 */
     async function demotePhase() {
-        if (!currentProfile) return;
-        const prev = Math.max(currentProfile.current_phase_index - 1, 0);
-        await settingsStore.updateRiskProfile(currentProfile.id, { ...currentProfile, current_phase_index: prev });
-        toast.warning(`Regredido para a Fase ${prev + 1}: ${currentProfile.growth_phases[prev]?.name}`);
+        if (!currentPlan) return;
+        const prev = Math.max(currentPlan.current_phase_index - 1, 0);
+        currentPlan.current_phase_index = prev;
+        await settingsStore.updateGrowthPlan(currentPlan.id, currentPlan);
+        toast.warning(`Regredido para a Fase ${prev + 1}: ${currentPlan.phases[prev]?.name || `Fase ${prev + 1}`}`);
     }
 
     // TODO: migrar este trecho para riskStore/riskCockpitState
@@ -563,7 +569,7 @@
                 </Card.Root>
 
                 <!-- Widget 4: Growth Phase (Dependent on whether it's enabled) -->
-                {#if currentProfile.growth_plan_enabled}
+                {#if currentPlan?.enabled}
                     <Card.Root class="lg:col-span-12 border-primary/20 shadow-lg bg-black/10 overflow-hidden relative">
                         <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
                         <div class="p-6">
@@ -617,13 +623,13 @@
                                          </div>
                                          <div class="flex flex-col p-3 rounded-lg border border-border/10 bg-black/20 items-center text-center">
                                              <span class="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-1">Fase</span>
-                                             <span class="text-xl font-bold font-mono tracking-tight text-primary">{ctx.riskProfile.current_phase_index + 1}<span class="text-xs text-muted-foreground font-normal">/{ctx.riskProfile.growth_phases.length}</span></span>
+                                             <span class="text-xl font-bold font-mono tracking-tight text-primary">{currentPlan.current_phase_index + 1}<span class="text-xs text-muted-foreground font-normal">/{currentPlan.phases.length}</span></span>
                                          </div>
                                          <div class="flex flex-col gap-2">
                                              <!-- Consuming DOMAIN growthEvaluation -->
                                              <Button size="sm" variant="outline"
                                                  class="h-8 text-xs border-emerald-500/40 text-emerald-500 hover:bg-emerald-500/10 hover:border-emerald-500 disabled:opacity-30 relative"
-                                                 disabled={ctx.riskProfile.current_phase_index >= ctx.riskProfile.growth_phases.length - 1 || riskData.growthEvaluation?.canPromote === false}
+                                                 disabled={currentPlan.current_phase_index >= currentPlan.phases.length - 1 || riskData.growthEvaluation?.canPromote === false}
                                                  onclick={promotePhase}>
                                                  <ChevronRight class="w-4 h-4 mr-1" /> Promover
                                                  {#if riskData.growthEvaluation?.canPromote}
@@ -632,7 +638,7 @@
                                              </Button>
                                              <Button size="sm" variant="outline"
                                                  class="h-8 text-xs border-rose-500/40 text-rose-500 hover:bg-rose-500/10 hover:border-rose-500 disabled:opacity-30 relative"
-                                                 disabled={ctx.riskProfile.current_phase_index <= 0 || riskData.growthEvaluation?.shouldRegress === false}
+                                                 disabled={currentPlan.current_phase_index <= 0 || riskData.growthEvaluation?.shouldRegress === false}
                                                  onclick={demotePhase}>
                                                  <ChevronLeft class="w-4 h-4 mr-1" /> Regredir
                                                  {#if riskData.growthEvaluation?.shouldRegress}

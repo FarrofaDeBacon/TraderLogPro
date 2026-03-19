@@ -81,8 +81,9 @@ export class RiskStore {
         let domainGrowthPhase = undefined;
         let startingCapital = undefined;
 
-        if (activeProfile.growth_plan_enabled && activeProfile.growth_phases && activeProfile.growth_phases.length > activeProfile.current_phase_index) {
-            const rawPhase = activeProfile.growth_phases[activeProfile.current_phase_index];
+        const activePlan = activeProfile.growth_plan_id ? settingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
+        if (activePlan && activePlan.enabled && activePlan.phases && activePlan.phases.length > activePlan.current_phase_index) {
+            const rawPhase = activePlan.phases[activePlan.current_phase_index];
             domainGrowthPhase = adaptGrowthPhaseToDomain(rawPhase);
 
             // Determinar Capital Base (para drawdowns) baseado na regra da conta escolhida vs fixed capital
@@ -152,15 +153,16 @@ export class RiskStore {
         }
 
         // 2. Fallback para o Global RiskProfile
-        if (activeProfile.growth_plan_enabled && activeProfile.growth_phases && activeProfile.growth_phases.length > 0) {
-            const currentPhaseIndex = activeProfile.current_phase_index || 0;
-            if (currentPhaseIndex < activeProfile.growth_phases.length) {
+        const activePlan = activeProfile.growth_plan_id ? settingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
+        if (activePlan && activePlan.enabled && activePlan.phases && activePlan.phases.length > 0) {
+            const currentPhaseIndex = activePlan.current_phase_index || 0;
+            if (currentPhaseIndex < activePlan.phases.length) {
                 return {
                     asset,
                     assetRiskProfile,
                     riskProfile: activeProfile,
                     growthSourceType: "global",
-                    growthPhase: activeProfile.growth_phases[currentPhaseIndex]
+                    growthPhase: activePlan.phases[currentPhaseIndex]
                 };
             }
         }
@@ -188,8 +190,9 @@ export class RiskStore {
         let currentPhase = undefined;
         let dynamicBalance = undefined;
 
-        if (activeProfile.growth_plan_enabled && activeProfile.growth_phases && activeProfile.growth_phases.length > activeProfile.current_phase_index) {
-            currentPhase = activeProfile.growth_phases[activeProfile.current_phase_index];
+        const activePlan = activeProfile.growth_plan_id ? settingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
+        if (activePlan && activePlan.enabled && activePlan.phases && activePlan.phases.length > activePlan.current_phase_index) {
+            currentPhase = activePlan.phases[activePlan.current_phase_index];
         }
 
         if (activeProfile.capital_source === 'LinkedAccount' && activeProfile.linked_account_id) {

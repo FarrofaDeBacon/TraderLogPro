@@ -44,7 +44,7 @@ export function adaptPositionSizingInput(
     const maxContracts = assetRiskProfile.max_contracts;
 
     // 3. Extrair Regras da Fase Ativa de Crescimento
-    const maxContractsPhase = (profile.growth_plan_enabled && currentPhase) 
+    const maxContractsPhase = (profile.growth_plan_id && currentPhase) 
         ? currentPhase.lot_size 
         : undefined;
 

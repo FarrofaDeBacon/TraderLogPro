@@ -157,9 +157,7 @@ describe('SettingsStore Unit Tests', () => {
                 capital_source: 'Fixed',
                 fixed_capital: 10000,
                 linked_account_id: 'acc1',
-                growth_plan_enabled: true,
-                current_phase_index: 0,
-                growth_phases: [{ id: 'gp1', level: 1, name: 'Phase 1', lot_size: 1, conditions_to_advance: [], conditions_to_demote: [] }],
+                
                 psychological_coupling_enabled: false,
                 outlier_regression_enabled: false,
                 sniper_mode_enabled: false,
@@ -252,9 +250,7 @@ describe('SettingsStore Unit Tests', () => {
                 capital_source: 'LinkedAccount',
                 fixed_capital: 0,
                 linked_account_id: 'acc1',
-                growth_plan_enabled: true,
-                current_phase_index: 0,
-                growth_phases: [{ id: 'gp1', level: 1, name: 'Phase 1', lot_size: 1, conditions_to_advance: [], conditions_to_demote: [] }],
+                
                 psychological_coupling_enabled: false,
                 outlier_regression_enabled: false,
                 sniper_mode_enabled: false,
@@ -353,8 +349,6 @@ describe('SettingsStore Unit Tests', () => {
                 capital_source: 'Fixed',
                 fixed_capital: 10000,
                 linked_account_id: null,
-                growth_plan_enabled: true,
-                current_phase_index: 0,
                 psychological_coupling_enabled: false,
                 outlier_regression_enabled: false,
                 sniper_mode_enabled: false,
@@ -367,8 +361,7 @@ describe('SettingsStore Unit Tests', () => {
                 account_type_applicability: 'All',
                 account_ids: [],
                 linked_asset_risk_profile_ids: [sharedAssetProfileId],
-                growth_phases: []
-            }];
+                }];
 
             const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
             

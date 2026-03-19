@@ -23,9 +23,6 @@ describe('Risk Adapters', () => {
             capital_source: 'Fixed',
             fixed_capital: 1000,
             linked_account_id: null,
-            growth_plan_enabled: true,
-            current_phase_index: 0,
-            growth_phases: [],
             psychological_coupling_enabled: true,
             outlier_regression_enabled: false,
             sniper_mode_enabled: true,
@@ -35,7 +32,8 @@ describe('Risk Adapters', () => {
             psychological_threshold: 50,
             lot_reduction_multiplier: 0.5,
             psychological_search_strategy: 'Strict',
-            active: true
+            active: true,
+            growth_plan_id: 'gp1'
         };
 
         const domainProfile = adaptSettingsProfileToDomain(appProfile);

@@ -78,15 +78,19 @@
     return Number(sorted[0].entry_price) || 0;
   });
 
+  const activePlan = $derived(
+    activeProfile?.growth_plan_id ? settingsStore.getGrowthPlanForProfile(activeProfile.id) : null
+  );
+
   const activePhase = $derived.by(() => {
-    const profile = activeProfile;
+    const plan = activePlan;
     if (
-      !profile ||
-      !profile.growth_phases ||
-      profile.current_phase_index === undefined
+      !plan ||
+      !plan.phases ||
+      plan.current_phase_index === undefined
     )
       return null;
-    return profile.growth_phases[profile.current_phase_index] || null;
+    return plan.phases[plan.current_phase_index] || null;
   });
 
   // --- Mastery Stats Engine ---
@@ -409,7 +413,7 @@
         <!-- Left Analytical Hub (8 Cols) -->
         <div class="col-span-full lg:col-span-8 space-y-2">
           <!-- Unified Survivor Control Center -->
-          {#if activeProfile?.growth_plan_enabled}
+          {#if activePlan?.enabled}
             <div class="space-y-1.5">
               <div class="flex items-center justify-between">
                 <h4
@@ -482,23 +486,23 @@
 
                   <!-- Phase Roadmap -->
                   <div class="flex items-center gap-1.5">
-                    {#each activeProfile?.growth_phases || [] as phase, i}
+                    {#each activePlan?.phases || [] as phase, i}
                       <div class="flex items-center">
                         <div
                           class={cn(
                             "w-1.5 h-1.5 rounded-full transition-all duration-300",
-                            i === activeProfile?.current_phase_index
+                            i === activePlan?.current_phase_index
                               ? "bg-emerald-500 scale-125 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                              : i < (activeProfile?.current_phase_index || 0)
+                              : i < (activePlan?.current_phase_index || 0)
                                 ? "bg-emerald-500/40"
                                 : "bg-zinc-800",
                           )}
                         ></div>
-                        {#if i < (activeProfile?.growth_phases?.length || 0) - 1}
+                        {#if i < (activePlan?.phases?.length || 0) - 1}
                           <div
                             class={cn(
                               "w-3 h-[1px]",
-                              i < (activeProfile?.current_phase_index || 0)
+                              i < (activePlan?.current_phase_index || 0)
                                 ? "bg-emerald-500/40"
                                 : "bg-zinc-800",
                             )}

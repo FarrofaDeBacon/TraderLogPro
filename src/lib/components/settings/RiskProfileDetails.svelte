@@ -14,8 +14,13 @@
     import { Badge } from "$lib/components/ui/badge";
     import { Separator } from "$lib/components/ui/separator";
     import * as Card from "$lib/components/ui/card";
+    import { settingsStore } from "$lib/stores/settings.svelte";
 
     let { profile } = $props<{ profile: RiskProfile }>();
+    
+    let currentPlan = $derived(
+        profile.growth_plan_id ? settingsStore.getGrowthPlanForProfile(profile.id) : null
+    );
 </script>
 
 <div class="space-y-6 py-4">
@@ -32,10 +37,10 @@
                         `settings.risk.accountTypes.${profile.account_type_applicability}`,
                     ) || profile.account_type_applicability}
                 </Badge>
-                {#if profile.growth_plan_enabled}
+                {#if currentPlan?.enabled}
                     <Badge
                         variant="default"
-                        class="bg-green-500/10 text-green-600 hover:bg-green-500/20 border-green-500/20"
+                        class="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/20"
                     >
                         <TrendingUp class="w-3 h-3 mr-1" />
                         {$t("settings.risk.growthPlan.activeStatus")}
@@ -167,7 +172,7 @@
     </Card.Root>
 
     <!-- Growth Plan Summary -->
-    {#if profile.growth_plan_enabled && profile.growth_phases && profile.growth_phases.length > 0}
+    {#if currentPlan && currentPlan.enabled && currentPlan.phases && currentPlan.phases.length > 0}
         <div class="space-y-2">
             <h3
                 class="text-sm font-medium flex items-center gap-2 text-muted-foreground"
@@ -176,14 +181,14 @@
                 {$t("settings.risk.growthPlan.phasesTitle")}
             </h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {#each profile.growth_phases as phase, i}
+                {#each currentPlan.phases as phase, i}
                     <div
                         class="p-2 rounded border bg-muted/20 text-xs relative {i ===
-                        profile.current_phase_index
+                        currentPlan.current_phase_index
                             ? 'ring-2 ring-primary border-primary bg-primary/5'
                             : ''}"
                     >
-                        {#if i === profile.current_phase_index}
+                        {#if i === currentPlan.current_phase_index}
                             <div
                                 class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary animate-pulse"
                             ></div>
@@ -194,13 +199,7 @@
                         <div class="text-muted-foreground">
                             {$t("settings.risk.growthPlan.maxLotLabel")}
                             <span class="font-mono text-foreground"
-                                >{phase.max_lots}</span
-                            >
-                        </div>
-                        <div class="text-muted-foreground">
-                            {$t("settings.risk.growthPlan.lossLabel")}
-                            <span class="font-mono text-foreground"
-                                >R$ {phase.max_daily_loss}</span
+                                >{phase.lot_size}</span
                             >
                         </div>
                     </div>

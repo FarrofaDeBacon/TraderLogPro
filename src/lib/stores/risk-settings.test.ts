@@ -30,14 +30,14 @@ describe('RiskSettingsStore Unit Tests', () => {
 
     it('should extract asset-specific risk metrics inheriting from profiles', () => {
         const activeProfile = riskSettingsStore.riskProfiles.find(p => p.active && p.account_ids?.includes('account:1'));
-        const assetRisk = riskSettingsStore.assetRiskProfiles.find(a => a.asset_id === 'asset:WIN' && activeProfile?.linked_asset_risk_profile_ids?.includes(a.id));
+        const assetRisk = riskSettingsStore.assetRiskProfiles.find(a => a.asset_id === 'asset:WIN' && activeProfile?.linked_asset_risk_profile_ids?.includes(a.id!));
         expect(assetRisk).toBeDefined();
         expect(assetRisk?.min_contracts).toBe(1);
         expect(assetRisk?.default_stop_points).toBe(150);
 
         // Fallback constraint checks
         const missingProfile = riskSettingsStore.riskProfiles.find(p => p.active && p.account_ids?.includes('account:2'));
-        const missingRisk = riskSettingsStore.assetRiskProfiles.find(a => a.asset_id === 'asset:WIN' && missingProfile?.linked_asset_risk_profile_ids?.includes(a.id));
+        const missingRisk = riskSettingsStore.assetRiskProfiles.find(a => a.asset_id === 'asset:WIN' && missingProfile?.linked_asset_risk_profile_ids?.includes(a.id!));
         expect(missingRisk).toBeUndefined();
     });
 
@@ -45,8 +45,6 @@ describe('RiskSettingsStore Unit Tests', () => {
         riskSettingsStore.addRiskProfile({
             name: 'Conservador',
             account_ids: [],
-            max_daily_loss: 100,
-            daily_target: 200,
             active: false
         } as any);
 

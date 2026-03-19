@@ -47,10 +47,7 @@ describe('RiskStore Position Sizing Integration', () => {
             max_risk_per_trade_percent: 1,
             capital_source: 'Fixed',
             fixed_capital: 1000,
-            growth_plan_enabled: false,
-            current_phase_index: 0,
-            growth_phases: []
-        } as any];
+            } as any];
 
         riskStore.activeAssetId = null;
 
@@ -65,9 +62,6 @@ describe('RiskStore Position Sizing Integration', () => {
             max_risk_per_trade_percent: 1.5,
             capital_source: 'Fixed',
             fixed_capital: 5000,
-            growth_plan_enabled: false,
-            current_phase_index: 0,
-            growth_phases: [],
             linked_asset_risk_profile_ids: ['profile-wdo']
         } as any];
 
@@ -137,8 +131,7 @@ describe('RiskStore Position Sizing Integration', () => {
     describe('Risk Flow Integration Tests (ETAPA 10)', () => {
         it('Scenario A: Asset selected, NO AssetRiskProfile linked', () => {
             riskSettingsStore.riskProfiles = [{ 
-                id: 'global-1', active: true, growth_plan_enabled: true, growth_phases: [{}], current_phase_index: 0,
-                // Missing link to 'profile-wdo'
+                id: 'global-1', active: true, // Missing link to 'profile-wdo'
                 linked_asset_risk_profile_ids: [] 
             } as any];
             assetsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10 } as any];
@@ -153,9 +146,7 @@ describe('RiskStore Position Sizing Integration', () => {
 
         it('Scenario B: Asset selected, AssetRiskProfile linked, Global Growth', () => {
             riskSettingsStore.riskProfiles = [{ 
-                id: 'global-1', active: true, growth_plan_enabled: true, 
-                growth_phases: [{ level: 1, lot_size: 5 }], current_phase_index: 0,
-                linked_asset_risk_profile_ids: ['profile-wdo']
+                id: 'global-1', active: true, linked_asset_risk_profile_ids: ['profile-wdo']
             } as any];
             assetsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10 } as any];
             riskSettingsStore.assetRiskProfiles = [{ 
@@ -171,17 +162,14 @@ describe('RiskStore Position Sizing Integration', () => {
 
         it('Scenario C: Asset selected, AssetRiskProfile linked, Override Growth', () => {
             riskSettingsStore.riskProfiles = [{ 
-                id: 'global-1', active: true, growth_plan_enabled: true, 
-                growth_phases: [{ level: 1, lot_size: 5 }], current_phase_index: 0,
-                linked_asset_risk_profile_ids: ['profile-wdo']
+                id: 'global-1', active: true, linked_asset_risk_profile_ids: ['profile-wdo']
             } as any];
             assetsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10 } as any];
             riskSettingsStore.assetRiskProfiles = [{ 
                 id: 'profile-wdo', asset_id: 'WDO', 
                 growth_override_enabled: true,
                 growth_phases_override: [{ level: 1, lot_size: 15 }], // Override
-                current_phase_index: 0
-            } as any];
+                } as any];
             
             riskStore.activeAssetId = 'WDO';
             
@@ -230,8 +218,7 @@ describe('RiskStore Position Sizing Integration', () => {
 
         it('Scenario F: Asset change triggers context switch', () => {
             riskSettingsStore.riskProfiles = [{ 
-                id: 'global-1', active: true, growth_plan_enabled: true, growth_phases: [{ level: 1, lot_size: 5 }], current_phase_index: 0,
-                linked_asset_risk_profile_ids: ['profile-wdo', 'profile-win']
+                id: 'global-1', active: true, linked_asset_risk_profile_ids: ['profile-wdo', 'profile-win']
             } as any];
             
             assetsStore.assets = [
@@ -241,7 +228,7 @@ describe('RiskStore Position Sizing Integration', () => {
             
             riskSettingsStore.assetRiskProfiles = [
                 { id: 'profile-wdo', asset_id: 'WDO', growth_override_enabled: false } as any, // Uses global
-                { id: 'profile-win', asset_id: 'WIN', growth_override_enabled: true, growth_phases_override: [{ level: 1, lot_size: 99 }], current_phase_index: 0 } as any // Uses override
+                { id: 'profile-win', asset_id: 'WIN', growth_override_enabled: true, growth_phases_override: [{ level: 1, lot_size: 99 }], } as any // Uses override
             ];
             
             // Select WDO

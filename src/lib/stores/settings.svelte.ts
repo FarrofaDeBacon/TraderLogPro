@@ -75,8 +75,15 @@ class SettingsStore {
     get accounts() {
         return accountsStore.accounts;
     }
+    set accounts(val) {
+        accountsStore.accounts = val;
+    }
 
     // --- Growth Plans CRUD ---
+    getGrowthPlanForProfile(riskProfileId: string) {
+        return riskSettingsStore.getGrowthPlanForProfile(riskProfileId);
+    }
+    
     addGrowthPlan(plan: Omit<import("$lib/types").GrowthPlan, "id">) {
         return riskSettingsStore.addGrowthPlan(plan);
     }
@@ -331,7 +338,6 @@ class SettingsStore {
             }
 
             // Run legacy risk/growth migration if needed
-            await riskSettingsStore.migrateLegacyGrowthPlans();
             await riskSettingsStore.migrateLegacyRiskRules();
 
             console.log("[SettingsStore] loadData completed.");

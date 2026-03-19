@@ -14,18 +14,19 @@ describe('ChartTypesStore Unit Tests', () => {
 
     it('should initialize and read the chart types accurately', () => {
         expect(chartTypesStore.chartTypes.length).toBe(2);
-        expect(chartTypesStore.chartTypes[0].code).toBe('CANDLE');
+        expect(chartTypesStore.chartTypes[0].base_type).toBe('TimeBased');
         expect(chartTypesStore.chartTypes[1].name).toBe('Renko');
     });
 
     it('should add a newly defined chart type safely', () => {
         chartTypesStore.addChartType({
             name: 'Line',
-            code: 'LINE'
+            base_type: 'TimeBased',
+            parameter: ''
         });
 
         expect(chartTypesStore.chartTypes.length).toBe(3);
-        const added = chartTypesStore.chartTypes.find(c => c.code === 'LINE');
+        const added = chartTypesStore.chartTypes.find(c => c.base_type === 'TimeBased' && c.name === 'Line');
         expect(added?.name).toBe('Line');
         expect(added?.id).toBeDefined();
     });

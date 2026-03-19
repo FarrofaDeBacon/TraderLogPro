@@ -149,54 +149,7 @@ export class RiskSettingsStore {
         }
     }
 
-    // --- Legacy Migration ---
-    async migrateLegacyGrowthPlans() {
-        let migratedCount = 0;
 
-        for (const profile of this.riskProfiles) {
-            // Check legacy properties dynamically (they are removed from RiskProfile type)
-            const legacyProfile = profile as any;
-            const hasLegacyPhases = legacyProfile.growth_phases && legacyProfile.growth_phases.length > 0;
-            const isUnmigrated = !profile.growth_plan_id && hasLegacyPhases;
-
-            if (isUnmigrated) {
-                console.log(`[RiskSettingsStore] Migrating legacy growth plan for profile: ${profile.name}`);
-                
-                // Create dedicated GrowthPlan
-                const newGrowthPlanId = crypto.randomUUID();
-                const newPlan: GrowthPlan = {
-                    id: newGrowthPlanId,
-                    name: `Plano de Evolução - ${profile.name}`,
-                    enabled: legacyProfile.growth_plan_enabled ?? true,
-                    current_phase_index: legacyProfile.current_phase_index ?? 0,
-                    phases: JSON.parse(JSON.stringify(legacyProfile.growth_phases)) // deep clone for safety
-                };
-                
-                this.growthPlans.push(newPlan);
-                try {
-                    await invoke("save_growth_plan", { plan: $state.snapshot(newPlan) });
-                    
-                    // 3. Update RiskProfile to point to the new GrowthPlan id
-                    profile.growth_plan_id = newPlan.id;
-                    
-                    // Cleanup legacy
-                    (profile as any).growth_phases = undefined;
-                    (profile as any).current_phase_index = undefined;
-                    (profile as any).growth_plan_enabled = undefined;
-
-                    migratedCount++;
-                } catch (e) {
-                    console.error("[RiskSettingsStore] Error saving migrated growth plan:", e);
-                }
-            }
-        }
-
-        // 4. Save modified RiskProfiles if any migration took place
-        if (migratedCount > 0) {
-            await this.saveRiskProfiles();
-            console.log(`[RiskSettingsStore] Legacy growth plan migration completed. Migrated ${migratedCount} profiles.`);
-        }
-    }
 
     getGrowthPlanForProfile(riskProfileId: string): GrowthPlan | undefined {
         const profile = this.riskProfiles.find((r) => r.id === riskProfileId);
