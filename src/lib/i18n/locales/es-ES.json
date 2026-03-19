@@ -1626,10 +1626,10 @@
           "title": "Ajustes Predefinidos"
         },
         "tabs": {
-          "deskConfig": "Mesa y Vínculos",
-          "engine": "Reglas Avanzadas",
           "general": "General",
-          "growth": "Roadmap"
+          "assetProfiles": "Perfiles de Activo",
+          "planRules": "Reglas del Plan",
+          "growth": "Growth"
         },
         "ruleBuilder": {
           "title": "Reglas del Plan",

@@ -1628,10 +1628,10 @@
           "title": "Predefinições de Perfil"
         },
         "tabs": {
-          "deskConfig": "Mesa & Vínculos",
-          "engine": "Regras Avançadas",
           "general": "Geral",
-          "growth": "Roadmap"
+          "assetProfiles": "Perfis de Ativo",
+          "planRules": "Regras do Plano",
+          "growth": "Growth"
         },
         "ruleBuilder": {
           "title": "Regras do Plano",

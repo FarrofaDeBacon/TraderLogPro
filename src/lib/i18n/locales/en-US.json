@@ -1628,10 +1628,10 @@
           "title": "Profile Presets"
         },
         "tabs": {
-          "deskConfig": "Desk & Links",
-          "engine": "Advanced Rules",
           "general": "General",
-          "growth": "Roadmap"
+          "assetProfiles": "Asset Profiles",
+          "planRules": "Plan Rules",
+          "growth": "Growth"
         },
         "ruleBuilder": {
           "title": "Plan Rules",
