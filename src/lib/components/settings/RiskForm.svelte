@@ -33,39 +33,6 @@
         onCancel: () => void;
     }>();
 
-    // Presets Configuration
-    const presets = $derived({
-        conservative: {
-            name: $t("settings.risk.form.presets.conservative"),
-            max_daily_loss: 500,
-            daily_target: 300,
-            max_risk_per_trade_percent: 1.0,
-            max_trades_per_day: 3,
-            min_risk_reward: 2.0,
-            lock_on_loss: true,
-        },
-        moderate: {
-            name: $t("settings.risk.form.presets.moderate"),
-            max_daily_loss: 1000,
-            daily_target: 800,
-            max_risk_per_trade_percent: 2.0,
-            max_trades_per_day: 5,
-            min_risk_reward: 1.5,
-            lock_on_loss: true,
-        },
-        aggressive: {
-            name: $t("settings.risk.form.presets.aggressive"),
-            max_daily_loss: 2000,
-            daily_target: 2000,
-            max_risk_per_trade_percent: 5.0,
-            max_trades_per_day: 10,
-            min_risk_reward: 1.0,
-            lock_on_loss: false,
-        },
-    });
-
-    let selectedPreset = $state<string>("custom");
-
     const data = $state.snapshot(initialData);
     let formData = $state<Omit<RiskProfile, "id">>({
         name: data?.name ?? "",
@@ -98,25 +65,7 @@
         combined_rules: data?.combined_rules ?? [],
     });
 
-    function applyPreset(key: string) {
-        selectedPreset = key;
-        if (key === "custom") return;
 
-        const p = presets[key as keyof typeof presets];
-        formData.name = p.name;
-        formData.max_daily_loss = p.max_daily_loss;
-        formData.daily_target = p.daily_target;
-        formData.max_risk_per_trade_percent = p.max_risk_per_trade_percent;
-        formData.max_trades_per_day = p.max_trades_per_day;
-        formData.min_risk_reward = p.min_risk_reward;
-        formData.lock_on_loss = p.lock_on_loss;
-
-        // Auto-apply corresponding growth plan
-        if (growthPresets[key as keyof typeof growthPresets]) {
-            applyGrowthPreset(key);
-            formData.growth_plan_enabled = true;
-        }
-    }
 
     $effect(() => {
         // Only update if initialData changes significantly or logic requires it.
@@ -157,7 +106,6 @@
                 linked_asset_risk_profile_ids: fd.linked_asset_risk_profile_ids ?? [],
                 combined_rules: fd.combined_rules ? [...fd.combined_rules] : [],
             };
-            selectedPreset = "custom";
         }
     });
 
@@ -256,7 +204,6 @@
         const template = settingsStore.createRiskProfileTemplate(id);
         if (template) {
             formData = template;
-            selectedPreset = "custom";
         }
     }
 
@@ -279,7 +226,7 @@
                     onValueChange={(value: string) => {
                         if (!value) return;
                         if (value === "blank") {
-                            selectedPreset = "custom";
+                            // nothing
                         } else {
                             applyTemplate(value);
                         }
@@ -313,41 +260,13 @@
         </div>
     {/if}
 
-    <!-- Presets Selection -->
-    <div class="space-y-2">
-        <Label class="text-xs text-muted-foreground uppercase font-bold"
-            >{$t("settings.risk.form.presets.title")}</Label
-        >
-        <div class="flex flex-wrap gap-2">
-            {#each Object.entries(presets) as [key, p]}
-                <button
-                    class="px-3 py-1.5 rounded-full text-xs font-medium border transition-all {selectedPreset ===
-                    key
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-muted/40 text-muted-foreground hover:bg-muted border-transparent'}"
-                    onclick={() => applyPreset(key)}
-                >
-                    {p.name}
-                </button>
-            {/each}
-            <button
-                class="px-3 py-1.5 rounded-full text-xs font-medium border transition-all {selectedPreset ===
-                'custom'
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-muted/40 text-muted-foreground hover:bg-muted border-transparent'}"
-                onclick={() => (selectedPreset = "custom")}
-            >
-                {$t("general.custom") || "Personalizado"}
-            </button>
-        </div>
-    </div>
+
 
     <div class="space-y-2">
         <Label>{$t("settings.risk.name")}</Label>
         <Input
             bind:value={formData.name}
             placeholder={$t("settings.risk.namePlaceholder")}
-            oninput={() => (selectedPreset = "custom")}
         />
     </div>
 
@@ -367,7 +286,7 @@
             >
         </Tabs.List>
 
-        <Tabs.Content value="general" class="space-y-6 pt-4">
+        <Tabs.Content value="general" class="space-y-3 pt-2">
             
             <!-- Target Type & Capital Source -->
             <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
@@ -375,7 +294,7 @@
                     <Target class="w-4 h-4" />
                     Configuração de Capital e Alvo
                 </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div class="space-y-2.5">
                         <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tipo de Alvo</Label>
                         <Select.Root
@@ -407,9 +326,6 @@
                             </Select.Content>
                         </Select.Root>
                     </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
                     {#if formData.capital_source === "Fixed"}
                         <div class="space-y-2.5 animate-in fade-in slide-in-from-top-1">
                             <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Capital Base (Valor Fixo)</Label>
@@ -600,7 +516,7 @@
 
         </Tabs.Content>
 
-        <Tabs.Content value="desk-config" class="space-y-6 pt-4">
+        <Tabs.Content value="desk-config" class="space-y-3 pt-2">
             <!-- Linked Asset Profiles -->
             <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
                 <div class="flex items-center justify-between">
@@ -678,7 +594,7 @@
             </div>
         </Tabs.Content>
 
-        <Tabs.Content value="risk-engine" class="space-y-6 pt-4">
+        <Tabs.Content value="risk-engine" class="space-y-3 pt-2">
             <!-- Psychological Coupling -->
             <div class="space-y-5 p-5 rounded-xl border border-indigo-500/20 bg-indigo-500/5 shadow-sm">
                 <div class="flex items-center justify-between">
@@ -849,7 +765,7 @@
             </div>
         </Tabs.Content>
 
-        <Tabs.Content value="growth" class="space-y-6 pt-4">
+        <Tabs.Content value="growth" class="space-y-3 pt-2">
             <div class="flex items-center justify-between p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm cursor-pointer" onclick={() => formData.growth_plan_enabled = !formData.growth_plan_enabled}>
                 <div class="flex items-center gap-3">
                     <div class="p-2 rounded-lg bg-primary/10"><TrendingUp class="w-5 h-5 text-primary" /></div>
