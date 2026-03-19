@@ -122,6 +122,34 @@
         if (!formData.name.trim()) return;
         onSave({ ...formData });
     }
+
+    // Auto-name generation logic
+    let nameManuallyEdited = $state(isEditing);
+
+    function getOperatorSymbol(op: string): string {
+        switch (op) {
+            case "<=": return "≤";
+            case ">=": return "≥";
+            case "=": return "=";
+            case "<": return "<";
+            case ">": return ">";
+            case "between": return "↔";
+            default: return op;
+        }
+    }
+
+    $effect(() => {
+        if (!nameManuallyEdited && !isEditing) {
+            const typeLabel = $t(`${prefix}.targetType.${formData.target_type}`);
+            if (isBooleanRule) {
+                formData.name = `${typeLabel} (${formData.value ? 'Ativo' : 'Inativo'})`;
+            } else {
+                const opLabel = getOperatorSymbol(formData.operator);
+                const val2 = showSecondaryValue && formData.value_secondary !== undefined ? ` e ${formData.value_secondary}` : '';
+                formData.name = `${typeLabel} ${opLabel} ${formData.value}${val2}`;
+            }
+        }
+    });
 </script>
 
 <div class="space-y-4 p-4 rounded-xl border border-primary/20 bg-primary/5">
@@ -134,7 +162,11 @@
         <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {$t(`${prefix}.ruleName`)}
         </Label>
-        <Input bind:value={formData.name} placeholder="Ex: Perda Máxima Diária" />
+        <Input 
+            value={formData.name} 
+            oninput={(e) => { formData.name = e.currentTarget.value; nameManuallyEdited = true; }} 
+            placeholder="Ex: Perda Máxima Diária" 
+        />
     </div>
 
     <!-- Scope + Target Type -->
@@ -177,6 +209,9 @@
                     {/each}
                 </Select.Content>
             </Select.Root>
+            <p class="text-[10px] text-muted-foreground/80 pt-0.5 px-0.5 italic">
+                {$t(`${prefix}.helpers.${formData.target_type}`)}
+            </p>
         </div>
     </div>
 

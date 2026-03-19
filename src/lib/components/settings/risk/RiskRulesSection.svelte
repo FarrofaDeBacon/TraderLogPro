@@ -25,6 +25,10 @@
     let showForm = $state(false);
     let editingRule = $state<RiskRule | undefined>(undefined);
 
+    const globalRules = $derived(rules.filter((r: RiskRule) => r.scope === "global"));
+    const combinedRules = $derived(rules.filter((r: RiskRule) => r.scope === "combined"));
+    const assetRules = $derived(rules.filter((r: RiskRule) => r.scope === "asset"));
+
     function handleAddNew() {
         editingRule = undefined;
         showForm = true;
@@ -57,6 +61,31 @@
 
     function toggleRule(id: string) {
         rules = rules.map((r: RiskRule) => r.id === id ? { ...r, enabled: !r.enabled } : r);
+    }
+
+    function createPreset(presetKey: string) {
+        let newRule: RiskRule = {
+            id: crypto.randomUUID(),
+            name: $t(`${prefix}.presets.${presetKey}`),
+            enabled: true,
+            scope: "global",
+            target_type: "max_daily_loss",
+            operator: "<=",
+            value: 0,
+            asset_risk_profile_ids: []
+        };
+        switch(presetKey) {
+            case 'maxDailyLoss': newRule.target_type = "max_daily_loss"; newRule.operator = "<="; break;
+            case 'profitTarget': newRule.target_type = "profit_target"; newRule.operator = ">="; break;
+            case 'maxTrades': newRule.target_type = "max_trades_per_day"; newRule.operator = "<="; break;
+            case 'dayTradeOnly': newRule.target_type = "day_trade_only"; newRule.operator = "="; newRule.value = true; break;
+            case 'consistency': newRule.target_type = "consistency"; newRule.operator = "="; newRule.value = true; break;
+            case 'rule50': newRule.target_type = "rule_50_percent"; newRule.operator = "="; newRule.value = true; break;
+            case 'closeBeforeClose': newRule.target_type = "close_before_close"; newRule.operator = "="; newRule.value = true; break;
+            case 'sumContracts': newRule.target_type = "sum_contracts"; newRule.operator = "<="; newRule.scope = 'combined'; break;
+        }
+        editingRule = newRule;
+        showForm = true;
     }
 
     function getScopeColor(scope: string): string {
@@ -95,6 +124,35 @@
         {/if}
     </div>
 
+    {#if !showForm}
+        <div class="flex gap-2 overflow-x-auto pb-2 pt-1 scrollbar-thin">
+            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('maxDailyLoss')}>
+                {$t(`${prefix}.presets.maxDailyLoss`)}
+            </Button>
+            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('profitTarget')}>
+                {$t(`${prefix}.presets.profitTarget`)}
+            </Button>
+            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('sumContracts')}>
+                {$t(`${prefix}.presets.sumContracts`)}
+            </Button>
+            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('maxTrades')}>
+                {$t(`${prefix}.presets.maxTrades`)}
+            </Button>
+            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('dayTradeOnly')}>
+                {$t(`${prefix}.presets.dayTradeOnly`)}
+            </Button>
+            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('closeBeforeClose')}>
+                {$t(`${prefix}.presets.closeBeforeClose`)}
+            </Button>
+            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('consistency')}>
+                {$t(`${prefix}.presets.consistency`)}
+            </Button>
+            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('rule50')}>
+                {$t(`${prefix}.presets.rule50`)}
+            </Button>
+        </div>
+    {/if}
+
     <!-- Rules List -->
     {#if rules.length === 0 && !showForm}
         <p class="text-sm text-muted-foreground italic py-4 text-center">
@@ -102,52 +160,11 @@
         </p>
     {/if}
 
-    {#each rules as rule (rule.id)}
-        <div
-            class="flex items-center gap-3 p-3 rounded-lg border transition-all {rule.enabled
-                ? 'border-border/20 bg-muted/10'
-                : 'border-border/10 bg-muted/5 opacity-60'}"
-        >
-            <Switch
-                checked={rule.enabled}
-                onCheckedChange={() => toggleRule(rule.id)}
-            />
-
-            <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 flex-wrap">
-                    <span class="text-sm font-medium truncate">{rule.name}</span>
-                    <Badge variant="outline" class="text-[10px] px-1.5 py-0 {getScopeColor(rule.scope)}">
-                        {$t(`${prefix}.scope.${rule.scope}`)}
-                    </Badge>
-                    <Badge variant="outline" class="text-[10px] px-1.5 py-0">
-                        {$t(`${prefix}.targetType.${rule.target_type}`)}
-                    </Badge>
-                </div>
-                <p class="text-xs text-muted-foreground mt-0.5">
-                    {#if typeof rule.value === "boolean"}
-                        {rule.value ? "✓" : "✗"}
-                    {:else}
-                        {getOperatorSymbol(rule.operator)} {rule.value}
-                        {#if rule.operator === "between" && rule.value_secondary !== undefined}
-                            – {rule.value_secondary}
-                        {/if}
-                    {/if}
-                    {#if rule.asset_risk_profile_ids && rule.asset_risk_profile_ids.length > 0}
-                        · {rule.asset_risk_profile_ids.length} {$t(`${prefix}.linkedProfiles`).toLowerCase()}
-                    {/if}
-                </p>
-            </div>
-
-            <div class="flex gap-1">
-                <Button variant="ghost" size="icon" class="h-7 w-7" onclick={() => handleEdit(rule)}>
-                    <Pencil class="w-3.5 h-3.5" />
-                </Button>
-                <Button variant="ghost" size="icon" class="h-7 w-7 text-destructive hover:text-destructive" onclick={() => handleDelete(rule.id)}>
-                    <Trash2 class="w-3.5 h-3.5" />
-                </Button>
-            </div>
-        </div>
-    {/each}
+    {#if !showForm}
+        {@render ruleGroup(globalRules, $t(`${prefix}.groups.global`))}
+        {@render ruleGroup(combinedRules, $t(`${prefix}.groups.combined`))}
+        {@render ruleGroup(assetRules, $t(`${prefix}.groups.asset`))}
+    {/if}
 
     <!-- Inline Form -->
     {#if showForm}
