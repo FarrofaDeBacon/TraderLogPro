@@ -67,7 +67,7 @@
     ];
 
     // Filter scopes based on selected target type
-    const availableScopes = $derived(() => {
+    const availableScopes = $derived.by(() => {
         if (globalOnlyTargetTypes.includes(formData.target_type)) {
             return allScopes.filter(s => s.value === "global");
         }
@@ -143,12 +143,16 @@
             <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {$t(`${prefix}.scope.label`)}
             </Label>
-            <Select.Root type="single" bind:value={formData.scope}>
+            <Select.Root
+                type="single"
+                value={formData.scope}
+                onValueChange={(v) => { if (v) formData.scope = v as RiskRuleScope; }}
+            >
                 <Select.Trigger class="w-full">
                     {$t(`${prefix}.scope.${formData.scope}`)}
                 </Select.Trigger>
                 <Select.Content>
-                    {#each availableScopes() as s}
+                    {#each availableScopes as s}
                         <Select.Item value={s.value}>{$t(`${prefix}.scope.${s.key}`)}</Select.Item>
                     {/each}
                 </Select.Content>
@@ -159,7 +163,11 @@
             <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {$t(`${prefix}.targetType.label`)}
             </Label>
-            <Select.Root type="single" bind:value={formData.target_type}>
+            <Select.Root
+                type="single"
+                value={formData.target_type}
+                onValueChange={(v) => { if (v) formData.target_type = v as RiskRuleTargetType; }}
+            >
                 <Select.Trigger class="w-full">
                     {$t(`${prefix}.targetType.${formData.target_type}`)}
                 </Select.Trigger>
@@ -225,7 +233,11 @@
                 <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     {$t(`${prefix}.operator.label`)}
                 </Label>
-                <Select.Root type="single" bind:value={formData.operator}>
+                <Select.Root
+                    type="single"
+                    value={formData.operator}
+                    onValueChange={(v) => { if (v) formData.operator = v as RiskRuleOperator; }}
+                >
                     <Select.Trigger class="w-full">
                         {$t(`${prefix}.operator.${allOperators.find(o => o.value === formData.operator)?.key ?? "lte"}`)}
                     </Select.Trigger>
