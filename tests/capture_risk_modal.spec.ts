@@ -9,8 +9,8 @@ test('capture risk modal', async ({ page }) => {
       language: "ptBR",
       theme: "dark"
     }));
-    window.__TAURI_INTERNALS__ = {
-      invoke: function(cmd, args) {
+    (window as any).__TAURI_INTERNALS__ = {
+      invoke: function(cmd: string, args: any) {
         console.log("Mocked Tauri invoke:", cmd, args);
         return Promise.resolve();
       }
