@@ -18,10 +18,9 @@
         Link,
     } from "lucide-svelte";
     import { t } from "svelte-i18n";
-    import type { RiskProfile, GrowthPhase } from "$lib/types";
+    import type { RiskProfile } from "$lib/types";
     import * as Tabs from "$lib/components/ui/tabs";
     import * as Card from "$lib/components/ui/card";
-    import GrowthPhasesEditor from "$lib/components/settings/GrowthPhasesEditor.svelte";
     import CombinedRulesSection from "./risk/CombinedRulesSection.svelte";
     import DeskConfigSection from "./risk/DeskConfigSection.svelte";
     import RiskRulesSection from "./risk/RiskRulesSection.svelte";

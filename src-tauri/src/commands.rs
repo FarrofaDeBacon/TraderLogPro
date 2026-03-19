@@ -2,7 +2,7 @@ use crate::db::DbState;
 use crate::models::{
     Account, ApiConfig, Asset, AssetType, CashTransaction, ChartType, Currency, EmotionalState,
     FeeProfile, GrowthPlan, Indicator, JournalEntry, Market, Modality, RiskProfile, Strategy, Tag,
-    Timeframe, Trade, UserProfile, AssetRiskProfile,
+    Timeframe, Trade, UserProfile,
 };
 use crate::models::dto::AssetRiskProfileDto;
 use bcrypt::{hash, verify, DEFAULT_COST};
