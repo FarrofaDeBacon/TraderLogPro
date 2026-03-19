@@ -36,6 +36,7 @@ class SettingsStore {
     get assets() { return assetsStore.assets; }
     get riskProfiles() { return riskSettingsStore.riskProfiles; }
     get assetRiskProfiles() { return riskSettingsStore.assetRiskProfiles; }
+    get growthPlans() { return riskSettingsStore.growthPlans; }
     get modalities() { return modalitiesStore.modalities; }
     userProfile = $state<UserProfile>({
         id: "main",
@@ -71,7 +72,21 @@ class SettingsStore {
     journalEntries = $state<JournalEntry[]>([]);
     apiConfigs = $state<ApiConfig[]>([]);
     get currencies() { return currenciesStore.currencies; }
-    get accounts() { return accountsStore.accounts; }
+    get accounts() {
+        return accountsStore.accounts;
+    }
+
+    // --- Growth Plans CRUD ---
+    addGrowthPlan(plan: Omit<import("$lib/types").GrowthPlan, "id">) {
+        return riskSettingsStore.addGrowthPlan(plan);
+    }
+    updateGrowthPlan(id: string, plan: Partial<import("$lib/types").GrowthPlan>) {
+        return riskSettingsStore.updateGrowthPlan(id, plan);
+    }
+    deleteGrowthPlan(id: string) {
+        return riskSettingsStore.deleteGrowthPlan(id);
+    }
+
     fees = $state<FeeProfile[]>([]);
     taxRules = $state<TaxRule[]>([]);
     taxMappings = $state<TaxMapping[]>([]);

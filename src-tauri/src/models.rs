@@ -944,8 +944,6 @@ pub struct GrowthPlan {
     pub current_phase_index: i32,
     #[serde(default)]
     pub phases: Vec<GrowthPhase>,
-    #[serde(default)]
-    pub risk_profile_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -980,9 +978,6 @@ pub struct RiskProfile {
     #[serde(default, deserialize_with = "crate::models::deserialize_id_opt")]
     pub linked_account_id: Option<String>,
 
-    pub growth_plan_enabled: bool,
-    pub current_phase_index: i32,
-    pub growth_phases: Vec<GrowthPhase>,
     #[serde(default)]
     pub psychological_coupling_enabled: bool,
     #[serde(default)]

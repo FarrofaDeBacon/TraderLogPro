@@ -101,44 +101,6 @@ pub async fn seed_risk_profiles(
             }
         }
 
-        let growth_phases = if growth_enabled {
-            vec![
-                GrowthPhase {
-                    id: Some(format!("{}_p1", id)),
-                    level: 1,
-                    name: "Starter".to_string(),
-                    lot_size: 1,
-                    conditions_to_advance: vec![
-                        RiskCondition {
-                            metric: "profit_target".to_string(),
-                            operator: ">=".to_string(),
-                            value: target * 5.0,
-                        },
-                        RiskCondition {
-                            metric: "consistency_days".to_string(),
-                            operator: ">=".to_string(),
-                            value: 20.0,
-                        },
-                    ],
-                    conditions_to_demote: vec![],
-                },
-                GrowthPhase {
-                    id: Some(format!("{}_p2", id)),
-                    level: 2,
-                    name: "Scale Up".to_string(),
-                    lot_size: 2,
-                    conditions_to_advance: vec![RiskCondition {
-                        metric: "profit_target".to_string(),
-                        operator: ">=".to_string(),
-                        value: target * 15.0,
-                    }],
-                    conditions_to_demote: vec![],
-                },
-            ]
-        } else {
-            vec![]
-        };
-
         let desk_config = if id == "r4" {
             Some(crate::models::DeskConfig {
                 enabled: true,
@@ -172,9 +134,6 @@ pub async fn seed_risk_profiles(
             capital_source: "Fixed".to_string(),
             fixed_capital: 0.0,
             linked_account_id: None,
-            growth_plan_enabled: growth_enabled,
-            current_phase_index: 0,
-            growth_phases,
             psychological_coupling_enabled: false,
             outlier_regression_enabled: false,
             sniper_mode_enabled: false,

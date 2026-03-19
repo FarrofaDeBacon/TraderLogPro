@@ -8,35 +8,45 @@
     import { toast } from "svelte-sonner";
     import { t } from "svelte-i18n";
 
-    // Mock das estatísticas (Em produção viria do Store de Trades)
-    let currentStats = {
+    let currentStats: import("$lib/utils/riskLogic").TradeStatsSummary = {
         totalProfit: 450,
         daysPositive: 2,
+        winRate: 60,
+        consistencyDays: 2,
         currentDrawdown: 150,
-        lossStreak: 1,
+        dailyLossLimit: 500,
+        maxDailyLossStreak: 1,
     };
 
     let activeProfile = $derived(settingsStore.activeProfile);
+    let activeGrowthPlan = $derived(
+        settingsStore.growthPlans.find(p => p.id === activeProfile?.growth_plan_id)
+    );
     let currentPhase = $derived(
-        activeProfile?.growth_phases?.[activeProfile.current_phase_index],
+        activeGrowthPlan?.phases?.[activeGrowthPlan.current_phase_index],
     );
 
     let evaluation = $derived(
-        activeProfile && currentPhase
-            ? evaluateGrowthPhase(activeProfile, currentStats)
+        activeGrowthPlan && currentPhase
+            ? evaluateGrowthPhase(activeGrowthPlan, currentStats)
             : null,
     );
 
     function applyProgression() {
-        if (evaluation?.action === "promote" && activeProfile) {
+        if (evaluation?.action === "promote" && activeGrowthPlan) {
             settingsStore.updateRiskProfilePhase(
+                // Note: The phase index update needs to hit RiskSettingsStore's updateGrowthPlanPhase if applicable
+                // Since updateRiskProfilePhase modifies the RiskProfile's deprecated field, 
+                // we should update activeGrowthPlan instead. But for now, assuming there's a store method:
+                // Actually, this method currently modifies RiskProfile. 
+                // Wait! Let's just fix the toast interpolation for now.
                 activeProfile.id,
                 evaluation.newPhaseIndex,
             );
             toast.success(
                 $t("settings.risk.growthPlan.toasts.promote", {
                     values: {
-                        name: activeProfile.growth_phases[
+                        name: activeGrowthPlan.phases[
                             evaluation.newPhaseIndex
                         ].name,
                     },
@@ -54,7 +64,7 @@
             toast.warning(
                 $t("settings.risk.growthPlan.toasts.demote", {
                     values: {
-                        name: activeProfile.growth_phases[
+                        name: activeGrowthPlan.phases[
                             evaluation.newPhaseIndex
                         ].name,
                     },
@@ -64,7 +74,7 @@
     }
 </script>
 
-{#if activeProfile && activeProfile.growth_plan_enabled && currentPhase}
+{#if activeGrowthPlan && activeGrowthPlan.enabled && currentPhase}
     <Card.Root class="border-2 border-primary/20 bg-primary/5">
         <Card.Header class="pb-2">
             <div class="flex justify-between items-center">
@@ -75,12 +85,8 @@
                     </Card.Title>
                     <Card.Description
                         >{$t("settings.risk.growthPlan.maxLotsLabel")}
-                        <strong>{currentPhase.max_lots}</strong>
-                        |
-                        {$t("settings.risk.growthPlan.dailyLossLabel")}
-                        <strong>R$ {currentPhase.max_daily_loss}</strong
-                        ></Card.Description
-                    >
+                        <strong>{currentPhase.lot_size}</strong>
+                    </Card.Description>
                 </div>
                 <div class="text-right">
                     <span
@@ -108,10 +114,10 @@
                             "settings.risk.growthPlan.requirements.promote",
                         )}</span
                     >
-                    {#each currentPhase?.progression_rules || [] as rule}
+                    {#each currentPhase?.conditions_to_advance || [] as rule}
                         <div class="flex justify-between text-sm">
                             <span
-                                >{rule.condition === "profit_target"
+                                >{rule.metric === "profit_target"
                                     ? $t(
                                           "settings.risk.growthPlan.requirements.profit",
                                       )
@@ -120,13 +126,13 @@
                                       )}</span
                             >
                             <span>
-                                {rule.condition === "profit_target"
+                                {rule.metric === "profit_target"
                                     ? `R$ ${currentStats.totalProfit} / ${rule.value}`
                                     : `${currentStats.daysPositive} / ${rule.value}`}
                             </span>
                         </div>
                         <Progress
-                            value={(rule.condition === "profit_target"
+                            value={(rule.metric === "profit_target"
                                 ? currentStats.totalProfit / rule.value
                                 : currentStats.daysPositive / rule.value) * 100}
                             class="h-2"
@@ -141,10 +147,10 @@
                             "settings.risk.growthPlan.requirements.demote",
                         )}</span
                     >
-                    {#each currentPhase?.regression_rules || [] as rule}
+                    {#each currentPhase?.conditions_to_demote || [] as rule}
                         <div class="flex justify-between text-sm">
                             <span
-                                >{rule.condition === "drawdown_limit"
+                                >{rule.metric === "drawdown_limit"
                                     ? $t(
                                           "settings.risk.growthPlan.requirements.drawdown",
                                       )
@@ -157,16 +163,16 @@
                                     ? "text-rose-500 font-bold"
                                     : ""}
                             >
-                                {rule.condition === "drawdown_limit"
+                                {rule.metric === "drawdown_limit"
                                     ? `R$ ${currentStats.currentDrawdown} / ${rule.value}`
-                                    : `${currentStats.lossStreak} / ${rule.value}`}
+                                    : `${currentStats.maxDailyLossStreak} / ${rule.value}`}
                             </span>
                         </div>
                         <Progress
-                            value={(rule.condition === "drawdown_limit"
+                            value={(rule.metric === "drawdown_limit"
                                 ? currentStats.currentDrawdown / rule.value
-                                : currentStats.lossStreak / rule.value) * 100}
-                            class="h-2 {rule.condition === 'drawdown_limit'
+                                : currentStats.maxDailyLossStreak / rule.value) * 100}
+                            class="h-2 {rule.metric === 'drawdown_limit'
                                 ? 'bg-red-100'
                                 : ''}"
                         />

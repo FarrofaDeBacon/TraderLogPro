@@ -1,4 +1,4 @@
-import type { RiskProfile, GrowthPhase, RiskCondition, Trade } from "$lib/types";
+import type { RiskProfile, GrowthPlan, GrowthPhase, RiskCondition, Trade } from "$lib/types";
 
 export type EvaluationResult = {
     action: "promote" | "demote" | "stay";
@@ -110,13 +110,18 @@ export function computeRiskStats(
         dailyEquityCurve.push({ day: `Dia ${d + 1}`, value: parseFloat(cumulative.toFixed(2)) });
     }
 
+    const dailyLossRule = profile.risk_rules?.find(
+        (r) => r.target_type === "max_daily_loss" && r.enabled
+    );
+    const dailyLossLimit = dailyLossRule ? Number(dailyLossRule.value) : 0;
+
     return {
         totalProfit,
         daysPositive,
         winRate,
         consistencyDays,
         currentDrawdown,
-        dailyLossLimit: profile.max_daily_loss,
+        dailyLossLimit,
         maxDailyLossStreak: maxStreak,
         dailyEquityCurve,
     };
@@ -146,15 +151,15 @@ export function evaluateCondition(stats: TradeStatsSummary, rule: RiskCondition)
 }
 
 export function evaluateGrowthPhase(
-    profile: RiskProfile,
+    plan: GrowthPlan,
     currentStats: TradeStatsSummary
 ): EvaluationResult {
-    if (!profile.growth_plan_enabled || !profile.growth_phases || profile.growth_phases.length === 0) {
-        return { action: "stay", newPhaseIndex: profile.current_phase_index, reasons: ["Plano de crescimento desativado ou vazio."] };
+    if (!plan.enabled || !plan.phases || plan.phases.length === 0) {
+        return { action: "stay", newPhaseIndex: plan.current_phase_index, reasons: ["Plano de crescimento desativado ou vazio."] };
     }
 
-    const currentIndex = profile.current_phase_index;
-    const currentPhase = profile.growth_phases[currentIndex];
+    const currentIndex = plan.current_phase_index;
+    const currentPhase = plan.phases[currentIndex];
 
     // 1. Check Demotion (Highest Priority)
     let demoteReasons: string[] = [];
@@ -190,7 +195,7 @@ export function evaluateGrowthPhase(
             }
         }
 
-        if (allAdvancePassed && currentIndex < profile.growth_phases.length - 1) {
+        if (allAdvancePassed && currentIndex < plan.phases.length - 1) {
             return {
                 action: "promote",
                 newPhaseIndex: currentIndex + 1,

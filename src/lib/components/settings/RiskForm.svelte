@@ -48,9 +48,7 @@
         capital_source: data?.capital_source ?? "Fixed",
         fixed_capital: data?.fixed_capital ?? 0,
         linked_account_id: data?.linked_account_id ?? null,
-        growth_plan_enabled: data?.growth_plan_enabled ?? false,
-        current_phase_index: data?.current_phase_index ?? 0,
-        growth_phases: data?.growth_phases ?? [],
+        growth_plan_id: data?.growth_plan_id ?? undefined,
         psychological_coupling_enabled: data?.psychological_coupling_enabled ?? false,
         outlier_regression_enabled: data?.outlier_regression_enabled ?? false,
         sniper_mode_enabled: data?.sniper_mode_enabled ?? false,
@@ -87,9 +85,7 @@
                 capital_source: fd.capital_source ?? "Fixed",
                 fixed_capital: fd.fixed_capital ?? 0,
                 linked_account_id: fd.linked_account_id ?? null,
-                growth_plan_enabled: fd.growth_plan_enabled ?? false,
-                current_phase_index: fd.current_phase_index ?? 0,
-                growth_phases: fd.growth_phases ? [...fd.growth_phases] : [],
+                growth_plan_id: fd.growth_plan_id ?? undefined,
                 psychological_coupling_enabled:
                     fd.psychological_coupling_enabled ?? false,
                 outlier_regression_enabled:
@@ -139,69 +135,7 @@
 
     import { settingsStore } from "$lib/stores/settings.svelte";
 
-    // Growth Plan Presets
-    const growthPresets = $derived({
-        conservative: {
-            name: $t("settings.risk.form.presets.conservative"),
-            description: $t("settings.risk.growthPlan.enableDesc"),
-            phases: Array.from({ length: 5 }, (_, i) => ({
-                level: i + 1,
-                name: `${$t("general.items")} ${i + 1}`,
-                lot_size: i + 1,
-                conditions_to_advance: [
-                    { metric: "days_positive", operator: ">=", value: 5 },
-                ],
-                conditions_to_demote: [
-                    { metric: "drawdown_limit", operator: ">=", value: (i + 1) * 100 },
-                ],
-            })),
-        },
-        moderate: {
-            name: $t("settings.risk.form.presets.moderate"),
-            description: $t("settings.risk.growthPlan.enableDesc"),
-            phases: Array.from({ length: 8 }, (_, i) => ({
-                level: i + 1,
-                name: `${$t("general.items")} ${i + 1}`,
-                lot_size: (i + 1) * 2,
-                conditions_to_advance: [
-                    { metric: "days_positive", operator: ">=", value: 3 },
-                ],
-                conditions_to_demote: [
-                    { metric: "max_daily_loss_streak", operator: ">=", value: 1 },
-                ],
-            })),
-        },
-        aggressive: {
-            name: $t("settings.risk.form.presets.aggressive"),
-            description: $t("settings.risk.growthPlan.enableDesc"),
-            phases: Array.from({ length: 10 }, (_, i) => ({
-                level: i + 1,
-                name: `${$t("general.items")} ${i + 1}`,
-                lot_size: (i + 1) * 5,
-                conditions_to_advance: [
-                    { metric: "days_positive", operator: ">=", value: 2 },
-                ],
-                conditions_to_demote: [
-                    { metric: "drawdown_limit", operator: ">=", value: (i + 1) * 800 },
-                ],
-            })),
-        },
-    });
 
-    let selectedGrowthPreset = $state<string>("custom");
-
-    function applyGrowthPreset(key: string) {
-        selectedGrowthPreset = key;
-        if (key === "custom") return;
-
-        const p = growthPresets[key as keyof typeof growthPresets];
-        // Keep ID if exists, or generate new ones? Prefer new to avoid conflicts if saving multiple profiles
-        // Actually, we replace the whole array
-        formData.growth_phases = p.phases.map((phase) => ({
-            ...phase,
-            id: crypto.randomUUID(),
-        }));
-    }
 
     function applyTemplate(id: string) {
         const template = settingsStore.createRiskProfileTemplate(id);
@@ -590,6 +524,46 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <Tabs.Content value="motors" class="space-y-4 pt-2">
             <div class="space-y-4">
+                <!-- Plano de Crescimento Vinculado -->
+                <div class="space-y-5 p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-lg bg-emerald-500/10"><TrendingUp class="w-5 h-5 text-emerald-400" /></div>
+                            <div class="space-y-1">
+                                <h4 class="font-bold text-emerald-400 text-sm">
+                                    Plano de Crescimento (Growth Plan)
+                                </h4>
+                                <p class="text-[10px] text-muted-foreground/80 uppercase tracking-widest font-semibold">
+                                    Vincular perfil estruturado de avanço de lotes
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-3 border-t border-emerald-500/10">
+                        <div class="space-y-2.5">
+                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                Selecionar Plano Base
+                            </Label>
+                            <Select.Root
+                                type="single"
+                                bind:value={() => formData.growth_plan_id || "none", (v) => formData.growth_plan_id = v === "none" ? undefined : v}
+                            >
+                                <Select.Trigger class="w-full">
+                                    {formData.growth_plan_id 
+                                        ? settingsStore.growthPlans.find(p => p.id === formData.growth_plan_id)?.name ?? "Desconhecido"
+                                        : "Nenhum plano vinculado (Fixo)"}
+                                </Select.Trigger>
+                                <Select.Content>
+                                    <Select.Item value="none">Nenhum plano vinculado (Fixo)</Select.Item>
+                                    {#each settingsStore.growthPlans as plan}
+                                        <Select.Item value={plan.id}>{plan.name}</Select.Item>
+                                    {/each}
+                                </Select.Content>
+                            </Select.Root>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Psychological Coupling -->
                 <div class="space-y-5 p-5 rounded-xl border border-indigo-500/20 bg-indigo-500/5 shadow-sm">
                     <div class="flex items-center justify-between">

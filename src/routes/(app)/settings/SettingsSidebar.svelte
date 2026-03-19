@@ -15,6 +15,7 @@
         Target,
         Workflow,
         HeartPulse,
+        TrendingUp,
         Tag,
         Activity,
         Clock,
@@ -105,6 +106,11 @@
             href: "/settings/risk",
             title: $t("settings.nav.risk"),
             icon: ShieldAlert,
+        },
+        {
+            href: "/settings/growth-plans",
+            title: $t("settings.nav.growthPlans") || "Planos de Crescimento",
+            icon: TrendingUp,
         },
         {
             href: "/settings/risk/asset-profiles",
