@@ -125,29 +125,29 @@
     </div>
 
     {#if !showForm}
-        <div class="flex gap-2 overflow-x-auto pb-2 pt-1 scrollbar-thin">
-            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('maxDailyLoss')}>
+        <div class="flex flex-wrap gap-2 pb-2 pt-1 w-full">
+            <Button variant="secondary" size="sm" class="text-[10px] md:text-xs h-7 px-2" onclick={() => createPreset('maxDailyLoss')}>
                 {$t(`${prefix}.presets.maxDailyLoss`)}
             </Button>
-            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('profitTarget')}>
+            <Button variant="secondary" size="sm" class="text-[10px] md:text-xs h-7 px-2" onclick={() => createPreset('profitTarget')}>
                 {$t(`${prefix}.presets.profitTarget`)}
             </Button>
-            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('sumContracts')}>
+            <Button variant="secondary" size="sm" class="text-[10px] md:text-xs h-7 px-2" onclick={() => createPreset('sumContracts')}>
                 {$t(`${prefix}.presets.sumContracts`)}
             </Button>
-            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('maxTrades')}>
+            <Button variant="secondary" size="sm" class="text-[10px] md:text-xs h-7 px-2" onclick={() => createPreset('maxTrades')}>
                 {$t(`${prefix}.presets.maxTrades`)}
             </Button>
-            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('dayTradeOnly')}>
+            <Button variant="secondary" size="sm" class="text-[10px] md:text-xs h-7 px-2" onclick={() => createPreset('dayTradeOnly')}>
                 {$t(`${prefix}.presets.dayTradeOnly`)}
             </Button>
-            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('closeBeforeClose')}>
+            <Button variant="secondary" size="sm" class="text-[10px] md:text-xs h-7 px-2" onclick={() => createPreset('closeBeforeClose')}>
                 {$t(`${prefix}.presets.closeBeforeClose`)}
             </Button>
-            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('consistency')}>
+            <Button variant="secondary" size="sm" class="text-[10px] md:text-xs h-7 px-2" onclick={() => createPreset('consistency')}>
                 {$t(`${prefix}.presets.consistency`)}
             </Button>
-            <Button variant="secondary" size="sm" class="text-xs shrink-0" onclick={() => createPreset('rule50')}>
+            <Button variant="secondary" size="sm" class="text-[10px] md:text-xs h-7 px-2" onclick={() => createPreset('rule50')}>
                 {$t(`${prefix}.presets.rule50`)}
             </Button>
         </div>
@@ -176,3 +176,41 @@
         />
     {/if}
 </div>
+
+{#snippet ruleGroup(groupRules: RiskRule[], title: string)}
+    {#if groupRules.length > 0}
+        <div class="space-y-2 mt-4">
+            <h4 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                {title} <Badge variant="secondary" class="text-[10px] px-1.5 py-0">{groupRules.length}</Badge>
+            </h4>
+            <div class="grid grid-cols-1 gap-2">
+                {#each groupRules as r (r.id)}
+                    <div class="p-3 border rounded-lg bg-background/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 group hover:border-primary/30 transition-colors">
+                        <div class="space-y-1 w-full md:w-auto">
+                            <div class="flex items-center gap-2">
+                                <span class="font-medium text-sm flex items-center gap-1.5">
+                                    <div class="w-2 h-2 rounded-full {r.enabled ? 'bg-emerald-500' : 'bg-muted-foreground'}"></div>
+                                    {r.name}
+                                </span>
+                                <Badge variant="outline" class="text-[10px] capitalize bg-muted border-muted-foreground/20">{r.target_type}</Badge>
+                            </div>
+                            <div class="text-xs text-muted-foreground flex flex-wrap items-center gap-2">
+                                <span class="bg-muted/50 px-1.5 py-0.5 rounded font-mono">
+                                    {getOperatorSymbol(r.operator)} {r.value}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button variant="ghost" size="icon" class="h-8 w-8 text-muted-foreground hover:text-primary" onclick={() => handleEdit(r)}>
+                                <Pencil class="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" class="h-8 w-8 text-muted-foreground hover:text-destructive" onclick={() => handleDelete(r.id)}>
+                                <Trash2 class="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </div>
+                {/each}
+            </div>
+        </div>
+    {/if}
+{/snippet}

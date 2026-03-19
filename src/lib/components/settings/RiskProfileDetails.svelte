@@ -126,7 +126,7 @@
                 {$t("settings.risk.discipline")}
             </Card.Title>
         </Card.Header>
-        <Card.Content class="grid grid-cols-2 gap-4">
+        <Card.Content class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
                 <span
                     class="text-xs text-muted-foreground block uppercase font-bold"
@@ -180,7 +180,7 @@
                 <TrendingUp class="w-4 h-4" />
                 {$t("settings.risk.growthPlan.phasesTitle")}
             </h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {#each currentPlan.phases as phase, i}
                     <div
                         class="p-2 rounded border bg-muted/20 text-xs relative {i ===

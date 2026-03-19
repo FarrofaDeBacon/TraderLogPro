@@ -169,9 +169,7 @@
                     }}
                 >
                     <Select.Trigger class="w-full md:w-[350px] bg-background">
-                        <Select.Value
-                            placeholder={$t("settings.risk.management.startBlank") || "Criar em Branco"}
-                        />
+                        {$t("settings.risk.management.startBlank") || "Criar em Branco"}
                     </Select.Trigger>
                     <Select.Content>
                         <Select.Item value="blank">
@@ -207,18 +205,18 @@
     </div>
 
     <Tabs.Root value="base" class="w-full">
-        <Tabs.List class="flex overflow-x-auto sm:grid sm:grid-cols-4 w-full justify-start sm:justify-center p-1">
-            <Tabs.Trigger value="base" class="whitespace-nowrap"
+        <Tabs.List class="flex flex-wrap w-full justify-start sm:justify-center p-1 h-auto gap-1">
+            <Tabs.Trigger value="base" class="flex-1 min-w-[120px]"
                 >{$t("settings.risk.form.tabs.base") || "Base"}</Tabs.Trigger
             >
-            <Tabs.Trigger value="asset-profiles" class="whitespace-nowrap"
-                >{$t("settings.risk.form.tabs.assetProfiles") || "Ativos"}</Tabs.Trigger
+            <Tabs.Trigger value="asset-profiles" class="flex-1 min-w-[120px]"
+                >{$t("settings.risk.form.tabs.assetProfiles") || "Perfis de Ativo"}</Tabs.Trigger
             >
-            <Tabs.Trigger value="rules" class="whitespace-nowrap"
+            <Tabs.Trigger value="rules" class="flex-1 min-w-[120px]"
                 >{$t("settings.risk.form.tabs.rules") || "Regras"}</Tabs.Trigger
             >
-            <Tabs.Trigger value="motors" class="whitespace-nowrap"
-                >{$t("settings.risk.form.tabs.motors") || "Motores"}</Tabs.Trigger
+            <Tabs.Trigger value="motors" class="flex-1 min-w-[120px]"
+                >{$t("settings.risk.form.tabs.motors") || "Motor de Crescimento"}</Tabs.Trigger
             >
         </Tabs.List>
 
@@ -333,7 +331,7 @@
                     <Lock class="w-4 h-4" />
                     {$t("settings.risk.discipline")}
                 </h3>
-                <div class="grid grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div class="space-y-2.5">
                         <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.applicability")}</Label>
                         <Select.Root
@@ -365,7 +363,7 @@
                         <Label class="text-xs font-semibold"
                             >{$t("settings.risk.form.accounts.title")}</Label
                         >
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {#each settingsStore.accounts as account}
                                 <div
                                     class="flex items-center space-x-2 p-2 rounded border bg-background/50"
@@ -450,7 +448,7 @@
                     <div class="flex gap-2">
                         <Select.Root
                             type="single"
-                            onValueChange={(val) => {
+                            onValueChange={(val: string) => {
                                 if (val && !formData.linked_asset_risk_profile_ids?.includes(val)) {
                                     formData.linked_asset_risk_profile_ids = [...(formData.linked_asset_risk_profile_ids || []), val];
                                 }
@@ -589,7 +587,7 @@
                         />
                     </div>
                     {#if formData.psychological_coupling_enabled}
-                        <div class="grid grid-cols-2 gap-5 pt-3 border-t border-indigo-500/10">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-3 border-t border-indigo-500/10">
                             <div class="space-y-2.5">
                                 <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                     {$t("settings.risk.engine.psychological.strategy")}

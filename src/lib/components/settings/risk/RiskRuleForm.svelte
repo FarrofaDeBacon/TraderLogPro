@@ -85,7 +85,7 @@
 
     // Available profiles not yet selected
     const availableProfiles = $derived(
-        assetRiskProfiles.filter(p => !formData.asset_risk_profile_ids?.includes(p.id!))
+        assetRiskProfiles.filter((p: AssetRiskProfile) => !formData.asset_risk_profile_ids?.includes(p.id!))
     );
 
     // Enforce global scope when target type requires it
@@ -178,7 +178,7 @@
             <Select.Root
                 type="single"
                 value={formData.scope}
-                onValueChange={(v) => { if (v) formData.scope = v as RiskRuleScope; }}
+                onValueChange={(v: string) => { if (v) formData.scope = v as RiskRuleScope; }}
             >
                 <Select.Trigger class="w-full">
                     {$t(`${prefix}.scope.${formData.scope}`)}
@@ -198,7 +198,7 @@
             <Select.Root
                 type="single"
                 value={formData.target_type}
-                onValueChange={(v) => { if (v) formData.target_type = v as RiskRuleTargetType; }}
+                onValueChange={(v: string) => { if (v) formData.target_type = v as RiskRuleTargetType; }}
             >
                 <Select.Trigger class="w-full">
                     {$t(`${prefix}.targetType.${formData.target_type}`)}
@@ -226,7 +226,7 @@
             {#if formData.asset_risk_profile_ids && formData.asset_risk_profile_ids.length > 0}
                 <div class="flex flex-wrap gap-1.5">
                     {#each formData.asset_risk_profile_ids as profileId}
-                        {@const profile = assetRiskProfiles.find(p => p.id === profileId)}
+                        {@const profile = assetRiskProfiles.find((p: AssetRiskProfile) => p.id === profileId)}
                         {#if profile}
                             <Badge variant="secondary" class="gap-1 pr-1">
                                 {profile.name}
@@ -246,7 +246,7 @@
             {#if availableProfiles.length > 0}
                 <Select.Root
                     type="single"
-                    onValueChange={(v) => { if (v) addAssetProfile(v); }}
+                    onValueChange={(v: string) => { if (v) addAssetProfile(v); }}
                 >
                     <Select.Trigger class="w-full">
                         {$t("settings.risk.management.assetProfileSelector")}
@@ -263,7 +263,7 @@
 
     <!-- Operator + Value -->
     {#if !isBooleanRule}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1.5">
                 <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     {$t(`${prefix}.operator.label`)}
@@ -271,7 +271,7 @@
                 <Select.Root
                     type="single"
                     value={formData.operator}
-                    onValueChange={(v) => { if (v) formData.operator = v as RiskRuleOperator; }}
+                    onValueChange={(v: string) => { if (v) formData.operator = v as RiskRuleOperator; }}
                 >
                     <Select.Trigger class="w-full">
                         {$t(`${prefix}.operator.${allOperators.find(o => o.value === formData.operator)?.key ?? "lte"}`)}
@@ -312,7 +312,7 @@
         <div class="flex items-center gap-3 py-2">
             <Switch
                 checked={formData.value === true}
-                onCheckedChange={(v) => formData.value = v}
+                onCheckedChange={(v: boolean) => formData.value = v}
             />
             <Label class="text-sm">{$t(`${prefix}.enabled`)}</Label>
         </div>
