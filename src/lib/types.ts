@@ -335,7 +335,7 @@ export type GrowthPlan = {
     enabled: boolean;
     current_phase_index: number;
     phases: GrowthPhase[];
-    risk_profile_id: string;
+    risk_profile_id?: string;
 };
 
 export type RiskProfile = {

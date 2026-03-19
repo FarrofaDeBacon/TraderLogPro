@@ -926,7 +926,8 @@ pub struct GrowthPlan {
     pub current_phase_index: i32,
     #[serde(default)]
     pub phases: Vec<GrowthPhase>,
-    pub risk_profile_id: String,
+    #[serde(default)]
+    pub risk_profile_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

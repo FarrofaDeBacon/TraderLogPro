@@ -315,6 +315,9 @@ class SettingsStore {
                 invoke("start_rtd_monitor_cmd", { excelPath: this.rtdExcelPath || null }).catch(e => console.error(e));
             }
 
+            // Run legacy risk/growth migration if needed
+            await riskSettingsStore.migrateLegacyGrowthPlans();
+
             console.log("[SettingsStore] loadData completed.");
         } catch (e) {
             console.error("[SettingsStore] CRITICAL error in loadData:", e);
