@@ -341,9 +341,12 @@ export type GrowthPlan = {
 export type RiskProfile = {
     id: string;
     name: string;
+    /** @deprecated Superseded by RiskRule(target_type='max_daily_loss') */
     max_daily_loss: number;
+    /** @deprecated Superseded by RiskRule(target_type='profit_target') */
     daily_target: number;
     max_risk_per_trade_percent: number;
+    /** @deprecated Superseded by RiskRule(target_type='max_trades_per_day') */
     max_trades_per_day: number;
     min_risk_reward: number;
     lock_on_loss: boolean;
@@ -375,7 +378,7 @@ export type RiskProfile = {
     min_contracts?: number;
     /** @deprecated Superseded by AssetRiskProfile context */
     max_contracts?: number;
-    linked_asset_risk_profile_ids?: string[];
+    /** @deprecated Superseded by RiskRule(scope='combined') */
     combined_rules?: CombinedRiskRule[];
     risk_rules?: RiskRule[];
     desk_config?: DeskConfig;
@@ -385,13 +388,21 @@ export type RiskProfile = {
 export type DeskConfig = {
     enabled: boolean;
     plan_name?: string;
+    /** @deprecated Superseded by RiskProfile.linked_asset_risk_profile_ids */
     allowed_asset_ids?: string[];
+    /** @deprecated Superseded by RiskRule(target_type='sum_contracts', scope='combined') */
     max_combined_exposure?: number;
+    /** @deprecated Superseded by RiskRule(target_type='max_total_loss' or 'max_daily_loss') */
     max_total_loss?: number;
+    /** @deprecated Superseded by RiskRule(target_type='profit_target') */
     profit_target?: number;
+    /** @deprecated Superseded by RiskRule(target_type='day_trade_only') */
     day_trade_only?: boolean;
+    /** @deprecated Superseded by RiskRule(target_type='close_before_close') */
     close_before_market_close_minutes?: number;
+    /** @deprecated Superseded by RiskRule(target_type='consistency') */
     consistency_mode?: 'none' | '5days_3positive' | '10days_5positive';
+    /** @deprecated Superseded by RiskRule(target_type='rule_50_percent') */
     max_single_day_profit_share?: number;
     mdr_mode?: 'none' | 'fixed' | 'percent_of_margin';
 };

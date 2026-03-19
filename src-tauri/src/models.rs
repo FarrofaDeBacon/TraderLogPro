@@ -864,6 +864,7 @@ pub struct GrowthPhase {
     pub conditions_to_demote: Vec<RiskCondition>,
 }
 
+/// DEPRECATED: Superseded by RiskRule(scope='combined')
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CombinedRiskRule {
     pub id: String,
@@ -881,22 +882,39 @@ pub struct DeskConfig {
     pub enabled: bool,
     #[serde(default)]
     pub plan_name: Option<String>,
+    
+    /// DEPRECATED: Superseded by RiskProfile.linked_asset_risk_profile_ids
     #[serde(default)]
     pub allowed_asset_ids: Option<Vec<String>>,
+    
+    /// DEPRECATED: Superseded by RiskRule(target_type='sum_contracts', scope='combined')
     #[serde(default)]
     pub max_combined_exposure: Option<i32>,
+    
+    /// DEPRECATED: Superseded by RiskRule(target_type='max_total_loss' | 'max_daily_loss')
     #[serde(default)]
     pub max_total_loss: Option<f64>,
+    
+    /// DEPRECATED: Superseded by RiskRule(target_type='profit_target')
     #[serde(default)]
     pub profit_target: Option<f64>,
+    
+    /// DEPRECATED: Superseded by RiskRule(target_type='day_trade_only')
     #[serde(default)]
     pub day_trade_only: Option<bool>,
+    
+    /// DEPRECATED: Superseded by RiskRule(target_type='close_before_close')
     #[serde(default)]
     pub close_before_market_close_minutes: Option<i32>,
+    
+    /// DEPRECATED: Superseded by RiskRule(target_type='consistency')
     #[serde(default)]
     pub consistency_mode: Option<String>,
+    
+    /// DEPRECATED: Superseded by RiskRule(target_type='rule_50_percent')
     #[serde(default)]
     pub max_single_day_profit_share: Option<f64>,
+    
     #[serde(default)]
     pub mdr_mode: Option<String>,
 }
@@ -935,10 +953,18 @@ pub struct RiskProfile {
     #[serde(deserialize_with = "deserialize_id")]
     pub id: String,
     pub name: String,
+    
+    /// DEPRECATED: Superseded by RiskRule(target_type='max_daily_loss')
     pub max_daily_loss: f64,
+    
+    /// DEPRECATED: Superseded by RiskRule(target_type='profit_target')
     pub daily_target: f64,
+    
     pub max_risk_per_trade_percent: f64,
+    
+    /// DEPRECATED: Superseded by RiskRule(target_type='max_trades_per_day')
     pub max_trades_per_day: i32,
+    
     pub min_risk_reward: f64,
     pub lock_on_loss: bool,
     pub account_type_applicability: String, // "All" | "Prop" | "Real" | "Demo" | "Specific"
@@ -985,6 +1011,8 @@ pub struct RiskProfile {
     pub max_contracts: Option<i32>,
     #[serde(default)]
     pub linked_asset_risk_profile_ids: Option<Vec<String>>,
+    
+    /// DEPRECATED: Superseded by RiskRule(scope='combined')
     #[serde(default)]
     pub combined_rules: Option<Vec<CombinedRiskRule>>,
     #[serde(default)]
