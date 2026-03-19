@@ -378,6 +378,7 @@ export type RiskProfile = {
     min_contracts?: number;
     /** @deprecated Superseded by AssetRiskProfile context */
     max_contracts?: number;
+    linked_asset_risk_profile_ids?: string[];
     /** @deprecated Superseded by RiskRule(scope='combined') */
     combined_rules?: CombinedRiskRule[];
     risk_rules?: RiskRule[];

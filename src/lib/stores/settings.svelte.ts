@@ -317,6 +317,7 @@ class SettingsStore {
 
             // Run legacy risk/growth migration if needed
             await riskSettingsStore.migrateLegacyGrowthPlans();
+            await riskSettingsStore.migrateLegacyRiskRules();
 
             console.log("[SettingsStore] loadData completed.");
         } catch (e) {
