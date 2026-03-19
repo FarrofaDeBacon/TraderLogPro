@@ -1632,6 +1632,47 @@
           "engine": "Advanced Rules",
           "general": "General",
           "growth": "Roadmap"
+        },
+        "ruleBuilder": {
+          "title": "Plan Rules",
+          "addRule": "New Rule",
+          "editRule": "Edit Rule",
+          "deleteRule": "Delete Rule",
+          "noRules": "No rules configured",
+          "ruleName": "Rule Name",
+          "scope": {
+            "label": "Scope",
+            "global": "Global",
+            "asset": "Asset",
+            "combined": "Combined"
+          },
+          "targetType": {
+            "label": "Rule Type",
+            "sum_contracts": "Sum of Contracts",
+            "max_daily_loss": "Max Daily Loss",
+            "profit_target": "Profit Target",
+            "day_trade_only": "Day Trade Only",
+            "close_before_close": "Close Before Close",
+            "consistency": "Consistency",
+            "rule_50_percent": "50% Rule",
+            "max_trades_per_day": "Max Trades per Day"
+          },
+          "operator": {
+            "label": "Operator",
+            "lte": "Less or equal (≤)",
+            "gte": "Greater or equal (≥)",
+            "eq": "Equal to (=)",
+            "lt": "Less than (<)",
+            "gt": "Greater than (>)",
+            "between": "Between"
+          },
+          "value": "Value",
+          "valueSecondary": "Max Value",
+          "linkedProfiles": "Asset Profiles",
+          "enabled": "Enabled",
+          "save": "Save Rule",
+          "cancel": "Cancel",
+          "confirmDelete": "Are you sure you want to delete this rule?"
         }
       },
       "growthPlan": {

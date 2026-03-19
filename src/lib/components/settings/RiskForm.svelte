@@ -24,6 +24,7 @@
     import GrowthPhasesEditor from "$lib/components/settings/GrowthPhasesEditor.svelte";
     import CombinedRulesSection from "./risk/CombinedRulesSection.svelte";
     import DeskConfigSection from "./risk/DeskConfigSection.svelte";
+    import RiskRulesSection from "./risk/RiskRulesSection.svelte";
 
     import { Badge } from "$lib/components/ui/badge";
 
@@ -63,6 +64,7 @@
         active: data?.active ?? false,
         linked_asset_risk_profile_ids: data?.linked_asset_risk_profile_ids ?? [],
         combined_rules: data?.combined_rules ?? [],
+        risk_rules: data?.risk_rules ?? [],
     });
 
 
@@ -105,6 +107,7 @@
                 active: fd.active ?? false,
                 linked_asset_risk_profile_ids: fd.linked_asset_risk_profile_ids ?? [],
                 combined_rules: fd.combined_rules ? [...fd.combined_rules] : [],
+                risk_rules: fd.risk_rules ? [...fd.risk_rules] : [],
             };
         }
     });
@@ -581,7 +584,7 @@
 
                 <!-- Combined Rules Component Injection -->
                 <CombinedRulesSection
-                    bind:rules={formData.combined_rules}
+                    bind:rules={() => formData.combined_rules ?? [], (v) => formData.combined_rules = v}
                     availableAssetProfiles={settingsStore.assetRiskProfiles.filter(ap => formData.linked_asset_risk_profile_ids?.includes(ap.id as string))}
                 />
 
@@ -591,6 +594,14 @@
                     availableAssetProfiles={settingsStore.assetRiskProfiles}
                 />
 
+            </div>
+
+            <!-- Risk Rules Builder -->
+            <div class="space-y-3 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
+                <RiskRulesSection
+                    bind:rules={() => formData.risk_rules ?? [], (v) => formData.risk_rules = v}
+                    assetRiskProfiles={settingsStore.assetRiskProfiles}
+                />
             </div>
         </Tabs.Content>
 

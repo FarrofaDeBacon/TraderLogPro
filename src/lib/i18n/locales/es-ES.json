@@ -1630,6 +1630,47 @@
           "engine": "Reglas Avanzadas",
           "general": "General",
           "growth": "Roadmap"
+        },
+        "ruleBuilder": {
+          "title": "Reglas del Plan",
+          "addRule": "Nueva Regla",
+          "editRule": "Editar Regla",
+          "deleteRule": "Eliminar Regla",
+          "noRules": "Ninguna regla configurada",
+          "ruleName": "Nombre de la Regla",
+          "scope": {
+            "label": "Alcance",
+            "global": "Global",
+            "asset": "Activo",
+            "combined": "Combinada"
+          },
+          "targetType": {
+            "label": "Tipo de Regla",
+            "sum_contracts": "Suma de Contratos",
+            "max_daily_loss": "Pérdida Máx. Diaria",
+            "profit_target": "Meta de Beneficio",
+            "day_trade_only": "Solo Day Trade",
+            "close_before_close": "Cerrar Antes del Cierre",
+            "consistency": "Consistencia",
+            "rule_50_percent": "Regla del 50%",
+            "max_trades_per_day": "Máx. Trades por Día"
+          },
+          "operator": {
+            "label": "Operador",
+            "lte": "Menor o igual (≤)",
+            "gte": "Mayor o igual (≥)",
+            "eq": "Igual a (=)",
+            "lt": "Menor que (<)",
+            "gt": "Mayor que (>)",
+            "between": "Entre"
+          },
+          "value": "Valor",
+          "valueSecondary": "Valor Máximo",
+          "linkedProfiles": "Perfiles de Activo",
+          "enabled": "Activa",
+          "save": "Guardar Regla",
+          "cancel": "Cancelar",
+          "confirmDelete": "¿Está seguro de que desea eliminar esta regla?"
         }
       },
       "growthPlan": {

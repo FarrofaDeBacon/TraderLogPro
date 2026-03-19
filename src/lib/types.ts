@@ -365,6 +365,7 @@ export type RiskProfile = {
     max_contracts?: number;
     linked_asset_risk_profile_ids?: string[];
     combined_rules?: CombinedRiskRule[];
+    risk_rules?: RiskRule[];
     desk_config?: DeskConfig;
 };
 
@@ -380,6 +381,30 @@ export type DeskConfig = {
     consistency_mode?: 'none' | '5days_3positive' | '10days_5positive';
     max_single_day_profit_share?: number;
     mdr_mode?: 'none' | 'fixed' | 'percent_of_margin';
+};
+
+export type RiskRuleOperator = '<=' | '>=' | '=' | '<' | '>' | 'between';
+export type RiskRuleScope = 'global' | 'asset' | 'combined';
+export type RiskRuleTargetType =
+    | 'sum_contracts'
+    | 'max_daily_loss'
+    | 'profit_target'
+    | 'day_trade_only'
+    | 'close_before_close'
+    | 'consistency'
+    | 'rule_50_percent'
+    | 'max_trades_per_day';
+
+export type RiskRule = {
+    id: string;
+    name: string;
+    enabled: boolean;
+    scope: RiskRuleScope;
+    target_type: RiskRuleTargetType;
+    operator: RiskRuleOperator;
+    value: number | boolean;
+    value_secondary?: number;
+    asset_risk_profile_ids?: string[];
 };
 
 export type CombinedRiskRule = {
