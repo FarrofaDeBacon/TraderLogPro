@@ -1,312 +1,255 @@
 <script lang="ts">
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { riskStore } from "$lib/stores/riskStore.svelte";
     import * as Card from "$lib/components/ui/card";
     import { Progress } from "$lib/components/ui/progress";
     import { Button } from "$lib/components/ui/button";
-    import { TrendingUp, TrendingDown, Lock, CheckCircle, AlertTriangle, Info } from "lucide-svelte";
+    import { TrendingUp, Target, AlertOctagon, ShieldAlert, CheckCircle, AlertTriangle, Info, Clock, CheckCircle2, ArrowRight } from "lucide-svelte";
     import { Badge } from "$lib/components/ui/badge";
-    import { evaluateGrowthPhase } from "$lib/utils/riskLogic";
-    import { riskStore } from "$lib/stores/riskStore.svelte";
     import { toast } from "svelte-sonner";
     import { t } from "svelte-i18n";
-
-    let currentStats: import("$lib/utils/riskLogic").TradeStatsSummary = {
-        totalProfit: 450,
-        daysPositive: 2,
-        winRate: 60,
-        consistencyDays: 2,
-        currentDrawdown: 150,
-        dailyLossLimit: 500,
-        maxDailyLossStreak: 1,
-    };
-
-    let activeProfile = $derived(settingsStore.activeProfile);
-    let activeGrowthPlan = $derived(
-        settingsStore.growthPlans.find(p => p.id === activeProfile?.growth_plan_id)
-    );
-    let currentPhase = $derived(
-        activeGrowthPlan?.phases?.[activeGrowthPlan.current_phase_index],
-    );
-
-    let evaluation = $derived(
-        activeGrowthPlan && currentPhase
-            ? evaluateGrowthPhase(activeGrowthPlan, currentStats)
-            : null,
-    );
+    import { cn } from "$lib/utils";
 
     let deskProgression = $derived(riskStore.deskStageProgressionState);
     let deskFeedback = $derived(riskStore.deskProgressFeedback);
+    let audit = $derived(riskStore.deskAuditState);
+    let cockpit = $derived(riskStore.riskCockpitState);
+    
+    let activeProfile = $derived(settingsStore.activeProfile);
+    let isDeskEnabled = $derived(activeProfile?.desk_config?.enabled);
+    let activeGrowthPlan = $derived(activeProfile?.growth_plan_id ? settingsStore.growthPlans.find(p => p.id === activeProfile?.growth_plan_id) : undefined);
+    
+    // Fallback metrics
+    let growthMetrics = $derived(cockpit?.growthEvaluation?.metrics);
 
-    function applyProgression() {
-        if (evaluation?.action === "promote" && activeGrowthPlan) {
-            settingsStore.updateRiskProfilePhase(
-                // Note: The phase index update needs to hit RiskSettingsStore's updateGrowthPlanPhase if applicable
-                // Since updateRiskProfilePhase modifies the RiskProfile's deprecated field, 
-                // we should update activeGrowthPlan instead. But for now, assuming there's a store method:
-                // Actually, this method currently modifies RiskProfile. 
-                // Wait! Let's just fix the toast interpolation for now.
-                activeProfile.id,
-                evaluation.newPhaseIndex,
-            );
-            toast.success(
-                $t("settings.risk.growthPlan.toasts.promote", {
-                    values: {
-                        name: activeGrowthPlan.phases[
-                            evaluation.newPhaseIndex
-                        ].name,
-                    },
-                }),
-            );
-        }
-    }
-
-    function applyRegression() {
-        if (evaluation?.action === "demote" && activeProfile && activeGrowthPlan) {
-            settingsStore.updateRiskProfilePhase(
-                activeProfile.id,
-                evaluation.newPhaseIndex,
-            );
-            toast.warning(
-                $t("settings.risk.growthPlan.toasts.demote", {
-                    values: {
-                        name: activeGrowthPlan.phases[
-                            evaluation.newPhaseIndex
-                        ].name,
-                    },
-                }),
-            );
+    function advanceDeskStage() {
+        if (activeProfile && activeProfile.desk_config && deskProgression?.can_advance) {
+            const currentIndex = activeProfile.desk_config.current_stage_index ?? 0;
+            const newDeskConfig = {
+                ...activeProfile.desk_config,
+                current_stage_index: currentIndex + 1
+            };
+            settingsStore.updateRiskProfile(activeProfile.id, { desk_config: newDeskConfig });
+            toast.success("Parabéns! Estágio da Mesa Avançado com Sucesso!");
         }
     }
 </script>
 
-{#if activeGrowthPlan && activeGrowthPlan.enabled && currentPhase}
-    <Card.Root class="border-2 border-primary/20 bg-primary/5">
+{#if isDeskEnabled && deskProgression && deskFeedback && cockpit}
+    <div class="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+        <!-- HEADER / JORNADA -->
+        <Card.Root class="border-2 border-primary/20 bg-background/50 overflow-hidden relative shadow-lg">
+            <div class="absolute right-0 top-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+            <Card.Content class="p-6 relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <TrendingUp class="w-5 h-5 text-primary" />
+                            <h2 class="text-xl font-bold tracking-tight">{$t("settings.risk.growthPlan.title") || "Cockpit da Mesa Proprietária"}</h2>
+                        </div>
+                        <p class="text-sm text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                            {$t("desk.progression.current") || "Estágio Atual"}: 
+                            <Badge variant="outline" class="font-bold text-foreground bg-background border-primary/30 uppercase">
+                                {$t(`risk.desk.stages.${deskProgression.current_stage_id.toLowerCase()}`) || deskProgression.current_stage_id}
+                            </Badge>
+                        </p>
+                    </div>
+
+                    <div class="text-right flex flex-col items-end gap-2">
+                        {#if deskProgression.can_advance}
+                            <Badge class="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 text-sm py-1.5 px-4 outline outline-1 outline-emerald-500/30">
+                                <CheckCircle class="w-4 h-4 mr-2 inline" />
+                                {$t("desk.progression.can_advance") || "Aprovado para Avançar"}
+                            </Badge>
+                        {:else if deskProgression.should_remain}
+                            <Badge variant="default" class="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20 text-sm py-1.5 px-4 outline outline-1 outline-primary/30">
+                                <Clock class="w-4 h-4 mr-2 inline" />
+                                Em Avaliação (Trabalhando Margem)
+                            </Badge>
+                        {/if}
+                    </div>
+                </div>
+            </Card.Content>
+        </Card.Root>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- PISTONS (PROMOÇÃO/METAS) -->
+            <div class="space-y-5 p-5 rounded-xl border bg-card/50 shadow-sm relative overflow-hidden">
+                <div class="absolute left-0 top-0 w-1 h-full bg-emerald-500/50"></div>
+                <div class="flex items-center gap-2 pb-3 border-b border-border/50">
+                    <div class="p-1.5 rounded-md bg-emerald-500/10">
+                        <Target class="w-5 h-5 text-emerald-500" />
+                    </div>
+                    <h3 class="font-semibold text-base">Metas para Avançar</h3>
+                </div>
+
+                {#if deskFeedback.progress.length === 0 && deskFeedback.missing_requirements.length === 0 && deskProgression.can_advance}
+                    <div class="flex flex-col items-center justify-center p-6 text-center space-y-4">
+                        <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                            <CheckCircle2 class="w-6 h-6 text-emerald-500" />
+                        </div>
+                        <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                            Todas as metas concluídas! Você está pronto para o próximo estágio.
+                        </p>
+                        <Button 
+                            onclick={advanceDeskStage}
+                            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 shadow-lg shadow-emerald-500/20"
+                        >
+                            Avançar de Estágio
+                            <ArrowRight class="w-4 h-4 ml-2" />
+                        </Button>
+                    </div>
+                {:else}
+                    <div class="space-y-6">
+                        {#each deskFeedback.progress as prog}
+                            <div class="space-y-2.5">
+                                <div class="flex justify-between text-sm items-end">
+                                    <span class="font-medium text-muted-foreground">{prog.label}</span>
+                                    <div class="text-right">
+                                        <span class="font-mono font-bold text-foreground">{prog.current.toFixed(1)}</span>
+                                        <span class="font-mono text-muted-foreground text-xs"> / {prog.target.toFixed(1)}</span>
+                                    </div>
+                                </div>
+                                <div class="h-2.5 bg-muted rounded-full overflow-hidden border border-border/50 shadow-inner">
+                                    <div class="h-full bg-emerald-500 transition-all duration-1000 ease-out relative" style="width: {Math.min((prog.current / Math.max(prog.target, 0.01)) * 100, 100)}%">
+                                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-full animate-[shimmer_2s_infinite]"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
+
+                {#if deskFeedback.missing_requirements.length > 0}
+                    <div class="mt-6 p-3.5 rounded-lg bg-amber-500/5 border border-amber-500/20 space-y-2">
+                        <h4 class="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-1">Pendências</h4>
+                        {#each deskFeedback.missing_requirements as req}
+                            <div class="flex items-start gap-2 text-xs text-amber-700/80 dark:text-amber-400/80">
+                                <AlertTriangle class="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                                <span>{$t(req) || req}</span>
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
+            </div>
+
+            <!-- ZONAS DE PERIGO (DEMOÇÃO/LIMITES) -->
+            <div class="space-y-5 p-5 rounded-xl border bg-card/50 shadow-sm relative overflow-hidden">
+                <div class="absolute left-0 top-0 w-1 h-full bg-rose-500/50"></div>
+                <div class="flex items-center gap-2 pb-3 border-b border-border/50">
+                    <div class="p-1.5 rounded-md bg-rose-500/10">
+                        <AlertOctagon class="w-5 h-5 text-rose-500" />
+                    </div>
+                    <h3 class="font-semibold text-base">Zonas de Perigo</h3>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Limite de Perda Diária -->
+                    {#if cockpit.dailyRiskStatus}
+                        {@const lossLimit = activeProfile?.max_daily_loss || 0}
+                        {@const currentLoss = Math.min(cockpit.dailyRiskStatus.dailyPnL, 0) * -1}
+                        {@const lossPercent = lossLimit > 0 ? Math.min((currentLoss / Math.max(lossLimit, 0.01)) * 100, 100) : 0}
+                        <div class="space-y-2.5">
+                            <div class="flex justify-between text-sm items-end">
+                                <span class="font-medium text-muted-foreground">Perda Diária Atual</span>
+                                <div class="text-right">
+                                    <span class="font-mono font-bold {lossPercent > 85 ? 'text-rose-500' : 'text-foreground'}">R$ {currentLoss.toFixed(2)}</span>
+                                    <span class="font-mono text-muted-foreground text-xs"> / R$ {lossLimit.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            <div class="h-2.5 bg-muted rounded-full overflow-hidden border border-border/50 shadow-inner">
+                                <div class={cn(
+                                    "h-full transition-all duration-1000 ease-out",
+                                    lossPercent > 85 ? "bg-rose-500 animate-[pulse_1s_infinite]" : lossPercent > 50 ? "bg-amber-500" : "bg-primary/50"
+                                )} style="width: {lossPercent}%"></div>
+                            </div>
+                        </div>
+                    {/if}
+
+                    <!-- Drawdown MDD / Retenção -->
+                    {#if audit}
+                        {@const mddLimit = activeProfile?.desk_config?.max_total_loss || 0}
+                        <!-- Em Mesas prop, o MDD absoluto geralmente bate com o PnL liquido geral, ou margem negativa -->
+                        <!-- Se o total_net_profit for negativo, é drawdown. -->
+                        {@const currentDrawdown = Math.min(audit.metrics.total_net_profit, 0) * -1}
+                        {@const mddPercent = mddLimit > 0 ? Math.min((currentDrawdown / Math.max(mddLimit, 0.01)) * 100, 100) : 0}
+                        
+                        {#if mddLimit > 0}
+                            <div class="space-y-2.5">
+                                <div class="flex justify-between text-sm items-end">
+                                    <span class="font-medium text-muted-foreground">Drawdown Total (MDR)</span>
+                                    <div class="text-right">
+                                        <span class="font-mono font-bold {mddPercent > 85 ? 'text-rose-500' : 'text-foreground'}">R$ {currentDrawdown.toFixed(2)}</span>
+                                        <span class="font-mono text-muted-foreground text-xs"> / R$ {mddLimit.toFixed(2)}</span>
+                                    </div>
+                                </div>
+                                <div class="h-2.5 bg-muted rounded-full overflow-hidden border border-border/50 shadow-inner">
+                                    <div class={cn(
+                                        "h-full transition-all duration-1000 ease-out",
+                                        mddPercent > 85 ? "bg-rose-500 animate-[pulse_1s_infinite]" : mddPercent > 50 ? "bg-amber-500" : "bg-primary/50"
+                                    )} style="width: {mddPercent}%"></div>
+                                </div>
+                            </div>
+                        {/if}
+                    {/if}
+                </div>
+
+                {#if deskFeedback.suggestions.length > 0}
+                    <div class="mt-6 p-3.5 rounded-lg bg-secondary/30 border border-border/50 space-y-2">
+                        <h5 class="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Restrições Comportamentais</h5>
+                        {#each deskFeedback.suggestions as sug}
+                            <div class="flex items-start gap-2 text-xs text-muted-foreground">
+                                <Info class="w-3.5 h-3.5 mt-0.5 shrink-0 opacity-70" />
+                                <span>{$t(sug) || sug}</span>
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+{:else if activeGrowthPlan && activeGrowthPlan.enabled && cockpit?.growthEvaluation}
+    <!-- STANDALONE GROWTH PLAN (SE A MESA ESTIVER DESATIVADA MAS O PLANO GENERICO ESTIVER ATIVO) -->
+    <Card.Root class="border-2 border-primary/20 bg-primary/5 shadow-sm">
         <Card.Header class="pb-2">
             <div class="flex justify-between items-center">
                 <div class="space-y-1">
                     <Card.Title class="flex items-center gap-2">
                         <TrendingUp class="w-5 h-5 text-primary" />
-                        {$t("settings.risk.growthPlan.title")}: {currentPhase.name}
+                        {$t("settings.risk.growthPlan.title") || "Plano de Crescimento"}
                     </Card.Title>
-                    <Card.Description
-                        >{$t("settings.risk.growthPlan.maxLotsLabel")}
-                        <strong>{currentPhase.lot_size}</strong>
-                    </Card.Description>
                 </div>
-                <div class="text-right">
-                    <span
-                        class="text-xs text-muted-foreground uppercase font-bold"
-                        >{$t("settings.risk.growthPlan.status.title")}</span
-                    >
-                    <div class="font-mono text-lg">
-                        {evaluation?.action === "promote"
-                            ? $t("settings.risk.growthPlan.status.approved")
-                            : evaluation?.action === "demote"
-                              ? $t("settings.risk.growthPlan.status.regression")
-                              : $t(
-                                    "settings.risk.growthPlan.status.inProgress",
-                                )}
+            </div>
+        </Card.Header>
+        <Card.Content>
+            <div class="grid grid-cols-2 gap-6 pt-2">
+                <div class="space-y-3">
+                    <div class="flex items-center gap-1.5 border-b border-border/50 pb-1">
+                        <Target class="w-4 h-4 text-emerald-500" />
+                        <span class="text-xs font-semibold text-emerald-600">Progresso de Metas</span>
+                    </div>
+                    <div class="flex justify-between text-sm py-1">
+                        <span class="text-muted-foreground">Lucro Líquido Acumulado</span>
+                        <span class="font-mono font-bold text-emerald-600">R$ {cockpit.growthEvaluation.metrics.netPnL.toFixed(2)}</span>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-1.5 border-b border-border/50 pb-1">
+                        <AlertOctagon class="w-4 h-4 text-rose-500" />
+                        <span class="text-xs font-semibold text-rose-600">Zonas de Perigo</span>
+                    </div>
+                    <div class="flex justify-between text-sm py-1">
+                        <span class="text-muted-foreground">Drawdown Máximo Atingido</span>
+                        <span class="font-mono font-bold {cockpit.growthEvaluation.metrics.drawdownPercent > 80 ? 'text-rose-500' : 'text-foreground'}">
+                            {cockpit.growthEvaluation.metrics.drawdownPercent.toFixed(2)}%
+                        </span>
+                    </div>
+                    <div class="flex justify-between text-sm py-1">
+                        <span class="text-muted-foreground">Perda Diária Atual</span>
+                        <span class="font-mono font-bold">R$ {Math.min(cockpit.dailyRiskStatus.dailyPnL, 0) * -1} <span class="text-xs text-muted-foreground font-normal">/ R$ {activeProfile?.max_daily_loss || 0}</span></span>
                     </div>
                 </div>
             </div>
-        </Card.Header>
-        <Card.Content>
-            <div class="grid grid-cols-2 gap-4">
-                <!-- Progression Status -->
-                <div class="space-y-2">
-                    <span class="text-xs font-semibold text-green-600"
-                        >{$t(
-                            "settings.risk.growthPlan.requirements.promote",
-                        )}</span
-                    >
-                    {#each currentPhase?.conditions_to_advance || [] as rule}
-                        <div class="flex justify-between text-sm">
-                            <span>
-                                {rule.metric === "profit_target"
-                                    ? $t("settings.risk.growthPlan.requirements.profit")
-                                    : rule.metric === "days_positive"
-                                      ? $t("settings.risk.growthPlan.requirements.days")
-                                      : rule.metric === "win_rate"
-                                        ? $t("settings.risk.growthPlan.requirements.winRate")
-                                        : rule.metric === "consistency_days"
-                                          ? $t("settings.risk.growthPlan.requirements.consistency")
-                                          : rule.metric}
-                            </span>
-                            <span>
-                                {rule.metric === "profit_target"
-                                    ? `R$ ${currentStats.totalProfit} / ${rule.value}`
-                                    : rule.metric === "days_positive"
-                                      ? `${currentStats.daysPositive} / ${rule.value}`
-                                      : rule.metric === "win_rate"
-                                        ? `${currentStats.winRate.toFixed(1)}% / ${rule.value}%`
-                                        : rule.metric === "consistency_days"
-                                          ? `${currentStats.consistencyDays} / ${rule.value}`
-                                          : `${rule.value}`}
-                            </span>
-                        </div>
-                        <Progress
-                            value={(rule.metric === "profit_target"
-                                ? Math.min(currentStats.totalProfit / rule.value, 1)
-                                : rule.metric === "days_positive"
-                                  ? Math.min(currentStats.daysPositive / rule.value, 1)
-                                  : rule.metric === "win_rate"
-                                    ? Math.min(currentStats.winRate / rule.value, 1)
-                                    : rule.metric === "consistency_days"
-                                      ? Math.min(currentStats.consistencyDays / rule.value, 1)
-                                      : 0) * 100}
-                            class="h-2"
-                        />
-                    {/each}
-                </div>
-
-                <!-- Regression Status -->
-                <div class="space-y-2">
-                    <span class="text-xs font-semibold text-red-600"
-                        >{$t(
-                            "settings.risk.growthPlan.requirements.demote",
-                        )}</span
-                    >
-                    {#each currentPhase?.conditions_to_demote || [] as rule}
-                        <div class="flex justify-between text-sm">
-                            <span>
-                                {rule.metric === "drawdown_limit"
-                                    ? $t("settings.risk.growthPlan.requirements.drawdown")
-                                    : rule.metric === "daily_loss_limit"
-                                      ? $t("settings.risk.growthPlan.requirements.dailyLoss")
-                                      : rule.metric === "max_daily_loss_streak"
-                                        ? $t("settings.risk.growthPlan.requirements.lossStreak")
-                                        : rule.metric}
-                            </span>
-                            <span class={(rule.metric === "drawdown_limit" && (currentStats.currentDrawdown || 0) > rule.value) || (rule.metric === "daily_loss_limit" && (currentStats.dailyLossLimit || 0) > rule.value) || (rule.metric === "max_daily_loss_streak" && (currentStats.maxDailyLossStreak || 0) > rule.value) ? "text-rose-500 font-bold" : ""}>
-                                {rule.metric === "drawdown_limit"
-                                    ? `R$ ${currentStats.currentDrawdown} / ${rule.value}`
-                                    : rule.metric === "daily_loss_limit"
-                                      ? `R$ ${currentStats.dailyLossLimit} / ${rule.value}`
-                                      : rule.metric === "max_daily_loss_streak"
-                                        ? `${currentStats.maxDailyLossStreak} / ${rule.value}`
-                                        : `${rule.value}`}
-                            </span>
-                        </div>
-                        <Progress
-                            value={(rule.metric === "drawdown_limit"
-                                ? Math.min((currentStats.currentDrawdown || 0) / rule.value, 1)
-                                : rule.metric === "daily_loss_limit"
-                                  ? Math.min((currentStats.dailyLossLimit || 0) / rule.value, 1)
-                                  : rule.metric === "max_daily_loss_streak"
-                                    ? Math.min((currentStats.maxDailyLossStreak || 0) / rule.value, 1)
-                                    : 0) * 100}
-                            class="h-2 {['drawdown_limit', 'daily_loss_limit', 'max_daily_loss_streak'].includes(rule.metric) ? 'bg-red-100' : ''}"
-                        />
-                    {/each}
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="pt-4 flex justify-end gap-2">
-                {#if evaluation?.action === "promote"}
-                    <Button
-                        onclick={applyProgression}
-                        class="bg-green-600 hover:bg-green-700 text-white"
-                    >
-                        <CheckCircle class="w-4 h-4 mr-2" />
-                        {$t("settings.risk.growthPlan.actions.promote")}
-                    </Button>
-                {:else if evaluation?.action === "demote"}
-                    <Button onclick={applyRegression} variant="destructive">
-                        <Lock class="w-4 h-4 mr-2" />
-                        {$t("settings.risk.growthPlan.actions.demote")}
-                    </Button>
-                {/if}
-            </div>
-        </Card.Content>
-    </Card.Root>
-{/if}
-
-{#if deskProgression && deskFeedback}
-    <Card.Root class="border-2 border-primary/20 bg-background/50 mt-4">
-        <Card.Header class="pb-2">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div class="space-y-1">
-                    <Card.Title class="flex items-center gap-2">
-                        <TrendingUp class="w-5 h-5 text-primary" />
-                        {$t("desk.progression.title") || "Progressão de Estágio - Mesa"}
-                    </Card.Title>
-                    <Card.Description>
-                        {$t("desk.progression.current") || "Estágio Atual"}: <span class="font-mono font-bold text-primary">{deskProgression.current_stage_id}</span>
-                    </Card.Description>
-                </div>
-                {#if deskProgression.can_advance}
-                    <Badge variant="default" class="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">
-                        {$t("desk.progression.can_advance") || "Apto para Avançar"}
-                    </Badge>
-                {:else if deskProgression.should_remain}
-                    <Badge variant="secondary" class="text-muted-foreground">
-                        {$t("desk.progression.should_remain") || "Estágio Retido"}
-                    </Badge>
-                {/if}
-            </div>
-        </Card.Header>
-        <Card.Content>
-            {#if deskProgression.checks.length > 0}
-                <div class="space-y-2 mb-4">
-                    {#each deskProgression.checks as check}
-                        <div class="flex items-center gap-2 text-sm">
-                            {#if check.passed}
-                                <div class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></div>
-                                <span class="text-muted-foreground">{check.reason || check.key}</span>
-                            {:else}
-                                <div class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></div>
-                                <span class="text-amber-500/90">{check.reason || check.key}</span>
-                            {/if}
-                        </div>
-                    {/each}
-                </div>
-            {/if}
-
-            {#if deskFeedback.missing_requirements.length > 0 || deskFeedback.progress.length > 0 || deskFeedback.suggestions.length > 0}
-                <div class="space-y-4 pt-4 border-t border-current/10">
-                    <h4 class="font-semibold text-sm">{$t("desk.feedback.title") || "O Que Falta para Avançar?"}</h4>
-                    
-                    {#if deskFeedback.missing_requirements.length > 0}
-                        <div class="space-y-1">
-                            {#each deskFeedback.missing_requirements as req}
-                                <div class="flex items-start gap-2 text-sm text-amber-600 dark:text-amber-400">
-                                    <AlertTriangle class="w-4 h-4 mt-0.5 shrink-0" />
-                                    <span>{$t(req) || req}</span>
-                                </div>
-                            {/each}
-                        </div>
-                    {/if}
-
-                    {#if deskFeedback.progress.length > 0}
-                        <div class="space-y-3 pt-2">
-                            {#each deskFeedback.progress as prog}
-                                <div class="space-y-1">
-                                    <div class="flex justify-between text-xs text-muted-foreground">
-                                        <span>{prog.label}</span>
-                                        <span class="font-mono">{prog.current} / {prog.target}</span>
-                                    </div>
-                                    <div class="h-2 bg-muted rounded-full overflow-hidden border border-current/10">
-                                        <div class="h-full bg-primary transition-all duration-500" style="width: {Math.min((prog.current / prog.target) * 100, 100)}%"></div>
-                                    </div>
-                                </div>
-                            {/each}
-                        </div>
-                    {/if}
-
-                    {#if deskFeedback.suggestions.length > 0}
-                        <div class="space-y-1 pt-2 border-t border-current/10">
-                            <h5 class="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Guias Adicionais</h5>
-                            {#each deskFeedback.suggestions as sug}
-                                <div class="flex items-start gap-2 text-xs text-muted-foreground">
-                                    <Info class="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                                    <span>{$t(sug) || sug}</span>
-                                </div>
-                            {/each}
-                        </div>
-                    {/if}
-                </div>
-            {/if}
         </Card.Content>
     </Card.Root>
 {/if}
