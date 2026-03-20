@@ -324,13 +324,23 @@
                         <Shield class="w-4 h-4" />
                         {$t("settings.risk.downside")}
                     </h3>
-                    <div class="space-y-2.5">
-                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.maxRiskPerTrade")}</Label>
-                        <Input
-                            type="number"
-                            step="0.1"
-                            bind:value={formData.max_risk_per_trade_percent}
-                        />
+                    <div class="space-y-4">
+                        <div class="space-y-2.5">
+                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Limite de Perda Diária ({formData.target_type === 'Financial' ? '$' : 'pts'})</Label>
+                            <Input
+                                type="number"
+                                step="0.01"
+                                bind:value={formData.max_daily_loss}
+                            />
+                        </div>
+                        <div class="space-y-2.5">
+                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.maxRiskPerTrade")}</Label>
+                            <Input
+                                type="number"
+                                step="0.1"
+                                bind:value={formData.max_risk_per_trade_percent}
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -340,13 +350,23 @@
                         <Target class="w-4 h-4" />
                         {$t("settings.risk.upside")} & Sizing
                     </h3>
-                    <div class="space-y-2.5">
-                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.minRiskReward")}</Label>
-                        <Input
-                            type="number"
-                            step="0.1"
-                            bind:value={formData.min_risk_reward}
-                        />
+                    <div class="space-y-4">
+                        <div class="space-y-2.5">
+                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Meta de Lucro Diária ({formData.target_type === 'Financial' ? '$' : 'pts'})</Label>
+                            <Input
+                                type="number"
+                                step="0.01"
+                                bind:value={formData.daily_target}
+                            />
+                        </div>
+                        <div class="space-y-2.5">
+                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.minRiskReward")}</Label>
+                            <Input
+                                type="number"
+                                step="0.1"
+                                bind:value={formData.min_risk_reward}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
