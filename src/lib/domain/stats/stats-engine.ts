@@ -1,5 +1,6 @@
 import { parseISO, isSameDay, startOfMonth, format } from "date-fns";
 import { parseSafeDate } from "$lib/utils";
+import { generateTraderInsights, type BehavioralInsight } from "../insights/insights-engine";
 
 export interface DashboardStats {
   net: number;
@@ -17,7 +18,7 @@ export interface DashboardStats {
   weekResult: number;
   weekPositiveDays: number;
   weekNegativeDays: number;
-  insights: string[];
+  insights: BehavioralInsight[];
 }
 
 export interface TradeConverter {
@@ -52,7 +53,7 @@ export function getDashboardStats(
       weekResult: 0,
       weekPositiveDays: 0,
       weekNegativeDays: 0,
-      insights: ["Adicione seu primeiro trade para gerar insights."],
+      insights: [{ id: 'empty', type: 'positive', title: 'Terminal Vazio', description: 'Adicione seu primeiro trade para gerar insights.', weight: 0 }],
     };
   }
 
@@ -154,31 +155,8 @@ export function getDashboardStats(
     else if (val < 0) weekNegativeDays++;
   });
 
-  // Insights Generator
-  const insights: string[] = [];
-  if (tradesToday > 5) {
-    insights.push("Você já operou muitas vezes hoje. Cuidado com o overtrading.");
-  } else if (tradesToday > 0 && tradesToday <= 3) {
-    insights.push("Operações precisas. Bom foco no plano até agora.");
-  }
-
-  if (dayRes > 0 && tradesToday > 0) {
-    insights.push("Dia positivo! Considere proteger seu lucro e encerrar o terminal.");
-  } else if (dayRes < 0) {
-    insights.push("Dia negativo. Respire fundo e certifique-se de estar respeitando seu limite diário.");
-  }
-
-  if (weekNegativeDays > weekPositiveDays && weekPositiveDays + weekNegativeDays >= 3) {
-    insights.push("A semana está mais vendedora. Reavalie o contexto do mercado.");
-  } else if (weekPositiveDays > weekNegativeDays && weekPositiveDays >= 2) {
-    insights.push("Semana consistente! Continue focando nos setups de maior qualidade.");
-  }
-  
-  // Limita a 3 insights máximo para não poluir
-  const finalInsights = insights.slice(0, 3);
-  if (finalInsights.length === 0 && tradesToday === 0) {
-     finalInsights.push("Terminal sincronizado. Aguardando novos trades.");
-  }
+  // Insights Generator Fase 5
+  const finalInsights = generateTraderInsights(trades, baseDate, convertTradeResult, dayRes, weekPositiveDays, weekNegativeDays);
 
   const validTradesCount = trades.length || 1;
 

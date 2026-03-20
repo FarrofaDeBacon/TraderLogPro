@@ -32,6 +32,8 @@
     Plus,
     Timer,
     Brain,
+    AlertTriangle,
+    ShieldAlert
   } from "lucide-svelte";
   import { cn, parseSafeDate } from "$lib/utils";
   import {
@@ -108,7 +110,7 @@
 
   const growthProgress = $derived.by(() => {
     if (!activePhase) return 0;
-    const rule = activePhase.progression_rules?.find(
+    const rule = (activePhase as any).progression_rules?.find(
       (r: any) => r.condition === "profit_target",
     );
     if (!rule) return 0;
@@ -225,18 +227,33 @@
         </div>
       </div>
 
-      <!-- BLOCO 3: INSIGHT AUTOMÁTICO (Radar Comportamental) -->
+      <!-- BLOCO 3: INSIGHT AUTOMÁTICO (Radar Comportamental Fase 5) -->
       <div class="mb-4 space-y-3">
         <h3 class="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2 pl-1">
-          <Brain class="w-3.5 h-3.5 text-emerald-500" />
-          Radar Comportamental
+          <Brain class="w-3.5 h-3.5 text-indigo-500" />
+          Radar Comportamental (IA Heurística)
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
           {#each stats.insights as insight}
-            <div class="p-3 bg-accent/30 border-l-2 border-l-emerald-500 border-y border-r border-border/50 rounded-r-xl rounded-l-sm flex items-start gap-3 transition-colors hover:bg-accent/50">
-              <Zap class="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-              <p class="text-[11px] font-bold tracking-wide text-foreground/80 uppercase leading-snug">
-                {insight}
+            <div class={cn(
+                "p-4 border-l-4 border-y border-r border-border/50 rounded-r-xl rounded-l-sm flex flex-col gap-2 transition-colors",
+                insight.type === 'danger' ? "bg-rose-500/10 border-l-rose-500 hover:bg-rose-500/20" : 
+                insight.type === 'warning' ? "bg-amber-500/10 border-l-amber-500 hover:bg-amber-500/20" : 
+                "bg-emerald-500/10 border-l-emerald-500 hover:bg-emerald-500/20"
+            )}>
+              <div class="flex items-center gap-2">
+                {#if insight.type === 'danger'} <ShieldAlert class="w-4 h-4 text-rose-500 shrink-0" />
+                {:else if insight.type === 'warning'} <AlertTriangle class="w-4 h-4 text-amber-500 shrink-0" />
+                {:else} <Zap class="w-4 h-4 text-emerald-500 shrink-0" /> {/if}
+                <span class={cn(
+                    "text-[10px] font-black uppercase tracking-widest drop-shadow-sm",
+                    insight.type === 'danger' ? "text-rose-500" : insight.type === 'warning' ? "text-amber-500" : "text-emerald-500"
+                )}>
+                  {insight.title}
+                </span>
+              </div>
+              <p class="text-[11px] font-medium text-foreground/90 leading-snug">
+                {insight.description}
               </p>
             </div>
           {/each}
@@ -308,9 +325,9 @@
               <div class="mt-4 space-y-3">
                 <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
                   <span class="text-[9px] font-black tracking-widest text-muted-foreground uppercase">Trailing Risk</span>
-                  {#if stats.dayResult <= -(activePhase?.max_daily_loss || 0) && (activePhase?.max_daily_loss ?? 0) > 0}
+                  {#if stats.dayResult <= -(activeProfile?.max_daily_loss || 0) && (activeProfile?.max_daily_loss ?? 0) > 0}
                     <Badge variant="destructive" class="text-[9px] uppercase font-black tracking-widest px-1.5 py-0 h-4">Bloqueado</Badge>
-                  {:else if stats.dayResult <= -(activePhase?.max_daily_loss || 0) * 0.7 && (activePhase?.max_daily_loss ?? 0) > 0}
+                  {:else if stats.dayResult <= -(activeProfile?.max_daily_loss || 0) * 0.7 && (activeProfile?.max_daily_loss ?? 0) > 0}
                     <Badge class="bg-orange-500/20 text-orange-500 hover:bg-orange-500/30 text-[9px] border border-orange-500/20 uppercase font-black tracking-widest px-1.5 py-0 h-4">Atenção</Badge>
                   {:else}
                     <Badge class="bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30 text-[9px] border border-emerald-500/20 uppercase font-black tracking-widest px-1.5 py-0 h-4">Liberado</Badge>
