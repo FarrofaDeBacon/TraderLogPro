@@ -2595,5 +2595,97 @@
         "contracts": "Contratos Mensurables",
         "blocked": "Bloqueado / Inválido",
         "reasons": "Motivo del Bloqueo:"
+    },
+    "risk": {
+        "desk": {
+            "auditTitle": "Auditoría Histórica de la Mesa",
+            "status": {
+                "passed": "Aprobado",
+                "failed": "Reprobado",
+                "pending": "Pendiente"
+            },
+            "metrics": {
+                "operatedDays": "Días Operados",
+                "positiveDays": "Días Positivos",
+                "bestDayShare": "% Mejor Día",
+                "totalProfit": "Beneficio Total"
+            },
+            "stages": {
+                "currentStage": "Etapa Operativa de la Mesa",
+                "margin_building": "Construcción de Margen",
+                "real_phase_1": "Cuenta Real - Fase 1",
+                "real_final": "Cuenta Real - Definitiva"
+            }
+        },
+        "cockpit": {
+            "title": "Cabina Operativa",
+            "subtitle": "Estado de lectura rápida para decisiones diarias del trader.",
+            "profile": "Perfil:",
+            "plan": "Plan:",
+            "asset": "Activo:",
+            "selectAsset": "!! Seleccione un Activo en la Boleta !!",
+            "noProfile": "No hay perfil de riesgo activo.",
+            "noProfileDesc": "Debe habilitar una gestión en Configuración para alimentar la cabina operativa.",
+            "statusBlocked": "Bloqueado",
+            "statusBlockedDesc1": "¡No operar hoy!",
+            "statusBlockedDesc2": "Se alcanzó un límite de supervivencia diaria.",
+            "statusCaution": "Atención",
+            "statusCautionDesc1": "Precaución extrema.",
+            "statusCautionDesc2": "Problemas inminentes o regla del 50% afectada.",
+            "statusAllowed": "Permitido",
+            "statusAllowedDesc1": "Puede operar normalmente.",
+            "statusAllowedDesc2": "Sistemas normales, exposición y drawdown en límites.",
+            "dailyDrawdown": "Drawdown Diario Actual",
+            "sizing": "Lotes (Activo Actual)",
+            "contracts": "CTRs",
+            "blockedZero": "Bloqueado (0)",
+            "violations": "VIOLACIONES ACTIVAS",
+            "warnings": "ADVERTENCIAS OPERATIVAS",
+            "evolutionStatus": "Estado de Evolución",
+            "dailyProfit": "Beneficio Diario Actual",
+            "profitDays": "Días Rentables",
+            "targetHit": "¿Meta Alcanzada?",
+            "yes": "Sí",
+            "no": "No",
+            "riskTriggers": "Disparadores de Riesgo",
+            "overtrading": "Límite de Operaciones",
+            "imminentRisk": "Riesgo Inminente",
+            "controlled": "Controlado",
+            "maxLot": "Lote Máximo Configurado",
+            "mdrStatus": "Techo de Drawdown (MDR)",
+            "watched": "Monitorizado",
+            "openBook": "Libro Abierto",
+            "missingReqs": "Lo que Falta (Meta)",
+            "allReqsMet": "¡Se han cumplido todos los requisitos para esta etapa!",
+            "auditedRules": "Reglas Auditadas",
+            "pending": "pendiente",
+            "noRules": "Ninguna regla activa auditada en la lista del plan actual.",
+            "engine": {
+                "min_trading_days": "Días Operados",
+                "min_positive_days": "Días de Consistencia",
+                "profit_target": "Objetivo de Beneficio",
+                "rule_50_percent": "Regla de 50%",
+                "consistency": "Consistencia Diaria"
+            }
+        }
+    },
+    "desk": {
+        "progression": {
+            "title": "Progresión de Etapa",
+            "current": "Etapa Actual",
+            "can_advance": "Apto para Avanzar",
+            "should_remain": "Etapa Mantenida",
+            "reasons": {
+                "pending_days": "Días mínimos no alcanzados",
+                "pending_audit": "Criterios de auditoría pendientes",
+                "max_stage_reached": "Etapa máxima alcanzada - progresión final"
+            }
+        },
+        "feedback": {
+            "missing_days": "Faltan días de operación para validar la consistencia.",
+            "missing_profit": "Objetivo de beneficios no alcanzado.",
+            "missing_consistency": "No se han superado los criterios mínimos de días rentables consistentes.",
+            "failed_50_percent": "Regla del 50% rota (su mejor día superó el límite de seguridad)."
+        }
     }
 }

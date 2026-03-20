@@ -2641,6 +2641,96 @@
             "assetProfileSelector": "Select an Asset Profile...",
             "noLinkedAssetProfiles": "No asset profile linked.",
             "removeAssetProfile": "Remove"
+        },
+        "desk": {
+            "auditTitle": "Historical Desk Audit",
+            "status": {
+                "passed": "Passed",
+                "failed": "Failed",
+                "pending": "Pending"
+            },
+            "metrics": {
+                "operatedDays": "Operated Days",
+                "positiveDays": "Positive Days",
+                "bestDayShare": "Best Day Share",
+                "totalProfit": "Total Profit"
+            },
+            "stages": {
+                "currentStage": "Operational Desk Stage",
+                "margin_building": "Margin Building",
+                "real_phase_1": "Real Account - Phase 1",
+                "real_final": "Real Account - Final"
+            }
+        },
+        "cockpit": {
+            "title": "Operational Cockpit",
+            "subtitle": "Quick read status for daily trader decisions.",
+            "profile": "Profile:",
+            "plan": "Plan:",
+            "asset": "Asset:",
+            "selectAsset": "!! Select an Asset in the Ticket !!",
+            "noProfile": "No active risk profile.",
+            "noProfileDesc": "You need to enable risk management in Settings to feed the operational cockpit.",
+            "statusBlocked": "Blocked",
+            "statusBlockedDesc1": "Do not trade today!",
+            "statusBlockedDesc2": "A daily survival limit has been reached.",
+            "statusCaution": "Caution",
+            "statusCautionDesc1": "Exercise extreme caution.",
+            "statusCautionDesc2": "Imminent issues or 50% rule affected.",
+            "statusAllowed": "Allowed",
+            "statusAllowedDesc1": "You can trade normally.",
+            "statusAllowedDesc2": "Systems normal, exposure and drawdown within limits.",
+            "dailyDrawdown": "Current Daily Drawdown",
+            "sizing": "Sizing (Current Asset)",
+            "contracts": "CTRs",
+            "blockedZero": "Blocked (0)",
+            "violations": "ACTIVE VIOLATIONS",
+            "warnings": "OPERATIONAL WARNINGS",
+            "evolutionStatus": "Evolution Status",
+            "dailyProfit": "Current Daily Profit",
+            "profitDays": "Profitable Days",
+            "targetHit": "Target Hit?",
+            "yes": "Yes",
+            "no": "No",
+            "riskTriggers": "Risk Triggers",
+            "overtrading": "Overtrading Limit",
+            "imminentRisk": "Imminent Risk",
+            "controlled": "Controlled",
+            "maxLot": "Configured Max Lot",
+            "mdrStatus": "Max Drawdown Ceiling (MDR)",
+            "watched": "Monitored",
+            "openBook": "Open Book",
+            "missingReqs": "Missing to Advance",
+            "allReqsMet": "All requirements for this stage have been met!",
+            "auditedRules": "Audited Rules",
+            "pending": "pending",
+            "noRules": "No active rules audited in the checklist for the current plan.",
+            "engine": {
+                "min_trading_days": "Trading Days",
+                "min_positive_days": "Consistent Days",
+                "profit_target": "Profit Target",
+                "rule_50_percent": "50% Safety Rule",
+                "consistency": "Daily Consistency"
+            }
+        }
+    },
+    "desk": {
+        "progression": {
+            "title": "Stage Progression",
+            "current": "Current Stage",
+            "can_advance": "Eligibile to Advance",
+            "should_remain": "Stage Maintained",
+            "reasons": {
+                "pending_days": "Minimum days not met",
+                "pending_audit": "Audit criteria pending",
+                "max_stage_reached": "Maximum stage reached - final progression"
+            }
+        },
+        "feedback": {
+            "missing_days": "Not enough trading days to validate consistency.",
+            "missing_profit": "Financial profit target has not been met yet.",
+            "missing_consistency": "Minimum consistent (profitable) days criteria not met.",
+            "failed_50_percent": "Breach of the 50% protection rule (best profit day exceeded safety metrics)."
         }
     }
 }

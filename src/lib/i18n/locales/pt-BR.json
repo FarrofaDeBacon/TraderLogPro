@@ -2664,6 +2664,57 @@
             "assetProfileSelector": "Selecione um Perfil de Ativo...",
             "noLinkedAssetProfiles": "Nenhum perfil de ativo vinculado.",
             "removeAssetProfile": "Remover"
+        },
+        "cockpit": {
+            "title": "Cockpit Operacional",
+            "subtitle": "Status de leitura rápida para decisão diária do trader.",
+            "profile": "Perfil:",
+            "plan": "Plano:",
+            "asset": "Ativo:",
+            "selectAsset": "!! Selecione um Ativo na Boleta !!",
+            "noProfile": "Nenhum perfil de risco ativo.",
+            "noProfileDesc": "Você precisa habilitar um gerenciamento em Configurações para alimentar o cockpit operacional.",
+            "statusBlocked": "Bloqueado",
+            "statusBlockedDesc1": "Não operar hoje!",
+            "statusBlockedDesc2": "Um limite de sobrevivência diária foi atingido.",
+            "statusCaution": "Atenção",
+            "statusCautionDesc1": "Cautela redobrada.",
+            "statusCautionDesc2": "Problemas iminentes ou regra dos 50% afetada.",
+            "statusAllowed": "Liberado",
+            "statusAllowedDesc1": "Pode operar normalmente.",
+            "statusAllowedDesc2": "Sistemas normais, exposição e drawdown nos limites.",
+            "dailyDrawdown": "Drawdown Diário Atual",
+            "sizing": "Lotes (Ativo Atual)",
+            "contracts": "CTRs",
+            "blockedZero": "Bloqueado (0)",
+            "violations": "VIOLAÇÕES ATIVAS",
+            "warnings": "AVISOS OPERACIONAIS",
+            "evolutionStatus": "Status de Evolução",
+            "dailyProfit": "Lucro Diário Atual",
+            "profitDays": "Dias de Lucro",
+            "targetHit": "Meta Bateu?",
+            "yes": "Sim",
+            "no": "Não",
+            "riskTriggers": "Gatilhos de Risco",
+            "overtrading": "Limite de Operações",
+            "imminentRisk": "Risco Iminente",
+            "controlled": "Controlado",
+            "maxLot": "Mão Máxima Configurada",
+            "mdrStatus": "Teto de Rebaixamento (MDR)",
+            "watched": "Vigiado",
+            "openBook": "Livro Aberto",
+            "missingReqs": "O Que Falta (Meta)",
+            "allReqsMet": "Todos os requisitos para este estágio foram cumpridos!",
+            "auditedRules": "Regras Auditadas",
+            "pending": "pendente",
+            "noRules": "Nenhuma regra ativa auditada na checklist no plano atual.",
+            "engine": {
+                "min_trading_days": "Dias Operados",
+                "min_positive_days": "Dias de Consistência",
+                "profit_target": "Bater a Meta de Capital",
+                "rule_50_percent": "Segurança de 50%",
+                "consistency": "Consistência Diária"
+            }
         }
     },
     "desk": {
@@ -2679,13 +2730,10 @@
             }
         },
         "feedback": {
-            "title": "O que Falta?",
-            "missing_days": "Operar dias mínimos requeridos",
-            "missing_profit": "Bater alvo de lucro (Target)",
-            "missing_consistency": "Atingir consistência mínima",
-            "failed_50_percent": "Regra 50% violada num só dia",
-            "keep_consistency": "Mantenha a consistência",
-            "warning_50_percent": "Aviso: lucro diário beirando limite de 50%"
+            "missing_days": "Faltam dias operados para validar a consistência.",
+            "missing_profit": "Meta financeira da conta ainda não foi atingida.",
+            "missing_consistency": "Os critérios mínimos de dias consistentes (lucrativos) não foram batidos.",
+            "failed_50_percent": "Houve quebra na proteção dos 50% (seu melhor dia de lucro ultrapassou a métrica de segurança)."
         }
     }
 }
