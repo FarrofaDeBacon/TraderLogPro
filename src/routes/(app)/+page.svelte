@@ -3,6 +3,7 @@
   import { t, locale } from "svelte-i18n";
   import { settingsStore } from "$lib/stores/settings.svelte";
   import { tradesStore } from "$lib/stores/trades.svelte";
+  import { evolutionStore } from "$lib/stores/evolutionStore.svelte";
   import {
     Card,
     CardContent,
@@ -219,6 +220,10 @@
         <div class="mt-5 flex flex-col sm:flex-row gap-3 justify-end items-center border-t border-border/40 pt-4">
           <Button variant="outline" size="sm" onclick={() => isNewTradeOpen = true} class="w-full sm:w-auto text-[10px] font-bold h-8 uppercase tracking-widest text-muted-foreground hover:text-foreground border-dashed">
             Registro Detalhado (Wizard)
+          </Button>
+          <Button size="sm" href="/evolution" class="w-full sm:w-auto bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 text-[10px] font-black h-8 uppercase tracking-widest shadow-none gap-2">
+            <Brain class="w-3.5 h-3.5 shrink-0" />
+            Diário de Evolução
           </Button>
           <Button size="sm" href="/risk-control" class="w-full sm:w-auto bg-indigo-600/10 text-indigo-500 hover:bg-indigo-600/20 border border-indigo-500/20 text-[10px] font-black h-8 uppercase tracking-widest shadow-none gap-2">
             <ShieldCheck class="w-3.5 h-3.5 shrink-0" />
