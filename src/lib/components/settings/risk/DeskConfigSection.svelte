@@ -151,9 +151,6 @@
                                     {/each}
                                 </Select.Content>
                             </Select.Root>
-                            <Badge variant="outline" class="uppercase">
-                                {config.stages[config.current_stage_index ?? 0]?.id}
-                            </Badge>
                         </div>
                     </div>
                 {/if}
@@ -221,7 +218,7 @@
                         <div class="space-y-0.5">
                             <h4 class="font-semibold text-sm">{$t("desk.progression.title") || "Progressão de Estágio"}</h4>
                             <p class="text-xs text-muted-foreground uppercase tracking-widest">
-                                {$t("desk.progression.current") || "Estágio Atual"}: <span class="font-mono font-bold text-primary">{progression.current_stage_id}</span>
+                                {$t("desk.progression.current") || "Estágio Atual"}: <span class="font-mono font-bold text-primary">{$t(`risk.desk.stages.${progression.current_stage_id.toLowerCase()}`) || config.stages.find((s: any) => s.id.toLowerCase() === progression.current_stage_id.toLowerCase())?.name || progression.current_stage_id}</span>
                             </p>
                         </div>
                         {#if progression.can_advance}
