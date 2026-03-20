@@ -44,7 +44,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-primary" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
             </div>
             <div class="space-y-1">
-                <p class="font-bold text-primary">{$t("settings.risk.growthPlan.infoTitle") || "Como usar este Plano?"}</p>
+                <p class="font-bold text-primary">Como usar este Plano?</p>
                 <p class="text-muted-foreground">
                     Isto é apenas o <strong>motor</strong>. Para que esta progressão de lotes funcione na sua conta real, você precisa criar (ou editar) um <strong>Perfil de Risco</strong> na Aba de Riscos e vincular este Plano lá.
                 </p>

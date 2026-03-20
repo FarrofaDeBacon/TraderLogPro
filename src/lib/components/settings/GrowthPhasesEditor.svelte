@@ -67,7 +67,7 @@
                         </Button>
                     </div>
                 {:else}
-                    <Card.Root class="relative border-border/10 bg-black/5 shadow-sm rounded-xl overflow-hidden mb-4">
+                    <Card.Root class="relative border-border/10 bg-black/5 shadow-sm rounded-xl overflow-hidden mb-3">
                         <Button
                             variant="ghost"
                             size="icon"
@@ -76,7 +76,7 @@
                         >
                             <Trash2 class="w-4 h-4" />
                         </Button>
-                        <Card.Header class="p-5 pb-2">
+                        <Card.Header class="p-4 pb-2">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary shadow-inner">
                                     {index + 1}
@@ -84,15 +84,15 @@
                                 <Input class="h-9 text-base font-bold border-0 px-0 focus-visible:ring-0 bg-transparent" bind:value={phase.name} />
                             </div>
                         </Card.Header>
-                        <Card.Content class="p-5 pt-3 space-y-5">
-                            <div class="grid grid-cols-1 gap-5">
+                        <Card.Content class="p-4 pt-2 space-y-4">
+                            <div class="grid grid-cols-1 gap-3">
                                 <div class="space-y-2.5">
                                     <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("settings.risk.growthPlan.maxLots")}</Label>
                                     <Input type="number" class="h-9 text-sm" bind:value={phase.lot_size} />
                                 </div>
                             </div>
-                            <div class="pt-4 border-t border-border/10 space-y-6">
-                                <div class="space-y-3">
+                            <div class="pt-3 border-t border-border/10 space-y-4">
+                                <div class="space-y-2">
                                     <div class="flex items-center justify-between">
                                         <Label class="text-[11px] font-bold text-emerald-500 uppercase flex items-center gap-1.5 tracking-wider">
                                             <TrendingUp class="w-3.5 h-3.5" />

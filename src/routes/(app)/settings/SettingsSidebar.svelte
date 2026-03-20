@@ -109,7 +109,7 @@
         },
         {
             href: "/settings/growth-plans",
-            title: $t("settings.nav.growthPlans") || "Planos de Crescimento",
+            title: $t("settings.nav.growthPlans").includes("growthPlans") ? "Planos de Crescimento" : $t("settings.nav.growthPlans"),
             icon: TrendingUp,
         },
         {
