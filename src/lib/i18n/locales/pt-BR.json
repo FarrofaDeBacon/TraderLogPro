@@ -1723,12 +1723,15 @@
                 "progression": "Critérios de Avanço",
                 "regression": "Critérios de Regressão",
                 "requirements": {
+                    "consistency": "Consistência (Dias)",
+                    "dailyLoss": "Perda Diária",
                     "days": "Sessões Positivas",
                     "demote": "Critérios de Regressão",
                     "drawdown": "Drawdown Máximo",
                     "lossStreak": "Sequência de Loss",
                     "profit": "Meta de Lucro",
-                    "promote": "Requisitos para Avançar"
+                    "promote": "Requisitos para Avançar",
+                    "winRate": "Taxa de Acerto (%)"
                 },
                 "status": {
                     "approved": "Aprovado p/ Próxima Fase",
@@ -2598,6 +2601,26 @@
         "reasons": "Motivo do Bloqueio:"
     },
     "risk": {
+        "desk": {
+            "auditTitle": "Auditoria Histórica da Mesa",
+            "status": {
+                "passed": "Aprovado",
+                "failed": "Reprovado",
+                "pending": "Pendente"
+            },
+            "metrics": {
+                "operatedDays": "Dias Operados",
+                "positiveDays": "Dias Positivos",
+                "bestDayShare": "Share do Melhor Dia",
+                "totalProfit": "Lucro Total"
+            },
+            "stages": {
+                "currentStage": "Estágio Operacional da Mesa",
+                "margin_building": "Construção de Margem",
+                "real_phase_1": "Conta Real - Fase 1",
+                "real_final": "Conta Real - Definitiva"
+            }
+        },
         "deskValidation": {
             "title": "Validação da Mesa",
             "allowed": "Operação Permitida",
@@ -2641,6 +2664,28 @@
             "assetProfileSelector": "Selecione um Perfil de Ativo...",
             "noLinkedAssetProfiles": "Nenhum perfil de ativo vinculado.",
             "removeAssetProfile": "Remover"
+        }
+    },
+    "desk": {
+        "progression": {
+            "title": "Progressão de Estágio",
+            "current": "Estágio Atual",
+            "can_advance": "Apto para Avançar",
+            "should_remain": "Estágio Retido",
+            "reasons": {
+                "pending_days": "Faltam dias operados",
+                "pending_audit": "Critérios de auditoria pendentes",
+                "max_stage_reached": "Estágio definitivo atingido"
+            }
+        },
+        "feedback": {
+            "title": "O que Falta?",
+            "missing_days": "Operar dias mínimos requeridos",
+            "missing_profit": "Bater alvo de lucro (Target)",
+            "missing_consistency": "Atingir consistência mínima",
+            "failed_50_percent": "Regra 50% violada num só dia",
+            "keep_consistency": "Mantenha a consistência",
+            "warning_50_percent": "Aviso: lucro diário beirando limite de 50%"
         }
     }
 }
