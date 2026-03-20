@@ -64,6 +64,8 @@
         risk_rules: data?.risk_rules ?? [],
     });
 
+    let activeTab = $state("base");
+
 
 
     $effect(() => {
@@ -219,7 +221,7 @@
         />
     </div>
 
-    <Tabs.Root value="base" class="w-full">
+    <Tabs.Root bind:value={activeTab} class="w-full">
         <Tabs.List class="flex flex-wrap w-full justify-start sm:justify-center p-1 h-auto gap-1">
             <Tabs.Trigger value="base" class="flex-1 min-w-[120px]"
                 >{$t("settings.risk.form.tabs.base") || "Base"}</Tabs.Trigger
@@ -535,8 +537,9 @@
         <!-- TAB 4: MOTORES                                     -->
         <!-- ═══════════════════════════════════════════════════ -->
         <Tabs.Content value="motors" class="space-y-4 pt-2">
-            <div class="space-y-4">
-                <!-- Plano de Crescimento Vinculado -->
+            {#if activeTab === "motors"}
+                <div class="space-y-4">
+                    <!-- Plano de Crescimento Vinculado -->
                 <div class="space-y-5 p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 shadow-sm">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -745,6 +748,7 @@
                     {/if}
                 </div>
             </div>
+            {/if}
         </Tabs.Content>
     </Tabs.Root>
 
