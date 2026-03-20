@@ -35,11 +35,7 @@ export type {
 
 class SettingsStore {
     // User Profile, Device ID, and Auth migrated to userProfileStore
-    get psychologyApiId() { return integrationsStore.psychologyApiId; }
-    get marketDataApiId() { return integrationsStore.marketDataApiId; }
-    get rtdEnabled() { return integrationsStore.rtdEnabled; }
-    get rtdExcelPath() { return integrationsStore.rtdExcelPath; }
-    get apiConfigs() { return integrationsStore.apiConfigs; }
+    // Integrations properties removed
     get emotionalStates() { return workspaceStore.emotionalStates; }
     get tags() { return workspaceStore.tags; }
     get journalEntries() { return workspaceStore.journalEntries; }
@@ -271,14 +267,7 @@ class SettingsStore {
         return chartTypesStore.deleteChartType(id);
     }
 
-    // API & RTD
-    addApiConfig(item: Omit<ApiConfig, "id">) { return integrationsStore.addApiConfig(item); }
-    updateApiConfig(id: string, item: Partial<ApiConfig>) { return integrationsStore.updateApiConfig(id, item); }
-    deleteApiConfig(id: string) { return integrationsStore.deleteApiConfig(id); }
-
-    saveServiceBindings(psychology: string, marketData: string) { return integrationsStore.bindServiceApi({ psychology, market_data: marketData }); }
-    setRtdEnabled(enabled: boolean) { integrationsStore.rtdEnabled = enabled; if (typeof window !== "undefined") localStorage.setItem("rtd_enabled", enabled.toString()); }
-    setRtdExcelPath(path: string) { integrationsStore.rtdExcelPath = path; if (typeof window !== "undefined") localStorage.setItem("rtd_excel_path", path); }
+    // APIs and RTD have been moved completely to integrationsStore
 
     // Debug / Seed
     async seedDatabase() {
