@@ -5,7 +5,7 @@
     import * as Card from "$lib/components/ui/card";
     import { Separator } from "$lib/components/ui/separator";
     import { Mail, Lock, LogIn, Github, Chrome } from "lucide-svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { goto } from "$app/navigation";
     import { toast } from "svelte-sonner";
     import { t } from "svelte-i18n";
@@ -31,7 +31,7 @@
         isLoading = true;
 
         try {
-            const success = await settingsStore.login(email, password);
+            const success = await userProfileStore.login(email, password);
             if (success) {
                 toast.success($t("auth.login.success"));
                 // Force reload to ensure clean state and session persistence

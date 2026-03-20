@@ -16,7 +16,7 @@
         Calendar,
         ArrowRight,
     } from "lucide-svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { goto } from "$app/navigation";
     import { toast } from "svelte-sonner";
     import { t } from "svelte-i18n";
@@ -80,7 +80,7 @@
             // Save the profile using the standard UPSERT logic in backend
             await invoke("save_user_profile", {
                 profile: {
-                    ...settingsStore.userProfile,
+                    ...userProfileStore.userProfile,
                     name: formData.name,
                     email: formData.email,
                     cpf: formData.cpf,
@@ -92,14 +92,14 @@
             });
 
             // Update local store partially
-            settingsStore.userProfile.name = formData.name;
-            settingsStore.userProfile.email = formData.email;
-            settingsStore.userProfile.cpf = formData.cpf;
-            settingsStore.userProfile.birth_date = formData.birthDate;
+            userProfileStore.userProfile.name = formData.name;
+            userProfileStore.userProfile.email = formData.email;
+            userProfileStore.userProfile.cpf = formData.cpf;
+            userProfileStore.userProfile.birth_date = formData.birthDate;
 
             // Log in user immediately
             localStorage.setItem("isLoggedIn", "true");
-            settingsStore.isLoggedIn = true;
+            userProfileStore.isLoggedIn = true;
 
             toast.success($t("auth.register.success"));
             showRecovery = true;
@@ -356,12 +356,23 @@
                 >
                     <Card.Content class="pt-8 space-y-6">
                         <div
+                            role="button"
+                            tabindex="0"
                             class="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 text-center group cursor-pointer hover:border-primary/30 transition-all"
                             onclick={() => {
                                 navigator.clipboard.writeText(recoveryKey);
                                 toast.success(
                                     $t("auth.register.recoveryKey.successCopy"),
                                 );
+                            }}
+                            onkeydown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    navigator.clipboard.writeText(recoveryKey);
+                                    toast.success(
+                                        $t("auth.register.recoveryKey.successCopy"),
+                                    );
+                                }
                             }}
                         >
                             <p

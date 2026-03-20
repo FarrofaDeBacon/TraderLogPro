@@ -4,6 +4,7 @@
   import { accountsStore } from "$lib/stores/accounts.svelte";
     import { t, locale } from "svelte-i18n";
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import * as Card from "$lib/components/ui/card";
     import { Badge } from "$lib/components/ui/badge";
     import { Separator } from "$lib/components/ui/separator";
@@ -38,14 +39,14 @@
         }),
     );
     const strategy = $derived(
-        settingsStore.strategies.find((s) => s.id === trade.strategy_id),
+        workspaceStore.strategies.find((s) => s.id === trade.strategy_id),
     );
     const account = $derived(
         accountsStore.accounts.find((a) => a.id === trade.account_id),
     );
 
     function getEmotionalState(id: string) {
-        return settingsStore.emotionalStates.find((s) => s.id === id);
+        return workspaceStore.emotionalStates.find((s) => s.id === id);
     }
 
     const entryEmotion = $derived(

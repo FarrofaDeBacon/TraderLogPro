@@ -4,14 +4,14 @@
   import { assetsStore } from "$lib/stores/assets.svelte";
   import { currenciesStore } from "$lib/stores/currencies.svelte";
   import { assetTypesStore } from "$lib/stores/asset-types.svelte";
-    import { page } from "$app/stores";
-    import { settingsStore } from "$lib/stores/settings.svelte";
-    import { tradesStore } from "$lib/stores/trades.svelte";
-    import { Button } from "$lib/components/ui/button";
-    import { Badge } from "$lib/components/ui/badge";
-    import { Card, CardContent } from "$lib/components/ui/card";
-    import { Separator } from "$lib/components/ui/separator";
-    import * as Tabs from "$lib/components/ui/tabs";
+  import { page } from "$app/stores";
+  import { workspaceStore } from "$lib/stores/workspace.svelte";
+  import { tradesStore } from "$lib/stores/trades.svelte";
+  import { Button } from "$lib/components/ui/button";
+  import { Badge } from "$lib/components/ui/badge";
+  import { Card, CardContent } from "$lib/components/ui/card";
+  import { Separator } from "$lib/components/ui/separator";
+  import * as Tabs from "$lib/components/ui/tabs";
     import * as Tooltip from "$lib/components/ui/tooltip";
     import { Label } from "$lib/components/ui/label";
     import { Input } from "$lib/components/ui/input";
@@ -59,7 +59,7 @@
 
     const strategyId = $page.params.id;
     let strategy = $derived(
-        settingsStore.strategies.find((s) => s.id === strategyId),
+        workspaceStore.strategies.find((s) => s.id === strategyId),
     );
 
     // Default Stats (Zeroed)
@@ -70,9 +70,11 @@
         );
 
         if (selectedMarketId) {
-            // Find assets that belong to this market
-            const marketAssets =
-                settingsStore.getMarketAssets(selectedMarketId);
+            // Only show assets belonging to the selected market
+            const marketAssets = assetsStore.assets.filter(a => {
+                const assetType = assetTypesStore.assetTypes.find(at => at.id === a.asset_type_id);
+                return assetType?.market_id === selectedMarketId;
+            });
             const marketAssetSymbols = marketAssets.map((a: any) => a.symbol);
             trades = trades.filter((t: any) =>
                 marketAssetSymbols.includes(t.asset_symbol),

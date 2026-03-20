@@ -12,7 +12,7 @@
         Link2,
     } from "lucide-svelte";
     import { t } from "svelte-i18n";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { integrationsStore } from "$lib/stores/integrations.svelte";
     import { rtdStore } from "$lib/stores/rtd.svelte";
     import { invoke } from "@tauri-apps/api/core";
     import { open } from "@tauri-apps/plugin-dialog";
@@ -32,7 +32,7 @@
                 ],
             });
             if (selected) {
-                settingsStore.setRtdExcelPath(selected as string);
+                integrationsStore.rtdExcelPath = selected as string;
                 toast.success(
                     $t("settings.api.integrations.profit.fileSelected"),
                 );
@@ -47,9 +47,9 @@
         isConnecting = true;
         try {
             await invoke("start_rtd_monitor_cmd", {
-                excelPath: settingsStore.rtdExcelPath || null,
+                excelPath: integrationsStore.rtdExcelPath || null,
             });
-            settingsStore.setRtdEnabled(true);
+            integrationsStore.rtdEnabled = true;
             toast.success($t("settings.api.integrations.profit.connected"));
         } catch (e) {
             console.error(e);
@@ -60,12 +60,12 @@
     }
 
     function disconnect() {
-        settingsStore.setRtdEnabled(false);
+        integrationsStore.rtdEnabled = false;
         toast.info($t("settings.api.integrations.profit.disconnected"));
     }
 
     let status = $derived(
-        settingsStore.rtdEnabled ? "connected" : "disconnected",
+        integrationsStore.rtdEnabled ? "connected" : "disconnected",
     );
 </script>
 
@@ -89,10 +89,10 @@
             </div>
             <div class="flex flex-col items-end gap-2">
                 <Badge
-                    variant={settingsStore.rtdEnabled ? "default" : "secondary"}
-                    class={settingsStore.rtdEnabled ? "bg-green-500" : ""}
+                    variant={integrationsStore.rtdEnabled ? "default" : "secondary"}
+                    class={integrationsStore.rtdEnabled ? "bg-green-500" : ""}
                 >
-                    {settingsStore.rtdEnabled
+                    {integrationsStore.rtdEnabled
                         ? $t("settings.api.integrations.profit.connected")
                         : $t("settings.api.integrations.profit.disconnected")}
                 </Badge>
@@ -121,7 +121,7 @@
                     <div class="flex gap-2">
                         <Input
                             readonly
-                            value={settingsStore.rtdExcelPath ||
+                            value={integrationsStore.rtdExcelPath ||
                                 $t(
                                     "settings.api.integrations.profit.noFileSelected",
                                 )}
@@ -167,7 +167,7 @@
 
             <div class="flex flex-col justify-center gap-4">
                 <div class="grid gap-3">
-                    {#if !settingsStore.rtdEnabled}
+                    {#if !integrationsStore.rtdEnabled}
                         <Button
                             size="lg"
                             class="w-full bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-900/20 h-12"

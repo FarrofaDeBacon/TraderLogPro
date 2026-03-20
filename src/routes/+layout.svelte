@@ -6,6 +6,7 @@
   import { isLoading } from "svelte-i18n";
   import { Toaster } from "$lib/components/ui/sonner";
   import { settingsStore } from "$lib/stores/settings.svelte";
+  import { userProfileStore } from "$lib/stores/user-profile.svelte";
   import { tradesStore } from "$lib/stores/trades.svelte";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
@@ -86,9 +87,9 @@
 
     const isAuthPage =
       $page.url.pathname === "/login" || $page.url.pathname === "/signup";
-    const hasPassword = !!settingsStore.userProfile.password_hash;
+    const hasPassword = !!userProfileStore.userProfile.password_hash;
 
-    if (!settingsStore.isLoggedIn && hasPassword && !isAuthPage) {
+    if (!userProfileStore.isLoggedIn && hasPassword && !isAuthPage) {
       console.log("[Layout] Auth Guard: Redirecting to login");
       goto("/login");
     }
@@ -109,7 +110,7 @@
 
     // 2. Otherwise sync from settingsStore
     // We only sync if theme is explicitly set (not empty string)
-    let desiredTheme = settingsStore.userProfile.theme;
+    let desiredTheme = userProfileStore.userProfile.theme;
 
     if (desiredTheme && desiredTheme !== mode.current) {
       console.log(

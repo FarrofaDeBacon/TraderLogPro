@@ -333,6 +333,17 @@ export class FinancialConfigStore {
             return { success: false, error: String(e) };
         }
     }
+    async hasClosureForDate(date: string, accountId: string): Promise<boolean> {
+        const targetDate = getLocalDatePart(date);
+        const normalize = (id: string) => id.split(':').pop()?.replace(/[⟨⟩`\s]/g, '') || id;
+        const targetAcc = normalize(accountId);
+
+        return this.cashTransactions.some(ct =>
+            ct.system_linked &&
+            getLocalDatePart(ct.date) === targetDate &&
+            normalize(ct.account_id) === targetAcc
+        );
+    }
 }
 
 export const financialConfigStore = new FinancialConfigStore();

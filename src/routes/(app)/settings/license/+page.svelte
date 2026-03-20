@@ -17,7 +17,7 @@
         Upload,
         Trash2,
     } from "lucide-svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import {
         validateLicenseKey,
         computeCustomerId,
@@ -31,8 +31,8 @@
 
     // Calculate PIN based on profile and hardware
     $effect(() => {
-        const profile = settingsStore.userProfile;
-        const hwid = settingsStore.hardwareId;
+        const profile = userProfileStore.userProfile;
+        const hwid = userProfileStore.hardwareId;
         if (profile && profile.name && profile.cpf) {
             computeCustomerId({
                 name: profile.name,
@@ -48,10 +48,10 @@
     // Diagnostic trace for license state
     $effect(() => {
         console.log("[License UI] Current License Details:", {
-            details: settingsStore.licenseDetails,
-            planName: settingsStore.licensePlanName,
-            totalDays: settingsStore.licenseTotalDays,
-            daysRemaining: settingsStore.licenseDaysRemaining,
+            details: userProfileStore.licenseDetails,
+            planName: userProfileStore.licensePlanName,
+            totalDays: userProfileStore.licenseTotalDays,
+            daysRemaining: userProfileStore.licenseDaysRemaining,
         });
     });
 
@@ -75,7 +75,7 @@
                 );
 
                 if (result.valid) {
-                    settingsStore.updateUserProfile({
+                    userProfileStore.updateUserProfile({
                         license_key: text.trim(),
                     });
                     toast.success(
@@ -101,7 +101,7 @@
             "Tem certeza que deseja remover esta licença? Você voltará para o período trial ou ficará sem acesso se ele já tiver expirado.",
         );
         if (confirmed) {
-            await settingsStore.deactivateLicense();
+            await userProfileStore.deactivateLicense();
             toast.success("Licença removida com sucesso.");
         }
     }
@@ -121,19 +121,19 @@
             </p>
         </div>
         <div class="flex items-center gap-3">
-            {#if settingsStore.licenseStatus === "active"}
+            {#if userProfileStore.licenseStatus === "active"}
                 <Badge
                     variant="default"
                     class="bg-green-500/10 text-green-500 border-green-500/20 px-3 py-1 text-xs uppercase tracking-widest font-bold"
                 >
-                    Assinatura {settingsStore.licensePlanName} Ativa
+                    Assinatura {userProfileStore.licensePlanName} Ativa
                 </Badge>
-            {:else if settingsStore.licenseStatus === "trial"}
+            {:else if userProfileStore.licenseStatus === "trial"}
                 <Badge
                     variant="outline"
                     class="bg-blue-500/10 text-blue-500 border-blue-500/20 px-3 py-1 text-xs uppercase tracking-widest font-bold"
                 >
-                    {$t("settings.license.trialBadge")} ({settingsStore.trialDaysLeft}
+                    {$t("settings.license.trialBadge")} ({userProfileStore.trialDaysLeft}
                     dias)
                 </Badge>
             {:else}
@@ -145,7 +145,7 @@
                 </Badge>
             {/if}
 
-            {#if settingsStore.userProfile.license_key}
+            {#if userProfileStore.userProfile.license_key}
                 <Button
                     variant="destructive"
                     size="sm"
@@ -159,7 +159,7 @@
         </div>
     </div>
 
-    {#if settingsStore.licenseStatus === "active" && settingsStore.licenseDetails}
+    {#if userProfileStore.licenseStatus === "active" && userProfileStore.licenseDetails}
         <div class="grid gap-4 md:grid-cols-3">
             <div
                 class="bg-card/50 backdrop-blur-md border border-border rounded-xl p-4 flex items-center gap-4"
@@ -176,12 +176,12 @@
                         Tipo de Licença
                     </p>
                     <p class="text-sm font-semibold text-foreground">
-                        {settingsStore.licensePlanName}
+                        {userProfileStore.licensePlanName}
                     </p>
                 </div>
             </div>
 
-            {#if settingsStore.licenseTotalDays}
+            {#if userProfileStore.licenseTotalDays}
                 <div
                     class="bg-card/50 backdrop-blur-md border border-border rounded-xl p-4 flex items-center gap-4"
                 >
@@ -197,11 +197,11 @@
                             Duração Contratada
                         </p>
                         <p class="text-sm font-semibold text-foreground">
-                            {settingsStore.licenseTotalDays} dias
+                            {userProfileStore.licenseTotalDays} dias
                         </p>
                     </div>
                 </div>
-            {:else if settingsStore.licenseDetails?.plan === "Lifetime"}
+            {:else if userProfileStore.licenseDetails?.plan === "Lifetime"}
                 <div
                     class="bg-card/50 backdrop-blur-md border border-border rounded-xl p-4 flex items-center gap-4"
                 >
@@ -223,7 +223,7 @@
                 </div>
             {/if}
 
-            {#if settingsStore.licenseDaysRemaining !== null}
+            {#if userProfileStore.licenseDaysRemaining !== null}
                 <div
                     class="bg-card/50 backdrop-blur-md border border-border rounded-xl p-4 flex items-center gap-4"
                 >
@@ -239,7 +239,7 @@
                             Restante
                         </p>
                         <p class="text-sm font-semibold text-foreground">
-                            {settingsStore.licenseDaysRemaining} dias
+                            {userProfileStore.licenseDaysRemaining} dias
                         </p>
                     </div>
                 </div>

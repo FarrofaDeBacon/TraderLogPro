@@ -1,7 +1,8 @@
 <script lang="ts">
   import { assetsStore } from "$lib/stores/assets.svelte";
   import { accountsStore } from "$lib/stores/accounts.svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { riskStore } from "$lib/stores/riskStore.svelte";
     import { formatCurrency } from "$lib/utils";
     import * as Card from "$lib/components/ui/card";
@@ -22,7 +23,7 @@
     } from "lucide-svelte";
     
     // Derived states para consumo sem re-cálculos locais
-    let activeProfile = $derived(settingsStore.activeProfile);
+    let activeProfile = $derived(riskSettingsStore.activeProfile);
     let cockpit = $derived(riskStore.riskCockpitState);
     let validation = $derived(riskStore.deskValidationResult);
     let deskFeedback = $derived(riskStore.deskProgressFeedback);
@@ -44,10 +45,13 @@
     let currencyCode = $derived(
         activeProfile?.capital_source === 'LinkedAccount' && activeProfile.linked_account_id 
         ? accountsStore.accounts.find(a => a.id === activeProfile?.linked_account_id)?.currency || 'USD'
-        : settingsStore.userProfile.main_currency || 'USD'
+        : userProfileStore.userProfile.main_currency || 'USD'
     );
 
     let activePhase = $derived(growthContext?.growthPhase);
+    let profitGoal = $derived(
+        activePhase?.conditions_to_advance?.find(c => c.metric === 'profit_target' || c.metric === 'target_financial')?.value || 0
+    );
     let ptcLoss = $derived(Math.min((dailyDrawdown / (activeProfile?.max_daily_loss || 1)) * 100, 100));
     let isLossHot = $derived(ptcLoss > 80);
 </script>
@@ -209,7 +213,7 @@
                         </div>
                         <div class="text-right space-y-1">
                             <p class="text-[10px] uppercase font-black tracking-widest text-emerald-600/70">Alvo (Meta)</p>
-                            <h3 class="text-3xl font-mono font-black text-emerald-500 tracking-tighter">{formatCurrency(activePhase?.profit_goal || 0, currencyCode)}</h3>
+                            <h3 class="text-3xl font-mono font-black text-emerald-500 tracking-tighter">{formatCurrency(profitGoal, currencyCode)}</h3>
                         </div>
                     </div>
 
@@ -263,7 +267,7 @@
                         A sua prioridade máxima agora é proteger a sua conta de quebrar. Feche a plataforma. Volte amanhã com a mente fresca, o dia operacional atingiu a estafa técnica.
                     {:else if mainStatus === 'caution'}
                         Você está muito perto de tomar um stop global. Reduza agressivamente o lote neste próximo trade. Se você tomar outro loss, encerre o dia preventivamente.
-                    {:else if cockpit?.dailyRiskStatus.dailyPnL && (cockpit.dailyRiskStatus.dailyPnL) > ((activePhase?.profit_goal || 0) * 0.7) && (activePhase?.profit_goal || 0) > 0}
+                    {:else if cockpit?.dailyRiskStatus.dailyPnL && (cockpit.dailyRiskStatus.dailyPnL) > (profitGoal * 0.7) && profitGoal > 0}
                         Atenção: Você assegurou mais de 70% da meta global do seu estágio de crescimento! O maior risco agora é a ganância devolver seu lucro de dias. Considere fechar a plataforma.
                     {:else}
                         Suas métricas térmicas estão absolutamente frias. O seu emocional deve focar apenas em executar as premissas do plano, sem pensar no dinheiro. Vá em frente.

@@ -8,6 +8,7 @@
     import { Badge } from "$lib/components/ui/badge";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { Zap, TrendingUp, TrendingDown, CheckSquare, Loader2 } from "lucide-svelte";
     import { toast } from "svelte-sonner";
 
@@ -52,7 +53,7 @@
             // Memory Context (The System guesses the environment to bypass heavy selects)
             const today = new Date().toISOString().slice(0, 16);
             const defaultAccount = accountsStore.accounts[0]?.id || "";
-            const defaultStrategy = settingsStore.strategies[0]?.id || "";
+            const defaultStrategy = workspaceStore.strategies[0]?.id || "";
             
             // Find Asset Type silently
             let assetTypeId = "rtd";

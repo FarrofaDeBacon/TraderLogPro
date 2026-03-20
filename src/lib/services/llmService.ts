@@ -1,5 +1,5 @@
 import { fetch } from "@tauri-apps/plugin-http";
-import { settingsStore } from "$lib/stores/settings.svelte";
+import { integrationsStore } from "$lib/stores/integrations.svelte";
 
 export interface EconomicEvent {
     time: string;
@@ -10,12 +10,12 @@ export interface EconomicEvent {
 
 export const llmService = {
     async extractEconomicEvents(html: string): Promise<EconomicEvent[]> {
-        const configId = settingsStore.psychologyApiId;
-        const config = settingsStore.apiConfigs.find(c => c.id === configId && c.enabled);
+        const configId = integrationsStore.psychologyApiId;
+        const config = integrationsStore.apiConfigs.find(c => c.id === configId && c.enabled);
 
         if (!config || !config.api_key) {
             // Fallback: try to find any enabled gemini config if the explicitly chosen one is missing/disabled/mock
-            const fallbackConfig = settingsStore.apiConfigs.find(c => c.provider === 'google_gemini' && c.enabled);
+            const fallbackConfig = integrationsStore.apiConfigs.find(c => c.provider === 'google_gemini' && c.enabled);
             if (!fallbackConfig || !fallbackConfig.api_key) {
                 throw new Error("Gemini API Key not configured or disabled");
             }
@@ -26,11 +26,11 @@ export const llmService = {
     },
 
     async analyzeJournal(content: string, emotion: string, intensity: number): Promise<string> {
-        const configId = settingsStore.psychologyApiId;
-        const config = settingsStore.apiConfigs.find(c => c.id === configId && c.enabled);
+        const configId = integrationsStore.psychologyApiId;
+        const config = integrationsStore.apiConfigs.find(c => c.id === configId && c.enabled);
 
         if (!config || !config.api_key) {
-            const fallbackConfig = settingsStore.apiConfigs.find(c => (c.provider === 'openai' || c.provider === 'google_gemini') && c.enabled);
+            const fallbackConfig = integrationsStore.apiConfigs.find(c => (c.provider === 'openai' || c.provider === 'google_gemini') && c.enabled);
             if (!fallbackConfig) return "Nenhuma IA configurada para Psicologia. Vá em Configurações > API & Integrações.";
             return this.processJournalAnalysis(content, emotion, intensity, fallbackConfig);
         }

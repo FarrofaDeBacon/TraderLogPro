@@ -2,6 +2,7 @@
   import { accountsStore } from "$lib/stores/accounts.svelte";
     import { t, locale } from "svelte-i18n";
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import * as Card from "$lib/components/ui/card";
     import { Badge } from "$lib/components/ui/badge";
@@ -60,7 +61,7 @@
 
     function requestDeleteJournal(id: string) {
         entryToDelete = id;
-        const entry = settingsStore.journalEntries.find((j) => j.id === id);
+        const entry = workspaceStore.journalEntries.find((j) => j.id === id);
         if (entry) {
             // Check if there are daily closures associated with this date
             const dateStr = entry.date.split("T")[0];
@@ -82,7 +83,7 @@
     async function confirmDeleteJournalWithClosure(deleteClosures: boolean) {
         if (entryToDelete) {
             const result =
-                await settingsStore.removeJournalEntry(entryToDelete);
+                await workspaceStore.removeJournalEntry(entryToDelete);
             if (result && result.success === false) {
                 toast.error("Erro ao excluir o registro: " + result.error);
             } else {
@@ -119,7 +120,7 @@
     async function confirmDeleteJournal() {
         if (entryToDelete) {
             const result =
-                await settingsStore.removeJournalEntry(entryToDelete);
+                await workspaceStore.removeJournalEntry(entryToDelete);
             if (result && result.success === false) {
                 toast.error("Erro ao excluir: " + result.error);
             } else {
@@ -212,9 +213,9 @@
         tradesStore.trades.filter((t) => isDateInRange(t.date)),
     );
     const filteredJournal = $derived(
-        settingsStore.journalEntries.filter((j) => isDateInRange(j.date)),
+        workspaceStore.journalEntries.filter((j) => isDateInRange(j.date)),
     );
-    const emotionalStates = $derived(settingsStore.emotionalStates);
+    const emotionalStates = $derived(workspaceStore.emotionalStates);
 
     function getAdjustedWeight(
         stateId: string,

@@ -25,7 +25,8 @@
     import * as Select from "$lib/components/ui/select";
     import { Separator } from "$lib/components/ui/separator";
     import { Switch } from "$lib/components/ui/switch";
-    import { settingsStore, type Strategy } from "$lib/stores/settings.svelte";
+    import type { Strategy } from "$lib/types";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { Badge } from "$lib/components/ui/badge";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";
@@ -78,9 +79,9 @@
 
     function save() {
         if (editingId) {
-            settingsStore.updateStrategy(editingId, formData);
+            workspaceStore.updateStrategy(editingId, formData);
         } else {
-            settingsStore.addStrategy(formData);
+            workspaceStore.addStrategy(formData);
         }
         isDialogOpen = false;
     }
@@ -92,7 +93,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteStrategy(deleteId);
+            const result = await workspaceStore.deleteStrategy(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {
@@ -154,7 +155,7 @@
     // Group Strategies
     let groupedStrategies = $derived.by(() => {
         const groups: Record<string, Strategy[]> = {};
-        for (const item of settingsStore.strategies) {
+        for (const item of workspaceStore.strategies) {
             // Use first asset type as category, or "Geral"
             const category =
                 item.asset_types.length > 0 ? item.asset_types[0] : "Geral";
@@ -293,7 +294,7 @@
             </div>
         {/each}
 
-        {#if settingsStore.strategies.length === 0}
+        {#if workspaceStore.strategies.length === 0}
             <div
                 class="flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg border-muted-foreground/25 text-muted-foreground h-[150px]"
             >

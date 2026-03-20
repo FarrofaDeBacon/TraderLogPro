@@ -11,7 +11,8 @@
     import { Input } from "$lib/components/ui/input";
     import * as Dialog from "$lib/components/ui/dialog";
     import { Separator } from "$lib/components/ui/separator";
-    import { settingsStore, type Tag } from "$lib/stores/settings.svelte";
+    import type { Tag } from "$lib/types";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import TagForm from "$lib/components/settings/TagForm.svelte";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";
@@ -24,7 +25,7 @@
     let deleteId = $state<string | null>(null);
 
     let filteredItems = $derived(
-        [...settingsStore.tags].sort((a, b) => a.name.localeCompare(b.name)),
+        [...workspaceStore.tags].sort((a, b) => a.name.localeCompare(b.name)),
     );
 
     function openNew() {
@@ -39,9 +40,9 @@
 
     function save(data: Omit<Tag, "id">) {
         if (editingItem) {
-            settingsStore.updateTag(editingItem.id, data);
+            workspaceStore.updateTag(editingItem.id, data);
         } else {
-            settingsStore.addTag(data);
+            workspaceStore.addTag(data);
         }
         isDialogOpen = false;
     }
@@ -53,7 +54,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteTag(deleteId);
+            const result = await workspaceStore.deleteTag(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {

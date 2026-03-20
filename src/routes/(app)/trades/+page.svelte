@@ -7,8 +7,13 @@
     import * as Card from "$lib/components/ui/card";
     import * as Table from "$lib/components/ui/table";
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
-    import { t, locale } from "svelte-i18n";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
+    import { rtdStore } from "$lib/stores/rtd.svelte";
+    import { invoke } from "@tauri-apps/api/core";
+    import { t, locale, _ } from "svelte-i18n";
     import {
         ChevronDown,
         TrendingUp,
@@ -49,8 +54,6 @@
     import TradeEquityChart from "$lib/components/trades/TradeEquityChart.svelte";
     import { calculateAverageTimeBetweenTrades, formatDuration } from "$lib/utils/gann";
     import { open } from "@tauri-apps/plugin-dialog";
-    import { invoke } from "@tauri-apps/api/core";
-
     import { untrack } from "svelte";
     import { format } from "date-fns/format";
     import { filterTradesContext, getTradeViewModel } from "$lib/domain/trades/trade-engine";
@@ -106,7 +109,7 @@
             },
             {
                 getStrategyName: (id: string) =>
-                    settingsStore.strategies.find((s) => s.id === id)?.name || "",
+                    workspaceStore.strategies.find((s) => s.id === id)?.name || "",
                 getAccountCurrency: (id: string) =>
                     accountsStore.accounts.find((a) => a.id === id)?.currency || "BRL",
             }
@@ -219,7 +222,7 @@
 
     const kpis = $derived.by(() => {
         const total = filteredTrades.length;
-        const mainCurrency = settingsStore.userProfile?.main_currency || "BRL";
+        const mainCurrency = userProfileStore.userProfile?.main_currency || "BRL";
 
         let profitTotal = 0;
         let winners = 0;
@@ -401,7 +404,7 @@
             avgLoss,
             riskReward: rr.toFixed(2),
             maxDrawdown: maxDd,
-            mainCurrency: settingsStore.userProfile?.main_currency || "BRL",
+            mainCurrency: userProfileStore.userProfile?.main_currency || "BRL",
         };
     });
 
@@ -432,7 +435,7 @@
         // Check if this trade is part of any system-linked cash transaction (daily closure)
         const normalizedId =
             trade.id.split(":").pop()?.replace(/[⟨⟩`]/g, "") || trade.id;
-        const linkedClosure = settingsStore.cashTransactions.find(
+        const linkedClosure = financialConfigStore.cashTransactions.find(
             (ct) =>
                 ct.system_linked &&
                 ct.trade_ids?.some(
@@ -872,7 +875,7 @@
                                 id="filter-strategy"
                                 class="bg-background/50 h-9"
                             >
-                                {settingsStore.strategies.find(
+                                {workspaceStore.strategies.find(
                                     (s) => s.id === filterStrategy,
                                 )?.name ||
                                     $t("general.all") ||
@@ -882,7 +885,7 @@
                                 <Select.Item value="all"
                                     >{$t("general.all") || "Todas"}</Select.Item
                                 >
-                                {#each settingsStore.strategies as strat}
+                                {#each workspaceStore.strategies as strat}
                                     <Select.Item value={strat.id}
                                         >{strat.name}</Select.Item
                                     >
@@ -1192,7 +1195,7 @@
                                                     <span
                                                         class="text-[8px] text-muted-foreground uppercase tracking-tighter"
                                                     >
-                                                        {settingsStore.strategies.find(
+                                                        {workspaceStore.strategies.find(
                                                             (s) =>
                                                                 s.id ===
                                                                 trade.strategy_id,
@@ -1612,7 +1615,7 @@
                         selectedTrade = null;
                         tradesStore.loadTrades();
                         // Also reload cash transactions so the statement updates after trade edit
-                        settingsStore.loadCashTransactions();
+                        financialConfigStore.loadCashTransactions();
                     }, 100);
                 }}
             />

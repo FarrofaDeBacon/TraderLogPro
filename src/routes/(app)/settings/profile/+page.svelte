@@ -20,7 +20,7 @@
     import { Separator } from "$lib/components/ui/separator";
     import * as Select from "$lib/components/ui/select";
     import * as AlertDialog from "$lib/components/ui/alert-dialog";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { toast } from "svelte-sonner";
     import * as Avatar from "$lib/components/ui/avatar";
     import { goto } from "$app/navigation";
@@ -28,16 +28,16 @@
 
     let initialized = $state(false);
     let formData = $state({
-        ...settingsStore.userProfile,
+        ...userProfileStore.userProfile,
         // Garantir que campos críticos não sejam undefined
-        name: settingsStore.userProfile?.name || "",
-        email: settingsStore.userProfile?.email || "",
-        utc_offset: settingsStore.userProfile?.utc_offset ?? -180,
+        name: userProfileStore.userProfile?.name || "",
+        email: userProfileStore.userProfile?.email || "",
+        utc_offset: userProfileStore.userProfile?.utc_offset ?? -180,
     });
 
     // Sincroniza uma vez quando os dados reais chegam do backend
     $effect(() => {
-        const profile = settingsStore.userProfile;
+        const profile = userProfileStore.userProfile;
         if (!initialized && profile && profile.name !== "") {
             formData = { ...profile };
             initialized = true;
@@ -108,7 +108,7 @@
     }
 
     function save() {
-        settingsStore.updateUserProfile(formData);
+        userProfileStore.updateUserProfile(formData);
         toast.success($t("settings.profile.success"));
     }
 
@@ -345,7 +345,7 @@
                                                 "settings.profile.security.loggingOut",
                                             ),
                                         );
-                                        settingsStore.logout();
+                                        userProfileStore.logout();
                                         setTimeout(() => goto("/login"), 1000);
                                     }}
                                     class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -659,10 +659,10 @@
                                 <h4
                                     class="font-medium text-emerald-600 dark:text-emerald-400"
                                 >
-                                    {$t("settings.profile.license.status")}: {settingsStore.licenseStatus ===
+                                    {$t("settings.profile.license.status")}: {userProfileStore.licenseStatus ===
                                     "active"
                                         ? $t("settings.profile.license.active")
-                                        : settingsStore.licenseStatus ===
+                                        : userProfileStore.licenseStatus ===
                                              "trial"
                                           ? $t("settings.profile.license.trial")
                                           : $t(

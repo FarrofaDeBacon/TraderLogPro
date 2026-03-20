@@ -1,12 +1,13 @@
 <script lang="ts">
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import * as Card from "$lib/components/ui/card";
     import { Brain, Quote, Smile, Frown, Meh, Sparkles } from "lucide-svelte";
     import { cn } from "$lib/utils";
     import { t } from "svelte-i18n";
 
-    const lastEntry = $derived(settingsStore.journalEntries[0]);
+    const lastEntry = $derived(workspaceStore.journalEntries[0]);
     const lastTrade = $derived(
         [...tradesStore.trades]
             .sort(
@@ -21,7 +22,7 @@
             lastEntry?.emotional_state_id ||
             lastTrade?.entry_emotional_state_id;
         if (!stateId) return null;
-        return settingsStore.emotionalStates.find((s) => s.id === stateId);
+        return workspaceStore.emotionalStates.find((s) => s.id === stateId);
     });
 
     const impactColors = {

@@ -6,6 +6,7 @@
     import { Input } from "$lib/components/ui/input";
     import { Button } from "$lib/components/ui/button";
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import DateFilter from "$lib/components/filters/DateFilter.svelte";
     import {
@@ -373,7 +374,7 @@
         const tx = settingsStore.cashTransactions.find((t) => t.id === id);
         if (tx && tx.id.includes("daily_closure_")) {
             const txDate = getLocalDatePart(tx.date);
-            const hasJournal = settingsStore.getJournalEntryByDate(txDate);
+            const hasJournal = workspaceStore.getJournalEntryByDate(txDate);
             if (hasJournal) {
                 deleteId = id;
                 deleteJournalId = hasJournal.id;
@@ -391,7 +392,7 @@
             if (result.success) {
                 if (deleteJournal && deleteJournalId) {
                     const jRes =
-                        await settingsStore.removeJournalEntry(deleteJournalId);
+                        await workspaceStore.deleteJournalEntry(deleteJournalId);
                     if (jRes.success === false) {
                         toast.error(
                             "Financeiro removido, mas falhou ao remover psicológico.",

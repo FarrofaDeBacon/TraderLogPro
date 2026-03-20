@@ -2,6 +2,7 @@
     import { onMount, tick } from "svelte";
     import { invoke } from "@tauri-apps/api/core";
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { integrationsStore } from "$lib/stores/integrations.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import { rtdStore } from "$lib/stores/rtd.svelte";
     import { Button } from "$lib/components/ui/button";
@@ -111,13 +112,13 @@
                 ],
             });
             if (selected) {
-                settingsStore.setRtdExcelPath(selected as string);
+                integrationsStore.rtdExcelPath = selected as string;
                 console.log("[Wizard] Invoking start_rtd_monitor_cmd...");
                 await invoke("start_rtd_monitor_cmd", {
-                    excelPath: settingsStore.rtdExcelPath || null,
+                    excelPath: integrationsStore.rtdExcelPath || null,
                 });
                 console.log("[Wizard] Monitor cmd invoked successfully.");
-                settingsStore.setRtdEnabled(true);
+                integrationsStore.rtdEnabled = true;
                 toast.success("RTD Conectado! Lendo ativos...", {
                     id: "rtd-load",
                 });

@@ -1,5 +1,6 @@
 import { tradesStore } from "$lib/stores/trades.svelte";
 import { settingsStore } from "$lib/stores/settings.svelte";
+import { workspaceStore } from "$lib/stores/workspace.svelte";
 import type { RiskProfile, Trade, EmotionalState } from "$lib/types";
 import { getLocalDatePart } from "$lib/utils";
 
@@ -31,7 +32,7 @@ class RiskEngine {
 
         samples.forEach(t => {
             if (t.entry_emotional_state_id) {
-                const state = settingsStore.emotionalStates.find(s => s.id === t.entry_emotional_state_id);
+                const state = workspaceStore.emotionalStates.find(s => s.id === t.entry_emotional_state_id);
                 if (state) {
                     const impactMultiplier = state.impact === 'Positive' ? 1 : state.impact === 'Negative' ? -1 : 0;
                     total += (state.weight || 5) * impactMultiplier;

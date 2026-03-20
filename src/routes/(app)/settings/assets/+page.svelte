@@ -26,6 +26,7 @@
     import { Separator } from "$lib/components/ui/separator";
     import { Badge } from "$lib/components/ui/badge";
     import { settingsStore, type Asset } from "$lib/stores/settings.svelte";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import RTDImportDialog from "$lib/components/settings/RTDImportDialog.svelte";
@@ -202,7 +203,7 @@
     async function confirmDelete() {
         if (deleteId) {
             console.log("Confirming delete for:", deleteId);
-            const result = await assetsStore.deleteAsset(deleteId, settingsStore.strategies);
+            const result = await assetsStore.deleteAsset(deleteId, workspaceStore.strategies);
             if (!result.success) {
                 console.error("Delete failed:", result.error);
                 toast.error(result.error || $t("general.error"));

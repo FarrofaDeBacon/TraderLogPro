@@ -11,7 +11,12 @@
     import { emit } from "@tauri-apps/api/event";
     import { toast } from "svelte-sonner";
     import { onMount, untrack } from "svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import {
+        settingsStore,
+    } from "$lib/stores/settings.svelte";
+    import { integrationsStore } from "$lib/stores/integrations.svelte";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import { rtdStore } from "$lib/stores/rtd.svelte";
     import { Button } from "$lib/components/ui/button";
@@ -204,9 +209,9 @@
         const dateStr = formData.entry_date;
         const accId = formData.account_id;
         if (dateStr && accId) {
-            settingsStore
+            financialConfigStore
                 .hasClosureForDate(dateStr, accId)
-                .then((exists) => (closureAlreadyExists = exists));
+                .then((exists: boolean) => (closureAlreadyExists = exists));
         } else {
             closureAlreadyExists = false;
         }
@@ -420,9 +425,9 @@
             }
             if (
                 strategiesList.length === 0 &&
-                settingsStore.strategies.length > 0
+                workspaceStore.strategies.length > 0
             ) {
-                strategiesList = [...settingsStore.strategies];
+                strategiesList = [...workspaceStore.strategies];
             }
             if (
                 assetTypesList.length === 0 &&
@@ -466,7 +471,7 @@
         // Capture initial snapshots from store
         if (!settingsStore.isLoadingData) {
             accountsList = [...accountsStore.accounts];
-            strategiesList = [...settingsStore.strategies];
+            strategiesList = [...workspaceStore.strategies];
             assetTypesList = [...assetTypesStore.assetTypes];
             assetsList = [...assetsStore.assets];
             timeframeList =
@@ -1657,7 +1662,7 @@
                                                 }
                                                 class="h-10 bg-muted/40 border-border/40 text-sm font-mono font-bold text-foreground flex-1"
                                             />
-                                            {#if true || settingsStore.rtdEnabled || rtdStore.symbols.length > 0}
+                                            {#if true || integrationsStore.rtdEnabled || rtdStore.symbols.length > 0}
                                                 <Button
                                                     variant="secondary"
                                                     size="icon"
@@ -1764,7 +1769,7 @@
                                     <Select.Trigger
                                         class="h-10 bg-muted/40 border-border/40 text-xs text-foreground"
                                     >
-                                        {settingsStore.emotionalStates.find(
+                                        {workspaceStore.emotionalStates.find(
                                             (e) =>
                                                 e.id ===
                                                 formData.entry_emotional_state_id,
@@ -1774,7 +1779,7 @@
                                             )}
                                     </Select.Trigger>
                                     <Select.Content>
-                                        {#each settingsStore.emotionalStates as state}
+                                        {#each workspaceStore.emotionalStates as state}
                                             <Select.Item value={state.id}
                                                 >{state.name}</Select.Item
                                             >
@@ -2102,7 +2107,7 @@
                                         <Select.Trigger
                                             class="h-8 bg-input/20 border-border/20 focus:ring-1 focus:ring-primary/40 text-xs"
                                         >
-                                            {settingsStore.emotionalStates.find(
+                                            {workspaceStore.emotionalStates.find(
                                                 (e) =>
                                                     e.id ===
                                                     formData.exit_emotional_state_id,
@@ -2112,7 +2117,7 @@
                                                 )}
                                         </Select.Trigger>
                                         <Select.Content>
-                                            {#each settingsStore.emotionalStates as state}
+                                            {#each workspaceStore.emotionalStates as state}
                                                 <Select.Item value={state.id}
                                                     >{state.name}</Select.Item
                                                 >
@@ -2541,7 +2546,7 @@
                                         <p
                                             class="text-xs font-medium text-foreground/80 truncate"
                                         >
-                                            {settingsStore.strategies.find(
+                                            {workspaceStore.strategies.find(
                                                 (s) =>
                                                     s.id ===
                                                     formData.strategy_id,

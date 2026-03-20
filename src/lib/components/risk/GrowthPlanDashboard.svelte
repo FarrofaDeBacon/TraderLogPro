@@ -16,7 +16,7 @@
     let audit = $derived(riskStore.deskAuditState);
     let cockpit = $derived(riskStore.riskCockpitState);
     
-    let activeProfile = $derived(settingsStore.activeProfile);
+    let activeProfile = $derived(riskSettingsStore.activeProfile);
     let isDeskEnabled = $derived(activeProfile?.desk_config?.enabled);
     let activeGrowthPlan = $derived(activeProfile?.growth_plan_id ? riskSettingsStore.growthPlans.find(p => p.id === activeProfile?.growth_plan_id) : undefined);
     

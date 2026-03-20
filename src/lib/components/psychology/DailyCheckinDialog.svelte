@@ -4,6 +4,7 @@
     import { Input } from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import * as Select from "$lib/components/ui/select";
     import { Textarea } from "$lib/components/ui/textarea";
     import Slider from "$lib/components/ui/slider/slider.svelte";
@@ -22,13 +23,13 @@
     let isAnalyzing = $state(false);
     let aiFeedback = $state("");
 
-    const emotionalStates = $derived(settingsStore.emotionalStates);
+    const emotionalStates = $derived(workspaceStore.emotionalStates);
 
     // Watch for date changes to load existing data
     $effect(() => {
         if (open && selectedDate) {
             const existingEntry =
-                settingsStore.getJournalEntryByDate(selectedDate);
+                workspaceStore.getJournalEntryByDate(selectedDate);
             if (existingEntry) {
                 emotionalStateId = existingEntry.emotional_state_id || "";
                 emotionalIntensity = existingEntry.intensity;
@@ -56,15 +57,15 @@
 
         try {
             const existingEntry =
-                settingsStore.getJournalEntryByDate(selectedDate);
+                workspaceStore.getJournalEntryByDate(selectedDate);
             if (existingEntry) {
-                await settingsStore.updateJournalEntry(existingEntry.id, {
+                await workspaceStore.updateJournalEntry(existingEntry.id, {
                     content: journalNotes,
                     emotional_state_id: emotionalStateId || null,
                     intensity: emotionalIntensity,
                 });
             } else {
-                await settingsStore.addJournalEntry({
+                await workspaceStore.addJournalEntry({
                     date: selectedDate,
                     content: journalNotes,
                     emotional_state_id: emotionalStateId || null,

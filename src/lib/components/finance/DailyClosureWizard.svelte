@@ -7,6 +7,7 @@
     import { Label } from "$lib/components/ui/label";
     import { Checkbox } from "$lib/components/ui/checkbox";
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import { toast } from "svelte-sonner";
     import { Loader2, ArrowRight, CheckCircle2 } from "lucide-svelte";
@@ -31,7 +32,7 @@
     let emotionalIntensity = $state(5);
     let journalNotes = $state("");
 
-    const emotionalStates = $derived(settingsStore.emotionalStates);
+    const emotionalStates = $derived(workspaceStore.emotionalStates);
 
     function nextStep() {
         if (step === 1) {
@@ -39,7 +40,7 @@
         } else if (step === 2) {
             // Check if journal entry exists for this date to pre-fill?
             const existingEntry =
-                settingsStore.getJournalEntryByDate(selectedDate);
+                workspaceStore.getJournalEntryByDate(selectedDate);
             if (existingEntry) {
                 emotionalStateId = existingEntry.emotional_state_id || "";
                 emotionalIntensity = existingEntry.intensity;
@@ -168,13 +169,13 @@
             if (emotionalStateId || journalNotes) {
                 // Check existence again to decide update vs add
                 const existingEntry =
-                    settingsStore.getJournalEntryByDate(selectedDate);
+                    workspaceStore.getJournalEntryByDate(selectedDate);
                 if (existingEntry) {
                     console.log(
                         "[DailyClosureWizard] Updating existing journal entry:",
                         existingEntry.id,
                     );
-                    await settingsStore.updateJournalEntry(existingEntry.id, {
+                    await workspaceStore.updateJournalEntry(existingEntry.id, {
                         content: journalNotes,
                         emotional_state_id: emotionalStateId || null,
                         intensity: emotionalIntensity,
@@ -183,7 +184,7 @@
                     console.log(
                         "[DailyClosureWizard] Creating new journal entry",
                     );
-                    await settingsStore.addJournalEntry({
+                    await workspaceStore.addJournalEntry({
                         date: selectedDate,
                         content: journalNotes,
                         emotional_state_id: emotionalStateId || null,

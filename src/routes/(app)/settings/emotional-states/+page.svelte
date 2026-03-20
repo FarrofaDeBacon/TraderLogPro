@@ -4,10 +4,8 @@
     import { Button } from "$lib/components/ui/button";
     import * as Dialog from "$lib/components/ui/dialog";
     import { Separator } from "$lib/components/ui/separator";
-    import {
-        settingsStore,
-        type EmotionalState,
-    } from "$lib/stores/settings.svelte";
+    import type { EmotionalState } from "$lib/types";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import EmotionalStateForm from "$lib/components/settings/EmotionalStateForm.svelte";
     import { Badge } from "$lib/components/ui/badge";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
@@ -22,7 +20,7 @@
 
     // Sort
     let filteredStates = $derived(
-        [...settingsStore.emotionalStates].sort((a, b) =>
+        [...workspaceStore.emotionalStates].sort((a, b) =>
             a.name.localeCompare(b.name),
         ),
     );
@@ -73,9 +71,9 @@
 
     function save(data: Omit<EmotionalState, "id">) {
         if (editingItem) {
-            settingsStore.updateEmotionalState(editingItem.id, data);
+            workspaceStore.updateEmotionalState(editingItem.id, data);
         } else {
-            settingsStore.addEmotionalState(data);
+            workspaceStore.addEmotionalState(data);
         }
         isDialogOpen = false;
     }
@@ -87,7 +85,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteEmotionalState(deleteId);
+            const result = await workspaceStore.deleteEmotionalState(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {

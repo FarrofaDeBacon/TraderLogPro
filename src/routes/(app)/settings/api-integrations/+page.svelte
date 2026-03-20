@@ -21,7 +21,8 @@
     import { Input } from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
     import { Separator } from "$lib/components/ui/separator";
-    import { settingsStore, type ApiConfig } from "$lib/stores/settings.svelte";
+    import { integrationsStore } from "$lib/stores/integrations.svelte";
+    import { settingsStore } from "$lib/stores/settings.svelte";
     import ApiConfigForm from "$lib/components/settings/ApiConfigForm.svelte";
     import ProfitRtdCard from "$lib/components/settings/ProfitRtdCard.svelte";
     import { Badge } from "$lib/components/ui/badge";
@@ -32,6 +33,7 @@
 
     let isDialogOpen = $state(false);
     let isSyncing = $state(false);
+    import type { ApiConfig } from "$lib/types";
     let editingItem = $state<ApiConfig | undefined>(undefined);
 
     // Delete Modal State
@@ -39,8 +41,8 @@
     let deleteId = $state<string | null>(null);
 
     // Initial binding state
-    let psychologyProvider = $state(settingsStore.psychologyApiId);
-    let marketDataProvider = $state(settingsStore.marketDataApiId);
+    let psychologyProvider = $state(integrationsStore.psychologyApiId);
+    let marketDataProvider = $state(integrationsStore.marketDataApiId);
 
     // Calendar Source Config
     let calendarSource = $state("https://br.investing.com/economic-calendar/");
@@ -66,7 +68,7 @@
             value: "mock",
             label: $t("settings.api.integrations.serviceMapping.mockLabel"),
         },
-        ...settingsStore.apiConfigs
+        ...integrationsStore.apiConfigs
             .filter((c) =>
                 ["openai", "google_gemini", "anthropic", "custom"].includes(
                     c.provider,
@@ -83,7 +85,7 @@
             value: "mock",
             label: $t("settings.api.integrations.serviceMapping.mockDataLabel"),
         },
-        ...settingsStore.apiConfigs
+        ...integrationsStore.apiConfigs
             .filter((c) =>
                 ["polygon", "alpha_vantage", "custom"].includes(c.provider),
             )
@@ -105,9 +107,9 @@
 
     function save(data: Omit<ApiConfig, "id">) {
         if (editingItem) {
-            settingsStore.updateApiConfig(editingItem.id, data);
+            integrationsStore.updateApiConfig(editingItem.id, data);
         } else {
-            settingsStore.addApiConfig(data);
+            integrationsStore.addApiConfig(data);
         }
         isDialogOpen = false;
     }
@@ -119,7 +121,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteApiConfig(deleteId);
+            const result = await integrationsStore.deleteApiConfig(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {
@@ -130,16 +132,16 @@
     }
 
     function saveServiceBindings() {
-        settingsStore.saveServiceBindings(
-            psychologyProvider,
-            marketDataProvider,
-        );
+        integrationsStore.bindServiceApi({
+            psychology: psychologyProvider,
+            market_data: marketDataProvider,
+        });
         toast.success($t("settings.api.integrations.serviceMapping.success"));
     }
 
     // All configs
     let filteredConfigs = $derived(
-        [...settingsStore.apiConfigs].sort((a, b) =>
+        [...integrationsStore.apiConfigs].sort((a, b) =>
             a.provider.localeCompare(b.provider),
         ),
     );

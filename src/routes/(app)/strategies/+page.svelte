@@ -3,7 +3,8 @@
   import { currenciesStore } from "$lib/stores/currencies.svelte";
   import { accountsStore } from "$lib/stores/accounts.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
+    import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { t } from "svelte-i18n";
     import StrategyPerformanceCard from "$lib/components/strategies/StrategyPerformanceCard.svelte";
     import { Input } from "$lib/components/ui/input";
@@ -17,7 +18,7 @@
 
     // Filter Logic
     let filteredStrategies = $derived(
-        settingsStore.strategies.filter((s) => {
+        workspaceStore.strategies.filter((s) => {
             const matchesSearch = s.name
                 .toLowerCase()
                 .includes(searchTerm.toLowerCase());
@@ -101,7 +102,7 @@
                             strategy.id,
                             accountsStore.accounts,
                             currenciesStore.currencies,
-                            settingsStore.userProfile,
+                            userProfileStore.userProfile,
                             "main",
                         )}
                     />
