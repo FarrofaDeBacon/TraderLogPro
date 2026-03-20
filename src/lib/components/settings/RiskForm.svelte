@@ -104,6 +104,8 @@
                 combined_rules: fd.combined_rules ? [...fd.combined_rules] : [],
                 risk_rules: fd.risk_rules ? [...fd.risk_rules] : [],
             };
+            
+            selectedGrowthPlan = fd.growth_plan_id || "none";
         }
     });
 
@@ -143,8 +145,8 @@
         }
     }
 
-    // Safe local state for Shadcn Bits V2
-    let selectedGrowthPlan = $state(initialData?.growth_plan_id || "none");
+    // Safe local state for Growth Plan
+    let selectedGrowthPlan = $state("none");
 
     function save() {
         const payload = { ...formData };
@@ -546,25 +548,30 @@
                     </div>
                     <div class="pt-3 border-t border-emerald-500/10">
                         <div class="space-y-2.5">
-                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                Selecionar Plano Base
-                            </Label>
-                            <Select.Root
-                                type="single"
-                                bind:value={selectedGrowthPlan}
-                            >
-                                <Select.Trigger class="w-full">
-                                    {selectedGrowthPlan !== "none"
-                                        ? settingsStore.growthPlans.find(p => p.id === selectedGrowthPlan)?.name ?? "Desconhecido"
-                                        : "Nenhum plano vinculado (Fixo)"}
-                                </Select.Trigger>
-                                <Select.Content>
-                                    <Select.Item value="none" label="Nenhum plano vinculado (Fixo)">Nenhum plano vinculado (Fixo)</Select.Item>
+                            <div class="flex items-center justify-between">
+                                <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                    Selecionar Plano Base
+                                </Label>
+                                <span class="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                                    DEBUG: {settingsStore.growthPlans.length} planos na store | Valor atual: {selectedGrowthPlan}
+                                </span>
+                            </div>
+                            
+                            {#if settingsStore.growthPlans.length === 0}
+                                <div class="text-sm border border-dashed border-amber-500/30 bg-amber-500/5 text-amber-600 dark:text-amber-400 p-3 rounded-md flex items-center justify-between">
+                                    <span>Nenhum Plano de Crescimento cadastrado ainda.</span>
+                                </div>
+                            {:else}
+                                <select
+                                    bind:value={selectedGrowthPlan}
+                                    class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <option value="none">Nenhum plano vinculado (Fixo)</option>
                                     {#each settingsStore.growthPlans as plan}
-                                        <Select.Item value={plan.id} label={plan.name}>{plan.name}</Select.Item>
+                                        <option value={plan.id}>{plan.name}</option>
                                     {/each}
-                                </Select.Content>
-                            </Select.Root>
+                                </select>
+                            {/if}
                         </div>
                     </div>
                 </div>
