@@ -23,6 +23,7 @@ import { indicatorsStore } from "./indicators.svelte";
 import { timeframesStore } from "./timeframes.svelte";
 import { chartTypesStore } from "./chart-types.svelte";
 import { financialConfigStore } from "./financial-config.svelte";
+import { userProfileStore } from "./user-profile.svelte";
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
     JournalEntry, Trade, EmotionalState, Strategy, UserProfile,
@@ -31,26 +32,7 @@ export type {
 } from "$lib/types";
 
 class SettingsStore {
-    userProfile = $state<UserProfile>({
-        id: "main",
-        name: "",
-        email: "",
-        phone: "",
-        cpf: "",
-        theme: "",
-        language: "pt-BR",
-        timezone: "America/Sao_Paulo",
-        main_currency: "BRL",
-        avatar: null,
-        convert_all_to_main: false,
-        onboarding_completed: false,
-        currency_api_url: "https://economia.awesomeapi.com.br/last/",
-        birth_date: null,
-        trial_start_date: null,
-        license_key: null,
-        utc_offset: -180, // Default to Brasilia
-    });
-
+    // User Profile, Device ID, and Auth migrated to userProfileStore
     psychologyApiId = $state<string>("none");
     marketDataApiId = $state<string>("none");
     rtdEnabled = $state<boolean>(false);
@@ -65,10 +47,8 @@ class SettingsStore {
     // (Financial Methods migrated to financialConfigStore)
 
     strategies = $state<Strategy[]>([]);
-    hardwareId = $state<string>("");
-    licenseDetails = $state<LicenseData | null>(null);
     isLoadingData = $state<boolean>(false);
-
+    
     // --- FINANCIAL DELEGATES (TEMPORARY FOR COMPATIBILITY) ---
     get fees() { return financialConfigStore.fees; }
     get taxRules() { return financialConfigStore.taxRules; }
@@ -78,56 +58,25 @@ class SettingsStore {
     get cashTransactions() { return financialConfigStore.cashTransactions; }
     // ---------------------------------------------------------
     
-    get activeProfile() { return riskSettingsStore.activeProfile; }
-    isLoggedIn = $state<boolean>(
-        typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false
-    );
-
-
-    // Computed license info
-    licenseStatus = $derived.by(() => {
-        if (this.licenseDetails?.valid) {
-            return "active";
-        }
-
-        if (!this.userProfile.trial_start_date) return "trial";
-
-        const start = new Date(this.userProfile.trial_start_date);
-        const now = new Date();
-        const diffTime = Math.abs(now.getTime() - start.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        return diffDays > 7 ? "expired" : "trial";
-    });
-
-    trialDaysLeft = $derived.by(() => {
-        if (!this.userProfile.trial_start_date) return 7;
-        const start = new Date(this.userProfile.trial_start_date);
-        const now = new Date();
-        const diffTime = now.getTime() - start.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        return Math.max(0, 7 - diffDays);
-    });
-
-    licensePlanName = $derived(this.licenseDetails?.plan || "Trial");
-
-    licenseTotalDays = $derived.by(() => {
-        if (this.licensePlanName === "Lifetime") return null;
-        if (!this.licenseDetails?.expiration || !this.licenseDetails?.createdAt) return null;
-        const start = new Date(this.licenseDetails.createdAt);
-        const end = new Date(this.licenseDetails.expiration);
-        const diffTime = end.getTime() - start.getTime();
-        return Math.round(diffTime / (1000 * 60 * 60 * 24));
-    });
-
-    licenseDaysRemaining = $derived.by(() => {
-        if (this.licensePlanName === "Lifetime") return null;
-        if (!this.licenseDetails?.expiration) return null;
-        const end = new Date(this.licenseDetails.expiration);
-        const now = new Date();
-        const diffTime = end.getTime() - now.getTime();
-        return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-    });
+    // --- USER PROFILE DELEGATES (TEMPORARY FOR COMPATIBILITY) ---
+    get userProfile() { return userProfileStore.userProfile; }
+    set userProfile(val: UserProfile) { userProfileStore.userProfile = val; }
+    get hardwareId() { return userProfileStore.hardwareId; }
+    get licenseDetails() { return userProfileStore.licenseDetails; }
+    get isLoggedIn() { return userProfileStore.isLoggedIn; }
+    get licenseStatus() { return userProfileStore.licenseStatus; }
+    get trialDaysLeft() { return userProfileStore.trialDaysLeft; }
+    get licensePlanName() { return userProfileStore.licensePlanName; }
+    get licenseTotalDays() { return userProfileStore.licenseTotalDays; }
+    get licenseDaysRemaining() { return userProfileStore.licenseDaysRemaining; }
+    
+    login(email: string, pass: string) { return userProfileStore.login(email, pass); }
+    logout() { return userProfileStore.logout(); }
+    updateUserProfile(data: Partial<UserProfile>) { return userProfileStore.updateUserProfile(data); }
+    saveUserProfile() { return userProfileStore.saveUserProfile(); }
+    refreshLicenseStatus() { return userProfileStore.refreshLicenseStatus(); }
+    deactivateLicense() { return userProfileStore.deactivateLicense(); }
+    // ---------------------------------------------------------
 
 
     constructor() {
@@ -140,31 +89,7 @@ class SettingsStore {
         return financialConfigStore.loadCashTransactions();
     }
 
-    async refreshLicenseStatus() {
-        if (!this.userProfile.license_key) {
-            console.log("[SettingsStore] No license key found, skipping refresh.");
-            return;
-        }
 
-        console.log("[SettingsStore] Refreshing license status for key:", this.userProfile.license_key.substring(0, 10) + "...");
-
-        try {
-            const customerId = await computeCustomerId({
-                name: this.userProfile.name,
-                cpf: this.userProfile.cpf,
-                birthDate: this.userProfile.birth_date || "",
-                hardwareId: this.hardwareId
-            });
-
-            console.log("[SettingsStore] Computed Customer ID:", customerId);
-
-            const result = await validateLicenseKey(this.userProfile.license_key, customerId);
-            console.log("[SettingsStore] License Validation Result:", result);
-            this.licenseDetails = result;
-        } catch (e) {
-            console.error("[SettingsStore] Error refreshing license:", e);
-        }
-    }
 
     async loadData(silent: boolean = false) {
         if (this.isLoadingData) {
@@ -186,8 +111,7 @@ class SettingsStore {
             };
 
             const [
-                profile,
-                hwid,
+                _userProfileSignal,
                 apiConfigsRes,
                 accountsRes,
                 currenciesRes,
@@ -207,8 +131,7 @@ class SettingsStore {
                 growthPlansRes,
                 _financialSignal
             ] = await Promise.all([
-                safeInvoke<UserProfile>("get_user_profile", "User Profile"),
-                safeInvoke<string>("get_machine_id_cmd", "Hardware ID"),
+                userProfileStore.loadData().then(() => null),
                 safeInvoke<ApiConfig[]>("get_api_configs", "API Configs"),
                 safeInvoke<Account[]>("get_accounts", "Accounts"),
                 safeInvoke<Currency[]>("get_currencies", "Currencies"),
@@ -230,7 +153,6 @@ class SettingsStore {
             ]);
 
             // Assign results
-            if (hwid) this.hardwareId = hwid;
             if (apiConfigsRes) this.apiConfigs = apiConfigsRes;
             if (accountsRes) accountsStore.accounts = accountsRes;
             if (currenciesRes) currenciesStore.currencies = currenciesRes;
@@ -262,13 +184,6 @@ class SettingsStore {
                 await this.deduplicateJournalEntries();
             }
 
-            if (profile) {
-                this.userProfile = { ...this.userProfile, ...profile };
-                console.log("[SettingsStore] User Profile loaded and processed.");
-            } else {
-                console.warn("[SettingsStore] No profile found, using defaults.");
-            }
-
             // LocalStorage fallbacks for UI state
             const savedBindings = localStorage.getItem("service_api_bindings");
             if (savedBindings) {
@@ -279,9 +194,6 @@ class SettingsStore {
             this.rtdEnabled = localStorage.getItem("rtd_enabled") === "true";
             this.rtdExcelPath = localStorage.getItem("rtd_excel_path") || "";
 
-            if (this.userProfile.license_key && this.hardwareId) {
-                this.refreshLicenseStatus();
-            }
 
             if (this.rtdEnabled) {
                 invoke("start_rtd_monitor_cmd", { excelPath: this.rtdExcelPath || null }).catch(e => console.error(e));
@@ -296,21 +208,6 @@ class SettingsStore {
         } finally {
             this.isLoadingData = false;
         }
-    }
-
-    async saveUserProfile() {
-        try {
-            await invoke("save_user_profile", { profile: $state.snapshot(this.userProfile) });
-        } catch (e) {
-            console.error("[SettingsStore] Error saving user profile:", e);
-        }
-    }
-
-    async deactivateLicense() {
-        this.userProfile.license_key = null;
-        this.licenseDetails = null;
-        await this.saveUserProfile();
-        console.log("[SettingsStore] License deactivated.");
     }
 
     private async saveApiConfigs() {
@@ -498,17 +395,6 @@ class SettingsStore {
     removeCashTransaction(id: string) { return financialConfigStore.removeCashTransaction(id); }
     transferFunds(options: any) { return financialConfigStore.transferFunds(options); }
 
-    // User Profile
-    updateUserProfile(data: Partial<UserProfile>) {
-        this.userProfile = { ...this.userProfile, ...data };
-        this.saveUserProfile();
-        if (typeof window !== "undefined" && data.language) {
-            localStorage.setItem("locale", data.language);
-        }
-        if (data.license_key !== undefined || data.name || data.cpf || data.birth_date) {
-            this.refreshLicenseStatus();
-        }
-    }
 
     // Psychology / Emotional States
     addEmotionalState(item: Omit<EmotionalState, "id">) {
@@ -717,32 +603,13 @@ class SettingsStore {
         chartTypesStore.clearChartTypes();
     }
 
-    async login(_email: string, pass: string): Promise<boolean> {
-        try {
-            const isValid = await invoke<boolean>("verify_password", { password: pass });
-            if (isValid) {
-                this.isLoggedIn = true;
-                localStorage.setItem("isLoggedIn", "true");
-            }
-            return isValid;
-        } catch (e) {
-            console.error("[SettingsStore] Login failed:", e);
-            throw e;
-        }
-    }
 
-    logout() {
-        this.isLoggedIn = false;
-        localStorage.removeItem("isLoggedIn");
-        console.log("[SettingsStore] User logged out");
-        window.location.href = "/login";
-    }
     async hasClosureForDate(date: string, accountId: string): Promise<boolean> {
         const targetDate = getLocalDatePart(date);
         const normalize = (id: string) => id.split(':').pop()?.replace(/[⟨⟩`\s]/g, '') || id;
         const targetAcc = normalize(accountId);
 
-        return this.cashTransactions.some(ct =>
+        return financialConfigStore.cashTransactions.some(ct =>
             ct.system_linked &&
             getLocalDatePart(ct.date) === targetDate &&
             normalize(ct.account_id) === targetAcc
