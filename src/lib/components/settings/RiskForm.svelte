@@ -144,9 +144,12 @@
     }
 
     function save() {
-        onSave({
-            ...formData,
-        });
+        const payload = { ...formData };
+        if (payload.growth_plan_id === "none") {
+            payload.growth_plan_id = undefined;
+        }
+        
+        onSave(payload);
     }
 </script>
 
@@ -543,11 +546,10 @@
                             </Label>
                             <Select.Root
                                 type="single"
-                                value={formData.growth_plan_id || "none"}
-                                onValueChange={(v: string) => formData.growth_plan_id = v === "none" ? undefined : v}
+                                bind:value={formData.growth_plan_id}
                             >
                                 <Select.Trigger class="w-full">
-                                    {formData.growth_plan_id 
+                                    {formData.growth_plan_id && formData.growth_plan_id !== "none"
                                         ? settingsStore.growthPlans.find(p => p.id === formData.growth_plan_id)?.name ?? "Desconhecido"
                                         : "Nenhum plano vinculado (Fixo)"}
                                 </Select.Trigger>
