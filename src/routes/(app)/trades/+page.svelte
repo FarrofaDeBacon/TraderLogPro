@@ -50,6 +50,7 @@
 
     import { untrack } from "svelte";
     import { format } from "date-fns/format";
+    import { filterTradesContext, getTradeViewModel } from "$lib/domain/trades/trade-engine";
 
     let searchQuery = $state("");
     let expandedMonths = $state<Set<string>>(new Set());
@@ -89,52 +90,23 @@
 
     // Base Filtering logic
     const filteredTrades = $derived.by(() => {
-        return allTrades.filter((t) => {
-            // Search filter
-            if (searchQuery) {
-                const q = searchQuery.toLowerCase();
-                const strategyName =
-                    settingsStore.strategies
-                        .find((s) => s.id === t.strategy_id)
-                        ?.name.toLowerCase() || "";
-                const matchesSearch =
-                    t.asset_symbol.toLowerCase().includes(q) ||
-                    strategyName.includes(q);
-                if (!matchesSearch) return false;
+        return filterTradesContext(
+            allTrades,
+            {
+                searchQuery,
+                status: filterStatus,
+                accountId: filterAccount,
+                strategyId: filterStrategy,
+                assetTypeId: filterAssetType,
+                currency: filterCurrency,
+            },
+            {
+                getStrategyName: (id: string) =>
+                    settingsStore.strategies.find((s) => s.id === id)?.name || "",
+                getAccountCurrency: (id: string) =>
+                    settingsStore.accounts.find((a) => a.id === id)?.currency || "BRL",
             }
-
-            // Status filter
-            if (filterStatus !== "all") {
-                const isClosed = !!t.exit_price;
-                if (filterStatus === "open" && isClosed) return false;
-                if (filterStatus === "closed" && !isClosed) return false;
-            }
-
-            // Account filter
-            if (filterAccount !== "all" && t.account_id !== filterAccount)
-                return false;
-
-            // Strategy filter
-            if (filterStrategy !== "all" && t.strategy_id !== filterStrategy)
-                return false;
-
-            // Asset Type filter
-            if (
-                filterAssetType !== "all" &&
-                t.asset_type_id !== filterAssetType
-            )
-                return false;
-
-            // Currency filter
-            if (filterCurrency !== "all") {
-                const acc = settingsStore.accounts.find(
-                    (a) => a.id === t.account_id,
-                );
-                if (acc?.currency !== filterCurrency) return false;
-            }
-
-            return true;
-        });
+        );
     });
 
     function getWeekKey(date: Date) {
@@ -147,129 +119,35 @@
 
     const hierarchicalTradesData = $derived.by(() => {
         if (settingsStore.isLoadingData) return [];
-        const monthsMap: Record<string, any> = {};
 
-        // Build the hierarchy: Month -> Week -> Day
-        for (const trade of filteredTrades) {
-            const dateStr = getLocalDatePart(trade.exit_date || trade.date);
-            const date = new Date(dateStr + "T12:00:00");
-            const monthKey = dateStr.slice(0, 7); // YYYY-MM
-            const weekKey = getWeekKey(date);
-
-            // Month Level
-            if (!monthsMap[monthKey]) {
-                monthsMap[monthKey] = {
-                    key: monthKey,
-                    label: date.toLocaleDateString($locale || "pt-BR", {
+        return getTradeViewModel(
+            filteredTrades,
+            {
+                getAccountCurrency: (id: string) =>
+                    settingsStore.accounts.find((a) => a.id === id)?.currency || "BRL",
+            },
+            {
+                formatMonth: (date: Date) =>
+                    date.toLocaleDateString($locale || "pt-BR", {
                         month: "long",
                         year: "numeric",
                     }),
-                    weeks: {},
-                    totalPnlByCurrency: {},
-                    trades: [],
-                };
-            }
-            const month = monthsMap[monthKey];
-            month.trades.push(trade);
-
-            // Week Level
-            if (!month.weeks[weekKey]) {
-                month.weeks[weekKey] = {
-                    key: weekKey,
-                    label: $t("trades.dashboard.weekOf", {
+                formatWeek: (dateStr: string) =>
+                    ($t("trades.dashboard.weekOf", {
                         values: {
-                            date: new Date(
-                                weekKey + "T12:00:00",
-                            ).toLocaleDateString($locale || "pt-BR", {
-                                day: "numeric",
-                                month: "short",
-                            }),
+                            date: new Date(dateStr + "T12:00:00").toLocaleDateString(
+                                $locale || "pt-BR",
+                                { day: "numeric", month: "short" }
+                            ),
                         },
-                    }).toUpperCase(),
-                    days: {},
-                    totalPnlByCurrency: {},
-                    trades: [],
-                };
-            }
-            const week = month.weeks[weekKey];
-            week.trades.push(trade);
-
-            // Day Level
-            if (!week.days[dateStr]) {
-                week.days[dateStr] = {
-                    key: dateStr,
-                    date: dateStr,
-                    label: date.toLocaleDateString($locale || "pt-BR", {
+                    }) || `Semana de ${dateStr}`).toUpperCase(),
+                formatDay: (date: Date) =>
+                    date.toLocaleDateString($locale || "pt-BR", {
                         weekday: "long",
                         day: "numeric",
                     }),
-                    trades: [],
-                    totalPnlByCurrency: {},
-                };
             }
-            const day = week.days[dateStr];
-            day.trades.push(trade);
-
-            // Calculate PnL across levels
-            const acc = settingsStore.accounts.find(
-                (a) => a.id === trade.account_id,
-            );
-            const curr = acc?.currency || "BRL";
-            const res = trade.result || 0;
-
-            day.totalPnlByCurrency[curr] =
-                (day.totalPnlByCurrency[curr] || 0) + res;
-            week.totalPnlByCurrency[curr] =
-                (week.totalPnlByCurrency[curr] || 0) + res;
-            month.totalPnlByCurrency[curr] =
-                (month.totalPnlByCurrency[curr] || 0) + res;
-        }
-
-        // Convert Objects back to sorted arrays
-        try {
-            return Object.values(monthsMap)
-                .sort((a, b) => (b.key || "").localeCompare(a.key || ""))
-                .map((month) => {
-                    const weeks = Object.values(month.weeks || {})
-                        .sort((a: any, b: any) =>
-                            (b.key || "").localeCompare(a.key || ""),
-                        )
-                        .map((week: any) => {
-                            const days = Object.values(week.days || {})
-                                .sort((a: any, b: any) =>
-                                    (b.date || "").localeCompare(a.date || ""),
-                                )
-                                .map((day: any) => ({
-                                    ...day,
-                                    pnlEntries: Object.entries(
-                                        day.totalPnlByCurrency || {},
-                                    ).map(([curr, val]) => ({ curr, val })),
-                                }));
-
-                            return {
-                                ...week,
-                                days,
-                                pnlEntries: Object.entries(
-                                    week.totalPnlByCurrency || {},
-                                ).map(([curr, val]) => ({ curr, val })),
-                            };
-                        });
-
-                    return {
-                        ...month,
-                        weeks,
-                        pnlEntries: Object.entries(
-                            month.totalPnlByCurrency || {},
-                        ).map(([curr, val]) => ({ curr, val })),
-                    };
-                });
-        } catch (err) {
-            console.error(
-                "[TradesHub] Error processing results hierarchy:",
-                err,
-            );
-            return [];
-        }
+        );
     });
 
     $effect(() => {

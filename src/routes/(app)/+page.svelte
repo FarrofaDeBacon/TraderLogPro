@@ -45,6 +45,7 @@
     SelectItem,
     SelectTrigger
   } from "$lib/components/ui/select";
+  import { getDashboardStats } from "$lib/domain/stats/stats-engine";
 
 
   // --- State ---
@@ -101,127 +102,15 @@
   );
 
   const stats = $derived.by(() => {
-    try {
-      const trades = filteredTrades;
-      const today = new Date();
-      const thisMonth = startOfMonth(today);
-      const yearMonthStr = format(today, "yyyy-MM");
-
-      if (!trades || trades.length === 0)
-        return {
-          net: 0,
-          winRate: 0,
-          profitFactor: 0,
-          payoff: 0,
-          equity: [],
-          monthResult: 0,
-          dayResult: 0,
-          discipline: 100,
-          drawdown: 0,
-          tradesToday: 0,
-          avgRFactor: 0,
-        };
-
-      const sorted = [...trades].sort((a, b) => {
-        const da = parseSafeDate(a.date).getTime();
-        const db = parseSafeDate(b.date).getTime();
-        return (isNaN(da) ? 0 : da) - (isNaN(db) ? 0 : db);
-      });
-
-      let current = 0,
-        totalW = 0,
-        totalL = 0,
-        wins = 0,
-        dayRes = 0,
-        monthRes = 0,
-        discSum = 0,
-        peak = 0,
-        maxDD = 0,
-        tradesToday = 0,
-        rFactorSum = 0,
-        rFactorCount = 0;
-
-      const equity = sorted.map((t) => {
-        const res = tradesStore.getConvertedTradeResult(
+    return getDashboardStats(
+      filteredTrades,
+      new Date(),
+      (t: any) => tradesStore.getConvertedTradeResult(
           t,
           settingsStore.accounts,
-          settingsStore.currencies,
-        );
-        current += res;
-
-        // Drawdown Logic
-        if (current > peak) peak = current;
-        const dd = peak === 0 ? 0 : ((peak - current) / peak) * 100;
-        if (dd > maxDD) maxDD = dd;
-
-        if (res > 0) {
-          wins++;
-          totalW += res;
-        } else if (res < 0) {
-          totalL += Math.abs(res);
-        }
-
-        try {
-          const tDate = parseISO(t.date);
-          const tExitDate = t.exit_date ? parseISO(t.exit_date) : tDate;
-
-          if (isSameDay(tExitDate, today)) {
-            dayRes += res;
-            tradesToday++;
-          }
-
-          // Use consistent year-month detection for parity with Finance
-          const tMonthStr = format(tExitDate, "yyyy-MM");
-          if (tMonthStr === yearMonthStr) {
-            monthRes += res;
-          }
-        } catch (e) {
-          // ignore single date error
-        }
-
-        discSum += t.followed_plan ? 100 : 0;
-
-        // R-Factor calculation (Reward/Risk)
-        if ((t as any).risk_amount && (t as any).risk_amount > 0) {
-          rFactorSum += t.result / (t as any).risk_amount;
-          rFactorCount++;
-        }
-
-        return [parseSafeDate(t.date).getTime(), current];
-      });
-
-      return {
-        net: current,
-        winRate: (wins / (trades.length || 1)) * 100,
-        profitFactor: totalL === 0 ? (totalW > 0 ? 99 : 0) : totalW / totalL,
-        payoff:
-          wins > 0 && trades.length - wins > 0
-            ? totalW / wins / (totalL / (trades.length - wins) || 1)
-            : 0,
-        equity,
-        monthResult: monthRes,
-        dayResult: dayRes,
-        discipline: discSum / (trades.length || 1),
-        drawdown: maxDD,
-        tradesToday,
-        avgRFactor: rFactorCount > 0 ? rFactorSum / rFactorCount : 0,
-      };
-    } catch (err) {
-      console.error("[Dashboard] Error in stats derived:", err);
-      return {
-        net: 0,
-        winRate: 0,
-        profitFactor: 0,
-        payoff: 0,
-        equity: [],
-        monthResult: 0,
-        dayResult: 0,
-        discipline: 0,
-        drawdown: 0,
-        tradesToday: 0,
-        avgRFactor: 0,
-      };
-    }
+          settingsStore.currencies
+      )
+    );
   });
 
   const growthProgress = $derived.by(() => {
