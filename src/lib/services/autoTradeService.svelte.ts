@@ -1,3 +1,4 @@
+import { accountsStore } from "$lib/stores/accounts.svelte";
 import { rtdStore, type RTDTradeEvent } from "$lib/stores/rtd.svelte";
 import { settingsStore } from "$lib/stores/settings.svelte";
 import { tradesStore } from "$lib/stores/trades.svelte";
@@ -37,15 +38,15 @@ class AutoTradeService {
         // Smart Account Detection
         let accountId = "";
         if (quote.sheet) {
-            const sheetMatch = settingsStore.accounts.find(a =>
+            const sheetMatch = accountsStore.accounts.find(a =>
                 a.nickname.toLowerCase().includes(quote.sheet!.toLowerCase()) ||
                 a.account_type.toLowerCase().includes(quote.sheet!.toLowerCase())
             );
             if (sheetMatch) accountId = sheetMatch.id;
         }
 
-        if (!accountId && settingsStore.accounts.length > 0) {
-            accountId = settingsStore.accounts[0].id;
+        if (!accountId && accountsStore.accounts.length > 0) {
+            accountId = accountsStore.accounts[0].id;
         }
 
         // Search for existing trade to link if partial

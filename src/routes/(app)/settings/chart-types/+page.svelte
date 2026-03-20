@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { chartTypesStore } from "$lib/stores/chart-types.svelte";
     import {
         Plus,
         Pencil,
@@ -27,7 +28,7 @@
     let deleteId = $state<string | null>(null);
 
     let filteredItems = $derived(
-        [...settingsStore.chartTypes].sort((a, b) =>
+        [...chartTypesStore.chartTypes].sort((a, b) =>
             a.name.localeCompare(b.name),
         ),
     );

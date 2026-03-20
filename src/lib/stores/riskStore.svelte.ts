@@ -1,6 +1,9 @@
 // --- RISK STORE (Position Sizing Enabled) ---
 // This file serves as the reactive bindings for the pure risk domains.
 
+import { assetsStore } from "$lib/stores/assets.svelte";
+import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
+import { accountsStore } from "$lib/stores/accounts.svelte";
 import { settingsStore } from './settings.svelte';
 import { tradesStore } from './trades.svelte';
 import { 
@@ -48,8 +51,8 @@ export class RiskStore {
             $effect.root(() => {
                 $effect(() => {
                     // Safe cleanup: if we have an active asset but it was deleted from settings
-                    if (this.activeAssetId && settingsStore.assets.length > 0) {
-                        const exists = settingsStore.assets.some(a => a.id === this.activeAssetId);
+                    if (this.activeAssetId && assetsStore.assets.length > 0) {
+                        const exists = assetsStore.assets.some(a => a.id === this.activeAssetId);
                         if (!exists) {
                             this.activeAssetId = null;
                         }
@@ -86,7 +89,7 @@ export class RiskStore {
         let domainGrowthPhase = undefined;
         let startingCapital = undefined;
 
-        const activePlan = activeProfile.growth_plan_id ? settingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
+        const activePlan = activeProfile.growth_plan_id ? riskSettingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
         if (activePlan && activePlan.enabled && activePlan.phases && activePlan.phases.length > activePlan.current_phase_index) {
             const rawPhase = activePlan.phases[activePlan.current_phase_index];
             domainGrowthPhase = adaptGrowthPhaseToDomain(rawPhase);
@@ -95,7 +98,7 @@ export class RiskStore {
             if (activeProfile.capital_source === 'Fixed') {
                 startingCapital = activeProfile.fixed_capital;
             } else if (activeProfile.linked_account_id) {
-                const linkedAccount = settingsStore.accounts.find(a => a.id === activeProfile.linked_account_id);
+                const linkedAccount = accountsStore.accounts.find(a => a.id === activeProfile.linked_account_id);
                 startingCapital = linkedAccount ? linkedAccount.balance : undefined;
             }
         }
@@ -116,11 +119,11 @@ export class RiskStore {
         const activeProfile = settingsStore.activeProfile;
         if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
 
-        const asset = settingsStore.assets.find(a => a.id === this.activeAssetId);
+        const asset = assetsStore.assets.find(a => a.id === this.activeAssetId);
         if (!asset) return null;
 
         const linkedProfileIds = activeProfile.linked_asset_risk_profile_ids || [];
-        const validProfiles = settingsStore.assetRiskProfiles.filter(ap => linkedProfileIds.includes(ap.id as string));
+        const validProfiles = riskSettingsStore.assetRiskProfiles.filter(ap => linkedProfileIds.includes(ap.id as string));
         
         return validProfiles.find(ap => ap.asset_id === asset.id) || null;
     }
@@ -176,7 +179,7 @@ export class RiskStore {
         const activeProfile = settingsStore.activeProfile;
         if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
 
-        const asset = settingsStore.assets.find(a => a.id === this.activeAssetId);
+        const asset = assetsStore.assets.find(a => a.id === this.activeAssetId);
         if (!asset) return null;
 
         const assetRiskProfile = this.resolvedAssetRiskProfile;
@@ -199,7 +202,7 @@ export class RiskStore {
         }
 
         // 2. Fallback para o Global RiskProfile
-        const activePlan = activeProfile.growth_plan_id ? settingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
+        const activePlan = activeProfile.growth_plan_id ? riskSettingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
         if (activePlan && activePlan.enabled && activePlan.phases && activePlan.phases.length > 0) {
             const currentPhaseIndex = activePlan.current_phase_index || 0;
             if (currentPhaseIndex < activePlan.phases.length) {
@@ -224,7 +227,7 @@ export class RiskStore {
         const activeProfile = settingsStore.activeProfile;
         if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
 
-        const asset = settingsStore.assets.find(a => a.id === this.activeAssetId);
+        const asset = assetsStore.assets.find(a => a.id === this.activeAssetId);
         if (!asset) return null;
 
         // ETAPA 3 & 4: Reutiliza logica do getter para obter o perfil resolvido na UI tbm.
@@ -236,13 +239,13 @@ export class RiskStore {
         let currentPhase = undefined;
         let dynamicBalance = undefined;
 
-        const activePlan = activeProfile.growth_plan_id ? settingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
+        const activePlan = activeProfile.growth_plan_id ? riskSettingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
         if (activePlan && activePlan.enabled && activePlan.phases && activePlan.phases.length > activePlan.current_phase_index) {
             currentPhase = activePlan.phases[activePlan.current_phase_index];
         }
 
         if (activeProfile.capital_source === 'LinkedAccount' && activeProfile.linked_account_id) {
-            const linkedAccount = settingsStore.accounts.find(a => a.id === activeProfile.linked_account_id);
+            const linkedAccount = accountsStore.accounts.find(a => a.id === activeProfile.linked_account_id);
             if (linkedAccount) {
                 dynamicBalance = linkedAccount.balance;
             }

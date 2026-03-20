@@ -1,4 +1,9 @@
 <script lang="ts">
+  import { marketsStore } from "$lib/stores/markets.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
+  import { assetsStore } from "$lib/stores/assets.svelte";
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { assetTypesStore } from "$lib/stores/asset-types.svelte";
     import { page } from "$app/stores";
     import { settingsStore } from "$lib/stores/settings.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
@@ -124,8 +129,8 @@
         strategyTrades.forEach((t) => {
             const res = tradesStore.getConvertedTradeResult(
                 t,
-                settingsStore.accounts,
-                settingsStore.currencies,
+                accountsStore.accounts,
+                currenciesStore.currencies,
             );
             netResult += res;
 
@@ -355,22 +360,22 @@
 
         // If strategy has market_ids, use them
         if (strategy.market_ids?.length) {
-            return settingsStore.markets.filter((m) =>
+            return marketsStore.markets.filter((m) =>
                 strategy.market_ids.includes(m.id),
             );
         }
 
         // Fallback: infer from assets
         const assetSymbol = strategy.specific_assets[0];
-        const asset = settingsStore.assets.find(
+        const asset = assetsStore.assets.find(
             (a) => a.symbol === assetSymbol,
         );
         if (!asset) return [];
-        const assetType = settingsStore.assetTypes.find(
+        const assetType = assetTypesStore.assetTypes.find(
             (t) => t.id === asset.asset_type_id,
         );
         if (!assetType) return [];
-        const market = settingsStore.markets.find(
+        const market = marketsStore.markets.find(
             (m) => m.id === assetType.market_id,
         );
         return market ? [market] : [];
@@ -391,7 +396,7 @@
     });
 
     const market = $derived(
-        settingsStore.markets.find((m) => m.id === selectedMarketId) ?? null,
+        marketsStore.markets.find((m) => m.id === selectedMarketId) ?? null,
     );
 
     // Generate hour labels from trading sessions
@@ -442,8 +447,8 @@
             if (dayRow !== -1 && hourCol !== -1) {
                 const res = tradesStore.getConvertedTradeResult(
                     t,
-                    settingsStore.accounts,
-                    settingsStore.currencies,
+                    accountsStore.accounts,
+                    currenciesStore.currencies,
                 );
                 grid[dayRow][hourCol] += res;
             }

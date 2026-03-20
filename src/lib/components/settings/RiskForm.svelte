@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import { Input } from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
     import { Button } from "$lib/components/ui/button";
@@ -147,7 +149,7 @@
 
     const growthPlanOptions = $derived([
         { value: "none", label: "Nenhum plano vinculado (Fixo)" },
-        ...settingsStore.growthPlans.map(p => ({ value: p.id, label: p.name }))
+        ...riskSettingsStore.growthPlans.map(p => ({ value: p.id, label: p.name }))
     ]);
 
     import { settingsStore } from "$lib/stores/settings.svelte";
@@ -205,7 +207,7 @@
                             <Select.Label>
                                 {$t("settings.risk.management.copyOf") || "Cópia de"}
                             </Select.Label>
-                            {#each settingsStore.riskProfiles as baseProfile}
+                            {#each riskSettingsStore.riskProfiles as baseProfile}
                                 <Select.Item value={baseProfile.id}>
                                     {baseProfile.name}
                                 </Select.Item>
@@ -304,10 +306,10 @@
                                 bind:value={selectedLinkedAccount}
                             >
                                 <Select.Trigger class="w-full">
-                                    {settingsStore.accounts.find(a => a.id === selectedLinkedAccount)?.nickname ?? "Selecione uma Conta"}
+                                    {accountsStore.accounts.find(a => a.id === selectedLinkedAccount)?.nickname ?? "Selecione uma Conta"}
                                 </Select.Trigger>
                                 <Select.Content>
-                                    {#each settingsStore.accounts as account}
+                                    {#each accountsStore.accounts as account}
                                         <Select.Item value={account.id}>{account.nickname}</Select.Item>
                                     {/each}
                                 </Select.Content>
@@ -410,7 +412,7 @@
                             >{$t("settings.risk.form.accounts.title")}</Label
                         >
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {#each settingsStore.accounts as account}
+                            {#each accountsStore.accounts as account}
                                 <div
                                     class="flex items-center space-x-2 p-2 rounded border bg-background/50"
                                 >
@@ -505,7 +507,7 @@
                                 {$t("risk.management.assetProfileSelector") || "Selecione um Perfil de Ativo..."}
                             </Select.Trigger>
                             <Select.Content>
-                                {#each settingsStore.assetRiskProfiles.filter((ap) => !formData.linked_asset_risk_profile_ids?.includes(ap.id as string)) as ap}
+                                {#each riskSettingsStore.assetRiskProfiles.filter((ap) => !formData.linked_asset_risk_profile_ids?.includes(ap.id as string)) as ap}
                                     <Select.Item value={ap.id as string}>{ap.name}</Select.Item>
                                 {/each}
                             </Select.Content>
@@ -519,7 +521,7 @@
                             </div>
                         {:else}
                             {#each formData.linked_asset_risk_profile_ids as apId}
-                                {@const profile = settingsStore.assetRiskProfiles.find((p) => p.id === apId)}
+                                {@const profile = riskSettingsStore.assetRiskProfiles.find((p) => p.id === apId)}
                                 {#if profile}
                                     <div class="flex items-center justify-between p-2 rounded border bg-background/50 text-sm">
                                         <span class="font-medium truncate">{profile.name}</span>
@@ -552,14 +554,14 @@
                 <!-- SUB-BLOCK B: Configuração da Mesa (Visual/Marcador apenas) -->
             <DeskConfigSection
                 bind:config={formData.desk_config}
-                availableAssetProfiles={settingsStore.assetRiskProfiles}
+                availableAssetProfiles={riskSettingsStore.assetRiskProfiles}
             />
 
             <!-- SUB-BLOCK C: Regras do Plano Builder -->
             <div class="space-y-3 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
                 <RiskRulesSection
                     bind:rules={() => formData.risk_rules ?? [], (v) => formData.risk_rules = v}
-                    assetRiskProfiles={settingsStore.assetRiskProfiles}
+                    assetRiskProfiles={riskSettingsStore.assetRiskProfiles}
                 />
                 </div>
             {/if}

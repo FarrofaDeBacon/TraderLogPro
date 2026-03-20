@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import * as Dialog from "$lib/components/ui/dialog";
     import * as Table from "$lib/components/ui/table";
     import { Button } from "$lib/components/ui/button";
@@ -59,7 +60,7 @@
         // Fetch all data
         const allData = tradesStore.getDailyResultByAccount(
             selectedDate,
-            settingsStore.accounts,
+            accountsStore.accounts,
         );
 
         // Filter to only show accounts that HAVE trades or had a result

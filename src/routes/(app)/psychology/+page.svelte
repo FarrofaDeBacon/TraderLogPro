@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import { t, locale } from "svelte-i18n";
     import { settingsStore } from "$lib/stores/settings.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
@@ -370,7 +371,7 @@
             );
             const dayPnl: Record<string, number> = {};
             for (const trade of data.trades) {
-                const acc = settingsStore.accounts.find(
+                const acc = accountsStore.accounts.find(
                     (a) => a.id === trade.account_id,
                 );
                 const curr = acc?.currency || "BRL";
@@ -1890,7 +1891,7 @@
                                     {/if}
                                 </h4>
 
-                                {#each selectedDayData.trades.filter((t: any) => !selectedCurrency || settingsStore.accounts.find((a) => a.id === t.account_id)?.currency === selectedCurrency) as trade}
+                                {#each selectedDayData.trades.filter((t: any) => !selectedCurrency || accountsStore.accounts.find((a) => a.id === t.account_id)?.currency === selectedCurrency) as trade}
                                     <div
                                         class="p-4 rounded-xl border border-border/40 bg-muted/20 hover:bg-accent/10 transition-colors"
                                     >
@@ -1923,7 +1924,7 @@
                                             >
                                                 {formatCurrency(
                                                     trade.result,
-                                                    settingsStore.accounts.find(
+                                                    accountsStore.accounts.find(
                                                         (a) =>
                                                             a.id ===
                                                             trade.account_id,
@@ -2085,7 +2086,7 @@
                                     >
                                         {formatCurrency(
                                             trade.result,
-                                            settingsStore.accounts.find(
+                                            accountsStore.accounts.find(
                                                 (a) =>
                                                     a.id === trade.account_id,
                                             )?.currency || "BRL",

@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { assetTypesStore } from "$lib/stores/asset-types.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
+  import { assetsStore } from "$lib/stores/assets.svelte";
+  import { timeframesStore } from "$lib/stores/timeframes.svelte";
+  import { modalitiesStore } from "$lib/stores/modalities.svelte";
+  import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
     import { t, locale, _ } from "svelte-i18n";
     import { invoke } from "@tauri-apps/api/core";
     import { emit } from "@tauri-apps/api/event";
@@ -130,28 +136,28 @@
     let selectedAsset = $derived.by(() => {
         const symbol = formData.asset;
         return untrack(() => {
-            const allAssets = [...settingsStore.assets, ...rtdAssets];
+            const allAssets = [...assetsStore.assets, ...rtdAssets];
             return allAssets.find((a) => a.symbol === symbol);
         });
     });
 
     let selectedAccount = $derived.by(() => {
         const id = formData.account_id;
-        return untrack(() => settingsStore.accounts.find((a) => a.id === id));
+        return untrack(() => accountsStore.accounts.find((a) => a.id === id));
     });
 
     let activeRiskProfile = $derived.by(() => {
         const account = selectedAccount;
-        if (!account) return settingsStore.riskProfiles[0] || null;
+        if (!account) return riskSettingsStore.riskProfiles[0] || null;
 
         // Find profile for specific account type or "All"
         return (
-            settingsStore.riskProfiles.find(
+            riskSettingsStore.riskProfiles.find(
                 (p) =>
                     p.account_type_applicability === account.account_type ||
                     p.account_type_applicability === "All",
             ) ||
-            settingsStore.riskProfiles[0] ||
+            riskSettingsStore.riskProfiles[0] ||
             null
         );
     });
@@ -407,9 +413,9 @@
         if (!settingsStore.isLoadingData) {
             if (
                 accountsList.length === 0 &&
-                settingsStore.accounts.length > 0
+                accountsStore.accounts.length > 0
             ) {
-                accountsList = [...settingsStore.accounts];
+                accountsList = [...accountsStore.accounts];
             }
             if (
                 strategiesList.length === 0 &&
@@ -419,18 +425,18 @@
             }
             if (
                 assetTypesList.length === 0 &&
-                settingsStore.assetTypes.length > 0
+                assetTypesStore.assetTypes.length > 0
             ) {
-                assetTypesList = [...settingsStore.assetTypes];
+                assetTypesList = [...assetTypesStore.assetTypes];
             }
-            if (assetsList.length !== settingsStore.assets.length && settingsStore.assets.length > 0) {
-                assetsList = [...settingsStore.assets];
+            if (assetsList.length !== assetsStore.assets.length && assetsStore.assets.length > 0) {
+                assetsList = [...assetsStore.assets];
             }
             if (
                 timeframeList.length === 0 &&
-                settingsStore.timeframes.length > 0
+                timeframesStore.timeframes.length > 0
             ) {
-                timeframeList = [...settingsStore.timeframes];
+                timeframeList = [...timeframesStore.timeframes];
             }
         }
     });
@@ -458,13 +464,13 @@
 
         // Capture initial snapshots from store
         if (!settingsStore.isLoadingData) {
-            accountsList = [...settingsStore.accounts];
+            accountsList = [...accountsStore.accounts];
             strategiesList = [...settingsStore.strategies];
-            assetTypesList = [...settingsStore.assetTypes];
-            assetsList = [...settingsStore.assets];
+            assetTypesList = [...assetTypesStore.assetTypes];
+            assetsList = [...assetsStore.assets];
             timeframeList =
-                settingsStore.timeframes.length > 0
-                    ? [...settingsStore.timeframes]
+                timeframesStore.timeframes.length > 0
+                    ? [...timeframesStore.timeframes]
                     : [
                           {
                               value: "1m",
@@ -500,8 +506,8 @@
 
     // Robust Initialization and auto-selection
     $effect(() => {
-        // We need to wait for settingsStore.assets to be populated
-        if (settingsStore.assets.length === 0) return;
+        // We need to wait for assetsStore.assets to be populated
+        if (assetsStore.assets.length === 0) return;
 
         // Priority 1: Use trade.asset_type_id if editing and not already set
         if (trade && !selectedAssetTypeId) {
@@ -512,7 +518,7 @@
                 trade.asset_symbol,
             );
             if (trade.asset_type_id) {
-                const type = settingsStore.assetTypes.find(
+                const type = assetTypesStore.assetTypes.find(
                     (t) =>
                         t.id === trade.asset_type_id ||
                         t.id.replace(/^asset_type:/, "") ===
@@ -550,7 +556,7 @@
                         "[NewTradeWizard] Symbol lookup failed for",
                         trade.asset_symbol,
                         "Total assets in store:",
-                        settingsStore.assets.length,
+                        assetsStore.assets.length,
                     );
                 }
             }
@@ -559,12 +565,12 @@
         // Priority 3: Auto-select based on formData.asset changes (for new trades or when changing symbol)
         // But don't override if user manually selected a type
         if (!userManuallySelectedType && formData.asset) {
-            const allAssets = [...settingsStore.assets, ...rtdAssets];
+            const allAssets = [...assetsStore.assets, ...rtdAssets];
             const asset = allAssets.find(
                 (a) => a.symbol.toUpperCase() === formData.asset.toUpperCase(),
             );
             if (asset) {
-                const type = settingsStore.assetTypes.find(
+                const type = assetTypesStore.assetTypes.find(
                     (t) =>
                         t.id === asset.asset_type_id ||
                         t.id.replace(/^asset_type:/, "") ===
@@ -590,23 +596,23 @@
 
         // Cache external lookups for performance
         const assetSymbolsSet = new Set(
-            settingsStore.assets.map((a) => a.symbol),
+            assetsStore.assets.map((a) => a.symbol),
         );
 
         const futType =
-            settingsStore.assetTypes.find(
+            assetTypesStore.assetTypes.find(
                 (t) =>
                     t.name.toLowerCase().includes("future") ||
                     t.name.toLowerCase().includes("futuro"),
             )?.id || "";
         const indType =
-            settingsStore.assetTypes.find(
+            assetTypesStore.assetTypes.find(
                 (t) =>
                     t.name.toLowerCase().includes("index") ||
                     t.name.toLowerCase().includes("indice"),
             )?.id || "";
         const stockType =
-            settingsStore.assetTypes.find(
+            assetTypesStore.assetTypes.find(
                 (t) =>
                     t.name.toLowerCase().includes("stock") ||
                     t.name.toLowerCase().includes("ação") ||
@@ -650,7 +656,7 @@
     });
 
     let filteredAssets = $derived.by(() => {
-        const assets = [...settingsStore.assets, ...rtdAssets];
+        const assets = [...assetsStore.assets, ...rtdAssets];
         if (!selectedAssetTypeId) return assets;
 
         const typeId = selectedAssetTypeId.replace(/^asset_type:/, "");
@@ -1563,7 +1569,7 @@
                                     <!-- Detail info -->
                                     {#if formData.asset}
                                         {@const asset =
-                                            settingsStore.assets.find(
+                                            assetsStore.assets.find(
                                                 (a) =>
                                                     a.symbol === formData.asset,
                                             )}
@@ -1797,7 +1803,7 @@
                                         id="modality-select"
                                         class="h-10 bg-muted/40 border-border/40 text-xs text-foreground"
                                     >
-                                        {settingsStore.modalities.find(
+                                        {modalitiesStore.modalities.find(
                                             (m) =>
                                                 m.id === formData.modality_id,
                                         )?.name ||
@@ -1806,7 +1812,7 @@
                                             )}
                                     </Select.Trigger>
                                     <Select.Content>
-                                        {#each settingsStore.modalities as modality}
+                                        {#each modalitiesStore.modalities as modality}
                                             <Select.Item value={modality.id}
                                                 >{modality.name}</Select.Item
                                             >
@@ -1831,7 +1837,7 @@
                                     placeholder="0.00"
                                 />
                                 {#if formData.stop_loss && formData.entry_price && formData.asset}
-                                    {@const asset = settingsStore.assets.find(
+                                    {@const asset = assetsStore.assets.find(
                                         (a) => a.symbol === formData.asset,
                                     )}
                                     <div
@@ -1865,7 +1871,7 @@
                                     placeholder="0.00"
                                 />
                                 {#if formData.take_profit && formData.entry_price && formData.asset}
-                                    {@const asset = settingsStore.assets.find(
+                                    {@const asset = assetsStore.assets.find(
                                         (a) => a.symbol === formData.asset,
                                     )}
                                     <div
@@ -1899,7 +1905,7 @@
                             )}
                         </h3>
                         {#if true}
-                            {@const selectedAsset = settingsStore.assets.find(
+                            {@const selectedAsset = assetsStore.assets.find(
                                 (a) => a.symbol === formData.asset,
                             )}
                             {@const resolvedPointValue = (() => {

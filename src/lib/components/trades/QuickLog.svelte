@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { assetTypesStore } from "$lib/stores/asset-types.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import { t } from "svelte-i18n";
     import { untrack } from "svelte";
     import { Input } from "$lib/components/ui/input";
@@ -49,17 +51,17 @@
         try {
             // Memory Context (The System guesses the environment to bypass heavy selects)
             const today = new Date().toISOString().slice(0, 16);
-            const defaultAccount = settingsStore.accounts[0]?.id || "";
+            const defaultAccount = accountsStore.accounts[0]?.id || "";
             const defaultStrategy = settingsStore.strategies[0]?.id || "";
             
             // Find Asset Type silently
             let assetTypeId = "rtd";
             const upperAsset = asset.toUpperCase();
             if (upperAsset.startsWith("WDO") || upperAsset.startsWith("WIN")) {
-                const futType = settingsStore.assetTypes.find(t => t.name.toLowerCase().includes("future") || t.name.toLowerCase().includes("futuro"));
+                const futType = assetTypesStore.assetTypes.find(t => t.name.toLowerCase().includes("future") || t.name.toLowerCase().includes("futuro"));
                 if (futType) assetTypeId = futType.id;
             } else if (upperAsset.length >= 4) {
-                const stockType = settingsStore.assetTypes.find(t => t.name.toLowerCase().includes("stock") || t.name.toLowerCase().includes("aç"));
+                const stockType = assetTypesStore.assetTypes.find(t => t.name.toLowerCase().includes("stock") || t.name.toLowerCase().includes("aç"));
                 if (stockType) assetTypeId = stockType.id;
             }
 

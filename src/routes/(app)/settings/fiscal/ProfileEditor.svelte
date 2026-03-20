@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { modalitiesStore } from "$lib/stores/modalities.svelte";
     import { Plus, Trash2, Save, X } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
@@ -179,7 +180,7 @@
 
     // Helpers for display
     function getModalityName(id: string) {
-        return settingsStore.modalities.find((m) => m.id === id)?.name || "N/A";
+        return modalitiesStore.modalities.find((m) => m.id === id)?.name || "N/A";
     }
     function getRuleName(id: string) {
         const r = settingsStore.taxRules.find((r) => r.id === id);
@@ -269,7 +270,7 @@
                                 <Select.Trigger
                                     class="h-9 text-xs bg-background"
                                 >
-                                    {settingsStore.modalities.find(
+                                    {modalitiesStore.modalities.find(
                                         (m) =>
                                             m.id === newEntryData.modality_id,
                                     )?.name ||
@@ -278,7 +279,7 @@
                                         )}
                                 </Select.Trigger>
                                 <Select.Content>
-                                    {#each settingsStore.modalities as mod}
+                                    {#each modalitiesStore.modalities as mod}
                                         <Select.Item value={mod.id}>
                                             {mod.name}
                                         </Select.Item>

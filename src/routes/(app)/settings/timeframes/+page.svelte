@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { timeframesStore } from "$lib/stores/timeframes.svelte";
     import { Plus, Pencil, Trash2, Clock, Search } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
@@ -18,7 +19,7 @@
     let deleteId = $state<string | null>(null);
 
     let filteredItems = $derived(
-        [...settingsStore.timeframes].sort((a, b) =>
+        [...timeframesStore.timeframes].sort((a, b) =>
             a.name.localeCompare(b.name),
         ), // Basic sort
     );

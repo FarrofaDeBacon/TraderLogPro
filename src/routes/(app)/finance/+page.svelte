@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import {
         Wallet,
         Plus,
@@ -38,7 +40,7 @@
     // Group accounts by currency for consolidated view
     let accountsByCurrency = $derived.by(() => {
         const groups: Record<string, { total: number; accounts: any[] }> = {};
-        settingsStore.accounts.forEach((acc) => {
+        accountsStore.accounts.forEach((acc) => {
             if (!groups[acc.currency]) {
                 groups[acc.currency] = { total: 0, accounts: [] };
             }
@@ -59,8 +61,8 @@
 
     let totalBalanceBRL = $derived(
         tradesStore.getTotalBalanceBRL(
-            settingsStore.accounts,
-            settingsStore.currencies,
+            accountsStore.accounts,
+            currenciesStore.currencies,
         ),
     );
 
@@ -73,8 +75,8 @@
     let monthResultBRL = $derived(
         tradesStore.getMonthlyTradeResult(
             currentMonthStr,
-            settingsStore.accounts,
-            settingsStore.currencies,
+            accountsStore.accounts,
+            currenciesStore.currencies,
         ),
     );
 
@@ -328,7 +330,7 @@
                     >
                         {$t("finance.statement.allAccounts")}
                     </button>
-                    {#each settingsStore.accounts as acc}
+                    {#each accountsStore.accounts as acc}
                         <button
                             type="button"
                             class={cn(

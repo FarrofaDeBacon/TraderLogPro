@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import * as Dialog from "$lib/components/ui/dialog";
     import * as Select from "$lib/components/ui/select";
     import { Input } from "$lib/components/ui/input";
@@ -29,10 +31,10 @@
     let description = $state("");
 
     let fromAccount = $derived(
-        settingsStore.accounts.find((a) => a.id === fromAccountId),
+        accountsStore.accounts.find((a) => a.id === fromAccountId),
     );
     let toAccount = $derived(
-        settingsStore.accounts.find((a) => a.id === toAccountId),
+        accountsStore.accounts.find((a) => a.id === toAccountId),
     );
 
     let sameCurrency = $derived(
@@ -43,11 +45,11 @@
     $effect(() => {
         if (fromAccount && toAccount && !sameCurrency) {
             const fromRate =
-                settingsStore.currencies.find(
+                currenciesStore.currencies.find(
                     (c) => c.code === fromAccount!.currency,
                 )?.exchange_rate || 1;
             const toRate =
-                settingsStore.currencies.find(
+                currenciesStore.currencies.find(
                     (c) => c.code === toAccount!.currency,
                 )?.exchange_rate || 1;
             exchangeRate = fromRate / toRate;
@@ -159,7 +161,7 @@
                             </span>
                         </Select.Trigger>
                         <Select.Content class="bg-zinc-900 border-zinc-800">
-                            {#each settingsStore.accounts as acc}
+                            {#each accountsStore.accounts as acc}
                                 <Select.Item
                                     value={acc.id}
                                     class="text-zinc-300 focus:bg-zinc-800"
@@ -193,7 +195,7 @@
                             </span>
                         </Select.Trigger>
                         <Select.Content class="bg-zinc-900 border-zinc-800">
-                            {#each settingsStore.accounts as acc}
+                            {#each accountsStore.accounts as acc}
                                 <Select.Item
                                     value={acc.id}
                                     class="text-zinc-300 focus:bg-zinc-800"

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { assetsStore } from "$lib/stores/assets.svelte";
+  import { modalitiesStore } from "$lib/stores/modalities.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import { t, locale } from "svelte-i18n";
     import { settingsStore } from "$lib/stores/settings.svelte";
     import * as Card from "$lib/components/ui/card";
@@ -25,7 +28,7 @@
     let selectedImageIndex = $state<number | null>(null);
 
     const asset = $derived(
-        settingsStore.assets.find((a) => {
+        assetsStore.assets.find((a) => {
             const sym = a.symbol.toUpperCase();
             const tradeSym = trade.asset_symbol.toUpperCase();
             // Match exactly or handle futures suffixes (e.g. WIN vs WINN24)
@@ -38,7 +41,7 @@
         settingsStore.strategies.find((s) => s.id === trade.strategy_id),
     );
     const account = $derived(
-        settingsStore.accounts.find((a) => a.id === trade.account_id),
+        accountsStore.accounts.find((a) => a.id === trade.account_id),
     );
 
     function getEmotionalState(id: string) {
@@ -52,7 +55,7 @@
         getEmotionalState(trade.exit_emotional_state_id),
     );
     const modality = $derived(
-        settingsStore.modalities.find((m) => m.id === trade.modality_id),
+        modalitiesStore.modalities.find((m) => m.id === trade.modality_id),
     );
 </script>
 

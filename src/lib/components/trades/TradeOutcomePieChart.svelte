@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import { t } from "svelte-i18n";
     import EChart from "$lib/components/ui/echart.svelte";
     import { settingsStore } from "$lib/stores/settings.svelte";
@@ -18,8 +20,8 @@
         tradesData.forEach((t) => {
             const res = tradesStore.getConvertedTradeResult(
                 t,
-                settingsStore.accounts,
-                settingsStore.currencies,
+                accountsStore.accounts,
+                currenciesStore.currencies,
             );
             if (res > 0) gainCount++;
             else if (res < 0) lossCount++;

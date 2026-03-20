@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { assetsStore } from "$lib/stores/assets.svelte";
+  import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
     import { Plus, Pencil, Trash2, Search, Layers, Briefcase, FileText } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
@@ -38,10 +40,10 @@
 
     // Sort and filter profiles
     let filteredProfiles = $derived(
-        [...settingsStore.assetRiskProfiles]
+        [...riskSettingsStore.assetRiskProfiles]
             .filter((p) => {
                 const search = searchQuery.toLowerCase();
-                const assetSymbol = settingsStore.assets.find(a => a.id === p.asset_id)?.symbol.toLowerCase() || "";
+                const assetSymbol = assetsStore.assets.find(a => a.id === p.asset_id)?.symbol.toLowerCase() || "";
                 return (
                     p.name.toLowerCase().includes(search) ||
                     assetSymbol.includes(search)
@@ -52,11 +54,11 @@
 
     // Get all assets for the dropdown
     let availableAssets = $derived(
-        [...settingsStore.assets].sort((a, b) => a.symbol.localeCompare(b.symbol))
+        [...assetsStore.assets].sort((a, b) => a.symbol.localeCompare(b.symbol))
     );
 
     function getAssetSymbol(assetId: string) {
-        const asset = settingsStore.assets.find(a => a.id === assetId);
+        const asset = assetsStore.assets.find(a => a.id === assetId);
         return asset ? asset.symbol : $t("general.unknown");
     }
 

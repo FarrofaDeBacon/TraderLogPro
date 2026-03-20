@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
     import { Plus, Pencil, Trash2, ShieldAlert, Copy } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import * as Card from "$lib/components/ui/card";
@@ -89,7 +90,7 @@
     <Separator />
 
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {#each settingsStore.riskProfiles as profile}
+        {#each riskSettingsStore.riskProfiles as profile}
             <Card.Root
                 class="border-l-4 {profile.active
                     ? 'border-l-green-500 shadow-lg'

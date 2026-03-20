@@ -1,4 +1,5 @@
 
+import { accountsStore } from "$lib/stores/accounts.svelte";
 import { invoke } from "@tauri-apps/api/core";
 import { getLocalDatePart } from "$lib/utils";
 import type { Trade, Account, Currency, UserProfile } from "$lib/types";
@@ -35,7 +36,7 @@ class TradesStore {
 
             // Sync account balances because save_trade might have updated them
             invoke("get_accounts").then(res => {
-                if (res) settingsStore.accounts = res as Account[];
+                if (res) accountsStore.accounts = res as Account[];
             }).catch(e => console.error("Failed to sync accounts after trade addition", e));
 
             return { success: true, trade: newTrade };
@@ -108,7 +109,7 @@ class TradesStore {
 
             // Sync account balances
             invoke("get_accounts").then(res => {
-                if (res) settingsStore.accounts = res as Account[];
+                if (res) accountsStore.accounts = res as Account[];
             }).catch(e => console.error("Failed to sync accounts after trade update", e));
 
             return { success: true };
@@ -136,7 +137,7 @@ class TradesStore {
 
             // Sync account balances
             invoke("get_accounts").then(res => {
-                if (res) settingsStore.accounts = res as Account[];
+                if (res) accountsStore.accounts = res as Account[];
             }).catch(e => console.error("Failed to sync accounts after trade deletion", e));
 
             return { success: true };
@@ -164,7 +165,7 @@ class TradesStore {
 
             // Sync account balances
             invoke("get_accounts").then(res => {
-                if (res) settingsStore.accounts = res as Account[];
+                if (res) accountsStore.accounts = res as Account[];
             }).catch(e => console.error("Failed to sync accounts after batch trade deletion", e));
 
             return { success: true };

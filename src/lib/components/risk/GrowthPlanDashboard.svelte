@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
     import { settingsStore } from "$lib/stores/settings.svelte";
     import { riskStore } from "$lib/stores/riskStore.svelte";
     import * as Card from "$lib/components/ui/card";
@@ -17,7 +18,7 @@
     
     let activeProfile = $derived(settingsStore.activeProfile);
     let isDeskEnabled = $derived(activeProfile?.desk_config?.enabled);
-    let activeGrowthPlan = $derived(activeProfile?.growth_plan_id ? settingsStore.growthPlans.find(p => p.id === activeProfile?.growth_plan_id) : undefined);
+    let activeGrowthPlan = $derived(activeProfile?.growth_plan_id ? riskSettingsStore.growthPlans.find(p => p.id === activeProfile?.growth_plan_id) : undefined);
     
     // Fallback metrics
     let growthMetrics = $derived(cockpit?.growthEvaluation?.metrics);

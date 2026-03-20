@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { marketsStore } from "$lib/stores/markets.svelte";
     import {
         Plus,
         Pencil,
@@ -87,7 +88,7 @@
 
     // Filter and Sort
     let filteredMarkets = $derived(
-        [...settingsStore.markets].sort((a, b) => a.code.localeCompare(b.code)),
+        [...marketsStore.markets].sort((a, b) => a.code.localeCompare(b.code)),
     );
 
     // Group by Timezone

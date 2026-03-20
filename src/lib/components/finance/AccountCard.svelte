@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
     import * as Card from "$lib/components/ui/card";
     import { Badge } from "$lib/components/ui/badge";
     import { Wallet, Landmark, ArrowUpRight } from "lucide-svelte";
@@ -10,7 +11,7 @@
 
     let currencyStr = $derived(account.currency);
     let currencyObj = $derived(
-        settingsStore.currencies.find((c) => c.code === currencyStr),
+        currenciesStore.currencies.find((c) => c.code === currencyStr),
     );
     let exchangeRate = $derived(currencyObj?.exchange_rate || 1);
     let balanceInBRL = $derived(account.balance * exchangeRate);

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { modalitiesStore } from "$lib/stores/modalities.svelte";
     import { Plus, Pencil, Trash2, Workflow, Search } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
@@ -23,7 +24,7 @@
     let deleteId = $state<string | null>(null);
 
     let filteredItems = $derived(
-        [...settingsStore.modalities].sort((a, b) =>
+        [...modalitiesStore.modalities].sort((a, b) =>
             a.name.localeCompare(b.name),
         ),
     );

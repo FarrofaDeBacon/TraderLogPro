@@ -1,11 +1,13 @@
 <script lang="ts">
+  import { assetTypesStore } from "$lib/stores/asset-types.svelte";
+  import { marketsStore } from "$lib/stores/markets.svelte";
     import { Tag, ExternalLink } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import { settingsStore } from "$lib/stores/settings.svelte";
     import { t } from "svelte-i18n";
     import { goto } from "$app/navigation";
 
-    let assetTypes = $derived(settingsStore.assetTypes);
+    let assetTypes = $derived(assetTypesStore.assetTypes);
 </script>
 
 <div class="space-y-6">
@@ -50,7 +52,7 @@
                 {#each assetTypes as at}
                     <tr class="hover:bg-muted/20 transition-colors">
                         <td class="p-3 text-muted-foreground">
-                            {settingsStore.markets.find(
+                            {marketsStore.markets.find(
                                 (m) => m.id === at.market_id,
                             )?.name || at.market_id}
                         </td>

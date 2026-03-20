@@ -12,16 +12,7 @@ import type {
     FeeProfile, RiskProfile, Modality, Tag, Indicator, Timeframe,
     ChartType, ApiConfig, CashTransaction, TaxRule, TaxMapping, TaxProfile, TaxProfileEntry, AssetRiskProfile, GrowthPlan
 } from "$lib/types";
-import { assetsStore } from "./assets.svelte";
 import { riskSettingsStore } from "./risk-settings.svelte";
-import { accountsStore } from "./accounts.svelte";
-import { currenciesStore } from "./currencies.svelte";
-import { marketsStore } from "./markets.svelte";
-import { assetTypesStore } from "./asset-types.svelte";
-import { modalitiesStore } from "./modalities.svelte";
-import { timeframesStore } from "./timeframes.svelte";
-import { chartTypesStore } from "./chart-types.svelte";
-import { indicatorsStore } from "./indicators.svelte";
 
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
@@ -31,13 +22,6 @@ export type {
 } from "$lib/types";
 
 class SettingsStore {
-    get markets() { return marketsStore.markets; }
-    get assetTypes() { return assetTypesStore.assetTypes; }
-    get assets() { return assetsStore.assets; }
-    get riskProfiles() { return riskSettingsStore.riskProfiles; }
-    get assetRiskProfiles() { return riskSettingsStore.assetRiskProfiles; }
-    get growthPlans() { return riskSettingsStore.growthPlans; }
-    get modalities() { return modalitiesStore.modalities; }
     userProfile = $state<UserProfile>({
         id: "main",
         name: "",
@@ -65,19 +49,9 @@ class SettingsStore {
 
     emotionalStates = $state<EmotionalState[]>([]);
     tags = $state<Tag[]>([]);
-    get indicators() { return indicatorsStore.indicators; }
-    get timeframes() { return timeframesStore.timeframes; }
-    get chartTypes() { return chartTypesStore.chartTypes; }
     cashTransactions = $state<CashTransaction[]>([]);
     journalEntries = $state<JournalEntry[]>([]);
     apiConfigs = $state<ApiConfig[]>([]);
-    get currencies() { return currenciesStore.currencies; }
-    get accounts() {
-        return accountsStore.accounts;
-    }
-    set accounts(val) {
-        accountsStore.accounts = val;
-    }
 
     // --- Growth Plans CRUD ---
     getGrowthPlanForProfile(riskProfileId: string) {

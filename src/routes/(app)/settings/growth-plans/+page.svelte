@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
     import { Plus, Pencil, Trash2, TrendingUp, Copy } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import * as Card from "$lib/components/ui/card";
@@ -31,9 +32,9 @@
 
     function save(data: Omit<GrowthPlan, "id">) {
         if (editingItem) {
-            settingsStore.updateGrowthPlan(editingItem.id, data);
+            riskSettingsStore.updateGrowthPlan(editingItem.id, data);
         } else {
-            settingsStore.addGrowthPlan(data);
+            riskSettingsStore.addGrowthPlan(data);
         }
         isDialogOpen = false;
     }
@@ -45,7 +46,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteGrowthPlan(deleteId);
+            const result = await riskSettingsStore.deleteGrowthPlan(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {
@@ -75,7 +76,7 @@
     <Separator />
 
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {#each settingsStore.growthPlans as plan}
+        {#each riskSettingsStore.growthPlans as plan}
             <Card.Root
                 class="border-l-4 hover:border-primary/50 transition-all cursor-pointer hover:shadow-md border-l-primary"
                 onclick={() => openEdit(plan)}
@@ -141,7 +142,7 @@
                 </Card.Footer>
             </Card.Root>
         {/each}
-        {#if settingsStore.growthPlans.length === 0}
+        {#if riskSettingsStore.growthPlans.length === 0}
             <div class="col-span-full py-12 text-center border-2 border-dashed rounded-xl border-border/50 bg-black/5">
                 <TrendingUp class="mx-auto w-10 h-10 text-muted-foreground/30 mb-3" />
                 <h3 class="text-sm font-semibold text-muted-foreground mb-1">Nenhum plano configurado</h3>

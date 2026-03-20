@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { assetTypesStore } from "$lib/stores/asset-types.svelte";
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import { settingsStore } from "$lib/stores/settings.svelte";
     import { t } from "svelte-i18n";
@@ -25,7 +28,7 @@
                     // Check if typeStr is the selected ID
                     if (typeStr === selectedType) return true;
                     // Check if the name of the type matching selectedType matches typeStr
-                    const selectedTypeName = settingsStore.assetTypes.find(
+                    const selectedTypeName = assetTypesStore.assetTypes.find(
                         (at) => at.id === selectedType,
                     )?.name;
                     if (selectedTypeName === typeStr) return true;
@@ -68,7 +71,7 @@
                 <Select.Root type="single" bind:value={selectedType}>
                     <Select.Trigger class="w-[180px]">
                         <Filter class="w-4 h-4 mr-2" />
-                        {settingsStore.assetTypes.find(
+                        {assetTypesStore.assetTypes.find(
                             (t) => t.id === selectedType,
                         )?.name || $t("trades.placeholders.all_types")}
                     </Select.Trigger>
@@ -76,7 +79,7 @@
                         <Select.Item value="all"
                             >{$t("trades.placeholders.all_types")}</Select.Item
                         >
-                        {#each settingsStore.assetTypes as type}
+                        {#each assetTypesStore.assetTypes as type}
                             <Select.Item value={type.id}>{type.name}</Select.Item>
                         {/each}
                     </Select.Content>
@@ -96,8 +99,8 @@
                         {strategy}
                         stats={tradesStore.getStrategyStats(
                             strategy.id,
-                            settingsStore.accounts,
-                            settingsStore.currencies,
+                            accountsStore.accounts,
+                            currenciesStore.currencies,
                             settingsStore.userProfile,
                             "main",
                         )}

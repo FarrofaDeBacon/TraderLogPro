@@ -1,4 +1,9 @@
 <script lang="ts">
+  import { marketsStore } from "$lib/stores/markets.svelte";
+  import { assetsStore } from "$lib/stores/assets.svelte";
+  import { timeframesStore } from "$lib/stores/timeframes.svelte";
+  import { indicatorsStore } from "$lib/stores/indicators.svelte";
+  import { assetTypesStore } from "$lib/stores/asset-types.svelte";
     import {
         Plus,
         Pencil,
@@ -368,7 +373,7 @@
                                             )}
                                     </Select.Trigger>
                                     <Select.Content>
-                                        {#each settingsStore.timeframes as tf}
+                                        {#each timeframesStore.timeframes as tf}
                                             <Select.Item
                                                 value={tf.name}
                                                 label={tf.name}
@@ -419,7 +424,7 @@
                                         {tempIndicator || "Selecionar"}
                                     </Select.Trigger>
                                     <Select.Content>
-                                        {#each settingsStore.indicators as ind}
+                                        {#each indicatorsStore.indicators as ind}
                                             <Select.Item
                                                 value={ind.name}
                                                 label={ind.name}
@@ -470,7 +475,7 @@
                                         {tempAssetType || "Selecionar"}
                                     </Select.Trigger>
                                     <Select.Content>
-                                        {#each settingsStore.assetTypes as type}
+                                        {#each assetTypesStore.assetTypes as type}
                                             <Select.Item
                                                 value={type.code}
                                                 label={type.code}
@@ -522,7 +527,7 @@
                                         {tempSpecificAsset || "Selecionar"}
                                     </Select.Trigger>
                                     <Select.Content>
-                                        {#each settingsStore.assets as asset}
+                                        {#each assetsStore.assets as asset}
                                             <Select.Item
                                                 value={asset.symbol}
                                                 label={asset.symbol}
@@ -571,7 +576,7 @@
                     {$t("settings.strategies.form.linkedMarkets")}
                 </h4>
                 <div class="flex flex-wrap gap-2">
-                    {#each settingsStore.markets as market}
+                    {#each marketsStore.markets as market}
                         {@const isSelected = formData.market_ids.includes(
                             market.id,
                         )}

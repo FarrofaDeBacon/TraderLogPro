@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
   import { Button } from "$lib/components/ui/button";
   import { t, locale } from "svelte-i18n";
   import { settingsStore } from "$lib/stores/settings.svelte";
@@ -59,11 +62,11 @@
   });
 
   const selectedAccount = $derived(
-    settingsStore.accounts.find((a) => a.id === selectedAccountId),
+    accountsStore.accounts.find((a) => a.id === selectedAccountId),
   );
 
   const activeProfile = $derived(
-    settingsStore.activeProfile || settingsStore.riskProfiles[0],
+    settingsStore.activeProfile || riskSettingsStore.riskProfiles[0],
   );
 
   const lastPrice = $derived.by(() => {
@@ -75,7 +78,7 @@
   });
 
   const activePlan = $derived(
-    activeProfile?.growth_plan_id ? settingsStore.getGrowthPlanForProfile(activeProfile.id) : null
+    activeProfile?.growth_plan_id ? riskSettingsStore.getGrowthPlanForProfile(activeProfile.id) : null
   );
 
   const activePhase = $derived.by(() => {
@@ -92,8 +95,8 @@
   // --- Mastery Stats Engine ---
   const totalBalanceBRL = $derived(
     tradesStore.getTotalBalanceBRL(
-      settingsStore.accounts,
-      settingsStore.currencies,
+      accountsStore.accounts,
+      currenciesStore.currencies,
     ),
   );
 
@@ -103,8 +106,8 @@
       new Date(),
       (t: any) => tradesStore.getConvertedTradeResult(
           t,
-          settingsStore.accounts,
-          settingsStore.currencies
+          accountsStore.accounts,
+          currenciesStore.currencies
       )
     );
   });
@@ -188,7 +191,7 @@
                     <span class="truncate">
                       {selectedAccountId === "all"
                         ? $t("general.all")
-                        : settingsStore.accounts.find(
+                        : accountsStore.accounts.find(
                             (a) => a.id === selectedAccountId,
                           )?.nickname || $t("trades.filters.account")}
                     </span>
@@ -196,7 +199,7 @@
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{$t("general.all")}</SelectItem>
-                  {#each settingsStore.accounts as acc}
+                  {#each accountsStore.accounts as acc}
                     <SelectItem value={acc.id}>{acc.nickname}</SelectItem>
                   {/each}
                 </SelectContent>

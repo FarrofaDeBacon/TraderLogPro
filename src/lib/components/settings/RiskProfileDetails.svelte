@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
     import {
         Shield,
         Target,
@@ -19,7 +20,7 @@
     let { profile } = $props<{ profile: RiskProfile }>();
     
     let currentPlan = $derived(
-        profile.growth_plan_id ? settingsStore.getGrowthPlanForProfile(profile.id) : null
+        profile.growth_plan_id ? riskSettingsStore.getGrowthPlanForProfile(profile.id) : null
     );
 </script>
 

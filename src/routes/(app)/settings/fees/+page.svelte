@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import {
         Plus,
         Pencil,
@@ -48,7 +49,7 @@
 
     // Unique Brokers from Accounts
     let uniqueBrokers = $derived(
-        Array.from(new Set(settingsStore.accounts.map((a) => a.broker))).sort(),
+        Array.from(new Set(accountsStore.accounts.map((a) => a.broker))).sort(),
     );
 
     // Group Fees by Broker

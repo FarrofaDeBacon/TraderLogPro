@@ -1,11 +1,12 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
     import { onMount } from "svelte";
     import { settingsStore } from "$lib/stores/settings.svelte";
     import { TrendingUp, TrendingDown } from "lucide-svelte";
 
     // Filtering only currencies that have a rate and are not BRL
     let tickerItems = $derived(
-        settingsStore.currencies
+        currenciesStore.currencies
             .filter((c) => c.code !== "BRL" && c.exchange_rate > 0)
             .map((c) => ({
                 pair: `${c.code}/BRL`,

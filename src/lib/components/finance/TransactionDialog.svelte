@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import * as Dialog from "$lib/components/ui/dialog";
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
@@ -40,7 +41,7 @@
     let exchangeRate = $state("1.0");
 
     let accountOptions = $derived(
-        settingsStore.accounts.map((a) => ({
+        accountsStore.accounts.map((a) => ({
             value: a.id,
             label: a.nickname,
             currency: a.currency,
@@ -58,10 +59,10 @@
 
     // Derived helpers for Transfer
     let fromAccount = $derived(
-        settingsStore.accounts.find((a) => a.id === fromAccountId),
+        accountsStore.accounts.find((a) => a.id === fromAccountId),
     );
     let toAccount = $derived(
-        settingsStore.accounts.find((a) => a.id === toAccountId),
+        accountsStore.accounts.find((a) => a.id === toAccountId),
     );
     let sameCurrency = $derived(
         fromAccount && toAccount && fromAccount.currency === toAccount.currency,

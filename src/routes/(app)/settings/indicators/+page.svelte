@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { indicatorsStore } from "$lib/stores/indicators.svelte";
     import {
         Plus,
         Pencil,
@@ -58,7 +59,7 @@
 
     // Sort indicators
     let filteredIndicators = $derived(
-        [...settingsStore.indicators].sort((a, b) =>
+        [...indicatorsStore.indicators].sort((a, b) =>
             a.name.localeCompare(b.name),
         ),
     );

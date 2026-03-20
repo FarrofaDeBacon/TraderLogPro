@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import EChart from "$lib/components/ui/echart.svelte";
     import * as echarts from "echarts";
     import { settingsStore } from "$lib/stores/settings.svelte";
@@ -56,14 +58,14 @@
             let amount = tx.amount;
 
             // Convert to the target currency
-            const acc = settingsStore.accounts.find(
+            const acc = accountsStore.accounts.find(
                 (a) => String(a.id) === String(tx.account_id),
             );
             if (acc && acc.currency !== currentCurrency) {
-                const srcCurrencyObj = settingsStore.currencies.find(
+                const srcCurrencyObj = currenciesStore.currencies.find(
                     (c) => c.code === acc.currency,
                 );
-                const destCurrencyObj = settingsStore.currencies.find(
+                const destCurrencyObj = currenciesStore.currencies.find(
                     (c) => c.code === currentCurrency,
                 );
                 if (srcCurrencyObj && destCurrencyObj) {

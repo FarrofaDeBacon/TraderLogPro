@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { modalitiesStore } from "$lib/stores/modalities.svelte";
     import { Plus, Pencil, Trash2, ArrowRightLeft } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import { Separator } from "$lib/components/ui/separator";
@@ -114,7 +115,7 @@
                                         class="w-2 h-2 rounded-full bg-blue-500"
                                     ></span>
                                     <span
-                                        >{settingsStore.modalities.find(
+                                        >{modalitiesStore.modalities.find(
                                             (m) => m.id === entry.modality_id,
                                         )?.name || "M?"}</span
                                     >

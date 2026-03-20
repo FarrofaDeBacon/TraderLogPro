@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
     import {
         Plus,
         Pencil,
@@ -28,7 +29,7 @@
     let deleteId = $state<string | null>(null);
 
     let filteredItems = $derived(
-        [...settingsStore.currencies].sort((a, b) =>
+        [...currenciesStore.currencies].sort((a, b) =>
             a.code.localeCompare(b.code),
         ),
     );

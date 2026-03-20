@@ -1,3 +1,13 @@
+import { marketsStore } from "$lib/stores/markets.svelte";
+import { chartTypesStore } from "$lib/stores/chart-types.svelte";
+import { accountsStore } from "$lib/stores/accounts.svelte";
+import { assetsStore } from "$lib/stores/assets.svelte";
+import { currenciesStore } from "$lib/stores/currencies.svelte";
+import { timeframesStore } from "$lib/stores/timeframes.svelte";
+import { indicatorsStore } from "$lib/stores/indicators.svelte";
+import { assetTypesStore } from "$lib/stores/asset-types.svelte";
+import { modalitiesStore } from "$lib/stores/modalities.svelte";
+import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { accountsStore } from './accounts.svelte';
 import { currenciesStore } from './currencies.svelte';
@@ -109,19 +119,19 @@ describe('SettingsStore Unit Tests', () => {
 
         // Test Mini Index (WIN)
         settingsStore.ensureAssetExists('WINJ24');
-        let asset = settingsStore.assets.find(a => a.symbol === 'WINJ24');
+        let asset = assetsStore.assets.find(a => a.symbol === 'WINJ24');
         expect(asset).toBeDefined();
         expect(asset?.asset_type_id).toBe('type_index');
         expect(asset?.point_value).toBe(0.20);
 
         // Test Mini Dollar (WDO)
         settingsStore.ensureAssetExists('WDOK24');
-        asset = settingsStore.assets.find(a => a.symbol === 'WDOK24');
+        asset = assetsStore.assets.find(a => a.symbol === 'WDOK24');
         expect(asset?.point_value).toBe(10.0);
 
         // Test Stocks (PETR4)
         settingsStore.ensureAssetExists('PETR4');
-        asset = settingsStore.assets.find(a => a.symbol === 'PETR4');
+        asset = assetsStore.assets.find(a => a.symbol === 'PETR4');
         expect(asset?.asset_type_id).toBe('type_stock');
         expect(asset?.point_value).toBe(1.0);
 
@@ -182,15 +192,15 @@ describe('SettingsStore Unit Tests', () => {
 
         it('creates a new RiskProfile with a new id, active false and suffix (TESTE A2)', async () => {
             const { originalProfileId } = setupStore();
-            const originalLength = settingsStore.riskProfiles.length;
+            const originalLength = riskSettingsStore.riskProfiles.length;
             
             const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
             
             expect(newId).toBeTruthy();
             expect(newId).not.toBe(originalProfileId);
-            expect(settingsStore.riskProfiles.length).toBe(originalLength + 1);
+            expect(riskSettingsStore.riskProfiles.length).toBe(originalLength + 1);
 
-            const clonedProfile = settingsStore.riskProfiles.find(p => p.id === newId);
+            const clonedProfile = riskSettingsStore.riskProfiles.find(p => p.id === newId);
             expect(clonedProfile!.name).toContain('(Cópia)');
             expect(clonedProfile!.active).toBe(false);
         });
@@ -199,8 +209,8 @@ describe('SettingsStore Unit Tests', () => {
             const { originalProfileId } = setupStore();
             
             const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
-            const clonedProfile = settingsStore.riskProfiles.find(p => p.id === newId);
-            const originalProfile = settingsStore.riskProfiles.find(p => p.id === originalProfileId);
+            const clonedProfile = riskSettingsStore.riskProfiles.find(p => p.id === newId);
+            const originalProfile = riskSettingsStore.riskProfiles.find(p => p.id === originalProfileId);
             
             expect(clonedProfile!.linked_account_id).toBe(originalProfile!.linked_account_id);
             expect(clonedProfile!.capital_source).toBe(originalProfile!.capital_source);
@@ -210,8 +220,8 @@ describe('SettingsStore Unit Tests', () => {
             const { originalProfileId } = setupStore();
             
             const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
-            const clonedProfile = settingsStore.riskProfiles.find(p => p.id === newId);
-            const originalProfile = settingsStore.riskProfiles.find(p => p.id === originalProfileId);
+            const clonedProfile = riskSettingsStore.riskProfiles.find(p => p.id === newId);
+            const originalProfile = riskSettingsStore.riskProfiles.find(p => p.id === originalProfileId);
             
             expect(clonedProfile!.growth_phases).toBeDefined();
             expect(clonedProfile!.growth_phases!.length).toBe(originalProfile!.growth_phases!.length);
@@ -221,13 +231,13 @@ describe('SettingsStore Unit Tests', () => {
 
         it('preserves linked asset risk profile ids without cloning AssetRiskProfiles (TESTE A5)', async () => {
             const { originalProfileId, originalAssetProfileId } = setupStore();
-            const originalAssetProfilesCount = settingsStore.assetRiskProfiles.length;
+            const originalAssetProfilesCount = riskSettingsStore.assetRiskProfiles.length;
             
             const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
-            const clonedProfile = settingsStore.riskProfiles.find(p => p.id === newId);
+            const clonedProfile = riskSettingsStore.riskProfiles.find(p => p.id === newId);
             
             expect(clonedProfile!.linked_asset_risk_profile_ids).toEqual([originalAssetProfileId]);
-            expect(settingsStore.assetRiskProfiles.length).toBe(originalAssetProfilesCount);
+            expect(riskSettingsStore.assetRiskProfiles.length).toBe(originalAssetProfilesCount);
         });
     });
 
@@ -289,17 +299,17 @@ describe('SettingsStore Unit Tests', () => {
 
         it('preserves linked asset risk profile ids without generating new ones (TESTE B4)', () => {
             const { baseId, assetProfileId } = setupStore();
-            const assetProfilesCount = settingsStore.assetRiskProfiles.length;
+            const assetProfilesCount = riskSettingsStore.assetRiskProfiles.length;
             
             const template = settingsStore.createRiskProfileTemplate(baseId);
             
             expect(template!.linked_asset_risk_profile_ids).toEqual([assetProfileId]);
-            expect(settingsStore.assetRiskProfiles.length).toBe(assetProfilesCount);
+            expect(riskSettingsStore.assetRiskProfiles.length).toBe(assetProfilesCount);
         });
 
         it('deep clones growth phases with new ids (TESTE B5)', () => {
             const { baseId } = setupStore();
-            const original = settingsStore.riskProfiles[0];
+            const original = riskSettingsStore.riskProfiles[0];
             const template = settingsStore.createRiskProfileTemplate(baseId);
             
             expect(template!.growth_phases).toBeDefined();
@@ -323,12 +333,12 @@ describe('SettingsStore Unit Tests', () => {
                 growth_override_enabled: false
             }];
 
-            const startingCount = settingsStore.assetRiskProfiles.length;
+            const startingCount = riskSettingsStore.assetRiskProfiles.length;
 
             settingsStore.updateAssetRiskProfile(sharedAssetProfileId, { default_stop_points: 200 });
             
-            expect(settingsStore.assetRiskProfiles.length).toBe(startingCount);
-            expect(settingsStore.assetRiskProfiles.find(p => p.id === sharedAssetProfileId)?.default_stop_points).toBe(200);
+            expect(riskSettingsStore.assetRiskProfiles.length).toBe(startingCount);
+            expect(riskSettingsStore.assetRiskProfiles.find(p => p.id === sharedAssetProfileId)?.default_stop_points).toBe(200);
         });
 
         it('duplicateRiskProfile preserves shared asset profile references over time (TESTE C2)', async () => {
@@ -365,8 +375,8 @@ describe('SettingsStore Unit Tests', () => {
 
             const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
             
-            const original = settingsStore.riskProfiles.find(p => p.id === originalProfileId);
-            const copy = settingsStore.riskProfiles.find(p => p.id === newId);
+            const original = riskSettingsStore.riskProfiles.find(p => p.id === originalProfileId);
+            const copy = riskSettingsStore.riskProfiles.find(p => p.id === newId);
 
             expect(original!.linked_asset_risk_profile_ids).toEqual([sharedAssetProfileId]);
             expect(copy!.linked_asset_risk_profile_ids).toEqual([sharedAssetProfileId]);
@@ -402,18 +412,18 @@ describe('SettingsStore Unit Tests', () => {
             chartTypesStore.chartTypes = [{ id: 'mock-chart' }] as any;
             indicatorsStore.indicators = [{ id: 'mock-indicator' }] as any;
 
-            expect(settingsStore.assets.length).toBe(1);
-            expect(settingsStore.accounts.length).toBe(1);
-            expect(settingsStore.riskProfiles.length).toBe(1);
-            expect(settingsStore.currencies.length).toBe(1);
-            expect(settingsStore.markets.length).toBe(1);
-            expect(settingsStore.assetTypes.length).toBe(1);
-            expect(settingsStore.modalities.length).toBe(1);
-            expect(settingsStore.timeframes.length).toBe(1);
-            expect(settingsStore.chartTypes.length).toBe(1);
-            expect(settingsStore.indicators.length).toBe(1);
+            expect(assetsStore.assets.length).toBe(1);
+            expect(accountsStore.accounts.length).toBe(1);
+            expect(riskSettingsStore.riskProfiles.length).toBe(1);
+            expect(currenciesStore.currencies.length).toBe(1);
+            expect(marketsStore.markets.length).toBe(1);
+            expect(assetTypesStore.assetTypes.length).toBe(1);
+            expect(modalitiesStore.modalities.length).toBe(1);
+            expect(timeframesStore.timeframes.length).toBe(1);
+            expect(chartTypesStore.chartTypes.length).toBe(1);
+            expect(indicatorsStore.indicators.length).toBe(1);
             
-            expect(settingsStore.assets).toBe(assetsStore.assets);
+            expect(assetsStore.assets).toBe(assetsStore.assets);
         });
 
         it('should seamlessly delegate mutation methods to domain handlers', () => {
@@ -475,7 +485,7 @@ describe('SettingsStore Unit Tests', () => {
 
         it('Scenario D: Current assets continue reading cleanly from isolated store proxy', () => {
             assetsStore.assets = [{ id: 'ast:1', symbol: 'WIN', point_value: 0.20, tick_size: 5 }] as any;
-            const asset = settingsStore.assets.find(a => a.id === 'ast:1');
+            const asset = assetsStore.assets.find(a => a.id === 'ast:1');
             expect(asset?.symbol).toBe('WIN');
         });
 

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { assetTypesStore } from "$lib/stores/asset-types.svelte";
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
     import * as Card from "$lib/components/ui/card";
@@ -105,7 +108,7 @@
                 getStrategyName: (id: string) =>
                     settingsStore.strategies.find((s) => s.id === id)?.name || "",
                 getAccountCurrency: (id: string) =>
-                    settingsStore.accounts.find((a) => a.id === id)?.currency || "BRL",
+                    accountsStore.accounts.find((a) => a.id === id)?.currency || "BRL",
             }
         );
     });
@@ -125,7 +128,7 @@
             filteredTrades,
             {
                 getAccountCurrency: (id: string) =>
-                    settingsStore.accounts.find((a) => a.id === id)?.currency || "BRL",
+                    accountsStore.accounts.find((a) => a.id === id)?.currency || "BRL",
             },
             {
                 formatMonth: (date: Date) =>
@@ -197,15 +200,15 @@
                     sum +
                     tradesStore.getConvertedTradeResult(
                         t,
-                        settingsStore.accounts,
-                        settingsStore.currencies,
+                        accountsStore.accounts,
+                        currenciesStore.currencies,
                     ),
                 0,
             );
         }
         const summary: Record<string, number> = {};
         trades.forEach((t) => {
-            const acc = settingsStore.accounts.find(
+            const acc = accountsStore.accounts.find(
                 (a) => a.id === t.account_id,
             );
             const curr = acc?.currency || "BRL";
@@ -226,7 +229,7 @@
         const pnlByCurrency: Record<string, number> = {};
 
         filteredTrades.forEach((t) => {
-            const acc = settingsStore.accounts.find(
+            const acc = accountsStore.accounts.find(
                 (a) => a.id === t.account_id,
             );
             const curr = acc?.currency || "BRL";
@@ -238,8 +241,8 @@
             // Converted result for consolidated metrics
             const convertedRes = tradesStore.getConvertedTradeResult(
                 t,
-                settingsStore.accounts,
-                settingsStore.currencies,
+                accountsStore.accounts,
+                currenciesStore.currencies,
             );
 
             consolidatedTotal += convertedRes;
@@ -342,7 +345,7 @@
         const pnlByCurrency: Record<string, number> = {};
 
         trades.forEach((t: any) => {
-            const acc = settingsStore.accounts.find(
+            const acc = accountsStore.accounts.find(
                 (a) => a.id === t.account_id,
             );
             const curr = acc?.currency || "BRL";
@@ -353,8 +356,8 @@
             // Use converted result for cross-currency calculations
             const convertedRes = tradesStore.getConvertedTradeResult(
                 t,
-                settingsStore.accounts,
-                settingsStore.currencies,
+                accountsStore.accounts,
+                currenciesStore.currencies,
             );
 
             if (convertedRes > 0) {
@@ -510,7 +513,7 @@
     }
 
     async function handleImportProfit() {
-        if (settingsStore.accounts.length === 0) {
+        if (accountsStore.accounts.length === 0) {
             toast.error($t("trades.messages.no_accounts") || "Nenhuma conta cadastrada.");
             return;
         }
@@ -527,7 +530,7 @@
             if (!selected || Array.isArray(selected)) return;
 
             // Simple account selection for now: pick the first real account or just the first one
-            const targetAccount = settingsStore.accounts.find(a => a.account_type === "Real") || settingsStore.accounts[0];
+            const targetAccount = accountsStore.accounts.find(a => a.account_type === "Real") || accountsStore.accounts[0];
 
             toast.promise(
                 invoke("import_profit_trades", {
@@ -839,7 +842,7 @@
                                 id="filter-account"
                                 class="bg-background/50 h-9"
                             >
-                                {settingsStore.accounts.find(
+                                {accountsStore.accounts.find(
                                     (a) => a.id === filterAccount,
                                 )?.nickname ||
                                     $t("general.all") ||
@@ -849,7 +852,7 @@
                                 <Select.Item value="all"
                                     >{$t("general.all") || "Todas"}</Select.Item
                                 >
-                                {#each settingsStore.accounts as acc}
+                                {#each accountsStore.accounts as acc}
                                     <Select.Item value={acc.id}
                                         >{acc.nickname}</Select.Item
                                     >
@@ -899,7 +902,7 @@
                                 id="filter-asset-type"
                                 class="bg-background/50 h-9"
                             >
-                                {settingsStore.assetTypes.find(
+                                {assetTypesStore.assetTypes.find(
                                     (at) => at.id === filterAssetType,
                                 )?.name ||
                                     $t("general.all") ||
@@ -909,7 +912,7 @@
                                 <Select.Item value="all"
                                     >{$t("general.all") || "Todos"}</Select.Item
                                 >
-                                {#each settingsStore.assetTypes as type}
+                                {#each assetTypesStore.assetTypes as type}
                                     <Select.Item value={type.id}
                                         >{type.name}</Select.Item
                                     >
@@ -938,7 +941,7 @@
                                 <Select.Item value="all"
                                     >{$t("general.all") || "Todas"}</Select.Item
                                 >
-                                {#each [...new Set(settingsStore.accounts.map((a) => a.currency))] as curr}
+                                {#each [...new Set(accountsStore.accounts.map((a) => a.currency))] as curr}
                                     <Select.Item value={curr}
                                         >{curr}</Select.Item
                                     >
@@ -1281,7 +1284,7 @@
                                                 >
                                                     {formatCurrency(
                                                         trade.result,
-                                                        settingsStore.accounts.find(
+                                                        accountsStore.accounts.find(
                                                             (a) =>
                                                                 a.id ===
                                                                 trade.account_id,
@@ -1417,7 +1420,7 @@
                                 >
                                     {formatCurrency(
                                         activeContext.data.result,
-                                        settingsStore.accounts.find(
+                                        accountsStore.accounts.find(
                                             (a) =>
                                                 a.id ===
                                                 activeContext.data.account_id,

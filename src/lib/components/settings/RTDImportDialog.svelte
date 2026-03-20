@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { assetTypesStore } from "$lib/stores/asset-types.svelte";
+  import { assetsStore } from "$lib/stores/assets.svelte";
     import * as Dialog from "$lib/components/ui/dialog";
     import { Button } from "$lib/components/ui/button";
     import { Checkbox } from "$lib/components/ui/checkbox";
@@ -27,7 +29,7 @@
     $effect(() => {
         if (open) {
             const quotes = rtdStore.quotes;
-            const currentAssets = settingsStore.assets;
+            const currentAssets = assetsStore.assets;
 
             untrack(() => {
                 const currentSymbols = currentAssets.map((a) => a.symbol);
@@ -56,7 +58,7 @@
     function detectType(symbol: string): string {
         const sym = symbol.toUpperCase();
         const typeMatches = (pattern: string) =>
-            settingsStore.assetTypes.find((t) =>
+            assetTypesStore.assetTypes.find((t) =>
                 t.name.toLowerCase().includes(pattern.toLowerCase()),
             );
 
@@ -65,7 +67,7 @@
             return (
                 typeMatches("Futuro")?.id ||
                 typeMatches("Indice")?.id ||
-                settingsStore.assetTypes[0]?.id ||
+                assetTypesStore.assetTypes[0]?.id ||
                 ""
             );
         }
@@ -75,12 +77,12 @@
             return (
                 typeMatches("Aç")?.id ||
                 typeMatches("Stock")?.id ||
-                settingsStore.assetTypes[1]?.id ||
+                assetTypesStore.assetTypes[1]?.id ||
                 ""
             );
         }
 
-        return settingsStore.assetTypes[0]?.id || "";
+        return assetTypesStore.assetTypes[0]?.id || "";
     }
 
     let allSelected = $derived(
@@ -231,7 +233,7 @@
                                             )}
                                         </Select.Trigger>
                                         <Select.Content>
-                                            {#each settingsStore.assetTypes as type}
+                                            {#each assetTypesStore.assetTypes as type}
                                                 <Select.Item value={type.id}
                                                     >{type.name}</Select.Item
                                                 >

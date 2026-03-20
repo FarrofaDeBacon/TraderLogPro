@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import * as Table from "$lib/components/ui/table";
     import * as Select from "$lib/components/ui/select";
     import { Input } from "$lib/components/ui/input";
@@ -128,7 +130,7 @@
             )
             .filter((tx) => {
                 if (currencyFilter === "all") return true;
-                const acc = settingsStore.accounts.find(
+                const acc = accountsStore.accounts.find(
                     (a) => String(a.id) === String(tx.account_id),
                 );
                 return acc?.currency === currencyFilter;
@@ -175,7 +177,7 @@
 
                 const pnl: Record<string, number> = {};
                 dayGroups[date].forEach((tx) => {
-                    const acc = settingsStore.accounts.find(
+                    const acc = accountsStore.accounts.find(
                         (a) => String(a.id) === String(tx.account_id),
                     );
                     const curr = acc?.currency || "BRL";
@@ -291,7 +293,7 @@
 
     let accountOptions = $derived([
         { value: "all", label: $t("finance.statement.allAccounts") },
-        ...settingsStore.accounts.map((a) => ({
+        ...accountsStore.accounts.map((a) => ({
             value: a.id,
             label: a.nickname,
         })),
@@ -299,7 +301,7 @@
 
     let currencyOptions = $derived([
         { value: "all", label: $t("finance.statement.allCurrencies") },
-        ...settingsStore.currencies.map((c) => ({
+        ...currenciesStore.currencies.map((c) => ({
             value: c.code,
             label: `${c.name} (${c.code})`,
         })),
@@ -441,7 +443,7 @@
     });
 
     function getAccount(id: string) {
-        return settingsStore.accounts.find((a) => String(a.id) === String(id));
+        return accountsStore.accounts.find((a) => String(a.id) === String(id));
     }
 
     function findTradeById(id: string) {

@@ -1,5 +1,7 @@
 <!-- SIZING ENABLED ASSET FORM -->
 <script lang="ts">
+  import { assetTypesStore } from "$lib/stores/asset-types.svelte";
+  import { assetsStore } from "$lib/stores/assets.svelte";
     import {
         Plus,
         Pencil,
@@ -92,7 +94,7 @@
 
     // Sort assets
     let filteredAssets = $derived(
-        [...settingsStore.assets].sort((a, b) =>
+        [...assetsStore.assets].sort((a, b) =>
             a.symbol.localeCompare(b.symbol),
         ),
     );
@@ -102,7 +104,7 @@
         const groups: Record<string, Asset[]> = {};
 
         // Initialize groups for all defined types to ensure order (optional, but good for consistency)
-        for (const type of settingsStore.assetTypes) {
+        for (const type of assetTypesStore.assetTypes) {
             const assetsInType = filteredAssets.filter(
                 (a) =>
                     a.asset_type_id === type.id ||
@@ -117,7 +119,7 @@
         // Handle assets with unknown types (if any)
         const unknownTypeAssets = filteredAssets.filter(
             (a) =>
-                !settingsStore.assetTypes.find(
+                !assetTypesStore.assetTypes.find(
                     (t) =>
                         t.id === a.asset_type_id ||
                         t.id.replace(/^asset_type:/, "") ===
@@ -133,7 +135,7 @@
 
     function getTypeName(typeId: string) {
         if (typeId === "unknown") return $t("settings.assets.groups.others");
-        const type = settingsStore.assetTypes.find((t) => t.id === typeId);
+        const type = assetTypesStore.assetTypes.find((t) => t.id === typeId);
         return type
             ? `${type.code} - ${type.name}`
             : $t("settings.assets.labels.unknown");
@@ -212,12 +214,12 @@
     }
 
     let rootAssets = $derived(
-        settingsStore.assets.filter((a) => a.is_root && a.id !== editingId),
+        assetsStore.assets.filter((a) => a.is_root && a.id !== editingId),
     );
 
     function getRootSymbol(rootId: string | null) {
         if (!rootId) return "";
-        const root = settingsStore.assets.find((a) => a.id === rootId);
+        const root = assetsStore.assets.find((a) => a.id === rootId);
         return root ? root.symbol : "";
     }
 </script>
@@ -317,7 +319,7 @@
                                                     )}
                                                 </div>
                                             {/if}
-                                            {#if !settingsStore.assetTypes.find((t) => t.id === asset.asset_type_id || t.id.replace(/^asset_type:/, "") === asset.asset_type_id.replace(/^asset_type:/, ""))}
+                                            {#if !assetTypesStore.assetTypes.find((t) => t.id === asset.asset_type_id || t.id.replace(/^asset_type:/, "") === asset.asset_type_id.replace(/^asset_type:/, ""))}
                                                 <Badge
                                                     variant="destructive"
                                                     class="text-[10px] h-5 px-1.5 font-normal"
@@ -479,7 +481,7 @@
                         disabled={formData.is_root}
                     >
                         <Select.Trigger class="w-full">
-                            {settingsStore.assets.find(
+                            {assetsStore.assets.find(
                                 (a) => a.id === formData.root_id,
                             )?.symbol ||
                                 (formData.root_id === "none"
@@ -528,7 +530,7 @@
                                 )}</Select.Trigger
                         >
                         <Select.Content>
-                            {#each settingsStore.assetTypes as t}
+                            {#each assetTypesStore.assetTypes as t}
                                 <Select.Item value={t.id}>{t.code}</Select.Item>
                             {/each}
                         </Select.Content>

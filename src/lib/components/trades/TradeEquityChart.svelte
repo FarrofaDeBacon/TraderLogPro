@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import { t } from "svelte-i18n";
     import EChart from "$lib/components/ui/echart.svelte";
     import * as echarts from "echarts";
@@ -25,8 +27,8 @@
         const equityCurve = sortedTrades.map((t) => {
             const result = tradesStore.getConvertedTradeResult(
                 t,
-                settingsStore.accounts,
-                settingsStore.currencies,
+                accountsStore.accounts,
+                currenciesStore.currencies,
             );
             cumulativePnL += result;
             if (cumulativePnL > maxPeak) maxPeak = cumulativePnL;

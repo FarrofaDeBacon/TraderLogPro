@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import {
         Plus,
         Pencil,
@@ -32,7 +34,7 @@
     let isProcessing = $state(false);
 
     let filteredItems = $derived(
-        [...settingsStore.accounts].sort((a, b) =>
+        [...accountsStore.accounts].sort((a, b) =>
             a.nickname.localeCompare(b.nickname),
         ),
     );
@@ -75,7 +77,7 @@
             account_type: "Real",
             broker: "",
             account_number: "",
-            currency: settingsStore.currencies[0]?.code || "BRL",
+            currency: currenciesStore.currencies[0]?.code || "BRL",
             balance: 0,
             custom_logo: null,
         };
@@ -432,7 +434,7 @@
                             {formData.currency}
                         </Select.Trigger>
                         <Select.Content>
-                            {#each settingsStore.currencies as curr}
+                            {#each currenciesStore.currencies as curr}
                                 <Select.Item value={curr.code}>
                                     {curr.code} - {curr.name}
                                 </Select.Item>

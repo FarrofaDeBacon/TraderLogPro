@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import { onMount } from "svelte";
     import { toast } from "svelte-sonner";
     import * as Card from "$lib/components/ui/card";
@@ -66,7 +67,7 @@
     onMount(() => {
         irpfStore.loadAllData(selectedYear);
         // Ensure accounts are loaded if not already
-        if (settingsStore.accounts.length === 0) {
+        if (accountsStore.accounts.length === 0) {
             settingsStore.loadData();
         }
     });
@@ -190,7 +191,7 @@
         const id = accountId.includes(":")
             ? accountId.split(":").pop()
             : accountId;
-        const acc = settingsStore.accounts.find(
+        const acc = accountsStore.accounts.find(
             (a) => irpfStore.getId(a.id) === id,
         );
         return acc ? acc.nickname : "Conta Removida";
@@ -729,7 +730,7 @@
                                 <Select.Trigger
                                     class="w-full bg-muted/20 border-border/30 text-foreground"
                                 >
-                                    {settingsStore.accounts.find(
+                                    {accountsStore.accounts.find(
                                         (a) => a.id === paymentData.accountId,
                                     )?.nickname ||
                                         $t("fiscal.darf.selectAccount")}
@@ -738,7 +739,7 @@
                                     class="bg-popover/80 backdrop-blur-md border-border"
                                 >
                                     <Select.Group>
-                                        {#each settingsStore.accounts as acc}
+                                        {#each accountsStore.accounts as acc}
                                             <Select.Item
                                                 value={acc.id}
                                                 label="{acc.nickname} ({acc.currency})"

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { assetTypesStore } from "$lib/stores/asset-types.svelte";
+  import { marketsStore } from "$lib/stores/markets.svelte";
     import { Plus, Pencil, Trash2, Tag, Globe } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
@@ -78,7 +80,7 @@
     // Group by Market
     let groupedTypes = $derived.by(() => {
         const groups: Record<string, AssetType[]> = {};
-        for (const type of settingsStore.assetTypes) {
+        for (const type of assetTypesStore.assetTypes) {
             const marketCode =
                 settingsStore.getMarketCode(type.market_id) ||
                 $t("settings.assets.groups.others");
@@ -283,7 +285,7 @@
                                 )}</Select.Trigger
                         >
                         <Select.Content>
-                            {#each settingsStore.markets as m}
+                            {#each marketsStore.markets as m}
                                 <Select.Item value={m.id}>{m.code}</Select.Item>
                             {/each}
                         </Select.Content>

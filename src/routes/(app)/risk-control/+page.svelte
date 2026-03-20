@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { assetsStore } from "$lib/stores/assets.svelte";
+  import { accountsStore } from "$lib/stores/accounts.svelte";
     import { settingsStore } from "$lib/stores/settings.svelte";
     import { riskStore } from "$lib/stores/riskStore.svelte";
     import { formatCurrency } from "$lib/utils";
@@ -41,7 +43,7 @@
 
     let currencyCode = $derived(
         activeProfile?.capital_source === 'LinkedAccount' && activeProfile.linked_account_id 
-        ? settingsStore.accounts.find(a => a.id === activeProfile?.linked_account_id)?.currency || 'USD'
+        ? accountsStore.accounts.find(a => a.id === activeProfile?.linked_account_id)?.currency || 'USD'
         : settingsStore.userProfile.main_currency || 'USD'
     );
 </script>
@@ -73,7 +75,7 @@
             {/if}
             {#if riskStore.activeAssetId}
             <div class="px-3 py-1 bg-emerald-500/10 rounded border border-emerald-500/20 text-xs text-emerald-500 font-bold uppercase tracking-wider">
-                {$t('risk.cockpit.asset')} {settingsStore.assets.find(a => a.id === riskStore.activeAssetId)?.symbol || 'Nenhum'}
+                {$t('risk.cockpit.asset')} {assetsStore.assets.find(a => a.id === riskStore.activeAssetId)?.symbol || 'Nenhum'}
             </div>
             {:else}
             <div class="px-3 py-1 bg-rose-500/10 rounded border border-rose-500/20 text-xs text-rose-500 font-bold uppercase tracking-wider">
