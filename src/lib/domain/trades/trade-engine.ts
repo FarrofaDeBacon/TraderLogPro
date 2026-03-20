@@ -1,4 +1,5 @@
 import { getLocalDatePart } from "$lib/utils";
+import type { Trade } from "$lib/types";
 
 export interface TradeFilterParams {
     searchQuery: string;
@@ -68,27 +69,29 @@ function getWeekKey(date: Date) {
     return monday.toISOString().split("T")[0];
 }
 
-export interface TradeViewModelMonth {
+export type TradeViewModelDay = {
     key: string;
-    label: string; // Precisa injetar a locale function depois
-    weeks: TradeViewModelWeek[];
-    pnlEntries: { curr: string; val: number }[];
-}
+    label: string;
+    date: string;
+    trades: Trade[]; // A UI usa isso diretamente no bottom
+    pnlEntries?: { curr: string; val: number }[];
+};
 
-export interface TradeViewModelWeek {
+export type TradeViewModelWeek = {
     key: string;
     label: string;
     days: TradeViewModelDay[];
-    pnlEntries: { curr: string; val: number }[];
-}
+    trades: Trade[]; // Added for backwards compatibility with HierarchicalList UI
+    pnlEntries?: { curr: string; val: number }[];
+};
 
-export interface TradeViewModelDay {
+export type TradeViewModelMonth = {
     key: string;
-    date: string;
     label: string;
-    trades: any[];
-    pnlEntries: { curr: string; val: number }[];
-}
+    weeks: TradeViewModelWeek[];
+    trades: Trade[]; // Added for backwards compatibility with HierarchicalList UI
+    pnlEntries?: { curr: string; val: number }[];
+};
 
 export interface DateFormattingDependencies {
     formatMonth: (date: Date) => string;

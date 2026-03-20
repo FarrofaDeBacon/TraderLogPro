@@ -51,6 +51,7 @@
     import { untrack } from "svelte";
     import { format } from "date-fns/format";
     import { filterTradesContext, getTradeViewModel } from "$lib/domain/trades/trade-engine";
+    import QuickLog from "$lib/components/trades/QuickLog.svelte";
 
     let searchQuery = $state("");
     let expandedMonths = $state<Set<string>>(new Set());
@@ -603,6 +604,9 @@
                 </Button>
             </div>
         </div>
+
+        <!-- Secundário: Registro Ultra Rápido (Fase 2) -->
+        <QuickLog />
 
         <!-- KPI Row -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-2">
