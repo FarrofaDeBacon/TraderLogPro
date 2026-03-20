@@ -161,10 +161,12 @@
     ]);
 
     function addParam() {
+        if (!formData.parameters) formData.parameters = [];
         formData.parameters.push({ key: "", value: "" });
     }
 
     function removeParam(index: number) {
+        if (!formData.parameters) return;
         formData.parameters = formData.parameters.filter((_, i) => i !== index);
     }
 

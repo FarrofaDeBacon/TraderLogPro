@@ -22,26 +22,30 @@
         }
     });
 
-    onMount(async () => {
-        await tick();
-        initChart();
+    onMount(() => {
+        let resizeTimeout: ReturnType<typeof setTimeout>;
 
-        // Use ResizeObserver instead of window resize for better precision
-        resizeObserver = new ResizeObserver(() => {
-            if (chartInstance) {
-                chartInstance.resize();
+        (async () => {
+            await tick();
+            initChart();
+
+            // Use ResizeObserver instead of window resize for better precision
+            resizeObserver = new ResizeObserver(() => {
+                if (chartInstance) {
+                    chartInstance.resize();
+                }
+            });
+
+            if (chartContainer) {
+                resizeObserver.observe(chartContainer);
             }
-        });
 
-        if (chartContainer) {
-            resizeObserver.observe(chartContainer);
-        }
-
-        // Handle common Svelte/ECharts race condition where container is not yet ready
-        // despite being onMount + tick.
-        const resizeTimeout = setTimeout(() => {
-            if (chartInstance) chartInstance.resize();
-        }, 300);
+            // Handle common Svelte/ECharts race condition where container is not yet ready
+            // despite being onMount + tick.
+            resizeTimeout = setTimeout(() => {
+                if (chartInstance) chartInstance.resize();
+            }, 300);
+        })();
 
         return () => {
             clearTimeout(resizeTimeout);

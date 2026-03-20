@@ -175,7 +175,7 @@
                                 class="h-8 text-xs px-3"
                                 onclick={(e) => {
                                     e.stopPropagation();
-                                    settingsStore.setActiveRiskProfile(
+                                    riskSettingsStore.setActiveRiskProfile(
                                         profile.id,
                                     );
                                 }}

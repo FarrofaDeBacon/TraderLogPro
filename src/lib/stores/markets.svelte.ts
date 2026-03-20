@@ -37,6 +37,11 @@ export class MarketsStore {
     clearMarkets() {
         this.markets = [];
     }
+
+    getMarketName(id: string): string {
+        const item = this.markets.find(m => m.id === id);
+        return item ? item.code : "N/A";
+    }
 }
 
 export const marketsStore = new MarketsStore();

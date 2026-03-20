@@ -228,7 +228,7 @@
                                         <Select.Trigger
                                             class="h-8 border-none bg-transparent hover:bg-muted/50 transition-colors"
                                         >
-                                            {settingsStore.getAssetTypeCode(
+                                            {assetTypesStore.getAssetTypeCode(
                                                 item.typeId,
                                             )}
                                         </Select.Trigger>

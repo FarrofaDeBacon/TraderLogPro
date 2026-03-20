@@ -82,7 +82,7 @@
         const groups: Record<string, AssetType[]> = {};
         for (const type of assetTypesStore.assetTypes) {
             const marketCode =
-                settingsStore.getMarketCode(type.market_id) ||
+                marketsStore.getMarketName(type.market_id) ||
                 $t("settings.assets.groups.others");
             if (!groups[marketCode]) {
                 groups[marketCode] = [];
@@ -279,7 +279,7 @@
                 <div class="col-span-3">
                     <Select.Root type="single" bind:value={formData.market_id}>
                         <Select.Trigger
-                            >{settingsStore.getMarketCode(formData.market_id) ||
+                            >{marketsStore.getMarketName(formData.market_id) ||
                                 $t(
                                     "settings.assetTypes.form.marketPlaceholder",
                                 )}</Select.Trigger

@@ -13,7 +13,16 @@ import type {
     ChartType, ApiConfig, CashTransaction, TaxRule, TaxMapping, TaxProfile, TaxProfileEntry, AssetRiskProfile, GrowthPlan
 } from "$lib/types";
 import { riskSettingsStore } from "./risk-settings.svelte";
-
+import { assetsStore } from "./assets.svelte";
+import { accountsStore } from "./accounts.svelte";
+import { currenciesStore } from "./currencies.svelte";
+import { marketsStore } from "./markets.svelte";
+import { assetTypesStore } from "./asset-types.svelte";
+import { modalitiesStore } from "./modalities.svelte";
+import { indicatorsStore } from "./indicators.svelte";
+import { timeframesStore } from "./timeframes.svelte";
+import { chartTypesStore } from "./chart-types.svelte";
+import { financialConfigStore } from "./financial-config.svelte";
 export type {
     TradingSession, Market, AssetType, Asset, Currency, Account,
     JournalEntry, Trade, EmotionalState, Strategy, UserProfile,
@@ -49,21 +58,26 @@ class SettingsStore {
 
     emotionalStates = $state<EmotionalState[]>([]);
     tags = $state<Tag[]>([]);
-    cashTransactions = $state<CashTransaction[]>([]);
     journalEntries = $state<JournalEntry[]>([]);
     apiConfigs = $state<ApiConfig[]>([]);
 
     // (Growth Plans Methods migrated to riskSettingsStore)
+    // (Financial Methods migrated to financialConfigStore)
 
-    fees = $state<FeeProfile[]>([]);
-    taxRules = $state<TaxRule[]>([]);
-    taxMappings = $state<TaxMapping[]>([]);
-    taxProfiles = $state<TaxProfile[]>([]);
-    taxProfileEntries = $state<TaxProfileEntry[]>([]);
     strategies = $state<Strategy[]>([]);
     hardwareId = $state<string>("");
     licenseDetails = $state<LicenseData | null>(null);
     isLoadingData = $state<boolean>(false);
+
+    // --- FINANCIAL DELEGATES (TEMPORARY FOR COMPATIBILITY) ---
+    get fees() { return financialConfigStore.fees; }
+    get taxRules() { return financialConfigStore.taxRules; }
+    get taxMappings() { return financialConfigStore.taxMappings; }
+    get taxProfiles() { return financialConfigStore.taxProfiles; }
+    get taxProfileEntries() { return financialConfigStore.taxProfileEntries; }
+    get cashTransactions() { return financialConfigStore.cashTransactions; }
+    // ---------------------------------------------------------
+    
     get activeProfile() { return riskSettingsStore.activeProfile; }
     isLoggedIn = $state<boolean>(
         typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false
@@ -123,16 +137,7 @@ class SettingsStore {
     }
 
     async loadCashTransactions() {
-        try {
-            const result = await invoke("get_cash_transactions") as CashTransaction[];
-            if (result) {
-                this.cashTransactions = result;
-            }
-            return { success: true };
-        } catch (e) {
-            console.error("[SettingsStore] Error reloading cash transactions:", e);
-            return { success: false, error: String(e) };
-        }
+        return financialConfigStore.loadCashTransactions();
     }
 
     async refreshLicenseStatus() {
@@ -191,21 +196,16 @@ class SettingsStore {
                 assetsRes,
                 emotionalStatesRes,
                 strategiesRes,
-                transactionsRes,
                 journalEntriesRes,
-                feesRes,
                 riskProfilesRes,
                 modalitiesRes,
                 tagsRes,
                 indicatorsRes,
                 timeframesRes,
                 chartTypesRes,
-                taxRulesRes,
-                taxMappingsRes,
-                taxProfilesRes,
-                taxProfileEntriesRes,
                 assetRiskProfilesRes,
-                growthPlansRes
+                growthPlansRes,
+                _financialSignal
             ] = await Promise.all([
                 safeInvoke<UserProfile>("get_user_profile", "User Profile"),
                 safeInvoke<string>("get_machine_id_cmd", "Hardware ID"),
@@ -217,21 +217,16 @@ class SettingsStore {
                 assetsStore.loadAssets().then(() => null),
                 safeInvoke<EmotionalState[]>("get_emotional_states", "Emotional States"),
                 safeInvoke<Strategy[]>("get_strategies", "Strategies"),
-                safeInvoke<CashTransaction[]>("get_cash_transactions", "Cash Transactions"),
                 safeInvoke<JournalEntry[]>("get_journal_entries", "Journal Entries"),
-                safeInvoke<FeeProfile[]>("get_fees", "Fees"),
                 safeInvoke<RiskProfile[]>("get_risk_profiles", "Risk Profiles"),
                 safeInvoke<Modality[]>("get_modalities", "Modalities"),
                 safeInvoke<Tag[]>("get_tags", "Tags"),
                 safeInvoke<Indicator[]>("get_indicators", "Indicators"),
                 safeInvoke<Timeframe[]>("get_timeframes", "Timeframes"),
                 safeInvoke<ChartType[]>("get_chart_types", "Chart Types"),
-                safeInvoke<TaxRule[]>("get_tax_rules", "Tax Rules"),
-                safeInvoke<TaxMapping[]>("get_tax_mappings", "Tax Mappings"),
-                safeInvoke<TaxProfile[]>("get_tax_profiles", "Tax Profiles"),
-                safeInvoke<TaxProfileEntry[]>("get_tax_profile_entries", "Tax Profile Entries"),
                 safeInvoke<AssetRiskProfile[]>("get_asset_risk_profiles", "Asset Risk Profiles"),
-                safeInvoke<GrowthPlan[]>("get_growth_plans", "Growth Plans")
+                safeInvoke<GrowthPlan[]>("get_growth_plans", "Growth Plans"),
+                financialConfigStore.loadData().then(() => null)
             ]);
 
             // Assign results
@@ -248,8 +243,6 @@ class SettingsStore {
             if (strategiesRes) {
                 this.strategies = strategiesRes;
             }
-            if (transactionsRes) this.cashTransactions = transactionsRes;
-            if (feesRes) this.fees = feesRes;
             if (riskProfilesRes) {
                 riskSettingsStore.riskProfiles = riskProfilesRes.map(rp => ({
                     ...rp,
@@ -261,10 +254,6 @@ class SettingsStore {
             if (indicatorsRes) indicatorsStore.indicators = indicatorsRes;
             if (timeframesRes) timeframesStore.timeframes = timeframesRes;
             if (chartTypesRes) chartTypesStore.chartTypes = chartTypesRes;
-            if (taxRulesRes) this.taxRules = taxRulesRes;
-            if (taxMappingsRes) this.taxMappings = taxMappingsRes;
-            if (taxProfilesRes) this.taxProfiles = taxProfilesRes;
-            if (taxProfileEntriesRes) this.taxProfileEntries = taxProfileEntriesRes;
             if (assetRiskProfilesRes) riskSettingsStore.assetRiskProfiles = assetRiskProfilesRes;
             if (growthPlansRes) riskSettingsStore.growthPlans = growthPlansRes;
 
@@ -398,29 +387,6 @@ class SettingsStore {
         }
     }
 
-    private async saveTransactions() {
-        for (const transaction of this.cashTransactions) {
-            await this.saveSingleTransaction(transaction);
-        }
-    }
-
-    private async saveSingleTransaction(transaction: CashTransaction) {
-        try {
-            await invoke("save_cash_transaction", { transaction: $state.snapshot(transaction) });
-        } catch (e) {
-            console.error("[SettingsStore] Error saving transaction:", e);
-        }
-    }
-
-    private async saveFees() {
-        for (const fee of this.fees) {
-            try {
-                await invoke("save_fee", { fee: $state.snapshot(fee) });
-            } catch (e) {
-                console.error("[SettingsStore] Error saving fee:", e);
-            }
-        }
-    }
 
 
 
@@ -481,234 +447,56 @@ class SettingsStore {
 
     // (Domain proxies migrated to domain stores)
 
-    async addTaxRule(item: Omit<TaxRule, "id">) {
-        const id = crypto.randomUUID();
-        const rule = { ...item, id };
-        await invoke("save_tax_rule", { rule: $state.snapshot(rule) });
-        this.taxRules.push(rule);
-    }
+    // --- RESTORED NATIVE METHODS (Etapa 2 migrará isto) ---
+    // Fees
+    addFeeProfile(item: Omit<FeeProfile, "id">) { return financialConfigStore.addFeeProfile(item); }
+    updateFeeProfile(id: string, item: Partial<FeeProfile>) { return financialConfigStore.updateFeeProfile(id, item); }
+    deleteFeeProfile(id: string) { return financialConfigStore.deleteFeeProfile(id); }
+    saveFees() { return financialConfigStore.saveFees(); }
 
-    async updateTaxRule(id: string, item: Partial<TaxRule>) {
-        const rule = this.taxRules.find(r => r.id === id);
-        if (rule) {
-            const updated = { ...rule, ...item };
-            await invoke("save_tax_rule", { rule: $state.snapshot(updated) });
-            this.taxRules = this.taxRules.map(r => r.id === id ? updated : r);
-        }
+    // Strategies
+    addStrategy(item: Omit<Strategy, "id">) {
+        this.strategies.push({ ...item, id: crypto.randomUUID() });
+        this.saveStrategies();
     }
-    async deleteTaxRule(id: string): Promise<{ success: boolean; error?: string }> {
-        // Check usage in mappings or profiles (entries)
-        if (this.taxMappings.some(m => m.tax_rule_id === id)) return { success: false, error: "This rule is used in old Mappings." };
-        if (this.taxProfileEntries.some(e => e.tax_rule_id === id)) return { success: false, error: "This rule is used in Tax Profiles." };
-
-        try {
-            await invoke("delete_tax_rule", { id });
-            this.taxRules = this.taxRules.filter(r => r.id !== id);
-            return { success: true };
-        } catch (e) {
-            return { success: false, error: String(e) };
-        }
+    updateStrategy(id: string, item: Partial<Strategy>) {
+        this.strategies = this.strategies.map(s => s.id === id ? { ...s, ...item } : s);
+        this.saveStrategies();
     }
+    async deleteStrategy(id: string): Promise<{ success: boolean; error?: string }> {
+        await invoke("delete_strategy", { id });
+        this.strategies = this.strategies.filter(s => s.id !== id);
+        return { success: true };
+    }
+    // --- END RESTORED ---
+    // Tax Rules
+    addTaxRule(item: Omit<TaxRule, "id">) { return financialConfigStore.addTaxRule(item); }
+    updateTaxRule(id: string, item: Partial<TaxRule>) { return financialConfigStore.updateTaxRule(id, item); }
+    deleteTaxRule(id: string) { return financialConfigStore.deleteTaxRule(id); }
 
     // Fiscal Module (Tax Profiles - New Option B)
-    async addTaxProfile(item: Omit<TaxProfile, "id">) {
-        const id = crypto.randomUUID();
-        const profile = { ...item, id };
-        await invoke("save_tax_profile", { profile: $state.snapshot(profile) });
-        this.taxProfiles.push(profile);
-        return id;
-    }
-
-    async updateTaxProfile(id: string, item: Partial<TaxProfile>) {
-        const profile = this.taxProfiles.find(p => p.id === id);
-        if (profile) {
-            const updated = { ...profile, ...item };
-            await invoke("save_tax_profile", { profile: $state.snapshot(updated) });
-            this.taxProfiles = this.taxProfiles.map(p => p.id === id ? updated : p);
-        }
-    }
-
-    async deleteTaxProfile(id: string): Promise<{ success: boolean; error?: string }> {
-        if (this.assetTypes.some(a => a.tax_profile_id === id)) {
-            return { success: false, error: "This Profile is used by Asset Types." };
-        }
-        try {
-            await invoke("delete_tax_profile", { id });
-            this.taxProfiles = this.taxProfiles.filter(p => p.id !== id);
-            // Also remove local entries for this profile
-            this.taxProfileEntries = this.taxProfileEntries.filter(e => e.tax_profile_id !== id);
-            return { success: true };
-        } catch (e) {
-            return { success: false, error: String(e) };
-        }
-    }
+    // Tax Profiles
+    addTaxProfile(item: Omit<TaxProfile, "id">) { return financialConfigStore.addTaxProfile(item); }
+    updateTaxProfile(id: string, item: Partial<TaxProfile>) { return financialConfigStore.updateTaxProfile(id, item); }
+    deleteTaxProfile(id: string) { return financialConfigStore.deleteTaxProfile(id); }
 
     // Fiscal Module (Tax Profile Entries)
-    async addTaxProfileEntry(item: Omit<TaxProfileEntry, "id">) {
-        const id = crypto.randomUUID();
-        const entry = { ...item, id };
-        await invoke("save_tax_profile_entry", { entry: $state.snapshot(entry) });
-        this.taxProfileEntries.push(entry);
-    }
-
-    async deleteTaxProfileEntry(id: string) {
-        try {
-            await invoke("delete_tax_profile_entry", { id });
-            this.taxProfileEntries = this.taxProfileEntries.filter(e => e.id !== id);
-        } catch (e) {
-            console.error("Failed to delete profile entry", e);
-        }
-    }
-
-    getEntriesForProfile(profileId: string) {
-        return this.taxProfileEntries.filter(e => e.tax_profile_id === profileId);
-    }
+    // Tax Profile Entries
+    addTaxProfileEntry(item: Omit<TaxProfileEntry, "id">) { return financialConfigStore.addTaxProfileEntry(item); }
+    deleteTaxProfileEntry(id: string) { return financialConfigStore.deleteTaxProfileEntry(id); }
+    getEntriesForProfile(profileId: string) { return financialConfigStore.getEntriesForProfile(profileId); }
 
 
     // Fiscal Module (Mappings)
-    async addTaxMapping(item: Omit<TaxMapping, "id">) {
-        const id = crypto.randomUUID();
-        const mapping = { ...item, id };
-        await invoke("save_tax_mapping", { mapping: $state.snapshot(mapping) });
-        this.taxMappings.push(mapping);
-    }
-
-    async updateTaxMapping(id: string, item: Partial<TaxMapping>) {
-        const mapping = this.taxMappings.find(m => m.id === id);
-        if (mapping) {
-            const updated = { ...mapping, ...item };
-            await invoke("save_tax_mapping", { mapping: $state.snapshot(updated) });
-            this.taxMappings = this.taxMappings.map(m => m.id === id ? updated : m);
-        }
-    }
-
-    async deleteTaxMapping(id: string) {
-        try {
-            await invoke("delete_tax_mapping", { id });
-            this.taxMappings = this.taxMappings.filter(m => m.id !== id);
-        } catch (e) {
-            console.error("Error deleting tax mapping", e);
-        }
-    }
+    // Tax Mappings
+    addTaxMapping(item: Omit<TaxMapping, "id">) { return financialConfigStore.addTaxMapping(item); }
+    updateTaxMapping(id: string, item: Partial<TaxMapping>) { return financialConfigStore.updateTaxMapping(id, item); }
+    deleteTaxMapping(id: string) { return financialConfigStore.deleteTaxMapping(id); }
 
     // Cash Transactions
-    async addCashTransaction(item: Omit<CashTransaction, "id"> & { id?: string }) {
-        try {
-            const id = item.id || crypto.randomUUID();
-            const transaction = { ...item, id } as CashTransaction;
-            const cleanInputId = id.split(':').pop() || id;
-            const isDailyClosure = cleanInputId.startsWith('daily_closure_');
-            const searchDate = isDailyClosure ? getLocalDatePart(item.date) : null;
-
-            const existingIndex = this.cashTransactions.findIndex(t => {
-                const cleanTId = t.id.split(':').pop() || t.id;
-                // Match by ID if it's the same
-                if (cleanTId === cleanInputId) return true;
-
-                // If it's a daily closure, also match by account and date to prevent duplicates
-                if (isDailyClosure && t.system_linked && t.id.startsWith('daily_closure_')) {
-                    const tDate = getLocalDatePart(t.date);
-                    const cleanTAccId = t.account_id.split(':').pop()?.replace(/[⟨⟩`]/g, '').trim() || t.account_id;
-                    const cleanItemAccId = item.account_id.split(':').pop()?.replace(/[⟨⟩`]/g, '').trim() || item.account_id;
-                    return tDate === searchDate && cleanTAccId === cleanItemAccId;
-                }
-
-                return false;
-            });
-            let amountDiff = transaction.amount;
-
-            if (existingIndex >= 0) {
-                const existing = this.cashTransactions[existingIndex];
-                amountDiff = transaction.amount - existing.amount;
-
-                // CRITICAL: If we found a match by account/date but the IDs differ, 
-                // we MUST use the existing ID to prevent the backend from creating a duplicate record.
-                if (existing.id !== transaction.id) {
-                    console.log(`[SettingsStore] Deduplication: Using existing ID ${existing.id} instead of ${transaction.id}`);
-                    transaction.id = existing.id;
-                }
-
-                this.cashTransactions[existingIndex] = transaction;
-            } else {
-                this.cashTransactions.push(transaction);
-            }
-
-            // Save after potential ID adjustment
-            await invoke("save_cash_transaction", { transaction: $state.snapshot(transaction) });
-
-            const account = this.accounts.find(a => a.id === item.account_id);
-            if (account && amountDiff !== 0) {
-                const newBalance = account.balance + amountDiff;
-                await this.updateAccount(account.id, { balance: newBalance });
-            }
-            return { success: true, id };
-        } catch (e: any) {
-            console.error("[SettingsStore] Error saving transaction:", e);
-            return { success: false, error: e.toString() };
-        }
-    }
-
-    async removeCashTransaction(id: string): Promise<{ success: boolean; error?: string }> {
-        try {
-            const tx = this.cashTransactions.find(t => t.id === id);
-            if (tx) {
-                await invoke("delete_cash_transaction", { id });
-                this.cashTransactions = this.cashTransactions.filter(t => t.id !== id);
-                const account = this.accounts.find(a => a.id === tx.account_id);
-                if (account) {
-                    const newBalance = account.balance - tx.amount;
-                    await this.updateAccount(account.id, { balance: newBalance });
-                }
-            }
-            return { success: true };
-        } catch (e: any) {
-            console.error("[SettingsStore] Error deleting transaction:", e);
-            return { success: false, error: e.toString() };
-        }
-    }
-
-    async transferFunds(options: {
-        fromAccountId: string,
-        toAccountId: string,
-        amountParams: {
-            sourceAmount: number,
-            fee: number,
-            destAmount: number
-        },
-        date: string,
-        description: string
-    }) {
-        try {
-            const { fromAccountId, toAccountId, amountParams, date, description } = options;
-
-            // 1. Withdraw from source (Total = sourceAmount)
-            const res1 = await this.addCashTransaction({
-                date,
-                amount: -amountParams.sourceAmount,
-                type: "Withdraw",
-                category: "Transfer",
-                description: description || "Transferência (Saída)",
-                account_id: fromAccountId
-            });
-            if (!res1.success) throw new Error(res1.error);
-
-            // 2. Deposit to destination (Net = destAmount)
-            const res2 = await this.addCashTransaction({
-                date,
-                amount: amountParams.destAmount,
-                type: "Deposit",
-                category: "Transfer",
-                description: description || "Transferência (Entrada)",
-                account_id: toAccountId
-            });
-            if (!res2.success) throw new Error(res2.error);
-
-            return { success: true };
-        } catch (e: any) {
-            console.error("[SettingsStore] Error transferring funds:", e);
-            return { success: false, error: e.toString() };
-        }
-    }
+    addCashTransaction(item: Omit<CashTransaction, "id"> & { id?: string }) { return financialConfigStore.addCashTransaction(item); }
+    removeCashTransaction(id: string) { return financialConfigStore.removeCashTransaction(id); }
+    transferFunds(options: any) { return financialConfigStore.transferFunds(options); }
 
     // User Profile
     updateUserProfile(data: Partial<UserProfile>) {
@@ -901,9 +689,10 @@ class SettingsStore {
 
 
     // Debug / Seed
-    seedDatabase() {
+    async seedDatabase() {
         if (this.strategies.length === 0) {
-            this.addStrategy({
+            await invoke("save_strategy", { strategy: {
+                id: crypto.randomUUID(),
                 name: "Default Setup (Seed)",
                 description: "Automatically generated strategy.",
                 market_ids: ["m1"],
@@ -917,13 +706,13 @@ class SettingsStore {
                 has_partial: false,
                 partial_description: "",
                 images: []
-            });
+            } });
         }
     }
 
     clearDatabase() {
         marketsStore.clearMarkets(); assetTypesStore.clearAssetTypes(); assetsStore.clearAssets(); accountsStore.clearAccounts(); currenciesStore.clearCurrencies();
-        this.fees = []; this.strategies = []; riskSettingsStore.clearRiskSettings(); modalitiesStore.clearModalities();
+        this.strategies = []; riskSettingsStore.clearRiskSettings(); modalitiesStore.clearModalities();
         this.emotionalStates = []; this.tags = []; indicatorsStore.clearIndicators(); timeframesStore.clearTimeframes();
         chartTypesStore.clearChartTypes();
     }

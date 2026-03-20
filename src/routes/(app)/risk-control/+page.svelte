@@ -46,6 +46,10 @@
         ? accountsStore.accounts.find(a => a.id === activeProfile?.linked_account_id)?.currency || 'USD'
         : settingsStore.userProfile.main_currency || 'USD'
     );
+
+    let activePhase = $derived(growthContext?.growthPhase);
+    let ptcLoss = $derived(Math.min((dailyDrawdown / (activeProfile?.max_daily_loss || 1)) * 100, 100));
+    let isLossHot = $derived(ptcLoss > 80);
 </script>
 
 <div class="flex-1 flex flex-col space-y-8 p-4 md:p-8 animate-in fade-in duration-500">
@@ -150,8 +154,6 @@
                         </div>
                         
                         <div class="relative w-full h-12 bg-black/50 rounded-xl overflow-hidden border border-rose-500/30">
-                            {@const ptcLoss = Math.min((dailyDrawdown / (activeProfile.max_daily_loss || 1)) * 100, 100)}
-                            {@const isLossHot = ptcLoss > 80}
                             <div class="absolute top-0 left-0 h-full transition-all duration-1000 flex items-center justify-end px-4 {isLossHot ? 'bg-rose-500 animate-pulse' : 'bg-rose-500/80'}" style="width: {ptcLoss}%">
                                 {#if ptcLoss > 15}<span class="text-[14px] font-black font-mono text-white/90 drop-shadow-md">{ptcLoss.toFixed(0)}%</span>{/if}
                             </div>
@@ -207,7 +209,7 @@
                         </div>
                         <div class="text-right space-y-1">
                             <p class="text-[10px] uppercase font-black tracking-widest text-emerald-600/70">Alvo (Meta)</p>
-                            <h3 class="text-3xl font-mono font-black text-emerald-500 tracking-tighter">{formatCurrency(activePhase?.profit_target || 0, currencyCode)}</h3>
+                            <h3 class="text-3xl font-mono font-black text-emerald-500 tracking-tighter">{formatCurrency(activePhase?.profit_goal || 0, currencyCode)}</h3>
                         </div>
                     </div>
 
@@ -261,7 +263,7 @@
                         A sua prioridade máxima agora é proteger a sua conta de quebrar. Feche a plataforma. Volte amanhã com a mente fresca, o dia operacional atingiu a estafa técnica.
                     {:else if mainStatus === 'caution'}
                         Você está muito perto de tomar um stop global. Reduza agressivamente o lote neste próximo trade. Se você tomar outro loss, encerre o dia preventivamente.
-                    {:else if cockpit?.dailyRiskStatus.dailyPnL && (cockpit.dailyRiskStatus.dailyPnL) > ((activePhase?.profit_target || 0) * 0.7) && (activePhase?.profit_target || 0) > 0}
+                    {:else if cockpit?.dailyRiskStatus.dailyPnL && (cockpit.dailyRiskStatus.dailyPnL) > ((activePhase?.profit_goal || 0) * 0.7) && (activePhase?.profit_goal || 0) > 0}
                         Atenção: Você assegurou mais de 70% da meta global do seu estágio de crescimento! O maior risco agora é a ganância devolver seu lucro de dias. Considere fechar a plataforma.
                     {:else}
                         Suas métricas térmicas estão absolutamente frias. O seu emocional deve focar apenas em executar as premissas do plano, sem pensar no dinheiro. Vá em frente.

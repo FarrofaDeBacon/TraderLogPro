@@ -1,14 +1,7 @@
-import { marketsStore } from "$lib/stores/markets.svelte";
-import { chartTypesStore } from "$lib/stores/chart-types.svelte";
-import { accountsStore } from "$lib/stores/accounts.svelte";
-import { assetsStore } from "$lib/stores/assets.svelte";
-import { currenciesStore } from "$lib/stores/currencies.svelte";
-import { timeframesStore } from "$lib/stores/timeframes.svelte";
-import { indicatorsStore } from "$lib/stores/indicators.svelte";
-import { assetTypesStore } from "$lib/stores/asset-types.svelte";
-import { modalitiesStore } from "$lib/stores/modalities.svelte";
-import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { settingsStore } from './settings.svelte';
+import { riskSettingsStore } from './risk-settings.svelte';
+import { assetsStore } from './assets.svelte';
 import { accountsStore } from './accounts.svelte';
 import { currenciesStore } from './currencies.svelte';
 import { marketsStore } from './markets.svelte';
@@ -17,9 +10,6 @@ import { modalitiesStore } from './modalities.svelte';
 import { timeframesStore } from './timeframes.svelte';
 import { chartTypesStore } from './chart-types.svelte';
 import { indicatorsStore } from './indicators.svelte';
-import { settingsStore } from './settings.svelte';
-import { riskSettingsStore } from './risk-settings.svelte';
-import { assetsStore } from './assets.svelte';
 
 // Mock Tauri
 vi.mock('@tauri-apps/api/core', () => ({

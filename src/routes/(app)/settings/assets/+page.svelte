@@ -202,7 +202,7 @@
     async function confirmDelete() {
         if (deleteId) {
             console.log("Confirming delete for:", deleteId);
-            const result = await assetsStore.deleteAsset(deleteId);
+            const result = await assetsStore.deleteAsset(deleteId, settingsStore.strategies);
             if (!result.success) {
                 console.error("Delete failed:", result.error);
                 toast.error(result.error || $t("general.error"));
@@ -262,7 +262,7 @@
             </div>
         {:else if Object.keys(groupedAssets).length > 0}
             {#each Object.entries(groupedAssets) as [typeId, assets]}
-                {@const typeCode = settingsStore.getAssetTypeCode(typeId)}
+                {@const typeCode = assetTypesStore.getAssetTypeName(typeId)}
                 {@const style = getAssetTypeStyle(typeCode)}
                 {@const Icon = style.icon}
 
@@ -333,7 +333,7 @@
                                                     variant="secondary"
                                                     class="text-[10px] h-5 px-1.5 font-normal border-primary/20"
                                                 >
-                                                    {settingsStore.getAssetTypeCode(
+                                                    {assetTypesStore.getAssetTypeName(
                                                         asset.asset_type_id,
                                                     )}
                                                 </Badge>
@@ -522,7 +522,7 @@
                         bind:value={formData.asset_type_id}
                     >
                         <Select.Trigger class="w-full">
-                            {settingsStore.getAssetTypeCode(
+                            {assetTypesStore.getAssetTypeName(
                                 formData.asset_type_id,
                             ) ||
                                 $t(
