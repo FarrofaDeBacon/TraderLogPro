@@ -554,22 +554,20 @@
                                 </Label>
                             </div>
                             
-                            <Select.Root
-                                type="single"
-                                bind:value={selectedGrowthPlan}
-                            >
-                                <Select.Trigger class="w-full">
-                                    {selectedGrowthPlan !== "none"
-                                        ? settingsStore.growthPlans.find(p => p.id === selectedGrowthPlan)?.name ?? "Desconhecido"
-                                        : "Nenhum plano vinculado (Fixo)"}
-                                </Select.Trigger>
-                                <Select.Content class="z-[9999]">
-                                    <Select.Item value="none" label="Nenhum plano vinculado (Fixo)">Nenhum plano vinculado (Fixo)</Select.Item>
+                            <div class="relative w-full">
+                                <select
+                                    bind:value={selectedGrowthPlan}
+                                    class="flex h-9 w-full appearance-none rounded-md border border-input bg-background/50 px-3 py-1 pr-8 text-sm shadow-sm transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-950 dark:text-zinc-50"
+                                >
+                                    <option value="none" class="bg-background text-foreground py-2">Nenhum plano vinculado (Fixo)</option>
                                     {#each settingsStore.growthPlans as plan}
-                                        <Select.Item value={plan.id} label={plan.name}>{plan.name}</Select.Item>
+                                        <option value={plan.id} class="bg-background text-foreground py-2">{plan.name}</option>
                                     {/each}
-                                </Select.Content>
-                            </Select.Root>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted-foreground">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
