@@ -118,19 +118,19 @@ describe('SettingsStore Unit Tests', () => {
         const uuidSpy = vi.spyOn(crypto, 'randomUUID').mockReturnValue('mock-uuid' as any);
 
         // Test Mini Index (WIN)
-        settingsStore.ensureAssetExists('WINJ24');
+        assetsStore.ensureAssetExists('WINJ24');
         let asset = assetsStore.assets.find(a => a.symbol === 'WINJ24');
         expect(asset).toBeDefined();
         expect(asset?.asset_type_id).toBe('type_index');
         expect(asset?.point_value).toBe(0.20);
 
         // Test Mini Dollar (WDO)
-        settingsStore.ensureAssetExists('WDOK24');
+        assetsStore.ensureAssetExists('WDOK24');
         asset = assetsStore.assets.find(a => a.symbol === 'WDOK24');
         expect(asset?.point_value).toBe(10.0);
 
         // Test Stocks (PETR4)
-        settingsStore.ensureAssetExists('PETR4');
+        assetsStore.ensureAssetExists('PETR4');
         asset = assetsStore.assets.find(a => a.symbol === 'PETR4');
         expect(asset?.asset_type_id).toBe('type_stock');
         expect(asset?.point_value).toBe(1.0);
@@ -186,7 +186,7 @@ describe('SettingsStore Unit Tests', () => {
         };
 
         it('returns null if profile does not exist (TESTE A1)', async () => {
-            const result = await settingsStore.duplicateRiskProfile('non-existent');
+            const result = await riskSettingsStore.duplicateRiskProfile('non-existent');
             expect(result).toBeNull();
         });
 
@@ -194,7 +194,7 @@ describe('SettingsStore Unit Tests', () => {
             const { originalProfileId } = setupStore();
             const originalLength = riskSettingsStore.riskProfiles.length;
             
-            const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
+            const newId = await riskSettingsStore.duplicateRiskProfile(originalProfileId);
             
             expect(newId).toBeTruthy();
             expect(newId).not.toBe(originalProfileId);
@@ -208,7 +208,7 @@ describe('SettingsStore Unit Tests', () => {
         it('preserves linked account and capital source (TESTE A3)', async () => {
             const { originalProfileId } = setupStore();
             
-            const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
+            const newId = await riskSettingsStore.duplicateRiskProfile(originalProfileId);
             const clonedProfile = riskSettingsStore.riskProfiles.find(p => p.id === newId);
             const originalProfile = riskSettingsStore.riskProfiles.find(p => p.id === originalProfileId);
             
@@ -219,7 +219,7 @@ describe('SettingsStore Unit Tests', () => {
         it('deep clones growth phases with new ids and same content (TESTE A4)', async () => {
             const { originalProfileId } = setupStore();
             
-            const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
+            const newId = await riskSettingsStore.duplicateRiskProfile(originalProfileId);
             const clonedProfile = riskSettingsStore.riskProfiles.find(p => p.id === newId);
             const originalProfile = riskSettingsStore.riskProfiles.find(p => p.id === originalProfileId);
             
@@ -233,7 +233,7 @@ describe('SettingsStore Unit Tests', () => {
             const { originalProfileId, originalAssetProfileId } = setupStore();
             const originalAssetProfilesCount = riskSettingsStore.assetRiskProfiles.length;
             
-            const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
+            const newId = await riskSettingsStore.duplicateRiskProfile(originalProfileId);
             const clonedProfile = riskSettingsStore.riskProfiles.find(p => p.id === newId);
             
             expect(clonedProfile!.linked_asset_risk_profile_ids).toEqual([originalAssetProfileId]);
@@ -279,13 +279,13 @@ describe('SettingsStore Unit Tests', () => {
         };
 
         it('does nothing if base profile does not exist (TESTE B1)', () => {
-            const result = settingsStore.createRiskProfileTemplate('non-existent');
+            const result = riskSettingsStore.createRiskProfileTemplate('non-existent');
             expect(result).toBeNull();
         });
 
         it('clears linked_account_id (TESTE B2)', () => {
             const { baseId } = setupStore();
-            const template = settingsStore.createRiskProfileTemplate(baseId);
+            const template = riskSettingsStore.createRiskProfileTemplate(baseId);
             
             expect(template).toBeDefined();
             expect(template!.linked_account_id).toBeNull();
@@ -293,7 +293,7 @@ describe('SettingsStore Unit Tests', () => {
 
         it('preserves capital_source (TESTE B3)', () => {
             const { baseId } = setupStore();
-            const template = settingsStore.createRiskProfileTemplate(baseId);
+            const template = riskSettingsStore.createRiskProfileTemplate(baseId);
             expect(template!.capital_source).toBe('LinkedAccount');
         });
 
@@ -301,7 +301,7 @@ describe('SettingsStore Unit Tests', () => {
             const { baseId, assetProfileId } = setupStore();
             const assetProfilesCount = riskSettingsStore.assetRiskProfiles.length;
             
-            const template = settingsStore.createRiskProfileTemplate(baseId);
+            const template = riskSettingsStore.createRiskProfileTemplate(baseId);
             
             expect(template!.linked_asset_risk_profile_ids).toEqual([assetProfileId]);
             expect(riskSettingsStore.assetRiskProfiles.length).toBe(assetProfilesCount);
@@ -310,7 +310,7 @@ describe('SettingsStore Unit Tests', () => {
         it('deep clones growth phases with new ids (TESTE B5)', () => {
             const { baseId } = setupStore();
             const original = riskSettingsStore.riskProfiles[0];
-            const template = settingsStore.createRiskProfileTemplate(baseId);
+            const template = riskSettingsStore.createRiskProfileTemplate(baseId);
             
             expect(template!.growth_phases).toBeDefined();
             expect(template!.growth_phases!.length).toBe(original.growth_phases!.length);
@@ -335,7 +335,7 @@ describe('SettingsStore Unit Tests', () => {
 
             const startingCount = riskSettingsStore.assetRiskProfiles.length;
 
-            settingsStore.updateAssetRiskProfile(sharedAssetProfileId, { default_stop_points: 200 });
+            riskSettingsStore.updateAssetRiskProfile(sharedAssetProfileId, { default_stop_points: 200 });
             
             expect(riskSettingsStore.assetRiskProfiles.length).toBe(startingCount);
             expect(riskSettingsStore.assetRiskProfiles.find(p => p.id === sharedAssetProfileId)?.default_stop_points).toBe(200);
@@ -373,7 +373,7 @@ describe('SettingsStore Unit Tests', () => {
                 linked_asset_risk_profile_ids: [sharedAssetProfileId],
                 }];
 
-            const newId = await settingsStore.duplicateRiskProfile(originalProfileId);
+            const newId = await riskSettingsStore.duplicateRiskProfile(originalProfileId);
             
             const original = riskSettingsStore.riskProfiles.find(p => p.id === originalProfileId);
             const copy = riskSettingsStore.riskProfiles.find(p => p.id === newId);
@@ -433,11 +433,11 @@ describe('SettingsStore Unit Tests', () => {
             const addMarketSpy = vi.spyOn(marketsStore, 'addMarket').mockImplementation(() => {});
             const addIndicatorSpy = vi.spyOn(indicatorsStore, 'addIndicator').mockImplementation(() => {});
 
-            settingsStore.addAsset({} as any);
-            settingsStore.addAccount({} as any);
-            settingsStore.addCurrency({} as any);
-            settingsStore.addMarket({} as any);
-            settingsStore.addIndicator({} as any);
+            assetsStore.addAsset({} as any);
+            accountsStore.addAccount({} as any);
+            currenciesStore.addCurrency({} as any);
+            marketsStore.addMarket({} as any);
+            indicatorsStore.addIndicator({} as any);
 
             expect(addAssetSpy).toHaveBeenCalledOnce();
             expect(addAccountSpy).toHaveBeenCalledOnce();
@@ -462,7 +462,7 @@ describe('SettingsStore Unit Tests', () => {
             currenciesStore.currencies = [{ id: 'cur:BRL', code: 'BRL', name: '', symbol: '' }];
             accountsStore.accounts = [{ id: 'acc:1', currency_id: 'cur:BRL', currency: 'cur:BRL' }] as any;
 
-            const res = await settingsStore.deleteCurrency('cur:BRL');
+            const res = await currenciesStore.deleteCurrency('cur:BRL');
             expect(res.success).toBe(false);
             expect(currenciesStore.currencies.length).toBe(1); 
         });
@@ -471,7 +471,7 @@ describe('SettingsStore Unit Tests', () => {
             marketsStore.markets = [{ id: 'mkt:B3', code: 'B3', name: '', country: '' }];
             assetTypesStore.assetTypes = [{ id: 'type:1', market_id: 'mkt:B3' }] as any;
             
-            let res = await settingsStore.deleteMarket('mkt:B3');
+            let res = await marketsStore.deleteMarket('mkt:B3');
             expect(res.success).toBe(false);
         });
 
@@ -479,7 +479,7 @@ describe('SettingsStore Unit Tests', () => {
             assetTypesStore.assetTypes = [{ id: 'type:STK', code: 'STK', name: '', market_id: '', has_expiration: false, tax_profile_id: '' }];
             assetsStore.assets = [{ id: 'ast:PETR4', asset_type_id: 'type:STK' }] as any;
 
-            const res = await settingsStore.deleteAssetType('type:STK');
+            const res = await assetTypesStore.deleteAssetType('type:STK');
             expect(res.success).toBe(false);
         });
 

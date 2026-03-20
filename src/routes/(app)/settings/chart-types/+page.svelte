@@ -86,9 +86,9 @@
 
     function save(data: Omit<ChartType, "id">) {
         if (editingItem) {
-            settingsStore.updateChartType(editingItem.id, data);
+            chartTypesStore.updateChartType(editingItem.id, data);
         } else {
-            settingsStore.addChartType(data);
+            chartTypesStore.addChartType(data);
         }
         isDialogOpen = false;
     }
@@ -100,7 +100,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteChartType(deleteId);
+            const result = await chartTypesStore.deleteChartType(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {

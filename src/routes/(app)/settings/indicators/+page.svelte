@@ -98,9 +98,9 @@
 
     function save(data: Omit<Indicator, "id">) {
         if (editingItem) {
-            settingsStore.updateIndicator(editingItem.id, data);
+            indicatorsStore.updateIndicator(editingItem.id, data);
         } else {
-            settingsStore.addIndicator(data);
+            indicatorsStore.addIndicator(data);
         }
         isDialogOpen = false;
     }
@@ -112,7 +112,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteIndicator(deleteId);
+            const result = await indicatorsStore.deleteIndicator(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {

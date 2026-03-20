@@ -112,7 +112,7 @@
             else if (item.symbol.startsWith("DOL")) pointValue = 50.0;
             else if (item.symbol.startsWith("IND")) pointValue = 1.0;
 
-            await settingsStore.addAsset(
+            await assetsStore.addAsset(
                 {
                     symbol: item.symbol.toUpperCase(),
                     name:

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
   import { assetTypesStore } from "$lib/stores/asset-types.svelte";
   import { accountsStore } from "$lib/stores/accounts.svelte";
   import { assetsStore } from "$lib/stores/assets.svelte";
@@ -678,7 +679,7 @@
             assetTypes[0];
         const account = selectedAccount;
         const currencySymbol = account
-            ? settingsStore.getCurrencySymbol(account.currency)
+            ? currenciesStore.getCurrencySymbol(account.currency)
             : "R$";
 
         const pointValue = (() => {

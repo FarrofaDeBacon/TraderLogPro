@@ -30,12 +30,12 @@
 
     onMount(() => {
         // Initial sync on mount
-        settingsStore.syncExchangeRates();
+        currenciesStore.syncExchangeRates();
 
         // Auto-refresh every 2 minutes (120000ms)
         const interval = setInterval(() => {
             console.log("[CurrencyTicker] Background Auto-Sync starting...");
-            settingsStore.syncExchangeRates();
+            currenciesStore.syncExchangeRates();
         }, 120000);
 
         return () => clearInterval(interval);

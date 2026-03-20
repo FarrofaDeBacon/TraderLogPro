@@ -43,9 +43,9 @@
 
     function save() {
         if (editingId) {
-            settingsStore.updateModality(editingId, formModality);
+            modalitiesStore.updateModality(editingId, formModality);
         } else {
-            settingsStore.addModality(formModality);
+            modalitiesStore.addModality(formModality);
         }
         isDialogOpen = false;
     }
@@ -57,7 +57,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteModality(deleteId);
+            const result = await modalitiesStore.deleteModality(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {

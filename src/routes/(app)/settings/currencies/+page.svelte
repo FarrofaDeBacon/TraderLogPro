@@ -59,9 +59,9 @@
 
     function saveCurrency() {
         if (editingId) {
-            settingsStore.updateCurrency(editingId, formData);
+            currenciesStore.updateCurrency(editingId, formData);
         } else {
-            settingsStore.addCurrency(formData);
+            currenciesStore.addCurrency(formData);
         }
         isDialogOpen = false;
     }
@@ -73,7 +73,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteCurrency(deleteId);
+            const result = await currenciesStore.deleteCurrency(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {
@@ -85,7 +85,7 @@
 
     async function handleSync() {
         isSyncing = true;
-        const result = await settingsStore.syncExchangeRates();
+        const result = await currenciesStore.syncExchangeRates();
         if (result?.success) {
             toast.success(`Sincronizado! ${result.count} moedas atualizadas.`);
         } else {

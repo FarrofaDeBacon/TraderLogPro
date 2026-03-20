@@ -30,7 +30,7 @@
                 ...activeProfile.desk_config,
                 current_stage_index: currentIndex + 1
             };
-            settingsStore.updateRiskProfile(activeProfile.id, { desk_config: newDeskConfig });
+            riskSettingsStore.updateRiskProfile(activeProfile.id, { desk_config: newDeskConfig });
             toast.success("Parabéns! Estágio da Mesa Avançado com Sucesso!");
         }
     }

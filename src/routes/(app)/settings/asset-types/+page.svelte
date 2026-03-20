@@ -38,7 +38,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteAssetType(deleteId);
+            const result = await assetTypesStore.deleteAssetType(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {
@@ -70,9 +70,9 @@
 
     function save() {
         if (editingId) {
-            settingsStore.updateAssetType(editingId, formData);
+            assetTypesStore.updateAssetType(editingId, formData);
         } else {
-            settingsStore.addAssetType(formData);
+            assetTypesStore.addAssetType(formData);
         }
         isDialogOpen = false;
     }

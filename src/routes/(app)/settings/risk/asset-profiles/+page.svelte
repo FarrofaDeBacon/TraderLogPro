@@ -97,7 +97,7 @@
     // Ações assíncronas
     async function handleDeleteConfirm() {
         if (!deleteId) return;
-        const res = await settingsStore.deleteAssetRiskProfile(deleteId);
+        const res = await riskSettingsStore.deleteAssetRiskProfile(deleteId);
         if (res.success) {
             toast.success($t("general.saveSuccess") || "Perfil excluído com sucesso.");
         } else {
@@ -131,9 +131,9 @@
         }
 
         if (editingId) {
-            settingsStore.updateAssetRiskProfile(editingId, formData);
+            riskSettingsStore.updateAssetRiskProfile(editingId, formData);
         } else {
-            settingsStore.addAssetRiskProfile(formData);
+            riskSettingsStore.addAssetRiskProfile(formData);
         }
 
         isDialogOpen = false;

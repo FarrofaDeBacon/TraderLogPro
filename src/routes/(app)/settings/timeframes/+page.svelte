@@ -36,9 +36,9 @@
 
     function save(data: Omit<Timeframe, "id">) {
         if (editingItem) {
-            settingsStore.updateTimeframe(editingItem.id, data);
+            timeframesStore.updateTimeframe(editingItem.id, data);
         } else {
-            settingsStore.addTimeframe(data);
+            timeframesStore.addTimeframe(data);
         }
         isDialogOpen = false;
     }
@@ -50,7 +50,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteTimeframe(deleteId);
+            const result = await timeframesStore.deleteTimeframe(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {

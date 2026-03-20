@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { currenciesStore } from "$lib/stores/currencies.svelte";
     import {
         Plus,
         Pencil,
@@ -145,7 +146,7 @@
 
     async function handleSync() {
         isSyncing = true;
-        const result = await settingsStore.syncExchangeRates();
+        const result = await currenciesStore.syncExchangeRates();
         if (result?.success) {
             toast.success(
                 $t("settings.api.integrations.currency.successSync", {

@@ -157,7 +157,7 @@
 
 
     function applyTemplate(id: string) {
-        const template = settingsStore.createRiskProfileTemplate(id);
+        const template = riskSettingsStore.createRiskProfileTemplate(id);
         if (template) {
             formData = template;
         }

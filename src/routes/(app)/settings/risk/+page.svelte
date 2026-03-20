@@ -47,9 +47,9 @@
 
     function save(data: Omit<RiskProfile, "id">) {
         if (editingItem) {
-            settingsStore.updateRiskProfile(editingItem.id, data);
+            riskSettingsStore.updateRiskProfile(editingItem.id, data);
         } else {
-            settingsStore.addRiskProfile(data);
+            riskSettingsStore.addRiskProfile(data);
         }
         isDialogOpen = false;
     }
@@ -61,7 +61,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteRiskProfile(deleteId);
+            const result = await riskSettingsStore.deleteRiskProfile(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {
@@ -192,7 +192,7 @@
                             title={$t("settings.risk.management.duplicate") || "Duplicar Perfil"}
                             onclick={async (e) => {
                                 e.stopPropagation();
-                                const newId = await settingsStore.duplicateRiskProfile(profile.id);
+                                const newId = await riskSettingsStore.duplicateRiskProfile(profile.id);
                                 if (newId) toast.success("Perfil duplicado com sucesso!");
                             }}
                         >

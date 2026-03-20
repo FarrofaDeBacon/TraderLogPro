@@ -132,9 +132,9 @@
 
     function save() {
         if (editingId) {
-            settingsStore.updateMarket(editingId, formMarket);
+            marketsStore.updateMarket(editingId, formMarket);
         } else {
-            settingsStore.addMarket(formMarket);
+            marketsStore.addMarket(formMarket);
         }
         isDialogOpen = false;
     }
@@ -146,7 +146,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            await settingsStore.deleteMarket(deleteId);
+            await marketsStore.deleteMarket(deleteId);
             toast.success($t("general.deleteSuccess"));
             deleteId = null;
         }

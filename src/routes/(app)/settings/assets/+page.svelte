@@ -187,9 +187,9 @@
         };
 
         if (editingId) {
-            await settingsStore.updateAsset(editingId, dataToSave);
+            await assetsStore.updateAsset(editingId, dataToSave);
         } else {
-            await settingsStore.addAsset(dataToSave);
+            await assetsStore.addAsset(dataToSave);
         }
         isDialogOpen = false;
     }
@@ -202,7 +202,7 @@
     async function confirmDelete() {
         if (deleteId) {
             console.log("Confirming delete for:", deleteId);
-            const result = await settingsStore.deleteAsset(deleteId);
+            const result = await assetsStore.deleteAsset(deleteId);
             if (!result.success) {
                 console.error("Delete failed:", result.error);
                 toast.error(result.error || $t("general.error"));

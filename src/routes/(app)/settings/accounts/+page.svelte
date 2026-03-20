@@ -100,9 +100,9 @@
         isProcessing = true;
         try {
             if (editingId) {
-                settingsStore.updateAccount(editingId, formData);
+                accountsStore.updateAccount(editingId, formData);
             } else {
-                settingsStore.addAccount(formData);
+                accountsStore.addAccount(formData);
             }
             isDialogOpen = false;
         } finally {
@@ -119,7 +119,7 @@
         if (deleteId && !isProcessing) {
             isProcessing = true;
             try {
-                const result = await settingsStore.deleteAccount(deleteId);
+                const result = await accountsStore.deleteAccount(deleteId);
                 if (result.success) {
                     toast.success($t("general.deleteSuccess"));
                     isDeleteOpen = false;
@@ -453,7 +453,7 @@
                     <span
                         class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-bold"
                     >
-                        {settingsStore.getCurrencySymbol(formData.currency)}
+                        {currenciesStore.getCurrencySymbol(formData.currency)}
                     </span>
                     <Input
                         type="number"
