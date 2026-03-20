@@ -450,7 +450,8 @@
         <!-- TAB 2: PERFIS DE ATIVO                             -->
         <!-- ═══════════════════════════════════════════════════ -->
         <Tabs.Content value="asset-profiles" class="space-y-3 pt-2">
-            <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
+            {#if activeTab === "asset-profiles"}
+                <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
                 <div class="flex items-center justify-between">
                     <h3 class="flex items-center gap-2 font-bold text-muted-foreground">
                         <Link class="w-4 h-4" />
@@ -511,14 +512,15 @@
                     </div>
                 </div>
             </div>
+            {/if}
         </Tabs.Content>
 
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- TAB 3: REGRAS DO PLANO                             -->
         <!-- ═══════════════════════════════════════════════════ -->
         <Tabs.Content value="rules" class="space-y-4 pt-2">
-
-            <!-- SUB-BLOCK B: Configuração da Mesa (Visual/Marcador apenas) -->
+            {#if activeTab === "rules"}
+                <!-- SUB-BLOCK B: Configuração da Mesa (Visual/Marcador apenas) -->
             <DeskConfigSection
                 bind:config={formData.desk_config}
                 availableAssetProfiles={settingsStore.assetRiskProfiles}
@@ -530,7 +532,8 @@
                     bind:rules={() => formData.risk_rules ?? [], (v) => formData.risk_rules = v}
                     assetRiskProfiles={settingsStore.assetRiskProfiles}
                 />
-            </div>
+                </div>
+            {/if}
         </Tabs.Content>
 
         <!-- ═══════════════════════════════════════════════════ -->
