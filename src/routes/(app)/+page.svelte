@@ -3,7 +3,6 @@
   import { t, locale } from "svelte-i18n";
   import { settingsStore } from "$lib/stores/settings.svelte";
   import { tradesStore } from "$lib/stores/trades.svelte";
-  import EChart from "$lib/components/ui/echart.svelte";
   import {
     Card,
     CardContent,
@@ -15,6 +14,7 @@
   import { Separator } from "$lib/components/ui/separator";
   import * as Dialog from "$lib/components/ui/dialog";
   import NewTradeWizard from "$lib/components/trades/NewTradeWizard.svelte";
+  import QuickLog from "$lib/components/trades/QuickLog.svelte";
   import CurrencyTicker from "$lib/components/finance/CurrencyTicker.svelte";
   import {
     TrendingUp,
@@ -31,13 +31,8 @@
     Wallet,
     Plus,
     Timer,
+    Brain,
   } from "lucide-svelte";
-  import { isSameDay } from "date-fns/isSameDay";
-  import { startOfMonth } from "date-fns/startOfMonth";
-  import { format } from "date-fns/format";
-  import { parseISO } from "date-fns/parseISO";
-  import PerformanceCalendar from "$lib/components/dashboard/PerformanceCalendar.svelte";
-  import { ptBR } from "date-fns/locale/pt-BR";
   import { cn, parseSafeDate } from "$lib/utils";
   import {
     Select,
@@ -51,8 +46,6 @@
   // --- State ---
   let selectedAccountId = $state<string>("all");
   let isNewTradeOpen = $state(false);
-  let isDailyDetailOpen = $state(false);
-  let selectedDateForDetail = $state<Date | null>(null);
 
   const filteredTrades = $derived.by(() => {
     let trades = tradesStore.trades || [];
@@ -123,11 +116,6 @@
     return Math.min(Math.max((stats.net / (target || 1)) * 100, 0), 100);
   });
 
-  function handleDayClick(day: Date) {
-    selectedDateForDetail = day;
-    isDailyDetailOpen = true;
-  }
-
   function formatCurrency(val: number) {
     const mainCurrency = settingsStore.userProfile.main_currency || "BRL";
     return new Intl.NumberFormat($locale || "pt-BR", {
@@ -135,51 +123,6 @@
       currency: mainCurrency,
     }).format(val);
   }
-
-  // --- ECharts Clean Options ---
-  const equityOptions = $derived({
-    animation: true,
-    backgroundColor: "transparent",
-    tooltip: {
-      trigger: "axis",
-      textStyle: { fontFamily: "Inter", fontSize: 12 },
-    },
-    grid: { top: 10, right: 10, bottom: 30, left: 50 },
-    xAxis: {
-      type: "time",
-      axisLine: { lineStyle: { color: "rgba(255,255,255,0.15)" } },
-      axisLabel: { color: "#71717a", fontSize: 10 },
-    },
-    yAxis: {
-      type: "value",
-      splitLine: {
-        lineStyle: { color: "rgba(255,255,255,0.1)", type: "dashed" },
-      },
-      axisLabel: { color: "#71717a", fontSize: 10 },
-    },
-    series: [
-      {
-        data: stats.equity,
-        type: "line",
-        smooth: true,
-        symbol: "none",
-        lineStyle: { width: 3, color: "#10b981" }, // Keeping primary green for trend
-        areaStyle: {
-          color: {
-            type: "linear",
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: "rgba(16, 185, 129, 0.15)" },
-              { offset: 1, color: "transparent" },
-            ],
-          },
-        },
-      },
-    ],
-  });
 </script>
 
 {#if settingsStore.isLoadingData}
@@ -268,659 +211,119 @@
             {$t("dashboard.newTrade")}
           </Button>
         </div>
-      </div>
-
-      <!-- ELITE KPI LINE: 7 Professional Horizontal Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-4">
-        {#each [{ label: $t("general.balance") + " (Est.)", val: formatCurrency(totalBalanceBRL), icon: Wallet, color: "text-emerald-500", borderColor: "border-l-emerald-500" }, { label: $t("dashboard.kpis.netResult"), val: formatCurrency(stats.net), icon: TrendingUp, color: stats.net >= 0 ? "text-emerald-500" : "text-rose-500", borderColor: stats.net >= 0 ? "border-l-emerald-500" : "border-l-rose-500" }, { label: $t("dashboard.kpis.winRate"), val: `${stats.winRate.toFixed(1)}%`, icon: Trophy, color: "text-blue-500", borderColor: "border-l-blue-500" }, { label: $t("dashboard.kpis.profitFactor"), val: stats.profitFactor.toFixed(2), icon: Activity, color: "text-amber-500", borderColor: "border-l-amber-500" }, { label: $t("dashboard.kpis.discipline"), val: `${stats.discipline.toFixed(0)}%`, icon: Zap, color: "text-indigo-500", borderColor: "border-l-indigo-500" }, { label: $t("dashboard.kpis.payoff"), val: stats.payoff.toFixed(2), icon: ArrowUpRight, color: "text-cyan-400", borderColor: "border-l-cyan-400" }, { label: $t("dashboard.kpis.maxDrawdown"), val: `${(stats.drawdown || 0).toFixed(1)}%`, icon: Activity, color: "text-rose-500", borderColor: "border-l-rose-500" }] as kpi}
-          {@const Icon = kpi.icon}
-          <Card class="card-glass border-l-2 {kpi.borderColor}">
-            <CardContent class="py-0.5 px-2.5">
-              <div class="flex items-center justify-between space-y-0">
-                <span
-                  class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60 leading-none"
-                  >{kpi.label}</span
-                >
-                <Icon class={cn("w-3 h-3", kpi.color)} />
-              </div>
-              <div class="mt-0">
-                <h3
-                  class="text-base font-mono font-bold text-foreground tabular-nums tracking-tight leading-none"
-                >
-                  {kpi.val}
-                </h3>
-              </div>
-            </CardContent>
-          </Card>
-        {/each}
-      </div>
-
-      <Separator />
-
-      <div class="grid gap-4 lg:grid-cols-12 mt-2">
-        <!-- Left Analytical Hub (8 Cols) -->
-        <div class="col-span-full lg:col-span-8 space-y-2">
-          <!-- Unified Survivor Control Center -->
-          {#if activePlan?.enabled}
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-between">
-                <h4
-                  class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest pl-1 flex items-center gap-2"
-                >
-                  <Zap class="w-3 h-3 text-emerald-500 fill-emerald-500/20" />
-                  {$t("dashboard.survivor.title")}
-                </h4>
-
-                <div class="flex items-center gap-2.5">
-                  <div class="flex items-center gap-2">
-                    <p class="text-xs font-medium text-muted-foreground/80">
-                      {$t("dashboard.survivor.activePlan")}
-                    </p>
-                    <Select
-                      type="single"
-                      value={activeProfile?.id}
-                      onValueChange={(val: string) =>
-                        settingsStore.setActiveRiskProfile(val)}
-                    >
-                      <SelectTrigger
-                        class="w-[150px] h-8 text-xs font-medium bg-emerald-500/5 border-emerald-500/20 text-emerald-500"
-                      >
-                        <div class="flex items-center gap-2">
-                          <ShieldCheck class="w-3 h-3 shrink-0" />
-                          <span class="truncate"
-                            >{activeProfile?.name ||
-                              $t("dashboard.survivor.select")}</span
-                          >
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {#each settingsStore.riskProfiles as profile}
-                          <SelectItem value={profile.id}
-                            >{profile.name}</SelectItem
-                          >
-                        {/each}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Separator orientation="vertical" class="h-4" />
-
-                  <div class="flex items-center gap-1.5">
-                    <span
-                      class="text-[9px] font-bold text-muted-foreground/60 uppercase"
-                      >{$t("dashboard.survivor.operationalStatus")}</span
-                    >
-                    {#if stats.dayResult <= -(activePhase?.max_daily_loss || 0) && (activePhase?.max_daily_loss ?? 0) > 0}
-                      <Badge
-                        variant="outline"
-                        class="bg-rose-500/10 text-rose-500 border-rose-500/20 text-[9px] font-black uppercase tracking-tighter"
-                        >{$t("dashboard.survivor.statusBlocked")}</Badge
-                      >
-                    {:else if stats.dayResult <= -(activePhase?.max_daily_loss || 0) * 0.7 && (activePhase?.max_daily_loss ?? 0) > 0}
-                      <Badge
-                        variant="outline"
-                        class="bg-orange-500/10 text-orange-500 border-orange-500/20 text-[9px] font-black uppercase tracking-tighter"
-                        >{$t("dashboard.survivor.statusRisk")}</Badge
-                      >
-                    {:else}
-                      <Badge
-                        variant="outline"
-                        class="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[9px] font-black uppercase tracking-tighter"
-                        >{$t("dashboard.survivor.statusAlpha")}</Badge
-                      >
-                    {/if}
-                  </div>
-
-                  <Separator orientation="vertical" class="h-3" />
-
-                  <!-- Phase Roadmap -->
-                  <div class="flex items-center gap-1.5">
-                    {#each activePlan?.phases || [] as phase, i}
-                      <div class="flex items-center">
-                        <div
-                          class={cn(
-                            "w-1.5 h-1.5 rounded-full transition-all duration-300",
-                            i === activePlan?.current_phase_index
-                              ? "bg-emerald-500 scale-125 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                              : i < (activePlan?.current_phase_index || 0)
-                                ? "bg-emerald-500/40"
-                                : "bg-zinc-800",
-                          )}
-                        ></div>
-                        {#if i < (activePlan?.phases?.length || 0) - 1}
-                          <div
-                            class={cn(
-                              "w-3 h-[1px]",
-                              i < (activePlan?.current_phase_index || 0)
-                                ? "bg-emerald-500/40"
-                                : "bg-zinc-800",
-                            )}
-                          ></div>
-                        {/if}
-                      </div>
-                    {/each}
-                  </div>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 xl:grid-cols-5 gap-2.5">
-                <!-- Card 1: Growth Engine (Span 3) -->
-                <Card class="xl:col-span-4 card-glass overflow-hidden">
-                  <CardContent class="p-0">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-0">
-                      <!-- SubCol 1: Current Phase -->
-                      <div
-                        class="py-0.5 px-2.5 border-r border-border/10 space-y-1"
-                      >
-                        <div class="flex items-center justify-between">
-                          <span
-                            class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50"
-                            >{$t("dashboard.survivor.currentPhase")}</span
-                          >
-                          <span
-                            class="text-[9px] font-mono font-bold text-emerald-400"
-                            >{growthProgress.toFixed(0)}%</span
-                          >
-                        </div>
-                        <h3
-                          class="font-black text-foreground uppercase tracking-tight text-xs truncate"
-                        >
-                          {activePhase?.name}
-                        </h3>
-                        <div
-                          class="h-1 bg-zinc-800 rounded-full overflow-hidden"
-                        >
-                          <div
-                            class="h-full bg-emerald-500 transition-all duration-700"
-                            style="width: {growthProgress}%"
-                          ></div>
-                        </div>
-                      </div>
-
-                      <!-- SubCol 2: Day Progress -->
-                      <div
-                        class="py-0.5 px-2.5 border-r border-border/10 space-y-1"
-                      >
-                        <div class="flex items-center justify-between">
-                          <span
-                            class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50"
-                            >{$t("dashboard.survivor.dailyEvolution")}</span
-                          >
-                          <span
-                            class="text-[9px] font-bold {stats.dayResult >= 0
-                              ? 'text-emerald-500'
-                              : 'text-rose-500'}"
-                          >
-                            {activeProfile?.daily_target > 0
-                              ? (
-                                  (stats.dayResult /
-                                    activeProfile.daily_target) *
-                                  100
-                                ).toFixed(0)
-                              : 0}%
-                          </span>
-                        </div>
-                        <div class="flex items-center justify-between h-4">
-                          <span
-                            class="text-[11px] font-mono font-bold tabular-nums {stats.dayResult >=
-                            0
-                              ? 'text-emerald-400'
-                              : 'text-rose-400'}"
-                          >
-                            {formatCurrency(stats.dayResult)}
-                          </span>
-                          <span
-                            class="text-[9px] text-muted-foreground/50 font-medium"
-                            >{$t("dashboard.survivor.target")}{formatCurrency(
-                              activeProfile?.daily_target || 0,
-                            )}</span
-                          >
-                        </div>
-                        <div
-                          class="h-1 bg-zinc-800 rounded-full overflow-hidden"
-                        >
-                          <div
-                            class={cn(
-                              "h-full transition-all duration-700",
-                              stats.dayResult >= 0
-                                ? "bg-emerald-500"
-                                : "bg-rose-500",
-                            )}
-                            style="width: {Math.min(
-                              activeProfile?.daily_target > 0
-                                ? (Math.abs(stats.dayResult) /
-                                    activeProfile.daily_target) *
-                                    100
-                                : 0,
-                              100,
-                            )}%"
-                          ></div>
-                        </div>
-                      </div>
-
-                      <!-- SubCol 3: Usage Counters -->
-                      <div
-                        class="py-0.5 px-2.5 border-r border-border/10 space-y-1"
-                      >
-                        <div class="flex justify-between items-center">
-                          <span
-                            class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50"
-                            >{$t("dashboard.survivor.tradesUsage")}</span
-                          >
-                          <span
-                            class="text-[9px] font-mono font-bold {stats.tradesToday >=
-                            (activeProfile?.max_trades_per_day || 0)
-                              ? 'text-amber-500'
-                              : 'text-emerald-500'}"
-                          >
-                            {stats.tradesToday}/{activeProfile?.max_trades_per_day ||
-                              0}
-                          </span>
-                        </div>
-                        <div class="flex items-center gap-1">
-                          {#each Array(activeProfile?.max_trades_per_day || 3) as _, i}
-                            <div
-                              class={cn(
-                                "h-1 flex-1 rounded-full",
-                                i < stats.tradesToday
-                                  ? stats.tradesToday >
-                                    (activeProfile?.max_trades_per_day || 0)
-                                    ? "bg-rose-500"
-                                    : "bg-emerald-600"
-                                  : "bg-zinc-800/80",
-                              )}
-                            ></div>
-                          {/each}
-                        </div>
-                        <div class="flex justify-between items-center">
-                          <span
-                            class="text-[9px] font-bold uppercase text-muted-foreground/40"
-                            >{$t("dashboard.survivor.avgRFactor")}</span
-                          >
-                          <span
-                            class="text-[10px] font-mono font-bold tabular-nums {stats.avgRFactor >=
-                            (activeProfile?.min_risk_reward || 1)
-                              ? 'text-emerald-500'
-                              : 'text-amber-500'}"
-                          >
-                            {stats.avgRFactor.toFixed(2)}R
-                          </span>
-                        </div>
-                      </div>
-
-                      <!-- SubCol 4: Next Level Roadmap -->
-                      <div class="py-0.5 px-2.5 space-y-1">
-                        <p
-                          class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50 flex items-center gap-1.5"
-                        >
-                          <Trophy class="w-2.5 h-2.5 text-amber-500" />
-                          {$t("dashboard.survivor.roadmapProgress")}
-                        </p>
-                        <div class="flex flex-col gap-1">
-                          {#each activePhase?.progression_rules || [] as rule}
-                            <div class="flex items-center justify-between">
-                              <span
-                                class="text-[9px] font-medium text-muted-foreground/60"
-                              >
-                                {rule.condition === "profit_target"
-                                  ? $t("dashboard.survivor.pnl")
-                                  : $t("dashboard.survivor.consistency")}:
-                              </span>
-                              <span
-                                class="text-[9px] font-black text-foreground tabular-nums"
-                              >
-                                {rule.condition === "profit_target"
-                                  ? formatCurrency(rule.value)
-                                  : `${rule.value}d`}
-                              </span>
-                            </div>
-                          {/each}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <!-- Card 2: Risk Monitor (Survivor Focus) -->
-                <Card class="card-glass overflow-hidden">
-                  <CardContent class="p-0 flex flex-col h-full">
-                    <div
-                      class="py-0.5 px-2.5 flex-1 border-b border-border/10 space-y-0.5"
-                    >
-                      <div class="flex items-center justify-between">
-                        <span
-                          class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50 flex items-center gap-1.5"
-                        >
-                          <ShieldCheck class="w-2.5 h-2.5 text-rose-500" />
-                          {$t("dashboard.survivor.riskMonth")}
-                        </span>
-                        <span class="text-[9px] font-bold text-rose-500"
-                          >6% {$t("dashboard.survivor.limit")}</span
-                        >
-                      </div>
-                      <div class="flex items-center justify-between">
-                        <span
-                          class="text-[11px] font-mono font-bold tabular-nums"
-                        >
-                          {(
-                            (Math.abs(stats.monthResult) /
-                              (selectedAccount?.balance || 10000)) *
-                            100
-                          ).toFixed(1)}%
-                        </span>
-                        <div
-                          class="flex-1 max-w-[40px] h-1 bg-zinc-800 rounded-full ml-2 overflow-hidden"
-                        >
-                          <div
-                            class="h-full bg-rose-500"
-                            style="width: {Math.min(
-                              (((Math.abs(stats.monthResult) /
-                                (selectedAccount?.balance || 10000)) *
-                                100) /
-                                6) *
-                                100,
-                              100,
-                            )}%"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="py-0.5 px-2.5 flex-1 bg-emerald-500/5">
-                      <div class="flex items-center justify-between mb-1">
-                        <span
-                          class="text-[9px] font-black uppercase tracking-widest text-emerald-500/70 shrink-0"
-                          >{$t("dashboard.survivor.eligibility")}</span
-                        >
-                        <Badge
-                          variant="outline"
-                          class="h-4 px-1 text-[8px] bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
-                          >{$t("dashboard.survivor.greenZone")}</Badge
-                        >
-                      </div>
-                      <p
-                        class="text-[10px] font-black text-emerald-400 uppercase tracking-tighter"
-                      >
-                        {$t("dashboard.survivor.operateTrade")}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          {/if}
-
-          <!-- Equity Curve -->
-
-          <Card class="p-4 card-glass mb-4">
-            <div class="flex justify-between items-start mb-2">
-              <div class="flex items-center gap-3">
-                <div class="p-1 bg-emerald-500/10 rounded-lg">
-                  <TrendingUp class="w-3.5 h-3.5 text-emerald-500" />
-                </div>
-                <div>
-                  <h3
-                    class="text-xs font-bold text-foreground tracking-tight leading-none"
-                  >
-                    {$t("dashboard.charts.equity")}
-                  </h3>
-                  <p class="text-[11px] text-muted-foreground">
-                    {$t("dashboard.charts.equitySubtitle")}
-                  </p>
-                </div>
-              </div>
-              <div class="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  class="bg-emerald-500/10 text-emerald-500 border-none font-bold px-2 py-0.5 text-[9px] uppercase"
-                >
-                  {filteredTrades.filter((t) => t.result > 0).length}
-                  {$t("dashboard.charts.wins")}
-                </Badge>
-                <Badge
-                  variant="outline"
-                  class="bg-rose-500/10 text-rose-500 border-none font-bold px-2 py-0.5 text-[9px] uppercase"
-                >
-                  {filteredTrades.filter((t) => (t.result || 0) < 0).length}
-                  {$t("dashboard.charts.losses")}
-                </Badge>
-                <Badge
-                  variant="outline"
-                  class="bg-blue-500/10 text-blue-500 border-none font-bold px-2 py-0.5 text-[9px] uppercase"
-                >
-                  {$t("dashboard.charts.consistency")}
-                </Badge>
-              </div>
-            </div>
-            <div class="h-[280px] w-full">
-              <EChart options={equityOptions} />
-            </div>
-          </Card>
+      <!-- BLOCO 5 - Ações Rápidas & Quick Log -->
+      <div class="mb-4 bg-card/60 rounded-xl p-5 border border-border/60 shadow-sm">
+        <QuickLog />
+        <div class="mt-5 flex flex-col sm:flex-row gap-3 justify-end items-center border-t border-border/40 pt-4">
+          <Button variant="outline" size="sm" onclick={() => isNewTradeOpen = true} class="w-full sm:w-auto text-[10px] font-bold h-8 uppercase tracking-widest text-muted-foreground hover:text-foreground border-dashed">
+            Registro Detalhado (Wizard)
+          </Button>
+          <Button size="sm" href="/risk-control" class="w-full sm:w-auto bg-indigo-600/10 text-indigo-500 hover:bg-indigo-600/20 border border-indigo-500/20 text-[10px] font-black h-8 uppercase tracking-widest shadow-none gap-2">
+            <ShieldCheck class="w-3.5 h-3.5 shrink-0" />
+            Cockpit Operacional
+          </Button>
         </div>
+      </div>
 
-        <div class="col-span-full lg:col-span-4 space-y-2">
-          <!-- Compact Performance Calendar (Restored) -->
-          <Card class="card-glass overflow-hidden p-2">
-            <CardContent class="p-0">
-              <PerformanceCalendar
-                trades={filteredTrades}
-                compact={true}
-                onDateClick={handleDayClick}
-              />
-            </CardContent>
-          </Card>
-
-
-
-          <!-- Daily Detail Modal -->
-          <Dialog.Root bind:open={isDailyDetailOpen}>
-            <Dialog.Content
-              class="max-w-4xl max-h-[90vh] overflow-y-auto text-left"
-            >
-              <Dialog.Header>
-                <Dialog.Title
-                  class="text-xl font-bold uppercase tracking-tight"
-                >
-                  {$t("dashboard.dailyDetail.title")}
-                </Dialog.Title>
-                <Dialog.Description
-                  class="text-xs font-semibold text-muted-foreground uppercase tracking-widest"
-                >
-                  {$t("dashboard.dailyDetail.subtitle")}
-                </Dialog.Description>
-              </Dialog.Header>
-
-              <div class="space-y-6 pt-4">
-                <div class="flex items-center justify-between">
-                  <h4 class="text-lg font-bold tracking-tight">
-                    {#if selectedDateForDetail}
-                      {format(selectedDateForDetail, "dd 'de' MMMM, yyyy", {
-                        locale: ptBR,
-                      })}
-                    {/if}
-                  </h4>
-                </div>
-                {#if selectedDateForDetail}
-                  {@const dayTrades = filteredTrades.filter((t) =>
-                    isSameDay(parseSafeDate(t.date), selectedDateForDetail as Date),
-                  )}
-                  {@const dayRes = dayTrades.reduce(
-                    (acc, t) => acc + (t.result || 0),
-                    0,
-                  )}
-
-                  <div class="grid grid-cols-3 gap-4">
-                    <div class="p-4 card-glass border-border/10 shadow-none">
-                      <p
-                        class="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1"
-                      >
-                        {$t("dashboard.dailyDetail.summary")}
-                      </p>
-                      <p
-                        class={cn(
-                          "text-base font-mono font-bold tabular-nums",
-                          dayRes >= 0 ? "text-emerald-500" : "text-rose-500",
-                        )}
-                      >
-                        {formatCurrency(dayRes)}
-                      </p>
-                    </div>
-                    <div class="p-4 card-glass border-border/10 shadow-none">
-                      <p
-                        class="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1"
-                      >
-                        {$t("dashboard.dailyDetail.tradeQty")}
-                      </p>
-                      <p
-                        class="text-base font-black text-foreground tabular-nums"
-                      >
-                        {dayTrades.length}
-                      </p>
-                    </div>
-                    <div class="p-4 card-glass border-border/10 shadow-none">
-                      <p
-                        class="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1"
-                      >
-                        {$t("dashboard.dailyDetail.efficiency")}
-                      </p>
-                      <p
-                        class="text-base font-black text-blue-500 tabular-nums"
-                      >
-                        {dayTrades.length > 0
-                          ? (
-                              (dayTrades.filter((t) => t.result > 0).length /
-                                dayTrades.length) *
-                              100
-                            ).toFixed(0)
-                          : 0}%
-                      </p>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div class="space-y-4">
-                    <h4
-                      class="text-[10px] font-bold uppercase tracking-widest text-foreground"
-                    >
-                      {$t("dashboard.dailyDetail.operationsList")}
-                    </h4>
-                    <div
-                      class="rounded-xl border border-border overflow-hidden"
-                    >
-                      <table class="w-full text-left text-xs">
-                        <thead
-                          class="bg-muted/50 font-bold uppercase tracking-tight text-[10px]"
-                        >
-                          <tr>
-                            <th class="px-4 py-3"
-                              >{$t("dashboard.dailyDetail.asset")}</th
-                            >
-                            <th class="px-4 py-3 text-center"
-                              >{$t("dashboard.dailyDetail.direction")}</th
-                            >
-                            <th class="px-4 py-3 text-right"
-                              >{$t("dashboard.dailyDetail.result")}</th
-                            >
-                            <th class="px-4 py-3 text-right"
-                              >{$t("general.quantity")}</th
-                            >
-                          </tr>
-                        </thead>
-                        <tbody class="divide-y divide-border">
-                          {#each dayTrades as trade}
-                            <tr class="hover:bg-muted/30 transition-colors">
-                              <td class="px-4 py-3 font-medium"
-                                >{trade.asset_symbol}</td
-                              >
-                              <td class="px-4 py-3 text-center">
-                                <Badge
-                                  variant="outline"
-                                  class={cn(
-                                    "text-[10px] font-semibold uppercase tracking-tight py-0.5 h-5 border-none",
-                                    trade.direction === "Buy"
-                                      ? "bg-emerald-500/10 text-emerald-500"
-                                      : "bg-rose-500/10 text-rose-500",
-                                  )}
-                                >
-                                  {trade.direction === "Buy"
-                                    ? $t("dashboard.dailyDetail.buy")
-                                    : $t("dashboard.dailyDetail.sell")}
-                                </Badge>
-                              </td>
-                              <td
-                                class={cn(
-                                  "px-4 py-3 text-right font-medium font-mono",
-                                  trade.result >= 0
-                                    ? "text-emerald-500"
-                                    : "text-rose-500",
-                                )}
-                              >
-                                {formatCurrency(trade.result)}
-                              </td>
-                              <td
-                                class="px-4 py-3 text-right text-muted-foreground font-mono"
-                              >
-                                {trade.quantity}
-                              </td>
-                            </tr>
-                          {:else}
-                            <tr>
-                              <td
-                                colspan="4"
-                                class="px-4 py-12 text-center text-muted-foreground font-medium uppercase text-[10px] tracking-widest"
-                              >
-                                {$t("dashboard.dailyDetail.noTrades")}
-                              </td>
-                            </tr>
-                          {/each}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                {/if}
-              </div>
-            </Dialog.Content>
-          </Dialog.Root>
-
-          <!-- Distribution Mini (Clean) -->
-          <Card class="p-4 card-glass">
-            <h3
-              class="text-xs font-bold text-muted-foreground mb-2 uppercase tracking-wider border-b border-border/50 pb-1"
-            >
-              {$t("dashboard.schedule.title")}
-            </h3>
-            <div class="space-y-2">
-              {#each [{ label: "Manhã (09h-12h)", val: 68, color: "bg-emerald-500", text: "text-emerald-500" }, { label: "Tarde (12h-18h)", val: 32, color: "bg-muted", text: "text-muted-foreground" }] as item}
-                <div class="space-y-2">
-                  <div
-                    class="flex justify-between text-[8px] font-black uppercase tracking-wider"
-                  >
-                    <span class="text-muted-foreground">
-                      {item.label === "Manhã (09h-12h)"
-                        ? $t("dashboard.schedule.morning")
-                        : $t("dashboard.schedule.afternoon")} ({item.label.split(
-                        "(",
-                      )[1]}
-                    </span>
-                    <span class={item.text}>{item.val}%</span>
-                  </div>
-                  <div class="h-2 w-full bg-muted rounded-full overflow-hidden">
-                    <div
-                      class={cn("h-full", item.color)}
-                      style="width: {item.val}%"
-                    ></div>
-                  </div>
-                </div>
-              {/each}
-            </div>
-            <div class="mt-8 pt-6 border-t border-border">
-              <p
-                class="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest text-center"
-              >
-                {$t("dashboard.schedule.basedOn", { values: { count: 20 } })}
+      <!-- BLOCO 3: INSIGHT AUTOMÁTICO (Radar Comportamental) -->
+      <div class="mb-4 space-y-3">
+        <h3 class="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2 pl-1">
+          <Brain class="w-3.5 h-3.5 text-emerald-500" />
+          Radar Comportamental
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {#each stats.insights as insight}
+            <div class="p-3 bg-accent/30 border-l-2 border-l-emerald-500 border-y border-r border-border/50 rounded-r-xl rounded-l-sm flex items-start gap-3 transition-colors hover:bg-accent/50">
+              <Zap class="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+              <p class="text-[11px] font-bold tracking-wide text-foreground/80 uppercase leading-snug">
+                {insight}
               </p>
             </div>
-          </Card>
+          {/each}
         </div>
+      </div>
+
+      <!-- BLOCOS 1, 2 e 4: Resumos Executivos de 3 segundos -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        <!-- Bloco 1: Resultado do Dia -->
+        <Card class={cn("card-glass border-l-4 transition-all hover:border-l-8", stats.dayResult >= 0 ? "border-l-emerald-500" : "border-l-rose-500")}>
+           <CardContent class="p-5">
+              <div class="flex items-center justify-between">
+                <h3 class="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                  <Calendar class="w-3.5 h-3.5" />
+                  P&L de Hoje
+                </h3>
+              </div>
+              <p class={cn("text-4xl lg:text-5xl font-mono font-black mt-3 tracking-tighter truncate", stats.dayResult >= 0 ? "text-emerald-500" : "text-rose-500")}>
+                {formatCurrency(stats.dayResult)}
+              </p>
+              <div class="mt-4 flex items-center justify-between border-t border-border/40 pt-3">
+                <p class="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
+                  Frequência (Trades)
+                </p>
+                <Badge variant="outline" class="font-mono text-[10px] bg-background/50">{stats.tradesToday}</Badge>
+              </div>
+           </CardContent>
+        </Card>
+
+        <!-- Bloco 4: Resumo da Semana -->
+        <Card class={cn("card-glass border-l-4 transition-all hover:border-l-8", stats.weekResult >= 0 ? "border-l-emerald-500" : "border-l-rose-500")}>
+           <CardContent class="p-5">
+              <div class="flex items-center justify-between">
+                <h3 class="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                  <BarChart3 class="w-3.5 h-3.5" />
+                  P&L da Semana
+                </h3>
+              </div>
+              <p class={cn("text-3xl lg:text-4xl font-mono font-black mt-4 tracking-tighter truncate", stats.weekResult >= 0 ? "text-emerald-500" : "text-rose-500")}>
+                {formatCurrency(stats.weekResult)}
+              </p>
+              <div class="flex gap-2 mt-4 relative w-full h-7">
+                 <div class="flex-1 flex flex-col justify-center items-center rounded-sm bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 transition-colors hover:bg-emerald-500/20">
+                    <div class="flex items-center gap-1">
+                       <span class="text-[8px] uppercase font-black tracking-widest">Gain</span>
+                       <span class="text-[10px] font-mono font-bold">{stats.weekPositiveDays}d</span>
+                    </div>
+                 </div>
+                 <div class="flex-1 flex flex-col justify-center items-center rounded-sm bg-rose-500/10 border border-rose-500/20 text-rose-600 transition-colors hover:bg-rose-500/20">
+                    <div class="flex items-center gap-1">
+                       <span class="text-[8px] uppercase font-black tracking-widest">Loss</span>
+                       <span class="text-[10px] font-mono font-bold">{stats.weekNegativeDays}d</span>
+                    </div>
+                 </div>
+              </div>
+           </CardContent>
+        </Card>
+
+        <!-- Bloco 2: Status Rápido (Risk & Consistency) -->
+        <Card class="card-glass border-l-4 border-l-indigo-500 relative overflow-hidden transition-all hover:border-l-8">
+           <div class="absolute -right-4 -top-8 rotate-12 opacity-5 pointer-events-none">
+             <ShieldCheck class="w-32 h-32" />
+           </div>
+           <CardContent class="p-5 relative z-10">
+              <h3 class="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                <Target class="w-3.5 h-3.5" />
+                Status Operacional
+              </h3>
+              <div class="mt-4 space-y-3">
+                <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
+                  <span class="text-[9px] font-black tracking-widest text-muted-foreground uppercase">Trailing Risk</span>
+                  {#if stats.dayResult <= -(activePhase?.max_daily_loss || 0) && (activePhase?.max_daily_loss ?? 0) > 0}
+                    <Badge variant="destructive" class="text-[9px] uppercase font-black tracking-widest px-1.5 py-0 h-4">Bloqueado</Badge>
+                  {:else if stats.dayResult <= -(activePhase?.max_daily_loss || 0) * 0.7 && (activePhase?.max_daily_loss ?? 0) > 0}
+                    <Badge class="bg-orange-500/20 text-orange-500 hover:bg-orange-500/30 text-[9px] border border-orange-500/20 uppercase font-black tracking-widest px-1.5 py-0 h-4">Atenção</Badge>
+                  {:else}
+                    <Badge class="bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30 text-[9px] border border-emerald-500/20 uppercase font-black tracking-widest px-1.5 py-0 h-4">Liberado</Badge>
+                  {/if}
+                </div>
+                <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
+                  <span class="text-[9px] font-black tracking-widest text-muted-foreground uppercase">Constância Média</span>
+                  <span class="font-mono font-bold text-indigo-400 text-xs bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">{stats.discipline.toFixed(0)}%</span>
+                </div>
+              </div>
+           </CardContent>
+        </Card>
+      </div>
       </div>
     </div>
   </div>

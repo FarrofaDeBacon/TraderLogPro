@@ -13,6 +13,11 @@ export interface DashboardStats {
   drawdown: number; // maximum drawdown percentage
   tradesToday: number;
   avgRFactor: number;
+  // Novos campos do Dashboard Fase 3
+  weekResult: number;
+  weekPositiveDays: number;
+  weekNegativeDays: number;
+  insights: string[];
 }
 
 export interface TradeConverter {
@@ -44,6 +49,10 @@ export function getDashboardStats(
       drawdown: 0,
       tradesToday: 0,
       avgRFactor: 0,
+      weekResult: 0,
+      weekPositiveDays: 0,
+      weekNegativeDays: 0,
+      insights: ["Adicione seu primeiro trade para gerar insights."],
     };
   }
 
@@ -111,6 +120,66 @@ export function getDashboardStats(
     return [parseSafeDate(t.date).getTime(), current];
   });
 
+  // Lógica Semanal
+  let weekRes = 0;
+  const weekDailyResults: Record<string, number> = {};
+  
+  // Encontrar o início da semana atual (Assumindo segunda-feira = início)
+  const d = new Date(baseDate);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); 
+  const startOfWeek = new Date(d.setDate(diff));
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  // Re-lap over trades to find current week data accurately
+  trades.forEach(t => {
+    try {
+      const tDate = parseISO(t.date);
+      const tExitDate = t.exit_date ? parseISO(t.exit_date) : tDate;
+      const tTime = tExitDate.getTime();
+      
+      if (tTime >= startOfWeek.getTime() && tTime <= baseDate.getTime()) {
+        const res = convertTradeResult(t);
+        weekRes += res;
+        const dateKey = format(tExitDate, "yyyy-MM-dd");
+        weekDailyResults[dateKey] = (weekDailyResults[dateKey] || 0) + res;
+      }
+    } catch {}
+  });
+
+  let weekPositiveDays = 0;
+  let weekNegativeDays = 0;
+  Object.values(weekDailyResults).forEach(val => {
+    if (val > 0) weekPositiveDays++;
+    else if (val < 0) weekNegativeDays++;
+  });
+
+  // Insights Generator
+  const insights: string[] = [];
+  if (tradesToday > 5) {
+    insights.push("Você já operou muitas vezes hoje. Cuidado com o overtrading.");
+  } else if (tradesToday > 0 && tradesToday <= 3) {
+    insights.push("Operações precisas. Bom foco no plano até agora.");
+  }
+
+  if (dayRes > 0 && tradesToday > 0) {
+    insights.push("Dia positivo! Considere proteger seu lucro e encerrar o terminal.");
+  } else if (dayRes < 0) {
+    insights.push("Dia negativo. Respire fundo e certifique-se de estar respeitando seu limite diário.");
+  }
+
+  if (weekNegativeDays > weekPositiveDays && weekPositiveDays + weekNegativeDays >= 3) {
+    insights.push("A semana está mais vendedora. Reavalie o contexto do mercado.");
+  } else if (weekPositiveDays > weekNegativeDays && weekPositiveDays >= 2) {
+    insights.push("Semana consistente! Continue focando nos setups de maior qualidade.");
+  }
+  
+  // Limita a 3 insights máximo para não poluir
+  const finalInsights = insights.slice(0, 3);
+  if (finalInsights.length === 0 && tradesToday === 0) {
+     finalInsights.push("Terminal sincronizado. Aguardando novos trades.");
+  }
+
   const validTradesCount = trades.length || 1;
 
   return {
@@ -124,9 +193,13 @@ export function getDashboardStats(
     equity,
     monthResult: monthRes,
     dayResult: dayRes,
-    discipline: discSum / validTradesCount,
+    discipline: validTradesCount > 0 ? discSum / validTradesCount : 100,
     drawdown: maxDD,
     tradesToday,
     avgRFactor: rFactorCount > 0 ? rFactorSum / rFactorCount : 0,
+    weekResult: weekRes,
+    weekPositiveDays,
+    weekNegativeDays,
+    insights: finalInsights,
   };
 }
