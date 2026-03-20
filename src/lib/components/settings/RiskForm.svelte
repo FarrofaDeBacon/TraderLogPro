@@ -65,7 +65,16 @@
     });
 
     let activeTab = $state("base");
+    
+    let selectedLinkedAccount = $state(initialData?.linked_account_id || "");
 
+    $effect(() => {
+        if (selectedLinkedAccount) {
+            formData.linked_account_id = selectedLinkedAccount;
+        } else {
+            formData.linked_account_id = null;
+        }
+    });
 
 
     $effect(() => {
@@ -292,10 +301,10 @@
                             <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Selecionar Conta Vinculada</Label>
                             <Select.Root
                                 type="single"
-                                bind:value={() => formData.linked_account_id || "", (v) => formData.linked_account_id = v || null}
+                                bind:value={selectedLinkedAccount}
                             >
                                 <Select.Trigger class="w-full">
-                                    {settingsStore.accounts.find(a => a.id === formData.linked_account_id)?.nickname ?? "Selecione uma Conta"}
+                                    {settingsStore.accounts.find(a => a.id === selectedLinkedAccount)?.nickname ?? "Selecione uma Conta"}
                                 </Select.Trigger>
                                 <Select.Content>
                                     {#each settingsStore.accounts as account}
