@@ -14,7 +14,7 @@
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";
 
-    import GrowthPlanDashboard from "$lib/components/risk/GrowthPlanDashboard.svelte";
+
 
     import RiskProfileDetails from "$lib/components/settings/RiskProfileDetails.svelte";
 
@@ -86,7 +86,6 @@
             {$t("settings.risk.new")}
         </Button>
     </div>
-    <GrowthPlanDashboard />
     <Separator />
 
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -233,7 +232,7 @@
 
 <!-- Edit/New Modal -->
 <Dialog.Root bind:open={isDialogOpen}>
-    <Dialog.Content class="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Dialog.Content class="max-w-4xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden">
         <Dialog.Header>
             <Dialog.Title>
                 {editingItem
@@ -252,7 +251,7 @@
 
 <!-- Details Modal -->
 <Dialog.Root bind:open={isDetailsOpen}>
-    <Dialog.Content class="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Dialog.Content class="max-w-4xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden">
         {#if viewingItem}
             <RiskProfileDetails profile={viewingItem} />
             <div class="flex justify-end gap-2">

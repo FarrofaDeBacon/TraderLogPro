@@ -99,23 +99,32 @@
         },
 
         {
-            title: $t("settings.nav.sections.operational"),
+            title: "Risco",
             href: "sep",
         },
         {
+            href: "/settings/risk/asset-profiles",
+            title: "Perfis de Ativo",
+            icon: Layers,
+        },
+        {
             href: "/settings/risk",
-            title: $t("settings.nav.risk"),
+            title: "Gerenciamentos de Risco",
             icon: ShieldAlert,
         },
         {
             href: "/settings/growth-plans",
-            title: $t("settings.nav.growthPlans").includes("growthPlans") ? "Planos de Crescimento" : $t("settings.nav.growthPlans"),
+            title: "Planos de Crescimento",
             icon: TrendingUp,
         },
         {
-            href: "/settings/risk/asset-profiles",
-            title: $t("settings.risk.assetProfiles.title") || "Perfis de Ativo",
-            icon: Layers,
+            href: "/risk-control",
+            title: "Controle de Risco",
+            icon: Activity,
+        },
+        {
+            title: $t("settings.nav.sections.operational"),
+            href: "sep",
         },
         {
             href: "/settings/strategies",
