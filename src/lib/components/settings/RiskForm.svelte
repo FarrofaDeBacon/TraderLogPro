@@ -143,10 +143,15 @@
         }
     }
 
+    // Safe local state for Shadcn Bits V2
+    let selectedGrowthPlan = $state(initialData?.growth_plan_id || "none");
+
     function save() {
         const payload = { ...formData };
-        if (payload.growth_plan_id === "none") {
+        if (selectedGrowthPlan === "none") {
             payload.growth_plan_id = undefined;
+        } else {
+            payload.growth_plan_id = selectedGrowthPlan;
         }
         
         onSave(payload);
@@ -546,17 +551,17 @@
                             </Label>
                             <Select.Root
                                 type="single"
-                                bind:value={formData.growth_plan_id}
+                                bind:value={selectedGrowthPlan}
                             >
                                 <Select.Trigger class="w-full">
-                                    {formData.growth_plan_id && formData.growth_plan_id !== "none"
-                                        ? settingsStore.growthPlans.find(p => p.id === formData.growth_plan_id)?.name ?? "Desconhecido"
+                                    {selectedGrowthPlan !== "none"
+                                        ? settingsStore.growthPlans.find(p => p.id === selectedGrowthPlan)?.name ?? "Desconhecido"
                                         : "Nenhum plano vinculado (Fixo)"}
                                 </Select.Trigger>
                                 <Select.Content>
-                                    <Select.Item value="none">Nenhum plano vinculado (Fixo)</Select.Item>
+                                    <Select.Item value="none" label="Nenhum plano vinculado (Fixo)">Nenhum plano vinculado (Fixo)</Select.Item>
                                     {#each settingsStore.growthPlans as plan}
-                                        <Select.Item value={plan.id}>{plan.name}</Select.Item>
+                                        <Select.Item value={plan.id} label={plan.name}>{plan.name}</Select.Item>
                                     {/each}
                                 </Select.Content>
                             </Select.Root>
