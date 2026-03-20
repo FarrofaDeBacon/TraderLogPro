@@ -9,14 +9,14 @@
         CheckCircle2, 
         XCircle, 
         AlertTriangle, 
-        Info, 
         ShieldAlert, 
         TrendingUp, 
         Shield, 
         Activity,
         Lock,
         Target,
-        Layers
+        Layers,
+        Brain
     } from "lucide-svelte";
     
     // Derived states para consumo sem re-cálculos locais
@@ -93,225 +93,181 @@
         </div>
     {:else}
 
-    <!-- ================= GRID BENTO PRINCIPAL ================= -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+    <!-- ================= ESTRUTURA FASE 4 (EMOCIONAL) ================= -->
+    <div class="flex flex-col gap-6">
 
-        <!-- BLOCO 0 e 2: DECISÃO MESTRA & STATUS RÁPIDO (Col Left - 4) -->
-        <div class="md:col-span-4 flex flex-col gap-6">
+        <!-- 1. TOPO: O SEMÁFORO MESTRE -->
+        <div class="mb-2 rounded-3xl p-8 md:p-16 flex flex-col items-center justify-center text-center transition-all duration-700 shadow-2xl relative overflow-hidden group
+            {mainStatus === 'blocked' ? 'bg-rose-600 border-4 border-rose-500/50 text-white' : 
+             mainStatus === 'caution' ? 'bg-amber-500 border-4 border-amber-400/50 text-white' : 
+             'bg-emerald-600 border-4 border-emerald-500/50 text-white shadow-[0_0_40px_rgba(16,185,129,0.3)]'}">
             
-            <!-- BLOCO 0: DECISÃO -->
-            <div class="rounded-2xl border-2 p-6 flex flex-col gap-4 shadow-lg transition-colors
-                {mainStatus === 'blocked' ? 'border-rose-500/50 bg-rose-500/5' : 
-                 mainStatus === 'caution' ? 'border-amber-500/50 bg-amber-500/5' : 
-                 'border-emerald-500/30 bg-emerald-500/5 glow-emerald'}">
-                
-                <div class="flex flex-col gap-1 text-center items-center justify-center py-4">
-                    {#if mainStatus === 'blocked'}
-                        <XCircle class="w-16 h-16 text-rose-500 mb-2 drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]" />
-                        <h2 class="text-3xl font-black text-rose-500 uppercase tracking-tighter">{$t('risk.cockpit.statusBlocked')}</h2>
-                        <p class="font-bold text-foreground mt-2 text-lg">{$t('risk.cockpit.statusBlockedDesc1')}</p>
-                        <p class="text-rose-400/80 text-sm">
-                            {validation?.reasons[0] || $t('risk.cockpit.statusBlockedDesc2')}
-                        </p>
-                    {:else if mainStatus === 'caution'}
-                        <AlertTriangle class="w-16 h-16 text-amber-500 mb-2 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
-                        <h2 class="text-3xl font-black text-amber-500 uppercase tracking-tighter">{$t('risk.cockpit.statusCaution')}</h2>
-                        <p class="font-bold text-foreground mt-2 text-lg">{$t('risk.cockpit.statusCautionDesc1')}</p>
-                        <p class="text-amber-400/80 text-sm">{$t('risk.cockpit.statusCautionDesc2')}</p>
-                    {:else}
-                        <CheckCircle2 class="w-16 h-16 text-emerald-500 mb-2 drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                        <h2 class="text-3xl font-black text-emerald-500 uppercase tracking-tighter">{$t('risk.cockpit.statusAllowed')}</h2>
-                        <p class="font-bold text-foreground mt-2 text-lg">{$t('risk.cockpit.statusAllowedDesc1')}</p>
-                        <p class="text-emerald-400/80 text-sm">{$t('risk.cockpit.statusAllowedDesc2')}</p>
-                    {/if}
-                </div>
+            <!-- Fundo decorativo giratório -->
+            <div class="absolute inset-0 opacity-[0.07] flex items-center justify-center scale-[2] group-hover:scale-[2.2] group-hover:rotate-6 transition-transform duration-1000">
+                {#if mainStatus === 'blocked'} <XCircle class="w-[800px] h-[800px]" />
+                {:else if mainStatus === 'caution'} <AlertTriangle class="w-[800px] h-[800px]" />
+                {:else} <CheckCircle2 class="w-[800px] h-[800px]" /> {/if}
             </div>
 
-            <!-- BLOCO 2: STATUS CARDS -->
-            <div class="grid grid-cols-2 lg:grid-cols-1 gap-4">
-                <div class="p-4 rounded-xl border border-border/10 bg-card/50 flex flex-col gap-1">
-                    <span class="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-widest">{$t('risk.cockpit.dailyDrawdown')}</span>
-                    <span class="text-2xl font-black font-mono {dailyDrawdown > 0 ? 'text-rose-500' : 'text-emerald-500'}">
-                        {formatCurrency(dailyDrawdown, currencyCode)}
-                    </span>
-                    {#if activeProfile.max_daily_loss > 0}
-                        <div class="mt-2 w-full h-1.5 bg-black/40 rounded-full overflow-hidden">
-                            <div class="h-full bg-rose-500 rounded-full" style="width: {Math.min((dailyDrawdown / activeProfile.max_daily_loss) * 100, 100)}%"></div>
-                        </div>
-                    {/if}
-                </div>
-                
-                <div class="p-4 rounded-xl border border-border/10 bg-card/50 flex flex-col gap-1">
-                    <span class="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-widest flex items-center gap-1">
-                        {$t('risk.cockpit.sizing')}
-                        <Info class="w-3 h-3 text-blue-400" />
-                    </span>
-                    {#if riskStore.positionSizingResult?.isValid}
-                        <span class="text-2xl font-black font-mono text-primary">
-                            {riskStore.positionSizingResult.allowedContracts} <span class="text-sm">{$t('risk.cockpit.contracts')}</span>
-                        </span>
-                    {:else}
-                        <span class="text-2xl font-black font-mono text-rose-500">{$t('risk.cockpit.blockedZero')}</span>
-                    {/if}
-                </div>
+            <div class="relative z-10 flex flex-col items-center gap-4">
+                {#if mainStatus === 'blocked'}
+                    <div class="bg-black/20 px-6 py-2 rounded-full border border-white/20 text-xs font-black uppercase tracking-[0.2em] mb-2 backdrop-blur-sm">Ação Bloqueada</div>
+                    <h2 class="text-5xl md:text-8xl font-black uppercase tracking-tighter drop-shadow-xl">SISTEMA TRAVADO</h2>
+                    <p class="text-xl md:text-3xl font-medium text-white/95 mt-2 bg-black/20 px-6 py-2 rounded shadow-inner">{validation?.reasons[0] || 'Limite de Risco atingido. Pare de operar hoje.'}</p>
+                {:else if mainStatus === 'caution'}
+                    <div class="bg-black/20 px-6 py-2 rounded-full border border-white/20 text-xs font-black uppercase tracking-[0.2em] mb-2 backdrop-blur-sm">Risco Iminente</div>
+                    <h2 class="text-5xl md:text-8xl font-black uppercase tracking-tighter drop-shadow-xl">ALERTA LARANJA</h2>
+                    <p class="text-xl md:text-3xl font-medium text-white/95 mt-2">{validation?.warnings[0] || 'Você está muito perto do limite diário.'}</p>
+                {:else}
+                    <div class="bg-black/20 px-6 py-2 rounded-full border border-white/20 text-xs font-black uppercase tracking-[0.2em] mb-2 backdrop-blur-sm">Tudo Limpo</div>
+                    <h2 class="text-5xl md:text-8xl font-black uppercase tracking-tighter drop-shadow-xl">PISTA LIMPA</h2>
+                    <p class="text-xl md:text-3xl font-medium text-emerald-100 mt-2">Você está dentro do plano. Foco, disciplina e execução.</p>
+                {/if}
             </div>
         </div>
 
-        <!-- BLOCO CENTRAL: ALERTAS, PROGRESSO E MISSING REQUIREMENTS (Col Middle/Right - 8) -->
-        <div class="md:col-span-8 flex flex-col gap-6">
+        <!-- 2. CORPO: ZONA DE PERIGO VS ZONA DE EVOLUÇÃO -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
-            <!-- BLOCO 4: ALERTAS (Separados) -->
-            {#if !validation?.allowed && validation?.reasons && validation.reasons.length > 0}
-            <div class="bg-rose-500/10 border-l-4 border-rose-500 rounded-r-lg p-5 flex flex-col gap-2">
-                <div class="flex items-center gap-2 text-rose-500 font-bold uppercase tracking-wider text-sm">
-                    <Lock class="w-4 h-4" /> {$t('risk.cockpit.violations')}
-                </div>
-                <ul class="list-disc list-inside text-sm text-rose-400/90 space-y-1">
-                    {#each validation.reasons as reason}
-                        <li>{reason}</li>
-                    {/each}
-                </ul>
-            </div>
-            {/if}
-
-            {#if validation?.warnings && validation.warnings.length > 0}
-            <div class="bg-amber-500/10 border-l-4 border-amber-500 rounded-r-lg p-5 flex flex-col gap-2">
-                <div class="flex items-center gap-2 text-amber-500 font-bold uppercase tracking-wider text-sm">
-                    <AlertTriangle class="w-4 h-4" /> {$t('risk.cockpit.warnings')}
-                </div>
-                <ul class="list-disc list-inside text-sm text-amber-400/90 space-y-1">
-                    {#each validation.warnings as warning}
-                        <li>{warning}</li>
-                    {/each}
-                </ul>
-            </div>
-            {/if}
-
-            <!-- BLOCO 5: PROGRESSO vs RISCO -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Painel Progresso -->
-                <Card.Root class="border-emerald-500/20 shadow-none bg-emerald-500/5">
-                    <Card.Header class="pb-2">
-                        <Card.Title class="text-sm font-bold uppercase tracking-widest text-emerald-500 flex items-center gap-2">
-                            <TrendingUp class="w-4 h-4" />
-                            {$t('risk.cockpit.evolutionStatus')}
-                        </Card.Title>
-                    </Card.Header>
-                    <Card.Content class="space-y-4">
-                        <div class="flex justify-between items-center border-b border-black/10 pb-2">
-                            <span class="text-sm text-foreground/80">{$t('risk.cockpit.dailyProfit')}</span>
-                            <span class="font-mono font-bold {cockpit?.dailyRiskStatus.dailyPnL && cockpit.dailyRiskStatus.dailyPnL >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
-                                {formatCurrency(cockpit?.dailyRiskStatus.dailyPnL || 0, currencyCode)}
-                            </span>
+            <!-- ESQUERDA: ZONA DE RISCO (VERMELHA) -->
+            <Card.Root class="border-rose-500/20 bg-rose-500/5 shadow-none overflow-hidden flex flex-col rounded-2xl">
+                <div class="h-3 w-full bg-gradient-to-r from-rose-600 to-rose-400"></div>
+                <Card.Header class="pb-2 pt-6 px-8">
+                    <Card.Title class="text-[11px] font-black uppercase tracking-[0.15em] text-rose-500 flex items-center gap-2">
+                        <ShieldAlert class="w-5 h-5" />
+                        Risco de Ruína (Sizing & Target)
+                    </Card.Title>
+                </Card.Header>
+                <Card.Content class="space-y-8 flex-1 flex flex-col justify-start px-8 pb-8 pt-4">
+                    
+                    <!-- A Barra de Risco -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-end border-b border-rose-500/20 pb-3">
+                            <span class="text-[13px] font-bold text-foreground/80 uppercase tracking-widest">Limite Global</span>
+                            <span class="text-3xl font-mono font-black text-rose-500">{formatCurrency(activeProfile.max_daily_loss, currencyCode)}</span>
                         </div>
-                        <div class="flex justify-between items-center border-b border-black/10 pb-2">
-                            <span class="text-sm text-foreground/80">{$t('risk.cockpit.profitDays')}</span>
-                            <span class="font-mono font-bold text-foreground">
-                                {deskProgression?.checks.find(c => c.key === 'min_positive_days')?.passed ? '✅' : (deskAudit?.metrics.positive_days || 0)}
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center pb-2">
-                            <span class="text-sm text-foreground/80">{$t('risk.cockpit.targetHit')}</span>
-                            <span class="font-mono font-bold {cockpit?.dailyRiskStatus.dailyTargetHit ? 'text-emerald-500' : 'text-muted-foreground'}">
-                                {cockpit?.dailyRiskStatus.dailyTargetHit ? $t('risk.cockpit.yes') : $t('risk.cockpit.no')}
-                            </span>
-                        </div>
-                    </Card.Content>
-                </Card.Root>
-
-                <!-- Painel Risco Relacional -->
-                <Card.Root class="border-border/10 shadow-none bg-card/50">
-                    <Card.Header class="pb-2">
-                        <Card.Title class="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                            <ShieldAlert class="w-4 h-4" />
-                            {$t('risk.cockpit.riskTriggers')}
-                        </Card.Title>
-                    </Card.Header>
-                    <Card.Content class="space-y-4">
-                        <div class="flex justify-between items-center border-b border-black/10 pb-2">
-                            <span class="text-sm text-foreground/80">{$t('risk.cockpit.overtrading')}</span>
-                            <span class="font-mono font-bold {cockpit?.disciplineEvaluation?.overtradingDetected ? 'text-rose-500' : 'text-emerald-500'}">
-                                {cockpit?.disciplineEvaluation?.overtradingDetected ? $t('risk.cockpit.imminentRisk') : $t('risk.cockpit.controlled')}
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center border-b border-black/10 pb-2">
-                            <span class="text-sm text-foreground/80">{$t('risk.cockpit.maxLot')}</span>
-                            <span class="font-mono font-bold text-primary">
-                                {growthContext?.growthPhase.lot_size || '---'}
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center pb-2">
-                            <span class="text-sm text-foreground/80">{$t('risk.cockpit.mdrStatus')}</span>
-                            <span class="font-mono font-bold {activeProfile.desk_config?.mdr_mode !== 'none' ? 'text-amber-500' : 'text-muted-foreground'}">
-                                {activeProfile.desk_config?.mdr_mode !== 'none' ? $t('risk.cockpit.watched') : $t('risk.cockpit.openBook')}
-                            </span>
-                        </div>
-                    </Card.Content>
-                </Card.Root>
-            </div>
-
-            <!-- Col span full base for checks -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- BLOCO 3: O QUE FALTA PARA AVANÇAR -->
-                <Card.Root class="border-primary/20 bg-primary/5">
-                    <Card.Header class="pb-2">
-                        <Card.Title class="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
-                            {$t('risk.cockpit.missingReqs')}
-                        </Card.Title>
-                    </Card.Header>
-                    <Card.Content>
-                        {#if deskFeedback?.missing_requirements && deskFeedback.missing_requirements.length > 0}
-                            <ul class="space-y-3 mt-2">
-                                {#each deskFeedback.missing_requirements as req}
-                                    <li class="flex items-start gap-2 text-sm text-foreground/90 leading-tight">
-                                        <div class="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5"></div>
-                                        {$t(req.includes('.') ? req : `desk.feedback.${req}`, { default: req })}
-                                    </li>
-                                {/each}
-                            </ul>
-                        {:else}
-                            <div class="py-4 text-center text-emerald-500 font-bold flex flex-col items-center justify-center gap-2">
-                                <CheckCircle2 class="w-8 h-8" />
-                                {$t('risk.cockpit.allReqsMet')}
+                        
+                        <div class="relative w-full h-12 bg-black/50 rounded-xl overflow-hidden border border-rose-500/30">
+                            {@const ptcLoss = Math.min((dailyDrawdown / (activeProfile.max_daily_loss || 1)) * 100, 100)}
+                            {@const isLossHot = ptcLoss > 80}
+                            <div class="absolute top-0 left-0 h-full transition-all duration-1000 flex items-center justify-end px-4 {isLossHot ? 'bg-rose-500 animate-pulse' : 'bg-rose-500/80'}" style="width: {ptcLoss}%">
+                                {#if ptcLoss > 15}<span class="text-[14px] font-black font-mono text-white/90 drop-shadow-md">{ptcLoss.toFixed(0)}%</span>{/if}
                             </div>
-                        {/if}
-                    </Card.Content>
-                </Card.Root>
+                        </div>
 
-                <!-- BLOCO 6: CHECKS DE REGRAS -->
-                <Card.Root class="border-border/10 bg-black/10">
-                    <Card.Header class="pb-2">
-                        <Card.Title class="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                            {$t('risk.cockpit.auditedRules')}
-                        </Card.Title>
-                    </Card.Header>
-                    <Card.Content>
+                        <div class="flex justify-between text-xs font-mono font-medium mt-2">
+                            <span class="text-foreground/70">Consumido: <b class="text-rose-500 text-sm tracking-tighter">{formatCurrency(dailyDrawdown, currencyCode)}</b></span>
+                            <span class="text-foreground/70">Restante: <b class="text-emerald-500 text-sm tracking-tighter">{formatCurrency(Math.max(0, activeProfile.max_daily_loss - dailyDrawdown), currencyCode)}</b></span>
+                        </div>
+                    </div>
+
+                    <!-- Lote Permitido -->
+                    <div class="bg-background/40 p-5 rounded-xl border border-border/50 flex justify-between items-center backdrop-blur-sm">
+                        <span class="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                            <Target class="w-4 h-4 text-blue-400" /> Carga Permitida
+                        </span>
+                        {#if riskStore.positionSizingResult?.isValid}
+                            <span class="text-3xl font-black font-mono text-blue-400">
+                                {riskStore.positionSizingResult.allowedContracts} <span class="text-xs uppercase tracking-widest text-muted-foreground ml-1">cts</span>
+                            </span>
+                        {:else}
+                            <span class="text-2xl font-black font-mono text-rose-500 uppercase tracking-tight">Bloqueado</span>
+                        {/if}
+                    </div>
+
+                    <!-- Violações Ativas -->
+                    {#if !validation?.allowed && validation?.reasons && validation.reasons.length > 0}
+                    <div class="bg-rose-500/10 border-l-4 border-rose-500 p-5 rounded-r-xl mt-2 flex flex-col gap-3">
+                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 flex items-center gap-2"><Lock class="w-4 h-4"/> Violações Registradas</p>
+                        <ul class="text-[13px] font-bold text-rose-400/90 space-y-2 leading-tight">
+                            {#each validation.reasons as reason} <li>{reason}</li> {/each}
+                        </ul>
+                    </div>
+                    {/if}
+                </Card.Content>
+            </Card.Root>
+
+            <!-- DIREITA: ZONA DE EVOLUÇÃO (VERDE) -->
+            <Card.Root class="border-emerald-500/20 bg-emerald-500/5 shadow-none overflow-hidden flex flex-col rounded-2xl">
+                <div class="h-3 w-full bg-gradient-to-r from-emerald-600 to-emerald-400"></div>
+                <Card.Header class="pb-2 pt-6 px-8">
+                    <Card.Title class="text-[11px] font-black uppercase tracking-[0.15em] text-emerald-500 flex items-center gap-2">
+                        <TrendingUp class="w-5 h-5" />
+                        Trilha de Aprovação
+                    </Card.Title>
+                </Card.Header>
+                <Card.Content class="space-y-8 flex-1 flex flex-col justify-start px-8 pb-8 pt-4">
+                    
+                    <div class="flex items-center justify-between border-b border-emerald-500/20 pb-4">
+                        <div class="space-y-1">
+                            <p class="text-[10px] uppercase font-black tracking-widest text-emerald-600/70">Estágio / Plano</p>
+                            <h3 class="text-3xl font-black text-foreground tracking-tighter">{activePhase?.name || 'Avaliação Base'}</h3>
+                        </div>
+                        <div class="text-right space-y-1">
+                            <p class="text-[10px] uppercase font-black tracking-widest text-emerald-600/70">Alvo (Meta)</p>
+                            <h3 class="text-3xl font-mono font-black text-emerald-500 tracking-tighter">{formatCurrency(activePhase?.profit_target || 0, currencyCode)}</h3>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <p class="text-[10px] uppercase font-black tracking-widest text-emerald-600/70 flex items-center gap-2">
+                           Missões Pendentes para Progredir
+                        </p>
                         {#if deskProgression?.checks && deskProgression.checks.length > 0}
-                            <ul class="space-y-2.5 mt-2">
+                            <ul class="space-y-3">
                                 {#each deskProgression.checks as check}
-                                    <li class="flex items-center gap-3 text-sm">
+                                    <li class="flex items-center gap-4 bg-background/50 p-4 rounded-xl border border-border/50 backdrop-blur-sm transition-colors hover:bg-background/80">
                                         {#if check.passed}
-                                            <CheckCircle2 class="w-4 h-4 text-emerald-500 shrink-0" />
-                                            <span class="text-foreground/80 capitalize line-through opacity-70">{$t(`risk.cockpit.engine.${check.key}`, { default: check.key.replace(/_/g, ' ') })}</span>
-                                        {:else}
-                                            <div class="w-4 h-4 rounded-full border-2 border-muted-foreground/30 flex shrink-0 items-center justify-center">
-                                                <div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+                                            <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                                                <CheckCircle2 class="w-4 h-4" />
                                             </div>
-                                            <span class="text-foreground font-medium capitalize">{$t(`risk.cockpit.engine.${check.key}`, { default: check.key.replace(/_/g, ' ') })} {$t('risk.cockpit.pending')}</span>
+                                            <span class="text-sm font-bold text-muted-foreground line-through opacity-50 uppercase tracking-widest">{$t(`risk.cockpit.engine.${check.key}`, { default: check.key.replace(/_/g, ' ') })}</span>
+                                        {:else}
+                                            <div class="w-8 h-8 rounded-full border-2 border-emerald-500/40 flex items-center justify-center shrink-0 bg-black/20">
+                                                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div>
+                                            </div>
+                                            <span class="text-[13px] font-black text-foreground uppercase tracking-wider">{$t(`risk.cockpit.engine.${check.key}`, { default: check.key.replace(/_/g, ' ') })}</span>
                                         {/if}
                                     </li>
                                 {/each}
                             </ul>
                         {:else}
-                            <div class="text-sm text-muted-foreground py-4 text-center italic">
-                                {$t('risk.cockpit.noRules')}
+                            <div class="p-8 bg-emerald-500/10 rounded-xl text-center flex flex-col items-center justify-center gap-3 border border-emerald-500/20">
+                                <CheckCircle2 class="w-10 h-10 text-emerald-500" />
+                                <span class="font-black text-emerald-500 uppercase tracking-widest text-sm">Caminho Livre. Suba de Nível.</span>
                             </div>
                         {/if}
-                    </Card.Content>
-                </Card.Root>
-            </div>
-            
+                    </div>
+                </Card.Content>
+            </Card.Root>
+
         </div>
+
+        <!-- 3. RODAPÉ: O CONSELHEIRO (AUTOMATIZADO) -->
+        <div class="bg-card/70 border-2 border-border/30 p-8 rounded-3xl flex flex-col lg:flex-row items-center gap-8 shadow-xl relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+            
+            <div class="w-20 h-20 rounded-2xl bg-indigo-500/10 flex items-center justify-center shrink-0 border border-indigo-500/30 shadow-[0_0_30px_rgba(99,102,241,0.15)] relative z-10">
+                <Brain class="w-10 h-10 text-indigo-500" />
+            </div>
+            <div class="flex-1 text-center lg:text-left relative z-10">
+                <h3 class="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-3 flex items-center justify-center lg:justify-start gap-2">
+                    Supervisor Emocional da Mesa
+                </h3>
+                <p class="text-xl md:text-2xl font-bold text-foreground/90 leading-tight">
+                    {#if mainStatus === 'blocked'}
+                        A sua prioridade máxima agora é proteger a sua conta de quebrar. Feche a plataforma. Volte amanhã com a mente fresca, o dia operacional atingiu a estafa técnica.
+                    {:else if mainStatus === 'caution'}
+                        Você está muito perto de tomar um stop global. Reduza agressivamente o lote neste próximo trade. Se você tomar outro loss, encerre o dia preventivamente.
+                    {:else if cockpit?.dailyRiskStatus.dailyPnL && (cockpit.dailyRiskStatus.dailyPnL) > ((activePhase?.profit_target || 0) * 0.7) && (activePhase?.profit_target || 0) > 0}
+                        Atenção: Você assegurou mais de 70% da meta global do seu estágio de crescimento! O maior risco agora é a ganância devolver seu lucro de dias. Considere fechar a plataforma.
+                    {:else}
+                        Suas métricas térmicas estão absolutamente frias. O seu emocional deve focar apenas em executar as premissas do plano, sem pensar no dinheiro. Vá em frente.
+                    {/if}
+                </p>
+            </div>
+        </div>
+
     </div>
     {/if}
 </div>
