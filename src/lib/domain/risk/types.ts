@@ -183,3 +183,18 @@ export type DeskValidationResult = {
         closeBeforeMarketClose: boolean;
     };
 };
+
+export type DeskAuditStatus = 'pending' | 'passed' | 'failed';
+
+export type DeskAuditResult = {
+    status: DeskAuditStatus;
+    reasons: string[];
+    warnings: string[];
+    metrics: {
+        operated_days: number;
+        positive_days: number;
+        total_net_profit: number;
+        best_day_profit: number;
+        best_day_share_percent: number;
+    };
+};

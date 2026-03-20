@@ -11,8 +11,13 @@ import {
     type PositionSizingInput,
     type PositionSizingResult,
     validateTradeContext,
+    calculateHistoricalAudit,
     type DeskValidationContext,
-    type DeskValidationResult
+    type DeskValidationResult,
+    type DeskAuditResult,
+    type DeskAuditStatus,
+    evaluateDeskStageProgression,
+    generateDeskProgressFeedback
 } from '$lib/domain/risk';
 import { 
     adaptSettingsProfileToDomain, 
@@ -118,6 +123,47 @@ export class RiskStore {
         const validProfiles = settingsStore.assetRiskProfiles.filter(ap => linkedProfileIds.includes(ap.id as string));
         
         return validProfiles.find(ap => ap.asset_id === asset.id) || null;
+    }
+
+    /**
+     * Retorna a Auditoria Histórica da Mesa (Prop Firm) para o perfil ativo atual.
+     * Computa os trades fechados e valida regras operacionais da mesa.
+     */
+    get deskAuditState(): DeskAuditResult | null {
+        const activeProfile = settingsStore.activeProfile;
+        if (!activeProfile || !activeProfile.active || !activeProfile.desk_config) return null;
+
+        const closedTrades = tradesStore.trades.filter(t => t.exit_price !== null && t.exit_price !== undefined);
+        
+        return calculateHistoricalAudit(
+            closedTrades,
+            activeProfile.desk_config,
+            activeProfile.risk_rules
+        );
+    }
+
+    /**
+     * Retorna o Status de Progressão de Estágio Operacional da Mesa.
+     */
+    get deskStageProgressionState() {
+        const activeProfile = settingsStore.activeProfile;
+        const audit = this.deskAuditState;
+        
+        if (!activeProfile || !activeProfile.active || !activeProfile.desk_config || !audit) return null;
+        
+        return evaluateDeskStageProgression(activeProfile.desk_config, audit);
+    }
+
+    /**
+     * Retorna o Feedback Operacional da Mesa detalhando métricas faltantes e sugestões.
+     */
+    get deskProgressFeedback() {
+        const activeProfile = settingsStore.activeProfile;
+        const audit = this.deskAuditState;
+        
+        if (!activeProfile || !activeProfile.active || !activeProfile.desk_config || !audit) return null;
+        
+        return generateDeskProgressFeedback(activeProfile.desk_config, audit, activeProfile.risk_rules || []);
     }
 
     /**

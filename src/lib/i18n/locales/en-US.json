@@ -1479,7 +1479,7 @@
             "markets": "Base Markets",
             "modalities": "Modalities",
             "profile": "My Profile",
-            "risk": "Risk and Goals",
+            "risk": "Risk",
             "sections": {
                 "analysis": "Analysis",
                 "fiscal": "Tax",
@@ -1491,7 +1491,10 @@
             },
             "strategies": "Strategies",
             "tags": "Tags",
-            "timeframes": "Timeframes"
+            "timeframes": "Timeframes",
+            "assetProfiles": "Asset Profiles",
+            "riskManagement": "Risk Management",
+            "growthPlans": "Growth Plans"
         },
         "profile": {
             "description": "Manage your personal information and system preferences.",
@@ -2580,7 +2583,8 @@
         "settings": "Settings",
         "fiscal": {
             "irpf": "Income Tax"
-        }
+        },
+        "risk": "Risk Control"
     },
     "riskContext": {
         "title": "Active Composition",
@@ -2716,14 +2720,10 @@
     },
     "desk": {
         "progression": {
-            "title": "Stage Progression",
-            "current": "Current Stage",
-            "can_advance": "Eligibile to Advance",
-            "should_remain": "Stage Maintained",
             "reasons": {
-                "pending_days": "Minimum days not met",
-                "pending_audit": "Audit criteria pending",
-                "max_stage_reached": "Maximum stage reached - final progression"
+                "pending_days": "Pending trading days to advance.",
+                "pending_audit": "Historical audit waiting for cut-off criteria.",
+                "max_stage_reached": "Plan ceiling reached (Final Phase)."
             }
         },
         "feedback": {
@@ -2731,6 +2731,20 @@
             "missing_profit": "Financial profit target has not been met yet.",
             "missing_consistency": "Minimum consistent (profitable) days criteria not met.",
             "failed_50_percent": "Breach of the 50% protection rule (best profit day exceeded safety metrics)."
+        },
+        "reasons": {
+            "invalid_asset": "Selected asset is not allowed by Prop Firm rules.",
+            "max_exposure": "Contract sum exceeds the allowed limit.",
+            "day_trade_only": "Prop Firm plan allows only Day Trade mode.",
+            "min_operated_days": "Minimum operated days not reached.",
+            "max_share_50": "Best day profit exceeds the limit (50% Rule).",
+            "consistency_failed": "Consistency rule failed.",
+            "consistency_pending": "Consistency rule pending."
+        },
+        "warnings": {
+            "day_trade_only": "Day Trade Only rule enabled, but current operation timeframe not provided.",
+            "time_constraint": "Temporary close rule configured, but current time context unavailable.",
+            "table_disabled": "Prop Firm disabled. Audit skipped."
         }
     }
 }

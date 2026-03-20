@@ -99,27 +99,27 @@
         },
 
         {
-            title: "Risco",
+            title: $t("settings.nav.risk"),
             href: "sep",
         },
         {
             href: "/settings/risk/asset-profiles",
-            title: "Perfis de Ativo",
+            title: $t("settings.nav.assetProfiles"),
             icon: Layers,
         },
         {
             href: "/settings/risk",
-            title: "Gerenciamentos de Risco",
+            title: $t("settings.nav.riskManagement"),
             icon: ShieldAlert,
         },
         {
             href: "/settings/growth-plans",
-            title: "Planos de Crescimento",
+            title: $t("settings.nav.growthPlans"),
             icon: TrendingUp,
         },
         {
             href: "/risk-control",
-            title: "Controle de Risco",
+            title: $t("nav.risk"),
             icon: Activity,
         },
         {

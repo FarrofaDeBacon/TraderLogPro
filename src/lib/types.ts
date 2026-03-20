@@ -379,6 +379,18 @@ export type RiskProfile = {
     growth_plan_id?: string;
 };
 
+export type DeskStage = {
+    id: string; // e.g., 'margin_building', 'real_phase_1', 'real_final'
+    name: string;
+    enabled: boolean;
+    mdr_mode: 'none' | 'fixed' | 'percent_of_margin';
+    mdr_percent?: number;
+    mdr_limit_cap?: number;
+    min_trading_days?: number;
+    rule_50_percent_enabled: boolean;
+    consistency_enabled: boolean;
+};
+
 export type DeskConfig = {
     enabled: boolean;
     plan_name?: string;
@@ -395,10 +407,45 @@ export type DeskConfig = {
     /** @deprecated Superseded by RiskRule(target_type='close_before_close') */
     close_before_market_close_minutes?: number;
     /** @deprecated Superseded by RiskRule(target_type='consistency') */
-    consistency_mode?: 'none' | '5days_3positive' | '10days_5positive';
+    consistency_mode?: 'none' | '5days_3positive' | '10days_5positive' | '5days_3positive_or_10days_5positive';
     /** @deprecated Superseded by RiskRule(target_type='rule_50_percent') */
     max_single_day_profit_share?: number;
+    min_trading_days?: number;
     mdr_mode?: 'none' | 'fixed' | 'percent_of_margin';
+    stages?: DeskStage[];
+    current_stage_index?: number;
+};
+
+/**
+ * Resultado da auditoria/validação de progressão de um estágio operacional da Mesa
+ */
+export type DeskStageProgressionResult = {
+  current_stage_id: string;
+  can_advance: boolean;
+  next_stage_id?: string;
+  should_remain: boolean;
+  should_regress?: boolean;
+  reasons: string[];
+  warnings: string[];
+  checks: Array<{
+    key: string;
+    passed: boolean;
+    reason?: string;
+  }>;
+};
+
+/**
+ * Feedback operacional amigável detalhando o que falta para avançar ou quais regras estão sendo violadas
+ */
+export type DeskProgressFeedback = {
+  missing_requirements: string[];
+  progress: Array<{
+    key: string;
+    current: number;
+    target: number;
+    label: string;
+  }>;
+  suggestions: string[];
 };
 
 export type RiskRuleOperator = '<=' | '>=' | '=' | '<' | '>' | 'between';
@@ -411,7 +458,8 @@ export type RiskRuleTargetType =
     | 'close_before_close'
     | 'consistency'
     | 'rule_50_percent'
-    | 'max_trades_per_day';
+    | 'max_trades_per_day'
+    | 'min_trading_days';
 
 export type RiskRule = {
     id: string;

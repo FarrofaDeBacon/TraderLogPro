@@ -43,8 +43,7 @@
     Select,
     SelectContent,
     SelectItem,
-    SelectTrigger,
-    SelectValue,
+    SelectTrigger
   } from "$lib/components/ui/select";
 
 

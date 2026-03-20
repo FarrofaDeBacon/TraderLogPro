@@ -1479,7 +1479,7 @@
             "markets": "Mercados Base",
             "modalities": "Modalidades",
             "profile": "Meu Perfil",
-            "risk": "Risco e Metas",
+            "risk": "Risco",
             "sections": {
                 "analysis": "Análise",
                 "fiscal": "Fiscal",
@@ -1491,7 +1491,10 @@
             },
             "strategies": "Estratégias",
             "tags": "Tags",
-            "timeframes": "Timeframes"
+            "timeframes": "Timeframes",
+            "assetProfiles": "Perfis de Ativo",
+            "riskManagement": "Gerenciamentos de Risco",
+            "growthPlans": "Planos de Crescimento"
         },
         "profile": {
             "description": "Gerencie suas informações pessoais e preferências do sistema.",
@@ -2583,7 +2586,8 @@
         "settings": "Configurações",
         "fiscal": {
             "irpf": "Imposto de Renda"
-        }
+        },
+        "risk": "Controle de Risco"
     },
     "riskContext": {
         "title": "Composição Ativa",
@@ -2719,14 +2723,10 @@
     },
     "desk": {
         "progression": {
-            "title": "Progressão de Estágio",
-            "current": "Estágio Atual",
-            "can_advance": "Apto para Avançar",
-            "should_remain": "Estágio Retido",
             "reasons": {
-                "pending_days": "Faltam dias operados",
-                "pending_audit": "Critérios de auditoria pendentes",
-                "max_stage_reached": "Estágio definitivo atingido"
+                "pending_days": "Dias de operação pendentes para avanço.",
+                "pending_audit": "Auditoria histórica aguardando critérios de corte.",
+                "max_stage_reached": "Teto do plano atingido (Última Fase)."
             }
         },
         "feedback": {
@@ -2734,6 +2734,20 @@
             "missing_profit": "Meta financeira da conta ainda não foi atingida.",
             "missing_consistency": "Os critérios mínimos de dias consistentes (lucrativos) não foram batidos.",
             "failed_50_percent": "Houve quebra na proteção dos 50% (seu melhor dia de lucro ultrapassou a métrica de segurança)."
+        },
+        "reasons": {
+            "invalid_asset": "Ativo selecionado não é permitido pela regra da Mesa.",
+            "max_exposure": "Soma de contratos excede o limite estipulado.",
+            "day_trade_only": "Plano da Mesa permite apenas modo Day Trade.",
+            "min_operated_days": "Mínimo de dias operados não atingido.",
+            "max_share_50": "Lucro do melhor dia excede o limite permitido (Regra dos 50%).",
+            "consistency_failed": "Regra de consistência falhou.",
+            "consistency_pending": "Regra de consistência pendente."
+        },
+        "warnings": {
+            "day_trade_only": "Regra Day Trade Only habilitada, mas o prazo da operação atual não foi informado.",
+            "time_constraint": "Regra de encerramento temporário configurada, mas contexto de horário atual indisponível.",
+            "table_disabled": "Mesa desativada. Auditoria pulada."
         }
     }
 }

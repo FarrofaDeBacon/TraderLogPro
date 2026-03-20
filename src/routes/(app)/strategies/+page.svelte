@@ -68,11 +68,9 @@
                 <Select.Root type="single" bind:value={selectedType}>
                     <Select.Trigger class="w-[180px]">
                         <Filter class="w-4 h-4 mr-2" />
-                        <Select.Value
-                            placeholder={settingsStore.assetTypes.find(
-                                (t) => t.id === selectedType,
-                            )?.name || $t("trades.placeholders.all_types")}
-                        />
+                        {settingsStore.assetTypes.find(
+                            (t) => t.id === selectedType,
+                        )?.name || $t("trades.placeholders.all_types")}
                     </Select.Trigger>
                     <Select.Content>
                         <Select.Item value="all"
