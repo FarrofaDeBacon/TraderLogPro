@@ -543,7 +543,8 @@
                             </Label>
                             <Select.Root
                                 type="single"
-                                bind:value={() => formData.growth_plan_id || "none", (v) => formData.growth_plan_id = v === "none" ? undefined : v}
+                                value={formData.growth_plan_id || "none"}
+                                onValueChange={(v: string) => formData.growth_plan_id = v === "none" ? undefined : v}
                             >
                                 <Select.Trigger class="w-full">
                                     {formData.growth_plan_id 
