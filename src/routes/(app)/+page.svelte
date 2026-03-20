@@ -5,6 +5,7 @@
   import { Button } from "$lib/components/ui/button";
   import { t, locale } from "svelte-i18n";
   import { settingsStore } from "$lib/stores/settings.svelte";
+  import { userProfileStore } from "$lib/stores/user-profile.svelte";
   import { tradesStore } from "$lib/stores/trades.svelte";
   import { evolutionStore } from "$lib/stores/evolutionStore.svelte";
   import {
@@ -66,7 +67,7 @@
   );
 
   const activeProfile = $derived(
-    settingsStore.activeProfile || riskSettingsStore.riskProfiles[0],
+    riskSettingsStore.riskProfiles.find(p => p.active) || riskSettingsStore.riskProfiles[0],
   );
 
   const lastPrice = $derived.by(() => {
@@ -123,7 +124,7 @@
   });
 
   function formatCurrency(val: number) {
-    const mainCurrency = settingsStore.userProfile.main_currency || "BRL";
+    const mainCurrency = userProfileStore.userProfile.main_currency || "BRL";
     return new Intl.NumberFormat($locale || "pt-BR", {
       style: "currency",
       currency: mainCurrency,

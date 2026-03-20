@@ -2,6 +2,7 @@
     import { onMount, tick } from "svelte";
     import { invoke } from "@tauri-apps/api/core";
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { integrationsStore } from "$lib/stores/integrations.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import { rtdStore } from "$lib/stores/rtd.svelte";
@@ -96,7 +97,7 @@
     function applyTheme(t: "dark" | "light") {
         selectedTheme = t;
         // Update store immediately so layout global syncs correctly
-        settingsStore.userProfile.theme = t;
+        userProfileStore.userProfile.theme = t;
         setMode(t);
     }
 
@@ -144,8 +145,8 @@
     let progress = $state(0);
 
     let formData = $state({
-        name: settingsStore.userProfile.name || "",
-        email: settingsStore.userProfile.email || "",
+        name: userProfileStore.userProfile.name || "",
+        email: userProfileStore.userProfile.email || "",
         password: "",
         confirmPassword: "",
         licenseKey: "",
@@ -191,7 +192,7 @@
                 const rawKey = text.trim();
                 const result = await validateLicenseKey(
                     rawKey,
-                    settingsStore.hardwareId || "",
+                    userProfileStore.hardwareId || "",
                 );
 
                 if (result.valid) {
@@ -217,23 +218,23 @@
 
         try {
             // 1. Prepare Store with all wizard data
-            settingsStore.userProfile.onboarding_completed = true;
-            settingsStore.userProfile.name = formData.name || "Trader";
-            settingsStore.userProfile.email = formData.email;
-            settingsStore.userProfile.main_currency = formData.mainCurrency;
-            settingsStore.userProfile.language = selectedLanguage;
-            settingsStore.userProfile.theme = selectedTheme;
-            settingsStore.userProfile.password_hash = formData.password;
-            settingsStore.userProfile.recovery_hash = recoveryKey;
+            userProfileStore.userProfile.onboarding_completed = true;
+            userProfileStore.userProfile.name = formData.name || "Trader";
+            userProfileStore.userProfile.email = formData.email;
+            userProfileStore.userProfile.main_currency = formData.mainCurrency;
+            userProfileStore.userProfile.language = selectedLanguage;
+            userProfileStore.userProfile.theme = selectedTheme;
+            userProfileStore.userProfile.password_hash = formData.password;
+            userProfileStore.userProfile.recovery_hash = recoveryKey;
 
             if (formData.licenseKey) {
-                settingsStore.userProfile.license_key = formData.licenseKey;
+                userProfileStore.userProfile.license_key = formData.licenseKey;
             }
 
             // 2. Local State for UI immediate feedback
             localStorage.setItem("isLoggedIn", "true");
             localStorage.setItem("onboarding_done", "true");
-            settingsStore.isLoggedIn = true;
+            userProfileStore.isLoggedIn = true;
 
             progress = 30;
 
@@ -256,13 +257,13 @@
             // 4. Final Atomic Save of User Profile
             await invoke("save_user_profile", {
                 profile: {
-                    ...$state.snapshot(settingsStore.userProfile),
+                    ...$state.snapshot(userProfileStore.userProfile),
                     onboarding_completed: true, // Triple ensure
                 },
             });
 
             if (formData.licenseKey) {
-                await settingsStore.refreshLicenseStatus();
+                await userProfileStore.refreshLicenseStatus();
             }
 
             progress = 100;
@@ -285,7 +286,7 @@
             console.error("Onboarding Error:", error);
             toast.error("Erro durante a configuração.");
             // Rollback if critical failure (optional, but safer to let user retry)
-            settingsStore.userProfile.onboarding_completed = false;
+            userProfileStore.userProfile.onboarding_completed = false;
             loading = false;
             progress = 0;
         }

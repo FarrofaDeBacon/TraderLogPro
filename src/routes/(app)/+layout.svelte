@@ -3,6 +3,7 @@
     import AppSidebar from "$lib/components/app-sidebar/AppSidebar.svelte";
     import { sidebarState } from "$lib/stores/sidebar.svelte";
     import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import OnboardingWizard from "$lib/components/setup/OnboardingWizard.svelte";
     import LicenseBanner from "$lib/components/layout/LicenseBanner.svelte";
@@ -24,7 +25,7 @@
         dataLoaded = true;
     });
 
-    $inspect(settingsStore.userProfile.onboarding_completed).with(
+    $inspect(userProfileStore.userProfile.onboarding_completed).with(
         (type, val) => {
             console.log(`[Layout] Onboarding record state (${type}):`, val);
         },
@@ -37,7 +38,7 @@
 </script>
 
 {#if dataLoaded}
-    {#if !settingsStore.userProfile.onboarding_completed}
+    {#if !userProfileStore.userProfile.onboarding_completed}
         <OnboardingWizard onComplete={handleOnboardingComplete} />
     {:else}
         <div

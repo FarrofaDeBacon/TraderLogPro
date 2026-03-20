@@ -19,7 +19,7 @@
     import TransferDialog from "$lib/components/finance/TransferDialog.svelte";
     import AccountCard from "$lib/components/finance/AccountCard.svelte";
     import AccountEvolutionChart from "$lib/components/finance/AccountEvolutionChart.svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import * as Dialog from "$lib/components/ui/dialog";
     import { t, locale } from "svelte-i18n";
@@ -31,7 +31,7 @@
     let isSyncing = $state(false);
 
     let selectedChartCurrency = $state(
-        settingsStore.userProfile?.main_currency || "BRL",
+        userProfileStore.userProfile?.main_currency || "BRL",
     );
     let selectedAccountId = $state<string>("all");
 

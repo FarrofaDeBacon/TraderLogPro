@@ -11,9 +11,8 @@
     import { emit } from "@tauri-apps/api/event";
     import { toast } from "svelte-sonner";
     import { onMount, untrack } from "svelte";
-    import {
-        settingsStore,
-    } from "$lib/stores/settings.svelte";
+    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { integrationsStore } from "$lib/stores/integrations.svelte";
     import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { workspaceStore } from "$lib/stores/workspace.svelte";
@@ -79,7 +78,7 @@
             );
 
             await invoke("open_detached_trade_window", {
-                theme: settingsStore.userProfile.theme,
+                theme: userProfileStore.userProfile.theme,
             });
             close(); // Close the modal in the main window
         } catch (e) {
@@ -95,7 +94,7 @@
         const now = new Date();
         // CRITICAL: Untrack profile to avoid reactive loop if settings update
         const offsetMinutes = untrack(
-            () => settingsStore.userProfile?.utc_offset || 0,
+            () => userProfileStore.userProfile?.utc_offset || 0,
         );
         const offsetMillis = offsetMinutes * 60000;
         return new Date(now.getTime() + offsetMillis)
@@ -780,7 +779,7 @@
         }
 
         // 3. Automatic Fee Calculation
-        const feeProfile = settingsStore.fees.find(
+        const feeProfile = financialConfigStore.fees.find(
             (f) => f.id === asset?.default_fee_id,
         );
 

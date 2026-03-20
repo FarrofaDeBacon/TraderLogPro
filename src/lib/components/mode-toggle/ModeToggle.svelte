@@ -2,14 +2,14 @@
     import { Sun, Moon } from "lucide-svelte";
     import { toggleMode } from "mode-watcher";
     import { Button } from "$lib/components/ui/button";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
 
     function handleToggle() {
         toggleMode();
         // Sync with store
         const newTheme =
-            settingsStore.userProfile.theme === "dark" ? "light" : "dark";
-        settingsStore.userProfile.theme = newTheme;
+            userProfileStore.userProfile.theme === "dark" ? "light" : "dark";
+        userProfileStore.userProfile.theme = newTheme;
     }
 </script>
 

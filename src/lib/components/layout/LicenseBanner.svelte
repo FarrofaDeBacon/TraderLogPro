@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { AlertTriangle, Info, Clock, ExternalLink } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import { t } from "svelte-i18n";
 
-    const status = $derived(settingsStore.licenseStatus);
-    const daysLeft = $derived(settingsStore.trialDaysLeft);
+    const status = $derived(userProfileStore.licenseStatus);
+    const daysLeft = $derived(userProfileStore.trialDaysLeft);
 </script>
 
 {#if status === "trial"}

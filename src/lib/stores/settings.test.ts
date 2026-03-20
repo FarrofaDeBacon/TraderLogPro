@@ -33,64 +33,7 @@ describe('SettingsStore Unit Tests', () => {
         // Reset state for each test if possible, or handle dirty state
     });
 
-    it('should initialize with default userProfile values', () => {
-        // userProfile is initialized with BRL and pt-BR
-        expect(settingsStore.userProfile.language).toBe('pt-BR');
-        expect(settingsStore.userProfile.main_currency).toBe('BRL');
-        // CRITICAL for detached windows: should start empty to avoid theme flash/override
-        expect(settingsStore.userProfile.theme).toBe('');
-    });
-
-    it('should calculate trial days correctly', () => {
-        const now = new Date();
-        const trialStart = new Date(now);
-        trialStart.setDate(now.getDate() - 2); // 2 days ago
-
-        settingsStore.userProfile.trial_start_date = trialStart.toISOString();
-
-        // Code has: Math.max(0, 7 - diffDays)
-        // 7 - 2 = 5
-        expect(settingsStore.trialDaysLeft).toBe(5);
-    });
-
-    it('should handle expired trial correctly', () => {
-        const now = new Date();
-        const trialStart = new Date(now);
-        trialStart.setDate(now.getDate() - 10); // 10 days ago (limit is 7)
-
-        settingsStore.userProfile.trial_start_date = trialStart.toISOString();
-        expect(settingsStore.trialDaysLeft).toBe(0);
-        expect(settingsStore.licenseStatus).toBe('expired');
-    });
-
-    it('should calculate license days remaining correctly', () => {
-        const now = new Date();
-        const expiration = new Date(now);
-        expiration.setDate(now.getDate() + 15); // Expiring in 15 days
-
-        settingsStore.licenseDetails = {
-            valid: true,
-            plan: "Pro",
-            expiration: expiration.toISOString(),
-            createdAt: now.toISOString()
-        };
-
-        expect(settingsStore.licenseDaysRemaining).toBe(15);
-        expect(settingsStore.licenseStatus).toBe('active');
-    });
-
-    it('should handle lifetime licenses correctly', () => {
-        settingsStore.licenseDetails = {
-            valid: true,
-            plan: "Lifetime",
-            expiration: null,
-            createdAt: new Date().toISOString()
-        };
-
-        expect(settingsStore.licensePlanName).toBe('Lifetime');
-        expect(settingsStore.licenseDaysRemaining).toBeNull();
-        expect(settingsStore.licenseTotalDays).toBeNull();
-    });
+    // Removed userProfile and license tests as they are now handled by userProfileStore
 
     it('should auto-detect asset types and point values in ensureAssetExists', () => {
         // Mock dependencies

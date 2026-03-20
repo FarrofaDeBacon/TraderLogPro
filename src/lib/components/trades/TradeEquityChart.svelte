@@ -4,7 +4,7 @@
     import { t } from "svelte-i18n";
     import EChart from "$lib/components/ui/echart.svelte";
     import * as echarts from "echarts";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import { formatCurrency, parseSafeDate } from "$lib/utils";
     import { format } from "date-fns/format";
@@ -104,7 +104,7 @@
                             <div class="flex items-center justify-between gap-4">
                                 <span class="text-[10px] text-zinc-400 uppercase">${capitalLabel}</span>
                                 <span class="text-xs font-black" style="color: ${color}">
-                                    ${val >= 0 ? "+" : ""}${formatCurrency(val, settingsStore.userProfile?.main_currency || "BRL")}
+                                    ${val >= 0 ? "+" : ""}${formatCurrency(val, userProfileStore.userProfile?.main_currency || "BRL")}
                                 </span>
                             </div>
                     `;
@@ -114,7 +114,7 @@
                             <div class="flex items-center justify-between gap-4 border-t border-white/5 pt-1 mt-1">
                                 <span class="text-[10px] text-zinc-400 uppercase">${ddLabel}</span>
                                 <span class="text-xs font-bold text-rose-500">
-                                    ${formatCurrency(Math.abs(dd.value[1]), settingsStore.userProfile?.main_currency || "BRL")}
+                                    ${formatCurrency(Math.abs(dd.value[1]), userProfileStore.userProfile?.main_currency || "BRL")}
                                 </span>
                             </div>
                         `;
@@ -144,7 +144,7 @@
                     formatter: (value: number) =>
                         formatCurrency(
                             value,
-                            settingsStore.userProfile?.main_currency || "BRL",
+                            userProfileStore.userProfile?.main_currency || "BRL",
                         ).replace(/[^\d.,+-]/g, ""),
                 },
                 splitLine: { lineStyle: { color: "#27272a", type: "dashed" } },

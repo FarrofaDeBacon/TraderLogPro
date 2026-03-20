@@ -52,24 +52,6 @@ class SettingsStore {
     get cashTransactions() { return financialConfigStore.cashTransactions; }
     // ---------------------------------------------------------
     
-    // --- USER PROFILE DELEGATES (TEMPORARY FOR COMPATIBILITY) ---
-    get userProfile() { return userProfileStore.userProfile; }
-    set userProfile(val: UserProfile) { userProfileStore.userProfile = val; }
-    get hardwareId() { return userProfileStore.hardwareId; }
-    get licenseDetails() { return userProfileStore.licenseDetails; }
-    get isLoggedIn() { return userProfileStore.isLoggedIn; }
-    get licenseStatus() { return userProfileStore.licenseStatus; }
-    get trialDaysLeft() { return userProfileStore.trialDaysLeft; }
-    get licensePlanName() { return userProfileStore.licensePlanName; }
-    get licenseTotalDays() { return userProfileStore.licenseTotalDays; }
-    get licenseDaysRemaining() { return userProfileStore.licenseDaysRemaining; }
-    
-    login(email: string, pass: string) { return userProfileStore.login(email, pass); }
-    logout() { return userProfileStore.logout(); }
-    updateUserProfile(data: Partial<UserProfile>) { return userProfileStore.updateUserProfile(data); }
-    saveUserProfile() { return userProfileStore.saveUserProfile(); }
-    refreshLicenseStatus() { return userProfileStore.refreshLicenseStatus(); }
-    deactivateLicense() { return userProfileStore.deactivateLicense(); }
     // ---------------------------------------------------------
 
 

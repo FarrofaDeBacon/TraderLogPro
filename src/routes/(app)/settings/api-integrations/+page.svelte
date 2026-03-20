@@ -22,7 +22,7 @@
     import { Label } from "$lib/components/ui/label";
     import { Separator } from "$lib/components/ui/separator";
     import { integrationsStore } from "$lib/stores/integrations.svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import ApiConfigForm from "$lib/components/settings/ApiConfigForm.svelte";
     import ProfitRtdCard from "$lib/components/settings/ProfitRtdCard.svelte";
     import { Badge } from "$lib/components/ui/badge";
@@ -165,7 +165,7 @@
     }
 
     function saveCurrencyUrl() {
-        settingsStore.saveUserProfile();
+        userProfileStore.saveUserProfile();
         toast.success($t("settings.api.integrations.currency.successSave"));
     }
 </script>
@@ -286,7 +286,7 @@
                 <div class="flex gap-2">
                     <Input
                         id="currency-url"
-                        bind:value={settingsStore.userProfile.currency_api_url}
+                        bind:value={userProfileStore.userProfile.currency_api_url}
                         placeholder="https://..."
                         class="flex-1"
                     />

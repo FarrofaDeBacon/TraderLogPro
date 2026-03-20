@@ -23,7 +23,7 @@
     import * as Tooltip from "$lib/components/ui/tooltip";
     import * as AlertDialog from "$lib/components/ui/alert-dialog";
     import { sidebarState } from "$lib/stores/sidebar.svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { goto } from "$app/navigation";
     import { toast } from "svelte-sonner";
     import { t } from "svelte-i18n";
@@ -449,7 +449,7 @@
                             toast.success(
                                 $t("settings.profile.security.loggingOut"),
                             );
-                            settingsStore.logout();
+                            userProfileStore.logout();
                             setTimeout(() => goto("/login"), 1000);
                         }}
                         class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
