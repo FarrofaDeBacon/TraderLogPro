@@ -32,15 +32,21 @@
     let isSubmitting = $state(false);
 
     // Refs for keyboard nav
-    let assetInputRef = $state<HTMLInputElement>();
-    let resultInputRef = $state<HTMLInputElement>();
+    let assetInputRef = $state<HTMLInputElement | null>(null);
+    let resultInputRef = $state<HTMLInputElement | null>(null);
+    
+    let inlineFeedback = $state<{ message: string, type: 'success' | 'error' } | null>(null);
 
-    // Load Last Used Asset from LocalStorage for ultra-fast repeating
+    // Smart Auto-focus and Last Asset memory
     $effect(() => {
         untrack(() => {
             const last = localStorage.getItem("quicklog_last_asset");
             if (last && !asset) {
                 asset = last;
+                // If we remembered the asset, jump straight to the result input
+                setTimeout(() => { if (resultInputRef) resultInputRef.focus(); }, 150);
+            } else if (!asset) {
+                setTimeout(() => { if (assetInputRef) assetInputRef.focus(); }, 150);
             }
         });
     });
@@ -118,17 +124,25 @@
             });
 
             if (res.success) {
-                toast.success("Trade " + upperAsset + " salvo com sucesso! ⚡");
+                const signal = rawResult >= 0 ? '+' : '';
+                const style = rawResult >= 0 ? 'success' : 'error';
+                inlineFeedback = { message: `Registrado: ${upperAsset} ${signal}${rawResult.toFixed(2)}`, type: style };
+                setTimeout(() => inlineFeedback = null, 4000);
+
                 localStorage.setItem("quicklog_last_asset", upperAsset);
                 
-                // Reset form gracefully
+                // Ultra-fast clean state
                 resultInput = "";
-                assetInputRef?.focus(); // Keeps user in the loop
+                quantityInput = "1";
+                // Keep asset populated and jump focal point to result again
+                setTimeout(() => { if (resultInputRef) resultInputRef.focus(); }, 50);
             } else {
-                toast.error("Erro: " + res.error);
+                inlineFeedback = { message: `Erro: ${res.error}`, type: 'error' };
+                setTimeout(() => inlineFeedback = null, 5000);
             }
         } catch (e) {
-            toast.error("Falha ao salvar Quick Log.");
+            inlineFeedback = { message: "Falha na submissão.", type: 'error' };
+            setTimeout(() => inlineFeedback = null, 5000);
         } finally {
             isSubmitting = false;
         }
@@ -226,7 +240,12 @@
     </div>
 
     <!-- Submit Action -->
-    <div class="w-full md:w-auto mt-2 md:mt-0">
+    <div class="w-full md:w-auto mt-2 md:mt-0 flex flex-col items-center justify-center relative">
+        {#if inlineFeedback}
+            <span class="absolute -top-7 right-0 text-[10px] font-black tracking-widest uppercase animate-in fade-in slide-in-from-bottom-2 {inlineFeedback.type === 'success' ? 'text-emerald-500' : 'text-rose-500'}">
+                {inlineFeedback.message}
+            </span>
+        {/if}
         <Button 
             disabled={isSubmitting || !asset || !resultInput}
             onclick={handleQuickSubmit}
@@ -236,7 +255,7 @@
                 <Loader2 class="w-4 h-4 animate-spin" />
             {:else}
                 <div class="flex items-center gap-2">
-                    <span>Add Trade</span>
+                    <span>Add</span>
                     <div class="hidden md:flex items-center gap-1 opacity-40 ml-2">
                         <span class="text-[9px] px-1 py-0.5 border border-zinc-900/20 rounded font-mono">↵</span>
                     </div>

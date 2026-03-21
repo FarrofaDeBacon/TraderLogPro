@@ -58,8 +58,10 @@
     import { format } from "date-fns/format";
     import { filterTradesContext, getTradeViewModel } from "$lib/domain/trades/trade-engine";
     import QuickLog from "$lib/components/trades/QuickLog.svelte";
+    import QuickEditTrade from "$lib/components/trades/QuickEditTrade.svelte";
 
     let searchQuery = $state("");
+    let searchInputRef = $state<HTMLInputElement | null>(null);
     let expandedMonths = $state<Set<string>>(new Set());
     let expandedWeeks = $state<Set<string>>(new Set());
     let expandedDays = $state<Set<string>>(new Set());
@@ -78,6 +80,7 @@
     let tradeToDelete = $state<string | null>(null);
     let dayToDelete = $state<any>(null);
     let isEditOpen = $state(false);
+    let isQuickEditOpen = $state(false);
     let isViewOpen = $state(false);
     let selectedTrade = $state<any>(null);
 
@@ -419,12 +422,36 @@
 
     function handleEdit(trade: any) {
         selectedTrade = trade;
-        isEditOpen = true;
+        isQuickEditOpen = true;
+    }
+
+    function handleAdvancedEdit() {
+        isQuickEditOpen = false;
+        setTimeout(() => { isEditOpen = true; }, 100);
     }
 
     function handleView(trade: any) {
         selectedTrade = trade;
         isViewOpen = true;
+    }
+
+    // Keyboard Shortcuts Logic
+    function handleGlobalKeydown(e: KeyboardEvent) {
+        // Prevent shortcuts if user is typing in inputs or textareas
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+        // CTRL/CMD + N: New Trade
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
+            e.preventDefault();
+            selectedTrade = null;
+            isEditOpen = true;
+        }
+
+        // CTRL/CMD + K: Focus Search
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            setTimeout(() => { if (searchInputRef) searchInputRef.focus(); }, 50);
+        }
     }
 
     let deleteModalDescription = $state("");
@@ -557,6 +584,8 @@
     }
 </script>
 
+<svelte:window onkeydown={handleGlobalKeydown} />
+
 <div class="space-y-6 animate-in fade-in duration-500">
     <div class="flex-1 flex flex-col space-y-8 p-4 md:p-8">
         <div
@@ -570,7 +599,12 @@
                     {$t("trades.subtitle")}
                 </p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
+                <div class="relative hidden sm:block">
+                    <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input bind:ref={searchInputRef} bind:value={searchQuery} placeholder="Buscar ativo/nota... (Ctrl+K)" class="pl-8 h-9 w-[180px] lg:w-[220px] bg-background/50 border-border/50 text-xs shadow-sm font-medium" />
+                </div>
+                
                 <Button
                     variant={showFilters ? "secondary" : "outline"}
                     size="sm"
@@ -1597,6 +1631,14 @@
     </Dialog.Content>
 </Dialog.Root>
 
+<!-- Quick Edit Modal -->
+<QuickEditTrade 
+    bind:open={isQuickEditOpen} 
+    trade={selectedTrade} 
+    onsave={() => { tradesStore.loadTrades(); financialConfigStore.loadCashTransactions(); }}
+    onadvanced={handleAdvancedEdit}
+/>
+
 <!-- Wizard Modal (New/Edit) -->
 <Dialog.Root bind:open={isEditOpen}>
     <Dialog.Content
@@ -1609,12 +1651,9 @@
                 close={() => (isEditOpen = false)}
                 onsave={() => {
                     isEditOpen = false;
-                    // Sync DB state AFTER the dialog is closed (100ms after) to avoid triggering
-                    // $effect in NewTradeWizard while it is still mounted
                     setTimeout(() => {
                         selectedTrade = null;
                         tradesStore.loadTrades();
-                        // Also reload cash transactions so the statement updates after trade edit
                         financialConfigStore.loadCashTransactions();
                     }, 100);
                 }}
