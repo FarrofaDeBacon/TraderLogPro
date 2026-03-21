@@ -17,6 +17,7 @@
         PanelLeftClose,
         PanelLeftOpen,
         FileText,
+        Printer,
         DollarSign,
         LifeBuoy,
     } from "lucide-svelte";
@@ -42,6 +43,7 @@
         { label: $t("nav.dashboard", { default: "Dashboard" }), href: "/", icon: LayoutDashboard },
         { label: $t("nav.psychology", { default: "Psicologia" }), href: "/psychology", icon: Brain },
         { label: $t("nav.risk", { default: "Controle de Risco" }), href: "/risk-control", icon: Activity },
+        { label: $t("nav.reports", { default: "Relatórios" }), href: "/reports", icon: Printer },
     ]);
 
     // Fiscal Items
