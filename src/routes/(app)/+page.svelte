@@ -262,6 +262,52 @@
         </div>
       </div>
 
+      <!-- BLOCO PROATIVO: ASSISTENTE DO TRADER -->
+      {#if gamificationStore.proactiveSignals.length > 0}
+      <div class="mb-4 space-y-3">
+        <h3 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest flex items-center gap-2 pl-1">
+          <Brain class="w-3.5 h-3.5" />
+          Assistente do Trader
+        </h3>
+        <div class="grid grid-cols-1 gap-3">
+          {#each gamificationStore.proactiveSignals.slice(0, 1) as signal}
+            <div class={cn(
+                "p-4 border border-border/50 rounded-xl flex items-start gap-4 transition-colors relative overflow-hidden",
+                signal.type === 'warning' ? "bg-rose-500/5 hover:bg-rose-500/10 border-rose-500/30" : 
+                signal.type === 'reminder' ? "bg-amber-500/5 hover:bg-amber-500/10 border-amber-500/30" : 
+                "bg-emerald-500/5 hover:bg-emerald-500/10 border-emerald-500/30"
+            )}>
+              <div class={cn(
+                  "p-2.5 rounded-full shrink-0 flex items-center justify-center",
+                  signal.type === 'warning' ? "bg-rose-500/20 text-rose-500" : 
+                  signal.type === 'reminder' ? "bg-amber-500/20 text-amber-500" : 
+                  "bg-emerald-500/20 text-emerald-500"
+              )}>
+                 {#if signal.type === 'warning'} <ShieldAlert class="w-5 h-5" />
+                 {:else if signal.type === 'reminder'} <AlertTriangle class="w-5 h-5" />
+                 {:else} <Zap class="w-5 h-5" /> {/if}
+              </div>
+              
+              <div class="flex-1 pt-0.5">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class={cn(
+                      "text-xs font-black uppercase tracking-widest",
+                      signal.type === 'warning' ? "text-rose-500" : signal.type === 'reminder' ? "text-amber-500" : "text-emerald-500"
+                  )}>
+                    {signal.title}
+                  </span>
+                  <Badge variant="outline" class="text-[8px] uppercase tracking-wider bg-background/50 border-border/40">{signal.type}</Badge>
+                </div>
+                <p class="text-xs font-medium text-foreground/80 leading-relaxed pr-6">
+                  {signal.message}
+                </p>
+              </div>
+            </div>
+          {/each}
+        </div>
+      </div>
+      {/if}
+
       <!-- BLOCO 3: INSIGHT AUTOMÁTICO (Radar Comportamental Fase 5) -->
       <div class="mb-4 space-y-3">
         <h3 class="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2 pl-1">

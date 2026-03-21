@@ -4,6 +4,7 @@ import { currenciesStore } from "$lib/stores/currencies.svelte";
 import { dailyReviewsStore } from "$lib/stores/daily-reviews.svelte";
 import { workspaceStore } from "$lib/stores/workspace.svelte";
 import { calculateStreaks, getScoreBreakdown, type GamificationStreaks, type TraderScoreStats, type ScoreBreakdown } from "$lib/domain/stats/gamification-engine";
+import { getProactiveSignals, type ProactiveSignal } from "$lib/domain/insights/behavioral-assistant-engine";
 import { checkUnlockedMilestones } from "$lib/domain/stats/milestones";
 
 class GamificationStore {
@@ -58,6 +59,15 @@ class GamificationStore {
                 getEmotionalState: (id: string) => workspaceStore.emotionalStates.find(e => e.id === id)
             }
         );
+    }
+
+    get proactiveSignals(): ProactiveSignal[] {
+        if (!tradesStore.trades || tradesStore.trades.length === 0) return [];
+        return getProactiveSignals({
+            trades: tradesStore.trades,
+            breakdown: this.scoreBreakdown,
+            streaks: this.streaks
+        });
     }
 }
 
