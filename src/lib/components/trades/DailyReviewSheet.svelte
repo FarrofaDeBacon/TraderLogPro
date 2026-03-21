@@ -12,6 +12,7 @@
     import { formatCurrency } from "$lib/utils";
     import { accountsStore } from "$lib/stores/accounts.svelte";
     import { currenciesStore } from "$lib/stores/currencies.svelte";
+    import { gamificationStore } from "$lib/stores/gamification.svelte";
 
     let { open = $bindable(false), date } = $props<{
         open: boolean;
@@ -66,8 +67,21 @@
             toast.error("Por favor, avalie seu dia primeiro.");
             return;
         }
+
+        const streakBefore = gamificationStore.streaks.disciplineStreak;
+        
         dailyReviewsStore.saveReview(date, rating, notes);
-        toast.success("Fechamento diário salvo com sucesso! 🎯");
+
+        const streakAfter = gamificationStore.streaks.disciplineStreak;
+
+        if (streakAfter > streakBefore && streakAfter >= 2) {
+            toast.success(`🔥 Shield Wall! Disciplina estendida para ${streakAfter} dias seguidos!`);
+        } else if (streakAfter === 0 && streakBefore > 0) {
+            toast.error("Streak de disciplina quebrada. O foco agora é retomar o controle amanhã.");
+        } else {
+            toast.success("Fechamento diário salvo com sucesso! 🎯");
+        }
+        
         open = false;
     }
 </script>

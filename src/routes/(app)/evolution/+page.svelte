@@ -16,10 +16,14 @@
         Calendar
     } from "lucide-svelte";
     import { cn } from "$lib/utils";
+    import { gamificationStore } from "$lib/stores/gamification.svelte";
+    import { MILESTONES } from "$lib/domain/stats/milestones";
+    import { Crosshair, ShieldCheck, Trophy } from "lucide-svelte"; // ensure icons exist
 
     let history = $derived(evolutionStore.history);
     let freqs = $derived(evolutionStore.insightFrequencies);
-    let score = $derived(evolutionStore.traderScore);
+    let score = $derived(Math.round(gamificationStore.scoreStats.score));
+    let unlockedBadges = $derived(gamificationStore.unlockedMilestones);
 
     // Group history by date for timeline
     let timeline = $derived.by(() => {
@@ -52,20 +56,49 @@
          'bg-emerald-600/10 border border-emerald-500/20'}">
         
         <div class="relative z-10 flex flex-col items-center gap-4">
-            <h3 class="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">TRADER SCORE (0-100)</h3>
+            <h3 class="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">ROLLING SCORE (30 TRADES)</h3>
             <h2 class="text-7xl md:text-9xl font-black font-mono tracking-tighter drop-shadow-md
                 {score < 50 ? 'text-rose-500' : score < 80 ? 'text-amber-500' : 'text-emerald-500'}">
                 {score}
             </h2>
             <p class="text-xl md:text-2xl font-medium text-foreground/80 mt-2">
                 {#if score < 50}
-                    Zona Crítica. Suas emoções estão operando sua conta. Pare por hoje.
+                    Zona Crítica. Suas emoções estão operando sua conta. Recupere o controle.
                 {:else if score < 80}
                     Disciplina Média. Sinais vitais sob pressão. Policie seu plano.
                 {:else}
                     Máxima Performance Tática. Emoções isoladas, execução fria.
                 {/if}
             </p>
+        </div>
+    </div>
+
+    <!-- MILESTONES VAULT -->
+    <div class="mb-10">
+        <h3 class="text-sm font-black uppercase tracking-[0.15em] text-foreground flex items-center gap-2 mb-6 border-b border-border/40 pb-4">
+            <Trophy class="w-4 h-4 text-amber-500" /> Milestones Vault
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {#each MILESTONES as milestone}
+                {@const isUnlocked = unlockedBadges.includes(milestone.id)}
+                <div class={cn(
+                    "flex flex-col p-5 rounded-2xl border transition-all duration-300",
+                    isUnlocked ? milestone.colorClass : "bg-muted/10 border-border/20 opacity-50 grayscale hover:grayscale-0"
+                )}>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="p-2 bg-background/50 rounded-lg">
+                            {#if milestone.icon === 'Target'} <Target class="w-5 h-5" /> 
+                            {:else if milestone.icon === 'Crosshair'} <Crosshair class="w-5 h-5" />
+                            {:else if milestone.icon === 'ShieldCheck'} <ShieldCheck class="w-5 h-5" />
+                            {:else if milestone.icon === 'Trophy'} <Trophy class="w-5 h-5" />
+                            {:else if milestone.icon === 'Brain'} <Brain class="w-5 h-5" />
+                            {:else} <TrendingUp class="w-5 h-5" /> {/if}
+                        </div>
+                        <h4 class="font-black tracking-widest uppercase text-sm">{milestone.title}</h4>
+                    </div>
+                    <p class="text-xs font-medium opacity-80 mt-1 leading-relaxed">{milestone.description}</p>
+                </div>
+            {/each}
         </div>
     </div>
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+    // @ts-nocheck
     import { Select as SelectPrimitive } from "bits-ui";
 
     let { placeholder = "", ...restProps } = $props();

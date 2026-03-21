@@ -24,6 +24,7 @@
   import OnboardingWizard from "$lib/components/dashboard/OnboardingWizard.svelte";
   import DailyReviewSheet from "$lib/components/trades/DailyReviewSheet.svelte";
   import { dailyReviewsStore } from "$lib/stores/daily-reviews.svelte";
+  import { gamificationStore } from "$lib/stores/gamification.svelte";
   import {
     TrendingUp,
     TrendingDown,
@@ -41,7 +42,8 @@
     Timer,
     Brain,
     AlertTriangle,
-    ShieldAlert
+    ShieldAlert,
+    Flame
   } from "lucide-svelte";
   import { cn, parseSafeDate } from "$lib/utils";
   import {
@@ -231,6 +233,8 @@
             {$t("dashboard.newTrade")}
           </Button>
         </div>
+      </div>
+
       <!-- BLOCO 5 - Ações Rápidas & Quick Log -->
       <div class="mb-4 bg-card/60 rounded-xl p-5 border border-border/60 shadow-sm">
         <QuickLog />
@@ -340,37 +344,40 @@
            </CardContent>
         </Card>
 
-        <!-- Bloco 2: Status Rápido (Risk & Consistency) -->
-        <Card class="card-glass border-l-4 border-l-indigo-500 relative overflow-hidden transition-all hover:border-l-8">
+        <!-- Bloco 2: Trader Streaks & Score -->
+        <Card class="card-glass border-l-4 border-l-amber-500 relative overflow-hidden transition-all hover:border-l-8">
            <div class="absolute -right-4 -top-8 rotate-12 opacity-5 pointer-events-none">
-             <ShieldCheck class="w-32 h-32" />
+             <Trophy class="w-32 h-32" />
            </div>
            <CardContent class="p-5 relative z-10">
-              <h3 class="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                <Target class="w-3.5 h-3.5" />
-                Status Operacional
+              <h3 class="text-[10px] font-black text-amber-500 uppercase tracking-widest flex items-center gap-2">
+                <Flame class="w-4 h-4" />
+                Evolution & Streaks
               </h3>
               <div class="mt-4 space-y-3">
                 <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
-                  <span class="text-[9px] font-black tracking-widest text-muted-foreground uppercase">Trailing Risk</span>
-                  {#if stats.dayResult <= -(activeProfile?.max_daily_loss || 0) && (activeProfile?.max_daily_loss ?? 0) > 0}
-                    <Badge variant="destructive" class="text-[9px] uppercase font-black tracking-widest px-1.5 py-0 h-4">Bloqueado</Badge>
-                  {:else if stats.dayResult <= -(activeProfile?.max_daily_loss || 0) * 0.7 && (activeProfile?.max_daily_loss ?? 0) > 0}
-                    <Badge class="bg-orange-500/20 text-orange-500 hover:bg-orange-500/30 text-[9px] border border-orange-500/20 uppercase font-black tracking-widest px-1.5 py-0 h-4">Atenção</Badge>
-                  {:else}
-                    <Badge class="bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30 text-[9px] border border-emerald-500/20 uppercase font-black tracking-widest px-1.5 py-0 h-4">Liberado</Badge>
-                  {/if}
+                  <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase">
+                    Rolling Score (30T)
+                  </span>
+                  <span class="font-mono font-bold text-amber-400 text-xs bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{gamificationStore.scoreStats.score.toFixed(0)}</span>
                 </div>
                 <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
-                  <span class="text-[9px] font-black tracking-widest text-muted-foreground uppercase">Constância Média</span>
-                  <span class="font-mono font-bold text-indigo-400 text-xs bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">{stats.discipline.toFixed(0)}%</span>
+                  <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase">
+                    Disciplina Inquebrável
+                  </span>
+                  <span class="font-mono font-bold {gamificationStore.streaks.disciplineStreak > 0 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-muted-foreground bg-muted border-muted-foreground/20'} text-xs px-2 py-0.5 rounded border">{gamificationStore.streaks.disciplineStreak}d</span>
+                </div>
+                <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
+                  <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase">
+                    Dias Seguidos de Lucro
+                  </span>
+                  <span class="font-mono font-bold {gamificationStore.streaks.greenStreak > 0 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-muted-foreground bg-muted border-muted-foreground/20'} text-xs px-2 py-0.5 rounded border">{gamificationStore.streaks.greenStreak}d</span>
                 </div>
               </div>
            </CardContent>
         </Card>
       </div>
       </div>
-    </div>
     {/if}
   </div>
 {/if}
