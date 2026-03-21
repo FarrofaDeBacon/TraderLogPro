@@ -3,7 +3,7 @@ import { accountsStore } from "$lib/stores/accounts.svelte";
 import { currenciesStore } from "$lib/stores/currencies.svelte";
 import { dailyReviewsStore } from "$lib/stores/daily-reviews.svelte";
 import { workspaceStore } from "$lib/stores/workspace.svelte";
-import { calculateStreaks, calculateRollingScore, type GamificationStreaks, type TraderScoreStats } from "$lib/domain/stats/gamification-engine";
+import { calculateStreaks, getScoreBreakdown, type GamificationStreaks, type TraderScoreStats, type ScoreBreakdown } from "$lib/domain/stats/gamification-engine";
 import { checkUnlockedMilestones } from "$lib/domain/stats/milestones";
 
 class GamificationStore {
@@ -23,12 +23,16 @@ class GamificationStore {
         );
     }
 
-    get scoreStats(): TraderScoreStats {
+    get scoreBreakdown(): ScoreBreakdown {
         if (!tradesStore.trades || tradesStore.trades.length === 0) {
-            return { score: 100, executionScore: 100, riskScore: 100, behaviorScore: 100, psychoScore: 100, winRate: 0, profitFactor: 0 };
+            return {
+                stats: { score: 100, executionScore: 100, riskScore: 100, behaviorScore: 100, psychoScore: 100, winRate: 0, profitFactor: 0 },
+                impacts: [],
+                recommendations: ["Sem dados suficientes. Faça sua primeira operação para gerar o Breakdown."]
+            };
         }
 
-        return calculateRollingScore(
+        return getScoreBreakdown(
             tradesStore.trades, 
             dailyReviewsStore.reviews,
             { 
@@ -36,6 +40,10 @@ class GamificationStore {
                 getEmotionalState: (id: string) => workspaceStore.emotionalStates.find(e => e.id === id)
             }
         );
+    }
+
+    get scoreStats(): TraderScoreStats {
+        return this.scoreBreakdown.stats;
     }
 
     get unlockedMilestones(): string[] {

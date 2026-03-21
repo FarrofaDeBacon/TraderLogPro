@@ -23,6 +23,7 @@
   import CurrencyTicker from "$lib/components/finance/CurrencyTicker.svelte";
   import OnboardingWizard from "$lib/components/dashboard/OnboardingWizard.svelte";
   import DailyReviewSheet from "$lib/components/trades/DailyReviewSheet.svelte";
+  import ScoreBreakdownSheet from "$lib/components/gamification/ScoreBreakdownSheet.svelte";
   import { dailyReviewsStore } from "$lib/stores/daily-reviews.svelte";
   import { gamificationStore } from "$lib/stores/gamification.svelte";
   import {
@@ -43,7 +44,8 @@
     Brain,
     AlertTriangle,
     ShieldAlert,
-    Flame
+    Flame,
+    Info
   } from "lucide-svelte";
   import { cn, parseSafeDate } from "$lib/utils";
   import {
@@ -59,6 +61,7 @@
   let selectedAccountId = $state<string>("all");
   let isNewTradeOpen = $state(false);
   let isReviewOpen = $state(false);
+  let isScoreBreakdownOpen = $state(false);
 
   const filteredTrades = $derived.by(() => {
     let trades = tradesStore.trades || [];
@@ -355,12 +358,18 @@
                 Evolution & Streaks
               </h3>
               <div class="mt-4 space-y-3">
-                <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
-                  <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase">
+                <button 
+                  class="w-full flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm hover:bg-amber-500/5 hover:border-amber-500/30 transition-colors group cursor-pointer"
+                  onclick={() => isScoreBreakdownOpen = true}
+                >
+                  <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase group-hover:text-amber-500 transition-colors">
                     Rolling Score (30T)
                   </span>
-                  <span class="font-mono font-bold text-amber-400 text-xs bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{gamificationStore.scoreStats.score.toFixed(0)}</span>
-                </div>
+                  <div class="flex items-center gap-2">
+                      <span class="font-mono font-bold text-amber-400 text-xs bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{gamificationStore.scoreStats.score.toFixed(0)}</span>
+                      <Info class="w-3 h-3 text-muted-foreground/50 group-hover:text-amber-500 transition-colors" />
+                  </div>
+                </button>
                 <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
                   <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase">
                     Controle Emocional
@@ -388,3 +397,5 @@
     {/if}
   </div>
 {/if}
+
+<ScoreBreakdownSheet bind:open={isScoreBreakdownOpen} />
