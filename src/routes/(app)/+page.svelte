@@ -363,15 +363,22 @@
                 </div>
                 <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
                   <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase">
+                    Controle Emocional
+                  </span>
+                  <span class="font-mono font-bold {gamificationStore.streaks.emotionalControlStreak > 0 ? 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' : 'text-muted-foreground bg-muted border-muted-foreground/20'} text-xs px-2 py-0.5 rounded border">{gamificationStore.streaks.emotionalControlStreak}d</span>
+                </div>
+                <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
+                  <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase">
                     Disciplina Inquebrável
                   </span>
                   <span class="font-mono font-bold {gamificationStore.streaks.disciplineStreak > 0 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-muted-foreground bg-muted border-muted-foreground/20'} text-xs px-2 py-0.5 rounded border">{gamificationStore.streaks.disciplineStreak}d</span>
                 </div>
-                <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
-                  <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase">
-                    Dias Seguidos de Lucro
+                <!-- Secondary Streak -->
+                <div class="flex items-center justify-between bg-background/40 p-2 opacity-70 rounded-md border border-border/40 backdrop-blur-sm">
+                  <span class="flex items-center gap-2 text-[8px] font-black tracking-widest text-muted-foreground uppercase">
+                    Dias de Lucro (Secundário)
                   </span>
-                  <span class="font-mono font-bold {gamificationStore.streaks.greenStreak > 0 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-muted-foreground bg-muted border-muted-foreground/20'} text-xs px-2 py-0.5 rounded border">{gamificationStore.streaks.greenStreak}d</span>
+                  <span class="font-mono font-bold {gamificationStore.streaks.greenStreak > 0 ? 'text-emerald-400/80 bg-emerald-500/5' : 'text-muted-foreground/50'} text-[10px] px-1.5 py-0.5 rounded border border-transparent">{gamificationStore.streaks.greenStreak}d</span>
                 </div>
               </div>
            </CardContent>

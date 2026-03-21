@@ -1,4 +1,4 @@
-import type { GamificationStreaks, TraderScoreStats } from "$lib/domain/stats/gamification-engine";
+import type { GamificationStreaks, TraderScoreStats, TradeConversionDeps } from "$lib/domain/stats/gamification-engine";
 import type { Trade } from "$lib/types";
 import { getLocalDatePart } from "$lib/utils";
 
@@ -59,7 +59,7 @@ export function checkUnlockedMilestones(
     trades: Trade[],
     streaks: GamificationStreaks,
     scoreStats: TraderScoreStats,
-    deps: { getConvertedResult: (t: Trade) => number }
+    deps: TradeConversionDeps
 ): string[] {
     const unlocked: string[] = [];
     if (trades.length === 0) return unlocked;
