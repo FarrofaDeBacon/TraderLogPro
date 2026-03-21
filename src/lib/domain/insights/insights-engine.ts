@@ -10,6 +10,13 @@ export interface BehavioralInsight {
     weight: number;
 }
 
+export interface LiveIntervention {
+    id: string;
+    type: 'warning' | 'danger';
+    message: string;
+    action?: string;
+}
+
 export function generateTraderInsights(
     trades: any[],
     baseDate: Date,
@@ -200,4 +207,69 @@ export function generateTraderInsights(
 
 function formatCurrencyFallback(val: number): string {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+}
+
+export function getLiveIntervention(
+    trades: any[],
+    baseDate: Date,
+    convertTradeResult: TradeConverter,
+    riskCockpitState?: any // To check daily loss limit
+): LiveIntervention | null {
+    if (!trades || trades.length === 0) return null;
+
+    // Filter today's trades
+    const todaysTrades = trades.filter(t => {
+        try {
+            const tDate = parseISO(t.exit_date || t.date);
+            return isSameDay(tDate, baseDate);
+        } catch { return false; }
+    }).sort((a, b) => {
+        const da = parseSafeDate(a.exit_date || a.date).getTime();
+        const db = parseSafeDate(b.exit_date || b.date).getTime();
+        return da - db;
+    });
+
+    if (todaysTrades.length === 0) return null;
+
+    const todaysResults = todaysTrades.map(t => convertTradeResult(t));
+    const dayResult = todaysResults.reduce((acc, val) => acc + val, 0);
+
+    // 1. Check Daily Loss Limit (Danger)
+    if (riskCockpitState && riskCockpitState.dailyLossLimit > 0) {
+        if (dayResult < 0 && Math.abs(dayResult) >= riskCockpitState.dailyLossLimit * 0.8) {
+            return {
+                id: 'daily_limit_danger',
+                type: 'danger',
+                message: `Loss Diário Crítico: Você atingiu ${(Math.abs(dayResult) / riskCockpitState.dailyLossLimit * 100).toFixed(0)}% do limite máximo.`,
+                action: 'PARE DE OPERAR'
+            };
+        }
+    }
+
+    // 2. Check Consecutive Losses (Warning/Danger)
+    let consecutiveLosses = 0;
+    for (let i = todaysResults.length - 1; i >= 0; i--) {
+        if (todaysResults[i] < 0) {
+            consecutiveLosses++;
+        } else if (todaysResults[i] > 0) {
+            break; // Stop counting backwards at the first win
+        }
+    }
+
+    if (consecutiveLosses >= 3) {
+        return {
+            id: 'tilt_imminent',
+            type: 'danger',
+            message: `${consecutiveLosses} perdas seguidas detectadas. Risco altíssimo de Tilt.`,
+            action: 'Respire fundo'
+        };
+    } else if (consecutiveLosses === 2) {
+        return {
+            id: 'consecutive_losses_2',
+            type: 'warning',
+            message: '2 perdas seguidas. Reduza o lote ou faça uma pausa na próxima entrada.',
+        };
+    }
+
+    return null;
 }

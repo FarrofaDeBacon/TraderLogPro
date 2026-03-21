@@ -9,8 +9,20 @@
     import { tradesStore } from "$lib/stores/trades.svelte";
     import { appStore } from "$lib/stores/app.svelte";
     import { workspaceStore } from "$lib/stores/workspace.svelte";
-    import { Zap, TrendingUp, TrendingDown, CheckSquare, Loader2 } from "lucide-svelte";
+    import { riskStore } from "$lib/stores/riskStore.svelte";
+    import { getLiveIntervention } from "$lib/domain/insights/insights-engine";
+    import type { LiveIntervention } from "$lib/domain/insights/insights-engine";
+    import { Zap, TrendingUp, TrendingDown, CheckSquare, Loader2, AlertCircle, AlertTriangle } from "lucide-svelte";
     import { toast } from "svelte-sonner";
+
+    let intervention = $derived.by(() => {
+        return getLiveIntervention(
+            tradesStore.trades,
+            new Date(),
+            (trade) => parseFloat(trade.result?.toString() || "0"),
+            riskStore.riskCockpitState
+        );
+    });
 
     // O Quick Log preenche o mínimo e deduz o máximo
     let asset = $state("");
@@ -131,7 +143,24 @@
     }
 </script>
 
-<div class="flex flex-col md:flex-row items-center gap-3 p-3 bg-zinc-950/40 border-y md:border border-border/10 md:rounded-xl shadow-inner w-full">
+<div class="w-full flex flex-col gap-2">
+    {#if intervention}
+        <div class="flex items-center gap-2 p-2 rounded-lg text-xs font-bold border animate-in fade-in slide-in-from-top-2 {intervention.type === 'danger' ? 'bg-rose-500/10 border-rose-500/20 text-rose-500' : 'bg-amber-500/10 border-amber-500/20 text-amber-500'}">
+            {#if intervention.type === 'danger'}
+                <AlertCircle class="w-4 h-4 shrink-0" />
+            {:else}
+                <AlertTriangle class="w-4 h-4 shrink-0" />
+            {/if}
+            <div class="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-1 md:gap-2">
+                <span>{intervention.message}</span>
+                {#if intervention.action}
+                    <span class="opacity-70 font-mono tracking-widest text-[9px] uppercase border px-1.5 py-0.5 rounded {intervention.type === 'danger' ? 'border-rose-500/30' : 'border-amber-500/30'}">{intervention.action}</span>
+                {/if}
+            </div>
+        </div>
+    {/if}
+
+    <div class="flex flex-col md:flex-row items-center gap-3 p-3 bg-zinc-950/40 border-y md:border border-border/10 md:rounded-xl shadow-inner w-full">
     <div class="flex items-center gap-2 pr-4 border-r border-border/10 justify-center min-w-max hidden md:flex">
         <Zap class="w-4 h-4 text-emerald-500 fill-emerald-500/20" />
         <span class="text-xs font-black uppercase tracking-widest text-muted-foreground">Quick Log</span>
@@ -215,4 +244,5 @@
             {/if}
         </Button>
     </div>
+</div>
 </div>
