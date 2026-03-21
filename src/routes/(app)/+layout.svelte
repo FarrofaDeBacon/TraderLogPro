@@ -42,17 +42,21 @@
         <OnboardingWizard onComplete={handleOnboardingComplete} />
     {:else}
         <div
-            class="grid min-h-screen w-full transition-all duration-300 bg-background md:grid-cols-[var(--sidebar-width)_1fr]"
+            class="grid min-h-screen w-full transition-all duration-300 bg-background md:grid-cols-[var(--sidebar-width)_1fr] print:flex print:flex-col print:bg-white"
             style="--sidebar-width: {sidebarState.isCollapsed
                 ? '70px'
                 : '280px'};"
         >
-            <AppSidebar />
-            <div class="flex flex-col min-w-0">
-                <LicenseBanner />
+            <div class="print:hidden h-full">
+                <AppSidebar />
+            </div>
+            <div class="flex flex-col min-w-0 print:w-full print:block">
+                <div class="print:hidden">
+                    <LicenseBanner />
+                </div>
                 <AutoTradeDetectionDialog />
                 <main
-                    class="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 min-w-0"
+                    class="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 min-w-0 print:p-0 print:m-0 print:block print:w-full print:max-w-none"
                 >
                     {@render children()}
                 </main>
