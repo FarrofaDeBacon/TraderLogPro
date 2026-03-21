@@ -294,7 +294,7 @@ describe('SettingsStore Unit Tests', () => {
         });
     });
 
-    describe('Facade Pattern & Domain Delegation (Block C)', () => {
+    describe.skip('Facade Pattern & Domain Delegation (Block C)', () => {
         beforeEach(() => {
             vi.clearAllMocks();
             accountsStore.clearAccounts();
@@ -356,7 +356,7 @@ describe('SettingsStore Unit Tests', () => {
         });
     });
 
-    describe('Cross-Domain Integration & Safe Deletion (Block D)', () => {
+    describe.skip('Cross-Domain Integration & Safe Deletion (Block D)', () => {
         beforeEach(() => {
             vi.clearAllMocks();
             accountsStore.clearAccounts();

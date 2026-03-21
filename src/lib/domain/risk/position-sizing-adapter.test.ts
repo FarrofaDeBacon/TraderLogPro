@@ -9,6 +9,7 @@ describe('Position Sizing Adapter', () => {
         max_risk_per_trade_percent: 1.5,
         capital_source: 'Fixed',
         fixed_capital: 10000,
+        growth_plan_id: 'mock-plan',
         };
 
     const baseAsset: Partial<Asset> = {
