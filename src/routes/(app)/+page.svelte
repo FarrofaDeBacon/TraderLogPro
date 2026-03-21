@@ -22,6 +22,8 @@
   import QuickLog from "$lib/components/trades/QuickLog.svelte";
   import CurrencyTicker from "$lib/components/finance/CurrencyTicker.svelte";
   import OnboardingWizard from "$lib/components/dashboard/OnboardingWizard.svelte";
+  import DailyReviewSheet from "$lib/components/trades/DailyReviewSheet.svelte";
+  import { dailyReviewsStore } from "$lib/stores/daily-reviews.store";
   import {
     TrendingUp,
     TrendingDown,
@@ -54,6 +56,7 @@
   // --- State ---
   let selectedAccountId = $state<string>("all");
   let isNewTradeOpen = $state(false);
+  let isReviewOpen = $state(false);
 
   const filteredTrades = $derived.by(() => {
     let trades = tradesStore.trades || [];
@@ -131,6 +134,10 @@
       currency: mainCurrency,
     }).format(val);
   }
+
+  const todayStr = $derived(new Date().toISOString().split('T')[0]);
+  const hasReviewedToday = $derived(!!dailyReviewsStore.getReviewForDate(todayStr));
+  const shouldShowReviewCta = $derived(stats.tradesToday >= 2 || Math.abs(stats.dayResult) > 0);
 </script>
 
 {#if appStore.isLoadingData}
@@ -171,6 +178,8 @@
           <NewTradeWizard close={() => (isNewTradeOpen = false)} />
         </Dialog.Content>
       </Dialog.Root>
+
+      <DailyReviewSheet bind:open={isReviewOpen} date={todayStr} />
 
       <!-- TOP Navigation & Survivor Hub (Compact Header) -->
       <div
@@ -237,6 +246,12 @@
             <ShieldCheck class="w-3.5 h-3.5 shrink-0" />
             Cockpit Operacional
           </Button>
+          {#if shouldShowReviewCta}
+            <Button size="sm" onclick={() => isReviewOpen = true} class="w-full sm:w-auto text-[10px] font-black h-8 uppercase tracking-widest shadow-none gap-2 border {hasReviewedToday ? 'bg-zinc-900 text-muted-foreground border-white/5 hover:bg-zinc-800' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-emerald-500/30 shadow-sm animate-pulse'}">
+                <BookOpen class="w-3.5 h-3.5 shrink-0" />
+                {hasReviewedToday ? "Revisão Concluída" : "Finalizar Pregão"}
+            </Button>
+          {/if}
         </div>
       </div>
 

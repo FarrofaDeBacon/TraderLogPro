@@ -341,7 +341,7 @@ import type { AssetRiskProfile } from "$lib/types";
 
             <!-- Growth Override Section -->
             <div class="border-t pt-4 mt-2">
-                <div class="flex items-center justify-between p-3 rounded-lg border border-border/10 bg-amber-500/5 shadow-sm cursor-pointer" onclick={() => formData.growth_override_enabled = !formData.growth_override_enabled}>
+                <button type="button" class="w-full text-left flex items-center justify-between p-3 rounded-lg border border-border/10 bg-amber-500/5 shadow-sm cursor-pointer" onclick={() => formData.growth_override_enabled = !formData.growth_override_enabled}>
                     <div class="space-y-0.5">
                         <h4 class="font-bold text-sm text-amber-500">
                             {$t("settings.risk.assetProfiles.growthOverride") || "Sobrescrita de Crescimento"}
@@ -351,7 +351,7 @@ import type { AssetRiskProfile } from "$lib/types";
                         </p>
                     </div>
                     <Switch bind:checked={formData.growth_override_enabled} />
-                </div>
+                </button>
 
                 {#if formData.growth_override_enabled}
                     <GrowthPhasesEditor bind:phases={formData.growth_phases_override} simpleMode={true} />
