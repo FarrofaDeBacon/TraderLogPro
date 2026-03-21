@@ -21,6 +21,7 @@
   import NewTradeWizard from "$lib/components/trades/NewTradeWizard.svelte";
   import QuickLog from "$lib/components/trades/QuickLog.svelte";
   import CurrencyTicker from "$lib/components/finance/CurrencyTicker.svelte";
+  import OnboardingWizard from "$lib/components/dashboard/OnboardingWizard.svelte";
   import {
     TrendingUp,
     TrendingDown,
@@ -159,8 +160,11 @@
       <CurrencyTicker />
     </div>
 
-    <div class="flex-1 flex flex-col space-y-8 p-4 md:p-8 min-h-screen">
-      <Dialog.Root bind:open={isNewTradeOpen}>
+    {#if tradesStore.trades.length === 0}
+      <OnboardingWizard />
+    {:else}
+      <div class="flex-1 flex flex-col space-y-8 p-4 md:p-8 min-h-screen">
+        <Dialog.Root bind:open={isNewTradeOpen}>
         <Dialog.Content
           class="max-w-3xl max-h-[85vh] p-0 border-0 bg-transparent shadow-none"
         >
@@ -352,5 +356,6 @@
       </div>
       </div>
     </div>
+    {/if}
   </div>
 {/if}

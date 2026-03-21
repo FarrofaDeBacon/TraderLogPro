@@ -57,7 +57,7 @@
 
     const pnlByDay = $derived.by(() => {
         const map = new Map<string, number>();
-        trades.forEach((t: import("$lib/stores/app.svelte").Trade) => {
+        trades.forEach((t: import("$lib/types").Trade) => {
             const day = format(parseSafeDate(t.date), "yyyy-MM-dd");
             map.set(day, (map.get(day) || 0) + (t.result || 0));
         });
