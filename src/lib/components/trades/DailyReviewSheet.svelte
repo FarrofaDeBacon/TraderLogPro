@@ -3,7 +3,7 @@
     import { Button } from "$lib/components/ui/button";
     import { Textarea } from "$lib/components/ui/textarea";
     import { tradesStore } from "$lib/stores/trades.svelte";
-    import { dailyReviewsStore, type DailyRating } from "$lib/stores/daily-reviews.store";
+    import { dailyReviewsStore, type DailyRating } from "$lib/stores/daily-reviews.svelte";
     import { generateTraderInsights } from "$lib/domain/insights/insights-engine";
     import { parseISO, isSameDay } from "date-fns";
     import { Briefcase, TrendingUp, TrendingDown, Trophy, AlertTriangle, CheckCircle2 } from "lucide-svelte";

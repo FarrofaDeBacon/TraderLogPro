@@ -23,7 +23,7 @@
   import CurrencyTicker from "$lib/components/finance/CurrencyTicker.svelte";
   import OnboardingWizard from "$lib/components/dashboard/OnboardingWizard.svelte";
   import DailyReviewSheet from "$lib/components/trades/DailyReviewSheet.svelte";
-  import { dailyReviewsStore } from "$lib/stores/daily-reviews.store";
+  import { dailyReviewsStore } from "$lib/stores/daily-reviews.svelte";
   import {
     TrendingUp,
     TrendingDown,
