@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
   import { accountsStore } from "$lib/stores/accounts.svelte";
     import * as Dialog from "$lib/components/ui/dialog";
     import { Button } from "$lib/components/ui/button";
@@ -6,7 +7,7 @@
     import { Label } from "$lib/components/ui/label";
     import * as Select from "$lib/components/ui/select";
     import * as Tabs from "$lib/components/ui/tabs";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import { toast } from "svelte-sonner";
     import { t } from "svelte-i18n";
     import { formatLocalISO, cn } from "$lib/utils";
@@ -126,7 +127,7 @@
 
             const fullIsoDate = formatLocalISO(date);
 
-            const result = await settingsStore.transferFunds({
+            const result = await financialConfigStore.transferFunds({
                 fromAccountId,
                 toAccountId,
                 amountParams: {
@@ -165,7 +166,7 @@
             const finalAmount = transactionType === "Withdraw" ? -value : value;
             const fullIsoDate = formatLocalISO(date);
 
-            const result = await settingsStore.addCashTransaction({
+            const result = await financialConfigStore.addCashTransaction({
                 account_id: accountId,
                 amount: finalAmount,
                 date: fullIsoDate,

@@ -1,4 +1,4 @@
-import { settingsStore } from "$lib/stores/settings.svelte";
+import { appStore } from "$lib/stores/app.svelte";
 
 export interface RiskSettings {
     maxRiskPerTrade: number; // 1% or 2%

@@ -5,7 +5,7 @@
     import { Textarea } from "$lib/components/ui/textarea";
     import * as Select from "$lib/components/ui/select";
     import { Plus, Trash2, Calculator } from "lucide-svelte";
-    import { type Indicator } from "$lib/stores/settings.svelte";
+    import type { Indicator } from "$lib/types";
     import { t } from "svelte-i18n";
 
     let { initialData, onSave, onCancel } = $props<{
@@ -282,7 +282,7 @@
             </Button>
         </div>
 
-        {#if formData.parameters.length === 0}
+        {#if !formData.parameters || formData.parameters.length === 0}
             <div
                 class="p-4 border border-dashed rounded-lg text-center bg-muted/30"
             >
@@ -295,7 +295,7 @@
             </div>
         {:else}
             <div class="space-y-2">
-                {#each formData.parameters as param, i}
+                {#each formData.parameters || [] as param, i}
                     <div
                         class="flex gap-2 items-center animate-in slide-in-from-left-2 duration-200"
                     >

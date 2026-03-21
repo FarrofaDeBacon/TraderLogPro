@@ -25,7 +25,9 @@
     import * as Select from "$lib/components/ui/select";
     import { Separator } from "$lib/components/ui/separator";
     import { Badge } from "$lib/components/ui/badge";
-    import { settingsStore, type Asset } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { Asset } from "$lib/types";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
@@ -252,7 +254,7 @@
 
     <!-- Grouped Clickable List Cards -->
     <div class="space-y-6">
-        {#if settingsStore.isLoadingData && Object.keys(groupedAssets).length === 0}
+        {#if appStore.isLoadingData && Object.keys(groupedAssets).length === 0}
             <div class="space-y-4">
                 <Skeleton class="h-8 w-48" />
                 <div class="grid gap-2">
@@ -548,7 +550,7 @@
                         bind:value={formData.default_fee_id}
                     >
                         <Select.Trigger class="w-full">
-                            {settingsStore.fees.find(
+                            {financialConfigStore.fees.find(
                                 (f) => f.id === formData.default_fee_id,
                             )?.name ||
                                 $t(
@@ -561,7 +563,7 @@
                                     "settings.assets.form.useTypeDefault",
                                 )}</Select.Item
                             >
-                            {#each settingsStore.fees as f}
+                            {#each financialConfigStore.fees as f}
                                 <Select.Item value={f.id}>{f.name}</Select.Item>
                             {/each}
                         </Select.Content>
@@ -579,7 +581,7 @@
                         bind:value={formData.tax_profile_id}
                     >
                         <Select.Trigger class="w-full">
-                            {settingsStore.taxProfiles.find(
+                            {financialConfigStore.taxProfiles.find(
                                 (p) => p.id === formData.tax_profile_id,
                             )?.name ||
                                 $t("settings.assets.form.useTypeDefault")}
@@ -590,7 +592,7 @@
                                     "settings.assets.form.useTypeDefault",
                                 )}</Select.Item
                             >
-                            {#each settingsStore.taxProfiles as p}
+                            {#each financialConfigStore.taxProfiles as p}
                                 <Select.Item value={p.id}>{p.name}</Select.Item>
                             {/each}
                         </Select.Content>

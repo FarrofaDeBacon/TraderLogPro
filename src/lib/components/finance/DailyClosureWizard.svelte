@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
   import { accountsStore } from "$lib/stores/accounts.svelte";
     import * as Dialog from "$lib/components/ui/dialog";
     import * as Table from "$lib/components/ui/table";
@@ -6,7 +7,7 @@
     import { Input } from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
     import { Checkbox } from "$lib/components/ui/checkbox";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import { toast } from "svelte-sonner";
@@ -142,7 +143,7 @@
                     )
                         .replace(/[⟨⟩`]/g, "")
                         .trim();
-                    const txResult = await settingsStore.addCashTransaction({
+                    const txResult = await financialConfigStore.addCashTransaction({
                         id: `daily_closure_${accUuid}_${selectedDate.replace(/-/g, "_")}`,
                         date: formatLocalISO(selectedDate),
                         amount: data.result,

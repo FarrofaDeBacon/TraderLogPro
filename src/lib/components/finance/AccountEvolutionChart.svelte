@@ -3,7 +3,7 @@
   import { accountsStore } from "$lib/stores/accounts.svelte";
     import EChart from "$lib/components/ui/echart.svelte";
     import * as echarts from "echarts";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { locale } from "svelte-i18n";
     import { TrendingUp } from "lucide-svelte";
 
@@ -23,7 +23,7 @@
             currentCurrency,
         });
 
-        let transactions = settingsStore.cashTransactions;
+        let transactions = financialConfigStore.cashTransactions;
         console.log(
             "[AccountEvolutionChart] Total transactions available:",
             transactions.length,

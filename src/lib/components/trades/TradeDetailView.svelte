@@ -3,7 +3,7 @@
   import { modalitiesStore } from "$lib/stores/modalities.svelte";
   import { accountsStore } from "$lib/stores/accounts.svelte";
     import { t, locale } from "svelte-i18n";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import { workspaceStore } from "$lib/stores/workspace.svelte";
     import * as Card from "$lib/components/ui/card";
     import { Badge } from "$lib/components/ui/badge";

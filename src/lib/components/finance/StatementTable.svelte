@@ -5,7 +5,8 @@
     import * as Select from "$lib/components/ui/select";
     import { Input } from "$lib/components/ui/input";
     import { Button } from "$lib/components/ui/button";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import DateFilter from "$lib/components/filters/DateFilter.svelte";
@@ -63,7 +64,7 @@
     let groupedTransactions = $derived.by(() => {
         const dayGroups: Record<string, any[]> = {};
 
-        settingsStore.cashTransactions
+        financialConfigStore.cashTransactions
             .filter((tx) => {
                 const txDateStr = tx.date.substring(0, 10);
                 const txDate = new Date(txDateStr + "T00:00:00");
@@ -371,7 +372,7 @@
     let deleteJournalId = $state<string | null>(null);
 
     function requestDelete(id: string) {
-        const tx = settingsStore.cashTransactions.find((t) => t.id === id);
+        const tx = financialConfigStore.cashTransactions.find((t) => t.id === id);
         if (tx && tx.id.includes("daily_closure_")) {
             const txDate = getLocalDatePart(tx.date);
             const hasJournal = workspaceStore.getJournalEntryByDate(txDate);
@@ -388,7 +389,7 @@
 
     async function confirmDeleteWithJournal(deleteJournal: boolean) {
         if (deleteId) {
-            const result = await settingsStore.removeCashTransaction(deleteId);
+            const result = await financialConfigStore.removeCashTransaction(deleteId);
             if (result.success) {
                 if (deleteJournal && deleteJournalId) {
                     const jRes =
@@ -422,7 +423,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.removeCashTransaction(deleteId);
+            const result = await financialConfigStore.removeCashTransaction(deleteId);
             if (result.success) {
                 toast.success($t("general.deleteSuccess"));
             } else {

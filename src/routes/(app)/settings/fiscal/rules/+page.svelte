@@ -6,7 +6,9 @@
     import * as Dialog from "$lib/components/ui/dialog";
     import * as Select from "$lib/components/ui/select";
     import { Switch } from "$lib/components/ui/switch";
-    import { settingsStore, type TaxRule } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { TaxRule } from "$lib/types";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";
@@ -71,9 +73,9 @@
 
         try {
             if (editingId) {
-                await settingsStore.updateTaxRule(editingId, formData);
+                await financialConfigStore.updateTaxRule(editingId, formData);
             } else {
-                await settingsStore.addTaxRule(formData);
+                await financialConfigStore.addTaxRule(formData);
             }
             // FECHAR modal
             isDialogOpen = false;
@@ -93,7 +95,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteTaxRule(deleteId);
+            const result = await financialConfigStore.deleteTaxRule(deleteId);
 
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
@@ -122,7 +124,7 @@
     </div>
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {#each settingsStore.taxRules as rule}
+        {#each financialConfigStore.taxRules as rule}
             <div
                 class="flex flex-col p-4 rounded-lg border bg-card hover:border-primary/50 transition-all shadow-sm group relative overflow-hidden"
             >

@@ -14,7 +14,6 @@ describe('ModalitiesStore Unit Tests', () => {
 
     it('should initialize and read the modalities accurately', () => {
         expect(modalitiesStore.modalities.length).toBe(2);
-        expect(modalitiesStore.modalities[0].code).toBe('DT');
         expect(modalitiesStore.modalities[1].name).toBe('Swing Trade');
     });
 
@@ -22,12 +21,11 @@ describe('ModalitiesStore Unit Tests', () => {
     it('should add a newly defined modality successfully', () => {
         modalitiesStore.addModality({
             name: 'Position Trade',
-            code: 'POS',
             description: 'Meses a anos'
         });
 
         expect(modalitiesStore.modalities.length).toBe(3);
-        const added = modalitiesStore.modalities.find(m => m.code === 'POS');
+        const added = modalitiesStore.modalities.find(m => m.name === 'Position Trade');
         expect(added?.name).toBe('Position Trade');
         expect(added?.id).toBeDefined();
     });
@@ -37,7 +35,6 @@ describe('ModalitiesStore Unit Tests', () => {
         
         const updated = modalitiesStore.modalities.find(m => m.id === 'modality:swing');
         expect(updated?.name).toBe('Swing Trading');
-        expect(updated?.code).toBe('SW');
     });
 
     it('should execute raw deletion accurately', async () => {

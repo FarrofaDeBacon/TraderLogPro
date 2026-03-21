@@ -15,7 +15,6 @@ describe('MarketsStore Unit Tests', () => {
     it('should initialize and read the market objects accurately', () => {
         expect(marketsStore.markets.length).toBe(2);
         expect(marketsStore.markets[0].code).toBe('B3');
-        expect(marketsStore.markets[1].country).toBe('US');
     });
 
     
@@ -23,7 +22,9 @@ describe('MarketsStore Unit Tests', () => {
         marketsStore.addMarket({
             name: 'New York Stock Exchange',
             code: 'NYSE',
-            country: 'US'
+            timezone: 'America/New_York',
+            trading_days: [1, 2, 3, 4, 5],
+            trading_sessions: []
         });
 
         expect(marketsStore.markets.length).toBe(3);
@@ -38,7 +39,6 @@ describe('MarketsStore Unit Tests', () => {
         
         const updated = marketsStore.markets.find(m => m.id === 'market:NASDAQ');
         expect(updated?.name).toBe('Nasdaq Composite');
-        expect(updated?.country).toBe('US'); // Unchanged property
     });
 
     it('should execute raw deletion on standard UI prompts', async () => {

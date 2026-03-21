@@ -5,7 +5,7 @@
     import { Textarea } from "$lib/components/ui/textarea";
     import * as Select from "$lib/components/ui/select";
     import { t } from "svelte-i18n";
-    import type { EmotionalState } from "$lib/stores/settings.svelte";
+    import type { EmotionalState } from "$lib/types";
 
     let { initialData, onSave, onCancel } = $props<{
         initialData?: EmotionalState;

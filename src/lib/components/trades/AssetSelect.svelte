@@ -1,7 +1,7 @@
 <script lang="ts">
   import { assetsStore } from "$lib/stores/assets.svelte";
     import { t } from "svelte-i18n";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
 
     let {
         value = $bindable(""),

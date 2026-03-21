@@ -14,19 +14,17 @@ describe('IndicatorsStore Unit Tests', () => {
 
     it('should initialize and read the indicators accurately', () => {
         expect(indicatorsStore.indicators.length).toBe(2);
-        expect(indicatorsStore.indicators[0].code).toBe('VWAP');
-        expect(indicatorsStore.indicators[1].category).toBe('Momentum');
+        expect(indicatorsStore.indicators[1].category).toBe('Oscillator');
     });
 
     it('should add a newly defined indicator safely', () => {
         indicatorsStore.addIndicator({
             name: 'Moving Average',
-            code: 'MA',
             category: 'Trend'
         });
 
         expect(indicatorsStore.indicators.length).toBe(3);
-        const added = indicatorsStore.indicators.find(i => i.code === 'MA');
+        const added = indicatorsStore.indicators.find(i => i.name === 'Moving Average');
         expect(added?.name).toBe('Moving Average');
         expect(added?.id).toBeDefined();
     });

@@ -1,9 +1,10 @@
+import { financialConfigStore } from "$lib/stores/financial-config.svelte";
 
 import { accountsStore } from "$lib/stores/accounts.svelte";
 import { invoke } from "@tauri-apps/api/core";
 import { getLocalDatePart } from "$lib/utils";
 import type { Trade, Account, Currency, UserProfile } from "$lib/types";
-import { settingsStore } from "$lib/stores/settings.svelte";
+import { appStore } from "$lib/stores/app.svelte";
 import { calculateAverageTimeBetweenTrades } from "$lib/utils/gann";
 
 class TradesStore {
@@ -32,7 +33,7 @@ class TradesStore {
 
             // Re-fetch instead of just pushing to ensure we have the DB's true state
             await this.loadTrades();
-            await settingsStore.loadCashTransactions();
+            await financialConfigStore.loadCashTransactions();
 
             // Sync account balances because save_trade might have updated them
             invoke("get_accounts").then(res => {
@@ -105,7 +106,7 @@ class TradesStore {
             this.trades = this.trades.map((t, i) => i === existingIdx ? updatedTrade : t);
 
             // Trigger financial refresh
-            await settingsStore.loadCashTransactions();
+            await financialConfigStore.loadCashTransactions();
 
             // Sync account balances
             invoke("get_accounts").then(res => {
@@ -133,7 +134,7 @@ class TradesStore {
             });
 
             await this.loadTrades();
-            await settingsStore.loadCashTransactions();
+            await financialConfigStore.loadCashTransactions();
 
             // Sync account balances
             invoke("get_accounts").then(res => {
@@ -161,7 +162,7 @@ class TradesStore {
             });
 
             await this.loadTrades();
-            await settingsStore.loadCashTransactions();
+            await financialConfigStore.loadCashTransactions();
 
             // Sync account balances
             invoke("get_accounts").then(res => {

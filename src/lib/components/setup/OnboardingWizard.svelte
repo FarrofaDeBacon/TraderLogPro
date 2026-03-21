@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount, tick } from "svelte";
     import { invoke } from "@tauri-apps/api/core";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { integrationsStore } from "$lib/stores/integrations.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
@@ -273,7 +273,7 @@
 
             // RE-FETCH MUST BE AWAITED before completion
             await Promise.all([
-                settingsStore.loadData(),
+                appStore.loadData(),
                 tradesStore.loadTrades(),
             ]);
 

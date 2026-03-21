@@ -7,11 +7,9 @@ import { validateLicenseKey, computeCustomerId, type LicenseData } from "$lib/ut
 // Using Svelte 5 Runes for reactivity outside components
 
 import type {
-    TradingSession, Market, AssetType, Asset, Currency, Account,
-    JournalEntry, Trade, EmotionalState, Strategy, UserProfile,
-    FeeProfile, RiskProfile, Modality, Tag, Indicator, Timeframe,
-    ChartType, ApiConfig, CashTransaction, TaxRule, TaxMapping, TaxProfile, TaxProfileEntry, AssetRiskProfile, GrowthPlan
+    Account, Currency, Market, AssetType, RiskProfile, Modality, Indicator, Timeframe, ChartType, AssetRiskProfile, GrowthPlan
 } from "$lib/types";
+
 import { riskSettingsStore } from "./risk-settings.svelte";
 import { assetsStore } from "./assets.svelte";
 import { accountsStore } from "./accounts.svelte";
@@ -26,47 +24,18 @@ import { financialConfigStore } from "./financial-config.svelte";
 import { userProfileStore } from "./user-profile.svelte";
 import { workspaceStore } from "./workspace.svelte";
 import { integrationsStore } from "./integrations.svelte";
-export type {
-    TradingSession, Market, AssetType, Asset, Currency, Account,
-    JournalEntry, Trade, EmotionalState, Strategy, UserProfile,
-    FeeProfile, RiskProfile, Modality, Tag, Indicator, Timeframe,
-    ChartType, ApiConfig, CashTransaction, TaxRule, TaxMapping, TaxProfile, TaxProfileEntry, AssetRiskProfile
-} from "$lib/types";
 
-class SettingsStore {
-    // User Profile, Device ID, and Auth migrated to userProfileStore
-    // Integrations properties removed
-    get emotionalStates() { return workspaceStore.emotionalStates; }
-    get tags() { return workspaceStore.tags; }
-    get journalEntries() { return workspaceStore.journalEntries; }
-    get strategies() { return workspaceStore.strategies; }
 
+
+
+class AppFacadeStore {
     isLoadingData = $state<boolean>(false);
-    
-    // --- FINANCIAL DELEGATES (TEMPORARY FOR COMPATIBILITY) ---
-    get fees() { return financialConfigStore.fees; }
-    get taxRules() { return financialConfigStore.taxRules; }
-    get taxMappings() { return financialConfigStore.taxMappings; }
-    get taxProfiles() { return financialConfigStore.taxProfiles; }
-    get taxProfileEntries() { return financialConfigStore.taxProfileEntries; }
-    get cashTransactions() { return financialConfigStore.cashTransactions; }
-    // ---------------------------------------------------------
-    
-    // ---------------------------------------------------------
-
 
     constructor() {
         if (typeof window !== "undefined") {
             this.loadData();
         }
     }
-
-    async loadCashTransactions() {
-        return financialConfigStore.loadCashTransactions();
-    }
-
-
-
     async loadData(silent: boolean = false) {
         if (this.isLoadingData) {
             console.log("[SettingsStore] loadData already in progress, skipping.");
@@ -164,90 +133,7 @@ class SettingsStore {
 
     
 
-    async saveAssets() {
-        return assetsStore.saveAssets();
-    }
 
-    // Private workspace sync methods have been removed.
-
-
-
-
-    // Public Logic Methods
-
-    // Deduplication relocated to workspaceStore
-
-    // (Domain proxies migrated to domain stores)
-
-    // --- RESTORED NATIVE METHODS (Etapa 2 migrará isto) ---
-    // Fees
-    addFeeProfile(item: Omit<FeeProfile, "id">) { return financialConfigStore.addFeeProfile(item); }
-    updateFeeProfile(id: string, item: Partial<FeeProfile>) { return financialConfigStore.updateFeeProfile(id, item); }
-    deleteFeeProfile(id: string) { return financialConfigStore.deleteFeeProfile(id); }
-    saveFees() { return financialConfigStore.saveFees(); }
-
-    // Tax Rules
-    addTaxRule(item: Omit<TaxRule, "id">) { return financialConfigStore.addTaxRule(item); }
-    updateTaxRule(id: string, item: Partial<TaxRule>) { return financialConfigStore.updateTaxRule(id, item); }
-    deleteTaxRule(id: string) { return financialConfigStore.deleteTaxRule(id); }
-
-    // Fiscal Module (Tax Profiles - New Option B)
-    // Tax Profiles
-    addTaxProfile(item: Omit<TaxProfile, "id">) { return financialConfigStore.addTaxProfile(item); }
-    updateTaxProfile(id: string, item: Partial<TaxProfile>) { return financialConfigStore.updateTaxProfile(id, item); }
-    deleteTaxProfile(id: string) { return financialConfigStore.deleteTaxProfile(id); }
-
-    // Fiscal Module (Tax Profile Entries)
-    // Tax Profile Entries
-    addTaxProfileEntry(item: Omit<TaxProfileEntry, "id">) { return financialConfigStore.addTaxProfileEntry(item); }
-    deleteTaxProfileEntry(id: string) { return financialConfigStore.deleteTaxProfileEntry(id); }
-    getEntriesForProfile(profileId: string) { return financialConfigStore.getEntriesForProfile(profileId); }
-
-
-    // Fiscal Module (Mappings)
-    // Tax Mappings
-    addTaxMapping(item: Omit<TaxMapping, "id">) { return financialConfigStore.addTaxMapping(item); }
-    updateTaxMapping(id: string, item: Partial<TaxMapping>) { return financialConfigStore.updateTaxMapping(id, item); }
-    deleteTaxMapping(id: string) { return financialConfigStore.deleteTaxMapping(id); }
-
-    // Cash Transactions
-    addCashTransaction(item: Omit<CashTransaction, "id"> & { id?: string }) { return financialConfigStore.addCashTransaction(item); }
-    removeCashTransaction(id: string) { return financialConfigStore.removeCashTransaction(id); }
-    transferFunds(options: any) { return financialConfigStore.transferFunds(options); }
-
-
-    // Indicators
-    addIndicator(item: Omit<Indicator, "id">) {
-        return indicatorsStore.addIndicator(item);
-    }
-    updateIndicator(id: string, item: Partial<Indicator>) {
-        return indicatorsStore.updateIndicator(id, item);
-    }
-    async deleteIndicator(id: string): Promise<{ success: boolean; error?: string }> {
-        return indicatorsStore.deleteIndicator(id);
-    }
-
-    // Timeframes
-    addTimeframe(item: Omit<Timeframe, "id">) {
-        return timeframesStore.addTimeframe(item);
-    }
-    updateTimeframe(id: string, item: Partial<Timeframe>) {
-        return timeframesStore.updateTimeframe(id, item);
-    }
-    async deleteTimeframe(id: string): Promise<{ success: boolean; error?: string }> {
-        return timeframesStore.deleteTimeframe(id);
-    }
-
-    // Chart Types
-    addChartType(item: Omit<ChartType, "id">) {
-        return chartTypesStore.addChartType(item);
-    }
-    updateChartType(id: string, item: Partial<ChartType>) {
-        return chartTypesStore.updateChartType(id, item);
-    }
-    async deleteChartType(id: string): Promise<{ success: boolean; error?: string }> {
-        return chartTypesStore.deleteChartType(id);
-    }
 
     // APIs and RTD have been moved completely to integrationsStore
 
@@ -286,4 +172,4 @@ class SettingsStore {
     }
 }
 
-export const settingsStore = new SettingsStore();
+export const appStore = new AppFacadeStore();

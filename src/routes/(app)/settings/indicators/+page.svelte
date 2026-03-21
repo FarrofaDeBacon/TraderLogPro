@@ -13,7 +13,8 @@
     import { Button } from "$lib/components/ui/button";
     import * as Dialog from "$lib/components/ui/dialog";
     import { Separator } from "$lib/components/ui/separator";
-    import { settingsStore, type Indicator } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { Indicator } from "$lib/types";
     import IndicatorForm from "$lib/components/settings/IndicatorForm.svelte";
     import { Badge } from "$lib/components/ui/badge";
     import { t } from "svelte-i18n";

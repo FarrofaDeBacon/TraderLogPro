@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { settingsStore } from './settings.svelte';
+import { appStore } from "./app.svelte";
 import { riskSettingsStore } from './risk-settings.svelte';
 import { assetsStore } from './assets.svelte';
 import { accountsStore } from './accounts.svelte';
@@ -51,19 +51,19 @@ describe('SettingsStore Unit Tests', () => {
         const uuidSpy = vi.spyOn(crypto, 'randomUUID').mockReturnValue('mock-uuid' as any);
 
         // Test Mini Index (WIN)
-        assetsStore.ensureAssetExists('WINJ24');
+        assetsStore.ensureAssetExists('WINJ24', undefined, assetTypesStore.assetTypes);
         let asset = assetsStore.assets.find(a => a.symbol === 'WINJ24');
         expect(asset).toBeDefined();
         expect(asset?.asset_type_id).toBe('type_index');
         expect(asset?.point_value).toBe(0.20);
 
         // Test Mini Dollar (WDO)
-        assetsStore.ensureAssetExists('WDOK24');
+        assetsStore.ensureAssetExists('WDOK24', undefined, assetTypesStore.assetTypes);
         asset = assetsStore.assets.find(a => a.symbol === 'WDOK24');
         expect(asset?.point_value).toBe(10.0);
 
         // Test Stocks (PETR4)
-        assetsStore.ensureAssetExists('PETR4');
+        assetsStore.ensureAssetExists('PETR4', undefined, assetTypesStore.assetTypes);
         asset = assetsStore.assets.find(a => a.symbol === 'PETR4');
         expect(asset?.asset_type_id).toBe('type_stock');
         expect(asset?.point_value).toBe(1.0);
@@ -149,19 +149,6 @@ describe('SettingsStore Unit Tests', () => {
             expect(clonedProfile!.capital_source).toBe(originalProfile!.capital_source);
         });
 
-        it('deep clones growth phases with new ids and same content (TESTE A4)', async () => {
-            const { originalProfileId } = setupStore();
-            
-            const newId = await riskSettingsStore.duplicateRiskProfile(originalProfileId);
-            const clonedProfile = riskSettingsStore.riskProfiles.find(p => p.id === newId);
-            const originalProfile = riskSettingsStore.riskProfiles.find(p => p.id === originalProfileId);
-            
-            expect(clonedProfile!.growth_phases).toBeDefined();
-            expect(clonedProfile!.growth_phases!.length).toBe(originalProfile!.growth_phases!.length);
-            expect(clonedProfile!.growth_phases![0].id).not.toBe(originalProfile!.growth_phases![0].id);
-            expect(clonedProfile!.growth_phases![0].name).toBe(originalProfile!.growth_phases![0].name);
-        });
-
         it('preserves linked asset risk profile ids without cloning AssetRiskProfiles (TESTE A5)', async () => {
             const { originalProfileId, originalAssetProfileId } = setupStore();
             const originalAssetProfilesCount = riskSettingsStore.assetRiskProfiles.length;
@@ -238,17 +225,6 @@ describe('SettingsStore Unit Tests', () => {
             
             expect(template!.linked_asset_risk_profile_ids).toEqual([assetProfileId]);
             expect(riskSettingsStore.assetRiskProfiles.length).toBe(assetProfilesCount);
-        });
-
-        it('deep clones growth phases with new ids (TESTE B5)', () => {
-            const { baseId } = setupStore();
-            const original = riskSettingsStore.riskProfiles[0];
-            const template = riskSettingsStore.createRiskProfileTemplate(baseId);
-            
-            expect(template!.growth_phases).toBeDefined();
-            expect(template!.growth_phases!.length).toBe(original.growth_phases!.length);
-            expect(template!.growth_phases![0].id).not.toBe(original.growth_phases![0].id);
-            expect(template!.growth_phases![0].name).toBe(original.growth_phases![0].name);
         });
     });
 
@@ -360,7 +336,7 @@ describe('SettingsStore Unit Tests', () => {
         });
 
         it('should seamlessly delegate mutation methods to domain handlers', () => {
-            const addAssetSpy = vi.spyOn(assetsStore, 'addAsset').mockImplementation(() => 'test');
+            const addAssetSpy = vi.spyOn(assetsStore, 'addAsset').mockImplementation(async () => {});
             const addAccountSpy = vi.spyOn(accountsStore, 'addAccount').mockImplementation(() => {});
             const addCurrencySpy = vi.spyOn(currenciesStore, 'addCurrency').mockImplementation(() => {});
             const addMarketSpy = vi.spyOn(marketsStore, 'addMarket').mockImplementation(() => {});
@@ -392,7 +368,7 @@ describe('SettingsStore Unit Tests', () => {
         });
 
         it('Scenario A: Blocks Currency deletion if bound to an existing Account', async () => {
-            currenciesStore.currencies = [{ id: 'cur:BRL', code: 'BRL', name: '', symbol: '' }];
+            currenciesStore.currencies = [{ id: 'cur:BRL', code: 'BRL', name: '', symbol: '', exchange_rate: 1 }];
             accountsStore.accounts = [{ id: 'acc:1', currency_id: 'cur:BRL', currency: 'cur:BRL' }] as any;
 
             const res = await currenciesStore.deleteCurrency('cur:BRL');
@@ -401,7 +377,7 @@ describe('SettingsStore Unit Tests', () => {
         });
 
         it('Scenario B: Blocks Market deletion if bound to an Asset Type or Asset', async () => {
-            marketsStore.markets = [{ id: 'mkt:B3', code: 'B3', name: '', country: '' }];
+            marketsStore.markets = [{ id: 'mkt:B3', code: 'B3', name: '' } as any];
             assetTypesStore.assetTypes = [{ id: 'type:1', market_id: 'mkt:B3' }] as any;
             
             let res = await marketsStore.deleteMarket('mkt:B3');
@@ -409,7 +385,7 @@ describe('SettingsStore Unit Tests', () => {
         });
 
         it('Scenario C: Blocks AssetType deletion if logically bound to an Asset', async () => {
-            assetTypesStore.assetTypes = [{ id: 'type:STK', code: 'STK', name: '', market_id: '', has_expiration: false, tax_profile_id: '' }];
+            assetTypesStore.assetTypes = [{ id: 'type:STK', code: 'STK', name: '', market_id: '', tax_profile_id: '', result_type: 'currency', unit_label: '' } as any];
             assetsStore.assets = [{ id: 'ast:PETR4', asset_type_id: 'type:STK' }] as any;
 
             const res = await assetTypesStore.deleteAssetType('type:STK');

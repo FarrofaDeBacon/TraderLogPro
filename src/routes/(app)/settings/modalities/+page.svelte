@@ -7,7 +7,8 @@
     import { Textarea } from "$lib/components/ui/textarea";
     import * as Dialog from "$lib/components/ui/dialog";
     import { Separator } from "$lib/components/ui/separator";
-    import { settingsStore, type Modality } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { Modality } from "$lib/types";
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";

@@ -3,7 +3,9 @@
     import * as Card from "$lib/components/ui/card";
     import { Badge } from "$lib/components/ui/badge";
     import { Wallet, Landmark, ArrowUpRight } from "lucide-svelte";
-    import { settingsStore, type Account } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { Account } from "$lib/types";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { t, locale } from "svelte-i18n";
     import { cn, formatCurrency } from "$lib/utils";
 
@@ -32,7 +34,7 @@
     import * as echarts from "echarts";
 
     let sparklineData = $derived.by(() => {
-        const transactions = settingsStore.cashTransactions
+        const transactions = financialConfigStore.cashTransactions
             .filter((tx) => tx.account_id === account.id)
             .sort((a, b) => a.date.localeCompare(b.date));
 

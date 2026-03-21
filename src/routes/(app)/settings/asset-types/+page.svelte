@@ -10,7 +10,9 @@
     import * as Select from "$lib/components/ui/select";
     import { Separator } from "$lib/components/ui/separator";
     import { Badge } from "$lib/components/ui/badge";
-    import { settingsStore, type AssetType } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { AssetType } from "$lib/types";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";
@@ -176,7 +178,7 @@
                                         variant="outline"
                                         class="text-[10px] py-0 border-primary/20 bg-primary/5"
                                     >
-                                        {settingsStore.taxProfiles.find(
+                                        {financialConfigStore.taxProfiles.find(
                                             (p) => p.id === type.tax_profile_id,
                                         )?.name ||
                                             $t(
@@ -195,7 +197,7 @@
                                         variant="outline"
                                         class="text-[10px] py-0 border-muted-foreground/20"
                                     >
-                                        {settingsStore.fees.find(
+                                        {financialConfigStore.fees.find(
                                             (f) => f.id === type.default_fee_id,
                                         )?.name ||
                                             $t(
@@ -350,7 +352,7 @@
                         bind:value={formData.tax_profile_id}
                     >
                         <Select.Trigger>
-                            {settingsStore.taxProfiles.find(
+                            {financialConfigStore.taxProfiles.find(
                                 (p) => p.id === formData.tax_profile_id,
                             )?.name ||
                                 $t("settings.assetTypes.labels.noneExempt")}
@@ -361,7 +363,7 @@
                                     "settings.assetTypes.labels.noneExempt",
                                 )}</Select.Item
                             >
-                            {#each settingsStore.taxProfiles as p}
+                            {#each financialConfigStore.taxProfiles as p}
                                 <Select.Item value={p.id}>{p.name}</Select.Item>
                             {/each}
                         </Select.Content>
@@ -379,7 +381,7 @@
                         bind:value={formData.default_fee_id}
                     >
                         <Select.Trigger>
-                            {settingsStore.fees.find(
+                            {financialConfigStore.fees.find(
                                 (f) => f.id === formData.default_fee_id,
                             )?.name ||
                                 $t("settings.assetTypes.labels.noneDefault")}
@@ -390,7 +392,7 @@
                                     "settings.assetTypes.labels.noneDefault",
                                 )}</Select.Item
                             >
-                            {#each settingsStore.fees as f}
+                            {#each financialConfigStore.fees as f}
                                 <Select.Item value={f.id}>{f.name}</Select.Item>
                             {/each}
                         </Select.Content>

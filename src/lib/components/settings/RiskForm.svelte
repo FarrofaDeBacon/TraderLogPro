@@ -152,7 +152,7 @@
         ...riskSettingsStore.growthPlans.map(p => ({ value: p.id, label: p.name }))
     ]);
 
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
 
 
 

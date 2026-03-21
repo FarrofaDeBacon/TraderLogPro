@@ -11,7 +11,7 @@
     import { emit } from "@tauri-apps/api/event";
     import { toast } from "svelte-sonner";
     import { onMount, untrack } from "svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { integrationsStore } from "$lib/stores/integrations.svelte";
     import { financialConfigStore } from "$lib/stores/financial-config.svelte";
@@ -415,7 +415,7 @@
 
     // Reactive sync for snapshots (for detached windows or slow loads)
     $effect(() => {
-        if (!settingsStore.isLoadingData) {
+        if (!appStore.isLoadingData) {
             if (
                 accountsList.length === 0 &&
                 accountsStore.accounts.length > 0
@@ -468,7 +468,7 @@
         }
 
         // Capture initial snapshots from store
-        if (!settingsStore.isLoadingData) {
+        if (!appStore.isLoadingData) {
             accountsList = [...accountsStore.accounts];
             strategiesList = [...workspaceStore.strategies];
             assetTypesList = [...assetTypesStore.assetTypes];

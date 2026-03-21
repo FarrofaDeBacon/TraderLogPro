@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { browser } from "$app/environment";
 import type { TaxPayment, Trade, TaxRule, TaxMapping } from "$lib/types";
-import { settingsStore } from "./settings.svelte";
+import { appStore } from "./app.svelte";
 
 type MonthlyTaxReport = {
     month: string; // YYYY-MM

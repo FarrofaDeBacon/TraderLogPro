@@ -17,10 +17,9 @@
     import * as Select from "$lib/components/ui/select";
     import * as Tabs from "$lib/components/ui/tabs";
     import { Separator } from "$lib/components/ui/separator";
-    import {
-        settingsStore,
-        type FeeProfile,
-    } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { FeeProfile } from "$lib/types";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";
@@ -55,7 +54,7 @@
     // Group Fees by Broker
     let groupedFees = $derived.by(() => {
         const groups: Record<string, FeeProfile[]> = {};
-        for (const fee of settingsStore.fees) {
+        for (const fee of financialConfigStore.fees) {
             const broker = fee.broker || $t("general.all");
             if (!groups[broker]) {
                 groups[broker] = [];
@@ -115,9 +114,9 @@
         }
 
         if (editingId) {
-            settingsStore.updateFeeProfile(editingId, payload);
+            financialConfigStore.updateFeeProfile(editingId, payload);
         } else {
-            settingsStore.addFeeProfile(payload);
+            financialConfigStore.addFeeProfile(payload);
         }
         isDialogOpen = false;
     }
@@ -129,7 +128,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteFeeProfile(deleteId);
+            const result = await financialConfigStore.deleteFeeProfile(deleteId);
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
             } else {

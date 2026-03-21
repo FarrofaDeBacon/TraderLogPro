@@ -3,7 +3,7 @@
   import { marketsStore } from "$lib/stores/markets.svelte";
     import { Tag, ExternalLink } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { t } from "svelte-i18n";
     import { goto } from "$app/navigation";
 
@@ -64,7 +64,7 @@
                         </td>
                         <td class="p-3">
                             {#if at.tax_profile_id}
-                                {settingsStore.taxProfiles.find(
+                                {financialConfigStore.taxProfiles.find(
                                     (p) => p.id === at.tax_profile_id,
                                 )?.name ||
                                     $t(

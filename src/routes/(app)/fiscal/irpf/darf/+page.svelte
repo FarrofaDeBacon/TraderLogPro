@@ -1,6 +1,6 @@
 <script lang="ts">
   import { accountsStore } from "$lib/stores/accounts.svelte";
-    import { onMount } from "svelte";
+    import { onMount, untrack } from "svelte";
     import { toast } from "svelte-sonner";
     import * as Card from "$lib/components/ui/card";
     import { Button } from "$lib/components/ui/button";
@@ -19,7 +19,7 @@
     } from "lucide-svelte";
     import { _ as t } from "svelte-i18n";
     import { irpfStore } from "$lib/stores/irpfStore.svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte"; // Import settingsStore
+    import { appStore } from "$lib/stores/app.svelte"; // Import appStore
     import * as Select from "$lib/components/ui/select";
     import DarfDetailsDialog from "$lib/components/finance/DarfDetailsDialog.svelte";
     import { formatLocalISO } from "$lib/utils";
@@ -68,7 +68,7 @@
         irpfStore.loadAllData(selectedYear);
         // Ensure accounts are loaded if not already
         if (accountsStore.accounts.length === 0) {
-            settingsStore.loadData();
+            appStore.loadData();
         }
     });
 

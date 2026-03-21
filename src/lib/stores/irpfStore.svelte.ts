@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "svelte-sonner";
-import { settingsStore } from "./settings.svelte";
+import { appStore } from "./app.svelte";
 
 export interface TaxAppraisal {
     id?: string;
@@ -277,7 +277,7 @@ class IrpfStore {
             ]);
 
             // REFRESH FINANCE HUB
-            settingsStore.loadData();
+            appStore.loadData();
 
             return updated;
         } catch (error) {
@@ -370,7 +370,7 @@ class IrpfStore {
             ]);
 
             // REFRESH FINANCE HUB
-            settingsStore.loadData();
+            appStore.loadData();
 
             return updated;
         } catch (error) {

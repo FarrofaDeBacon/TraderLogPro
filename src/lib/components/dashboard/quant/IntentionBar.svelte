@@ -7,7 +7,7 @@
         label?: string;
     }
 
-    let { buy, sell, label } = $props<Props>();
+    let { buy, sell, label }: Props = $props();
 
     let total = $derived(buy + sell || 1);
     let buyPercent = $derived((buy / total) * 100);

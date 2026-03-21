@@ -1,0 +1,529 @@
+﻿
+> tauri-apptraderlogpro@0.2.2 check
+> svelte-kit sync && svelte-check --tsconfig ./tsconfig.json
+
+Loading svelte-check in workspace: c:\PROJETOS\TraderLogPro
+Getting Svelte diagnostics...
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\asset-types.test.ts[39m:18:46
+[31mError[39m: Property 'has_expiration' does not exist on type 'AssetType'. 
+[36m        expect(assetTypesStore.assetTypes[0].code).toBe('STK_BR');
+        expect(assetTypesStore.assetTypes[1].[35mhas_expiration[36m).toBe(true);
+    });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\asset-types.test.ts[39m:31:13
+[31mError[39m: Object literal may only specify known properties, and 'has_expiration' does not exist in type 'Omit<AssetType, "id">'. 
+[36m            market_id: 'market:B3',
+            [35mhas_expiration[36m: true,
+            tax_profile_id: 'tax_br_opt'[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\indicators.test.ts[39m:17:46
+[31mError[39m: Property 'code' does not exist on type 'Indicator'. 
+[36m        expect(indicatorsStore.indicators.length).toBe(2);
+        expect(indicatorsStore.indicators[0].[35mcode[36m).toBe('VWAP');
+        expect(indicatorsStore.indicators[1].category).toBe('Momentum');[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\indicators.test.ts[39m:24:13
+[31mError[39m: Object literal may only specify known properties, and 'code' does not exist in type 'Omit<Indicator, "id">'. 
+[36m            name: 'Moving Average',
+            [35mcode[36m: 'MA',
+            category: 'Trend'[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\indicators.test.ts[39m:29:62
+[31mError[39m: Property 'code' does not exist on type 'Indicator'. 
+[36m        expect(indicatorsStore.indicators.length).toBe(3);
+        const added = indicatorsStore.indicators.find(i => i.[35mcode[36m === 'MA');
+        expect(added?.name).toBe('Moving Average');[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\markets.test.ts[39m:18:40
+[31mError[39m: Property 'country' does not exist on type 'Market'. 
+[36m        expect(marketsStore.markets[0].code).toBe('B3');
+        expect(marketsStore.markets[1].[35mcountry[36m).toBe('US');
+    });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\markets.test.ts[39m:26:13
+[31mError[39m: Object literal may only specify known properties, and 'country' does not exist in type 'Omit<Market, "id">'. 
+[36m            code: 'NYSE',
+            [35mcountry[36m: 'US'
+        });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\markets.test.ts[39m:41:25
+[31mError[39m: Property 'country' does not exist on type 'Market'. 
+[36m        expect(updated?.name).toBe('Nasdaq Composite');
+        expect(updated?.[35mcountry[36m).toBe('US'); // Unchanged property
+    });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\modalities.test.ts[39m:17:46
+[31mError[39m: Property 'code' does not exist on type 'Modality'. 
+[36m        expect(modalitiesStore.modalities.length).toBe(2);
+        expect(modalitiesStore.modalities[0].[35mcode[36m).toBe('DT');
+        expect(modalitiesStore.modalities[1].name).toBe('Swing Trade');[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\modalities.test.ts[39m:25:13
+[31mError[39m: Object literal may only specify known properties, and 'code' does not exist in type 'Omit<Modality, "id">'. 
+[36m            name: 'Position Trade',
+            [35mcode[36m: 'POS',
+            description: 'Meses a anos'[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\modalities.test.ts[39m:30:62
+[31mError[39m: Property 'code' does not exist on type 'Modality'. 
+[36m        expect(modalitiesStore.modalities.length).toBe(3);
+        const added = modalitiesStore.modalities.find(m => m.[35mcode[36m === 'POS');
+        expect(added?.name).toBe('Position Trade');[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\modalities.test.ts[39m:40:25
+[31mError[39m: Property 'code' does not exist on type 'Modality'. 
+[36m        expect(updated?.name).toBe('Swing Trading');
+        expect(updated?.[35mcode[36m).toBe('SW');
+    });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\riskStore.svelte.ts[39m:78:45
+[31mError[39m: Property 'activeProfile' does not exist on type 'SettingsStore'. 
+[36m        // 1. Obter Perfil Ativo
+        const activeProfile = settingsStore.[35mactiveProfile[36m;
+        if (!activeProfile || !activeProfile.active) return null;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\riskStore.svelte.ts[39m:119:45
+[31mError[39m: Property 'activeProfile' does not exist on type 'SettingsStore'. 
+[36m    get resolvedAssetRiskProfile() {
+        const activeProfile = settingsStore.[35mactiveProfile[36m;
+        if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\riskStore.svelte.ts[39m:136:45
+[31mError[39m: Property 'activeProfile' does not exist on type 'SettingsStore'. 
+[36m    get deskAuditState(): DeskAuditResult | null {
+        const activeProfile = settingsStore.[35mactiveProfile[36m;
+        if (!activeProfile || !activeProfile.active || !activeProfile.desk_config) return null;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\riskStore.svelte.ts[39m:152:45
+[31mError[39m: Property 'activeProfile' does not exist on type 'SettingsStore'. 
+[36m    get deskStageProgressionState() {
+        const activeProfile = settingsStore.[35mactiveProfile[36m;
+        const audit = this.deskAuditState;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\riskStore.svelte.ts[39m:164:45
+[31mError[39m: Property 'activeProfile' does not exist on type 'SettingsStore'. 
+[36m    get deskProgressFeedback() {
+        const activeProfile = settingsStore.[35mactiveProfile[36m;
+        const audit = this.deskAuditState;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\riskStore.svelte.ts[39m:179:45
+[31mError[39m: Property 'activeProfile' does not exist on type 'SettingsStore'. 
+[36m    get resolvedGrowthContext(): ResolvedGrowthContext | null {
+        const activeProfile = settingsStore.[35mactiveProfile[36m;
+        if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\riskStore.svelte.ts[39m:227:45
+[31mError[39m: Property 'activeProfile' does not exist on type 'SettingsStore'. 
+[36m    get positionSizingInput(): PositionSizingInput | null {
+        const activeProfile = settingsStore.[35mactiveProfile[36m;
+        if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\riskStore.svelte.ts[39m:276:45
+[31mError[39m: Property 'activeProfile' does not exist on type 'SettingsStore'. 
+[36m    get deskValidationResult(): DeskValidationResult | null {
+        const activeProfile = settingsStore.[35mactiveProfile[36m;
+        if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:54:21
+[31mError[39m: Expected 3 arguments, but got 1. 
+[36m        // Test Mini Index (WIN)
+        assetsStore.[35mensureAssetExists[36m('WINJ24');
+        let asset = assetsStore.assets.find(a => a.symbol === 'WINJ24');[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:61:21
+[31mError[39m: Expected 3 arguments, but got 1. 
+[36m        // Test Mini Dollar (WDO)
+        assetsStore.[35mensureAssetExists[36m('WDOK24');
+        asset = assetsStore.assets.find(a => a.symbol === 'WDOK24');[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:66:21
+[31mError[39m: Expected 3 arguments, but got 1. 
+[36m        // Test Stocks (PETR4)
+        assetsStore.[35mensureAssetExists[36m('PETR4');
+        asset = assetsStore.assets.find(a => a.symbol === 'PETR4');[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:159:35
+[31mError[39m: Property 'growth_phases' does not exist on type 'RiskProfile'. 
+[36m            
+            expect(clonedProfile!.[35mgrowth_phases[36m).toBeDefined();
+            expect(clonedProfile!.growth_phases!.length).toBe(originalProfile!.growth_phases!.length);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:160:35
+[31mError[39m: Property 'growth_phases' does not exist on type 'RiskProfile'. 
+[36m            expect(clonedProfile!.growth_phases).toBeDefined();
+            expect(clonedProfile!.[35mgrowth_phases[36m!.length).toBe(originalProfile!.growth_phases!.length);
+            expect(clonedProfile!.growth_phases![0].id).not.toBe(originalProfile!.growth_phases![0].id);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:160:80
+[31mError[39m: Property 'growth_phases' does not exist on type 'RiskProfile'. 
+[36m            expect(clonedProfile!.growth_phases).toBeDefined();
+            expect(clonedProfile!.growth_phases!.length).toBe(originalProfile!.[35mgrowth_phases[36m!.length);
+            expect(clonedProfile!.growth_phases![0].id).not.toBe(originalProfile!.growth_phases![0].id);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:161:35
+[31mError[39m: Property 'growth_phases' does not exist on type 'RiskProfile'. 
+[36m            expect(clonedProfile!.growth_phases!.length).toBe(originalProfile!.growth_phases!.length);
+            expect(clonedProfile!.[35mgrowth_phases[36m![0].id).not.toBe(originalProfile!.growth_phases![0].id);
+            expect(clonedProfile!.growth_phases![0].name).toBe(originalProfile!.growth_phases![0].name);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:161:83
+[31mError[39m: Property 'growth_phases' does not exist on type 'RiskProfile'. 
+[36m            expect(clonedProfile!.growth_phases!.length).toBe(originalProfile!.growth_phases!.length);
+            expect(clonedProfile!.growth_phases![0].id).not.toBe(originalProfile!.[35mgrowth_phases[36m![0].id);
+            expect(clonedProfile!.growth_phases![0].name).toBe(originalProfile!.growth_phases![0].name);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:162:35
+[31mError[39m: Property 'growth_phases' does not exist on type 'RiskProfile'. 
+[36m            expect(clonedProfile!.growth_phases![0].id).not.toBe(originalProfile!.growth_phases![0].id);
+            expect(clonedProfile!.[35mgrowth_phases[36m![0].name).toBe(originalProfile!.growth_phases![0].name);
+        });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:162:81
+[31mError[39m: Property 'growth_phases' does not exist on type 'RiskProfile'. 
+[36m            expect(clonedProfile!.growth_phases![0].id).not.toBe(originalProfile!.growth_phases![0].id);
+            expect(clonedProfile!.growth_phases![0].name).toBe(originalProfile!.[35mgrowth_phases[36m![0].name);
+        });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:248:30
+[31mError[39m: Property 'growth_phases' does not exist on type 'Omit<RiskProfile, "id">'. 
+[36m            
+            expect(template!.[35mgrowth_phases[36m).toBeDefined();
+            expect(template!.growth_phases!.length).toBe(original.growth_phases!.length);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:249:30
+[31mError[39m: Property 'growth_phases' does not exist on type 'Omit<RiskProfile, "id">'. 
+[36m            expect(template!.growth_phases).toBeDefined();
+            expect(template!.[35mgrowth_phases[36m!.length).toBe(original.growth_phases!.length);
+            expect(template!.growth_phases![0].id).not.toBe(original.growth_phases![0].id);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:249:67
+[31mError[39m: Property 'growth_phases' does not exist on type 'RiskProfile'. 
+[36m            expect(template!.growth_phases).toBeDefined();
+            expect(template!.growth_phases!.length).toBe(original.[35mgrowth_phases[36m!.length);
+            expect(template!.growth_phases![0].id).not.toBe(original.growth_phases![0].id);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:250:30
+[31mError[39m: Property 'growth_phases' does not exist on type 'Omit<RiskProfile, "id">'. 
+[36m            expect(template!.growth_phases!.length).toBe(original.growth_phases!.length);
+            expect(template!.[35mgrowth_phases[36m![0].id).not.toBe(original.growth_phases![0].id);
+            expect(template!.growth_phases![0].name).toBe(original.growth_phases![0].name);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:250:70
+[31mError[39m: Property 'growth_phases' does not exist on type 'RiskProfile'. 
+[36m            expect(template!.growth_phases!.length).toBe(original.growth_phases!.length);
+            expect(template!.growth_phases![0].id).not.toBe(original.[35mgrowth_phases[36m![0].id);
+            expect(template!.growth_phases![0].name).toBe(original.growth_phases![0].name);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:251:30
+[31mError[39m: Property 'growth_phases' does not exist on type 'Omit<RiskProfile, "id">'. 
+[36m            expect(template!.growth_phases![0].id).not.toBe(original.growth_phases![0].id);
+            expect(template!.[35mgrowth_phases[36m![0].name).toBe(original.growth_phases![0].name);
+        });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:251:68
+[31mError[39m: Property 'growth_phases' does not exist on type 'RiskProfile'. 
+[36m            expect(template!.growth_phases![0].id).not.toBe(original.growth_phases![0].id);
+            expect(template!.growth_phases![0].name).toBe(original.[35mgrowth_phases[36m![0].name);
+        });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:363:92
+[31mError[39m: Type 'string' is not assignable to type 'Promise<void>'. 
+[36m        it('should seamlessly delegate mutation methods to domain handlers', () => {
+            const addAssetSpy = vi.spyOn(assetsStore, 'addAsset').mockImplementation(() => [35m'test'[36m);
+            const addAccountSpy = vi.spyOn(accountsStore, 'addAccount').mockImplementation(() => {});[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:395:43
+[31mError[39m: Property 'exchange_rate' is missing in type '{ id: string; code: string; name: string; symbol: string; }' but required in type 'Currency'. 
+[36m        it('Scenario A: Blocks Currency deletion if bound to an existing Account', async () => {
+            currenciesStore.currencies = [[35m{ id: 'cur:BRL', code: 'BRL', name: '', symbol: '' }[36m];
+            accountsStore.accounts = [{ id: 'acc:1', currency_id: 'cur:BRL', currency: 'cur:BRL' }] as any;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:404:75
+[31mError[39m: Object literal may only specify known properties, and 'country' does not exist in type 'Market'. 
+[36m        it('Scenario B: Blocks Market deletion if bound to an Asset Type or Asset', async () => {
+            marketsStore.markets = [{ id: 'mkt:B3', code: 'B3', name: '', [35mcountry[36m: '' }];
+            assetTypesStore.assetTypes = [{ id: 'type:1', market_id: 'mkt:B3' }] as any;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\settings.test.ts[39m:412:99
+[31mError[39m: Object literal may only specify known properties, and 'has_expiration' does not exist in type 'AssetType'. 
+[36m        it('Scenario C: Blocks AssetType deletion if logically bound to an Asset', async () => {
+            assetTypesStore.assetTypes = [{ id: 'type:STK', code: 'STK', name: '', market_id: '', [35mhas_expiration[36m: false, tax_profile_id: '' }];
+            assetsStore.assets = [{ id: 'ast:PETR4', asset_type_id: 'type:STK' }] as any;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\timeframes.test.ts[39m:17:46
+[31mError[39m: Property 'code' does not exist on type 'Timeframe'. 
+[36m        expect(timeframesStore.timeframes.length).toBe(2);
+        expect(timeframesStore.timeframes[0].[35mcode[36m).toBe('M5');
+        expect(timeframesStore.timeframes[1].minutes).toBe(1440);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\timeframes.test.ts[39m:18:46
+[31mError[39m: Property 'minutes' does not exist on type 'Timeframe'. 
+[36m        expect(timeframesStore.timeframes[0].code).toBe('M5');
+        expect(timeframesStore.timeframes[1].[35mminutes[36m).toBe(1440);
+    });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\dashboard\quant\IntentionBar.svelte[39m:10:39
+[31mError[39m: Expected 0 type arguments, but got 1. (ts)
+[36m
+    let { buy, sell, label } = $props<[35mProps[36m>();[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\ApiConfigForm.svelte[39m:19:34
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    const data = $state.snapshot([35minitialData[36m);
+    let formData = $state<Omit<ApiConfig, "id">>({[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\ChartTypeForm.svelte[39m:15:34
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    const data = $state.snapshot([35minitialData[36m);
+    let formData = $state<Omit<ChartType, "id">>({[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\EmotionalStateForm.svelte[39m:17:15
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let formData = $state<Omit<EmotionalState, "id">>({
+        name: [35minitialData[36m?.name ?? "",
+        impact: initialData?.impact ?? "Negative",[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\EmotionalStateForm.svelte[39m:18:17
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        name: initialData?.name ?? "",
+        impact: [35minitialData[36m?.impact ?? "Negative",
+        description: initialData?.description ?? "",[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\EmotionalStateForm.svelte[39m:19:22
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        impact: initialData?.impact ?? "Negative",
+        description: [35minitialData[36m?.description ?? "",
+        potential_impact: initialData?.potential_impact ?? "",[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\EmotionalStateForm.svelte[39m:20:27
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        description: initialData?.description ?? "",
+        potential_impact: [35minitialData[36m?.potential_impact ?? "",
+        weight: initialData?.weight ?? 5.0,[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\EmotionalStateForm.svelte[39m:21:17
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        potential_impact: initialData?.potential_impact ?? "",
+        weight: [35minitialData[36m?.weight ?? 5.0,
+    });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\IndicatorForm.svelte[39m:18:15
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let formData = $state<Omit<Indicator, "id">>({
+        name: [35minitialData[36m?.name ?? "",
+        category: initialData?.category ?? "Trend",[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\IndicatorForm.svelte[39m:19:19
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        name: initialData?.name ?? "",
+        category: [35minitialData[36m?.category ?? "Trend",
+        plot_type: initialData?.plot_type ?? "Overlay",[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\IndicatorForm.svelte[39m:20:20
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        category: initialData?.category ?? "Trend",
+        plot_type: [35minitialData[36m?.plot_type ?? "Overlay",
+        default_color: initialData?.default_color ?? "#00ff00",[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\IndicatorForm.svelte[39m:21:24
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        plot_type: initialData?.plot_type ?? "Overlay",
+        default_color: [35minitialData[36m?.default_color ?? "#00ff00",
+        usage_description: initialData?.usage_description ?? "",[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\IndicatorForm.svelte[39m:22:28
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        default_color: initialData?.default_color ?? "#00ff00",
+        usage_description: [35minitialData[36m?.usage_description ?? "",
+        parameters: initialData?.parameters ? [...initialData.parameters] : [],[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\IndicatorForm.svelte[39m:23:21
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        usage_description: initialData?.usage_description ?? "",
+        parameters: [35minitialData[36m?.parameters ? [...initialData.parameters] : [],
+    });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\IndicatorForm.svelte[39m:23:51
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        usage_description: initialData?.usage_description ?? "",
+        parameters: initialData?.parameters ? [...[35minitialData[36m.parameters] : [],
+    });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\IndicatorForm.svelte[39m:285:14
+[31mError[39m: 'formData.parameters' is possibly 'undefined'. (ts)
+[36m
+        {#if [35mformData.parameters[36m.length === 0}
+            <div[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\RTDImportDialog.svelte[39m:231:62
+[31mError[39m: Property 'getAssetTypeCode' does not exist on type 'AssetTypesStore'. Did you mean 'getAssetTypeName'? (ts)
+[36m                                        >
+                                            {assetTypesStore.[35mgetAssetTypeCode[36m(
+                                                item.typeId,[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\risk\RiskRuleForm.svelte[39m:24:25
+[33mWarn[39m: This reference only captures the initial value of `rule`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    const isEditing = !![35mrule[36m;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\risk\RiskRuleForm.svelte[39m:27:13
+[33mWarn[39m: This reference only captures the initial value of `rule`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let formData = $state<RiskRule>({
+        id: [35mrule[36m?.id ?? crypto.randomUUID(),
+        name: rule?.name ?? "",[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\risk\RiskRuleForm.svelte[39m:28:15
+[33mWarn[39m: This reference only captures the initial value of `rule`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        id: rule?.id ?? crypto.randomUUID(),
+        name: [35mrule[36m?.name ?? "",
+        enabled: rule?.enabled ?? true,[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\risk\RiskRuleForm.svelte[39m:29:18
+[33mWarn[39m: This reference only captures the initial value of `rule`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        name: rule?.name ?? "",
+        enabled: [35mrule[36m?.enabled ?? true,
+        scope: rule?.scope ?? "global",[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\risk\RiskRuleForm.svelte[39m:30:16
+[33mWarn[39m: This reference only captures the initial value of `rule`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        enabled: rule?.enabled ?? true,
+        scope: [35mrule[36m?.scope ?? "global",
+        target_type: rule?.target_type ?? "max_daily_loss",[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\risk\RiskRuleForm.svelte[39m:31:22
+[33mWarn[39m: This reference only captures the initial value of `rule`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        scope: rule?.scope ?? "global",
+        target_type: [35mrule[36m?.target_type ?? "max_daily_loss",
+        operator: rule?.operator ?? "<=",[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\risk\RiskRuleForm.svelte[39m:32:19
+[33mWarn[39m: This reference only captures the initial value of `rule`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        target_type: rule?.target_type ?? "max_daily_loss",
+        operator: [35mrule[36m?.operator ?? "<=",
+        value: rule?.value ?? 0,[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\risk\RiskRuleForm.svelte[39m:33:16
+[33mWarn[39m: This reference only captures the initial value of `rule`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        operator: rule?.operator ?? "<=",
+        value: [35mrule[36m?.value ?? 0,
+        value_secondary: rule?.value_secondary,[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\risk\RiskRuleForm.svelte[39m:34:26
+[33mWarn[39m: This reference only captures the initial value of `rule`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        value: rule?.value ?? 0,
+        value_secondary: [35mrule[36m?.value_secondary,
+        asset_risk_profile_ids: rule?.asset_risk_profile_ids ? [...rule.asset_risk_profile_ids] : [],[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\risk\RiskRuleForm.svelte[39m:35:33
+[33mWarn[39m: This reference only captures the initial value of `rule`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        value_secondary: rule?.value_secondary,
+        asset_risk_profile_ids: [35mrule[36m?.asset_risk_profile_ids ? [...rule.asset_risk_profile_ids] : [],
+    });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\risk\RiskRuleForm.svelte[39m:35:68
+[33mWarn[39m: This reference only captures the initial value of `rule`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        value_secondary: rule?.value_secondary,
+        asset_risk_profile_ids: rule?.asset_risk_profile_ids ? [...[35mrule[36m.asset_risk_profile_ids] : [],
+    });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\RiskForm.svelte[39m:38:34
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    const data = $state.snapshot([35minitialData[36m);
+    let formData = $state<Omit<RiskProfile, "id">>({[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\RiskForm.svelte[39m:71:40
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    
+    let selectedLinkedAccount = $state([35minitialData[36m?.linked_account_id || "");[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\TagForm.svelte[39m:14:34
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    const data = $state.snapshot([35minitialData[36m);
+    let formData = $state<Omit<Tag, "id">>({[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\TimeframeForm.svelte[39m:14:34
+[33mWarn[39m: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    const data = $state.snapshot([35minitialData[36m);
+    let formData = $state<Omit<Timeframe, "id">>({[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\ui\select\select-value.svelte[39m:7:18
+[31mError[39m: Property 'Value' does not exist on type 'typeof import("C:/PROJETOS/TraderLogPro/node_modules/.pnpm/bits-ui@2.16.3_@internation_da4ab5d602ce413c24aa21fcd5173295/node_modules/bits-ui/dist/bits/select/exports")'. (ts)
+[36m
+<SelectPrimitive.[35mValue[36m {placeholder} data-slot="select-value" {...restProps} />[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\routes\(app)\fiscal\irpf\darf\+page.svelte[39m:290:13
+[31mError[39m: Cannot find name 'untrack'. (ts)
+[36m        if (hierarchicalDarfs.length > 0) {
+            [35muntrack[36m(() => {
+                const today = new Date();[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\routes\(app)\settings\risk\asset-profiles\+page.svelte[39m:343:17
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m            <div class="border-t pt-4 mt-2">
+                [35m<div class="flex items-center justify-between p-3 rounded-lg border border-border/10 bg-amber-500/5 shadow-sm cursor-pointer" onclick={() => formData.growth_override_enabled = !formData.growth_override_enabled}>
+                    <div class="space-y-0.5">
+                        <h4 class="font-bold text-sm text-amber-500">
+                            {$t("settings.risk.assetProfiles.growthOverride") || "Sobrescrita de Crescimento"}
+                        </h4>
+                        <p class="text-[10px] text-muted-foreground/80 font-medium">
+                            {$t("settings.risk.assetProfiles.growthOverrideDesc") || "Define regras de crescimento ignorando o plano global."}
+                        </p>
+                    </div>
+                    <Switch bind:checked={formData.growth_override_enabled} />
+                </div>[36m[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\routes\(app)\settings\risk\asset-profiles\+page.svelte[39m:343:17
+[33mWarn[39m: `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+[36m            <div class="border-t pt-4 mt-2">
+                [35m<div class="flex items-center justify-between p-3 rounded-lg border border-border/10 bg-amber-500/5 shadow-sm cursor-pointer" onclick={() => formData.growth_override_enabled = !formData.growth_override_enabled}>
+                    <div class="space-y-0.5">
+                        <h4 class="font-bold text-sm text-amber-500">
+                            {$t("settings.risk.assetProfiles.growthOverride") || "Sobrescrita de Crescimento"}
+                        </h4>
+                        <p class="text-[10px] text-muted-foreground/80 font-medium">
+                            {$t("settings.risk.assetProfiles.growthOverrideDesc") || "Define regras de crescimento ignorando o plano global."}
+                        </p>
+                    </div>
+                    <Switch bind:checked={formData.growth_override_enabled} />
+                </div>[36m[39m
+
+====================================
+[31msvelte-check found 48 errors and 31 warnings in 20 files
+[39m

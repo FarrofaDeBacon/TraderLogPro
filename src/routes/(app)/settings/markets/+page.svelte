@@ -17,11 +17,8 @@
     import * as Dialog from "$lib/components/ui/dialog";
     import { Separator } from "$lib/components/ui/separator";
     import { Checkbox } from "$lib/components/ui/checkbox";
-    import {
-        settingsStore,
-        type Market,
-        type TradingSession,
-    } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { Market, TradingSession } from "$lib/types";
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";
@@ -172,7 +169,7 @@
 
     <!-- Grouped Clickable List Cards -->
     <div class="space-y-6">
-        {#if settingsStore.isLoadingData && Object.keys(groupedMarkets).length === 0}
+        {#if appStore.isLoadingData && Object.keys(groupedMarkets).length === 0}
             <div class="space-y-4">
                 <Skeleton class="h-8 w-48" />
                 <div class="space-y-3">

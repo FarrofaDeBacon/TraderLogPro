@@ -3,7 +3,8 @@
     import { Plus, Pencil, Trash2, ArrowRightLeft } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import { Separator } from "$lib/components/ui/separator";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";
@@ -34,7 +35,7 @@
 
     async function confirmDelete() {
         if (deleteId) {
-            const result = await settingsStore.deleteTaxProfile(deleteId);
+            const result = await financialConfigStore.deleteTaxProfile(deleteId);
 
             if (!result.success) {
                 toast.error(result.error || $t("general.error"));
@@ -63,7 +64,7 @@
     </div>
 
     <div class="grid gap-4 md:grid-cols-2">
-        {#each settingsStore.taxProfiles as profile}
+        {#each financialConfigStore.taxProfiles as profile}
             <div
                 class="flex flex-col p-5 rounded-lg border bg-card hover:border-primary/50 transition-all shadow-sm"
             >
@@ -105,8 +106,8 @@
                     >
                         {$t("settings.fiscal.profiles.linkedRules")}
                     </h5>
-                    {#each settingsStore.getEntriesForProfile(profile.id) as entry}
-                        {#if settingsStore.taxRules.find((r) => r.id === entry.tax_rule_id)}
+                    {#each financialConfigStore.getEntriesForProfile(profile.id) as entry}
+                        {#if financialConfigStore.taxRules.find((r) => r.id === entry.tax_rule_id)}
                             <div
                                 class="flex justify-between items-center text-sm p-2 bg-muted/50 rounded border"
                             >
@@ -121,7 +122,7 @@
                                     >
                                 </div>
                                 <div class="font-medium">
-                                    {settingsStore.taxRules.find(
+                                    {financialConfigStore.taxRules.find(
                                         (r) => r.id === entry.tax_rule_id,
                                     )?.name}
                                 </div>

@@ -5,7 +5,7 @@
   import { setupI18n } from "$lib/i18n";
   import { isLoading } from "svelte-i18n";
   import { Toaster } from "$lib/components/ui/sonner";
-  import { settingsStore } from "$lib/stores/settings.svelte";
+  import { appStore } from "$lib/stores/app.svelte";
   import { userProfileStore } from "$lib/stores/user-profile.svelte";
   import { tradesStore } from "$lib/stores/trades.svelte";
   import { page } from "$app/stores";
@@ -40,8 +40,8 @@
       isI18nReady = true;
       console.log("[Root Layout] Step 1 complete: i18n ready.");
 
-      console.log("[Root Layout] Step 2: Loading settingsStore data...");
-      await settingsStore.loadData();
+      console.log("[Root Layout] Step 2: Loading appStore data...");
+      await appStore.loadData();
       console.log("[Root Layout] Step 2 complete: Settings loaded.");
 
       console.log("[Root Layout] Step 3: Loading tradesStore data...");
@@ -53,7 +53,7 @@
       console.error("[Root Layout] FATAL Error during initial load:", e);
       // Fallback: force bypass loading to at least show something
       isBypassLoading = true;
-      settingsStore.isLoadingData = false;
+      appStore.isLoadingData = false;
     }
 
     // Fire-and-forget: listen for trade-saved from detached windows
@@ -83,7 +83,7 @@
 
   // Auth Guard: Force login if password is set and user is not authenticated
   $effect(() => {
-    if (settingsStore.isLoadingData) return;
+    if (appStore.isLoadingData) return;
 
     const isAuthPage =
       $page.url.pathname === "/login" || $page.url.pathname === "/signup";
@@ -108,7 +108,7 @@
       }
     }
 
-    // 2. Otherwise sync from settingsStore
+    // 2. Otherwise sync from appStore
     // We only sync if theme is explicitly set (not empty string)
     let desiredTheme = userProfileStore.userProfile.theme;
 
@@ -123,15 +123,15 @@
   // Panic bypass for fixed loading screen (5s threshold)
   $effect(() => {
     const timer = setTimeout(() => {
-      if ($isLoading || settingsStore.isLoadingData) {
+      if ($isLoading || appStore.isLoadingData) {
         console.warn(
           "[Layout] Initial loading taking too long, forcing bypass.",
         );
         isBypassLoading = true;
 
         // Ensure store isn't stuck in loading state (prevent lockouts)
-        if (settingsStore.isLoadingData) {
-          settingsStore.isLoadingData = false;
+        if (appStore.isLoadingData) {
+          appStore.isLoadingData = false;
         }
       }
     }, 5000);
@@ -146,7 +146,7 @@
 {#if isI18nReady}
   {#if !isSplashFinished}
     <StartupSplash onFinish={() => (isSplashFinished = true)} />
-  {:else if ($isLoading || settingsStore.isLoadingData) && !isBypassLoading}
+  {:else if ($isLoading || appStore.isLoadingData) && !isBypassLoading}
     <div
       class="flex items-center justify-center h-screen w-full bg-background border-t-4 border-primary"
     >

@@ -3,7 +3,7 @@
   import { accountsStore } from "$lib/stores/accounts.svelte";
     import { t } from "svelte-i18n";
     import EChart from "$lib/components/ui/echart.svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import { formatCurrency } from "$lib/utils";
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import { riskStore } from "$lib/stores/riskStore.svelte";
     import * as Card from "$lib/components/ui/card";
     import { Progress } from "$lib/components/ui/progress";

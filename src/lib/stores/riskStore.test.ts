@@ -8,11 +8,11 @@ import { modalitiesStore } from './modalities.svelte';
 import { timeframesStore } from './timeframes.svelte';
 import { chartTypesStore } from './chart-types.svelte';
 import { indicatorsStore } from './indicators.svelte';
-import { settingsStore } from './settings.svelte';
+import { appStore } from "./app.svelte";
 import { assetsStore } from './assets.svelte';
 import { riskSettingsStore } from './risk-settings.svelte';
 
-// Mock the Tauri APIs that might get called on settingsStore initialization
+// Mock the Tauri APIs that might get called on appStore initialization
 vi.mock('@tauri-apps/api/core', () => ({
     invoke: vi.fn(),
 }));
@@ -22,7 +22,7 @@ vi.mock('@tauri-apps/plugin-dialog', () => ({
     confirm: vi.fn(),
 }));
 
-// We only need to override the getters on settingsStore to mock the inputs
+// We only need to override the getters on appStore to mock the inputs
 describe('RiskStore Position Sizing Integration', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -146,7 +146,8 @@ describe('RiskStore Position Sizing Integration', () => {
 
         it('Scenario B: Asset selected, AssetRiskProfile linked, Global Growth', () => {
             riskSettingsStore.riskProfiles = [{ 
-                id: 'global-1', active: true, linked_asset_risk_profile_ids: ['profile-wdo']
+                id: 'global-1', active: true, linked_asset_risk_profile_ids: ['profile-wdo'],
+                growth_phases: [{ level: 1, lot_size: 1 }]
             } as any];
             assetsStore.assets = [{ id: 'WDO', symbol: 'WDO', point_value: 10 } as any];
             riskSettingsStore.assetRiskProfiles = [{ 
@@ -218,7 +219,8 @@ describe('RiskStore Position Sizing Integration', () => {
 
         it('Scenario F: Asset change triggers context switch', () => {
             riskSettingsStore.riskProfiles = [{ 
-                id: 'global-1', active: true, linked_asset_risk_profile_ids: ['profile-wdo', 'profile-win']
+                id: 'global-1', active: true, linked_asset_risk_profile_ids: ['profile-wdo', 'profile-win'],
+                growth_phases: [{ level: 1, lot_size: 1 }]
             } as any];
             
             assetsStore.assets = [
@@ -272,7 +274,7 @@ describe('RiskStore Persistence (activeAssetId)', () => {
         expect(testStore.activeAssetId).toBe('WDO');
     });
 
-    it('cleans activeAssetId if the linked asset no longer exists in settingsStore', async () => {
+    it('cleans activeAssetId if the linked asset no longer exists in appStore', async () => {
         mockStore['risk_activeAssetId'] = 'DEAD_ASSET';
         
         assetsStore.assets = [

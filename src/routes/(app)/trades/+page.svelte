@@ -6,7 +6,7 @@
     import { Input } from "$lib/components/ui/input";
     import * as Card from "$lib/components/ui/card";
     import * as Table from "$lib/components/ui/table";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import { userProfileStore } from "$lib/stores/user-profile.svelte";
@@ -125,7 +125,7 @@
     }
 
     const hierarchicalTradesData = $derived.by(() => {
-        if (settingsStore.isLoadingData) return [];
+        if (appStore.isLoadingData) return [];
 
         return getTradeViewModel(
             filteredTrades,
@@ -478,7 +478,7 @@
                     $t("trades.messages.delete_success") ||
                         "Operação excluída com sucesso.",
                 );
-                settingsStore.loadData();
+                appStore.loadData();
             } else {
                 toast.error(
                     $t("trades.messages.delete_error") ||
@@ -493,7 +493,7 @@
                     $t("trades.messages.delete_success") ||
                         "Operações excluídas com sucesso.",
                 );
-                settingsStore.loadData();
+                appStore.loadData();
             } else {
                 toast.error(
                     $t("trades.messages.delete_error") ||
@@ -544,7 +544,7 @@
                     loading: $t("trades.messages.importing") || "Importando trades...",
                     success: (data: any) => {
                         tradesStore.loadTrades();
-                        settingsStore.loadData();
+                        appStore.loadData();
                         return data;
                     },
                     error: (err: any) => `Erro: ${err}`

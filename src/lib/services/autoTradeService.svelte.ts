@@ -1,6 +1,6 @@
 import { accountsStore } from "$lib/stores/accounts.svelte";
 import { rtdStore, type RTDTradeEvent } from "$lib/stores/rtd.svelte";
-import { settingsStore } from "$lib/stores/settings.svelte";
+import { appStore } from "$lib/stores/app.svelte";
 import { tradesStore } from "$lib/stores/trades.svelte";
 
 export interface PendingTrade {

@@ -11,11 +11,11 @@
         CheckCircle2,
     } from "lucide-svelte";
     import { t } from "svelte-i18n";
-    import type { RiskProfile } from "$lib/stores/settings.svelte";
+    import type { RiskProfile } from "$lib/types";
     import { Badge } from "$lib/components/ui/badge";
     import { Separator } from "$lib/components/ui/separator";
     import * as Card from "$lib/components/ui/card";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
 
     let { profile } = $props<{ profile: RiskProfile }>();
     

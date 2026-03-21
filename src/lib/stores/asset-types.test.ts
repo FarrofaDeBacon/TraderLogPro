@@ -15,7 +15,6 @@ describe('AssetTypesStore Unit Tests', () => {
     it('should read the initial list correctly', () => {
         expect(assetTypesStore.assetTypes.length).toBe(2);
         expect(assetTypesStore.assetTypes[0].code).toBe('STK_BR');
-        expect(assetTypesStore.assetTypes[1].has_expiration).toBe(true);
     });
 
     it('should resolve asset type name by ID natively', () => {
@@ -28,9 +27,8 @@ describe('AssetTypesStore Unit Tests', () => {
             name: 'Opções BR',
             code: 'OPT_BR',
             market_id: 'market:B3',
-            has_expiration: true,
             tax_profile_id: 'tax_br_opt'
-        });
+        } as any);
 
         expect(assetTypesStore.assetTypes.length).toBe(3);
         const added = assetTypesStore.assetTypes.find(at => at.code === 'OPT_BR');

@@ -18,7 +18,8 @@
     import * as Select from "$lib/components/ui/select";
     import { Separator } from "$lib/components/ui/separator";
     import { Badge } from "$lib/components/ui/badge";
-    import { settingsStore, type Account } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { Account } from "$lib/types";
     import { t, locale } from "svelte-i18n";
     import { toast } from "svelte-sonner";
     import { formatCurrency } from "$lib/utils";

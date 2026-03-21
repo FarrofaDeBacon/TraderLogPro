@@ -7,18 +7,20 @@
     import * as Dialog from "$lib/components/ui/dialog";
     import * as Select from "$lib/components/ui/select";
     import { Separator } from "$lib/components/ui/separator";
-    import {
-        settingsStore,
-        type TaxProfile,
-        type TaxProfileEntry,
-    } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { TaxProfile, TaxProfileEntry } from "$lib/types";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { t } from "svelte-i18n";
     import { toast } from "svelte-sonner";
 
     let {
         open = $bindable(false),
-        profileId = $bindable(null),
-        onSave,
+        profileId = $bindable<string | null>(null),
+        onSave = undefined,
+    }: {
+        open?: boolean;
+        profileId?: string | null;
+        onSave?: () => void;
     } = $props();
 
     let formData = $state<Omit<TaxProfile, "id">>({
@@ -40,7 +42,7 @@
     $effect(() => {
         if (open) {
             if (profileId) {
-                const p = settingsStore.taxProfiles.find(
+                const p = financialConfigStore.taxProfiles.find(
                     (x) => x.id === profileId,
                 );
                 if (p) {
@@ -60,7 +62,7 @@
     // Entries for this profile
     let currentEntries = $derived.by(() => {
         if (!profileId) return localEntries;
-        return settingsStore.getEntriesForProfile(profileId);
+        return financialConfigStore.getEntriesForProfile(profileId);
     });
 
     let isSubmitting = $state(false);
@@ -77,15 +79,15 @@
         try {
             if (profileId) {
                 // Editando existente
-                await settingsStore.updateTaxProfile(profileId, formData);
+                await financialConfigStore.updateTaxProfile(profileId, formData);
                 toast.success($t("settings.fiscal.profiles.success.update"));
             } else {
                 // Criando novo
-                const newId = await settingsStore.addTaxProfile(formData);
+                const newId = await financialConfigStore.addTaxProfile(formData);
 
                 // Salvar quaisquer regras locais que construímos
                 for (const entry of localEntries) {
-                    await settingsStore.addTaxProfileEntry({
+                    await financialConfigStore.addTaxProfileEntry({
                         tax_profile_id: newId,
                         modality_id: entry.modality_id,
                         tax_rule_id: entry.tax_rule_id,
@@ -121,7 +123,7 @@
         try {
             // Check duplicate modality
             const exists = profileId
-                ? settingsStore
+                ? financialConfigStore
                       .getEntriesForProfile(profileId)
                       .some((e) => e.modality_id === newEntryData.modality_id)
                 : localEntries.some(
@@ -137,7 +139,7 @@
 
             if (profileId) {
                 // Add directly to DB if editing
-                await settingsStore.addTaxProfileEntry({
+                await financialConfigStore.addTaxProfileEntry({
                     tax_profile_id: profileId,
                     modality_id: newEntryData.modality_id,
                     tax_rule_id: newEntryData.tax_rule_id,
@@ -166,7 +168,7 @@
 
     async function removeEntry(entry: any) {
         if (profileId) {
-            await settingsStore.deleteTaxProfileEntry(entry.id);
+            await financialConfigStore.deleteTaxProfileEntry(entry.id);
             toast.success($t("settings.fiscal.profiles.success.ruleRemoved"));
         } else {
             localEntries = localEntries.filter(
@@ -183,7 +185,7 @@
         return modalitiesStore.modalities.find((m) => m.id === id)?.name || "N/A";
     }
     function getRuleName(id: string) {
-        const r = settingsStore.taxRules.find((r) => r.id === id);
+        const r = financialConfigStore.taxRules.find((r) => r.id === id);
         return r ? `${r.name} (${r.tax_rate}%)` : "N/A";
     }
 </script>
@@ -301,7 +303,7 @@
                                 <Select.Trigger
                                     class="h-9 text-xs bg-background"
                                 >
-                                    {settingsStore.taxRules.find(
+                                    {financialConfigStore.taxRules.find(
                                         (r) =>
                                             r.id === newEntryData.tax_rule_id,
                                     )?.name ||
@@ -310,7 +312,7 @@
                                         )}
                                 </Select.Trigger>
                                 <Select.Content>
-                                    {#each settingsStore.taxRules as r}
+                                    {#each financialConfigStore.taxRules as r}
                                         <Select.Item value={r.id}>
                                             {r.name} ({r.tax_rate}%)
                                         </Select.Item>

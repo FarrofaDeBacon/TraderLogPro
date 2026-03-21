@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import AppSidebar from "$lib/components/app-sidebar/AppSidebar.svelte";
     import { sidebarState } from "$lib/stores/sidebar.svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import OnboardingWizard from "$lib/components/setup/OnboardingWizard.svelte";
@@ -33,7 +33,7 @@
 
     async function handleOnboardingComplete() {
         console.log("[Layout] Onboarding complete, refreshing data...");
-        await Promise.all([settingsStore.loadData(), tradesStore.loadTrades()]);
+        await Promise.all([appStore.loadData(), tradesStore.loadTrades()]);
     }
 </script>
 

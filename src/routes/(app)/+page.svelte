@@ -4,7 +4,7 @@
   import { accountsStore } from "$lib/stores/accounts.svelte";
   import { Button } from "$lib/components/ui/button";
   import { t, locale } from "svelte-i18n";
-  import { settingsStore } from "$lib/stores/settings.svelte";
+  import { appStore } from "$lib/stores/app.svelte";
   import { userProfileStore } from "$lib/stores/user-profile.svelte";
   import { tradesStore } from "$lib/stores/trades.svelte";
   import { evolutionStore } from "$lib/stores/evolutionStore.svelte";
@@ -132,7 +132,7 @@
   }
 </script>
 
-{#if settingsStore.isLoadingData}
+{#if appStore.isLoadingData}
   <div class="flex items-center justify-center p-20 min-h-[60vh] w-full">
     <div class="flex flex-col items-center gap-4 text-center">
       <div

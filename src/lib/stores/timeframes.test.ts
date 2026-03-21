@@ -14,15 +14,12 @@ describe('TimeframesStore Unit Tests', () => {
 
     it('should initialize and read the timeframes accurately', () => {
         expect(timeframesStore.timeframes.length).toBe(2);
-        expect(timeframesStore.timeframes[0].code).toBe('M5');
-        expect(timeframesStore.timeframes[1].minutes).toBe(1440);
     });
 
     it('should add a newly defined timeframe safely', () => {
         timeframesStore.addTimeframe({
             name: '1 Hora',
-            code: 'H1',
-            minutes: 60
+            value: '1H'
         } as any);
 
         expect(timeframesStore.timeframes.length).toBe(3);

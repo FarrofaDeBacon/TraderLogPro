@@ -1,5 +1,5 @@
 import { tradesStore } from "$lib/stores/trades.svelte";
-import { settingsStore } from "$lib/stores/settings.svelte";
+import { appStore } from "$lib/stores/app.svelte";
 import { workspaceStore } from "$lib/stores/workspace.svelte";
 import type { RiskProfile, Trade, EmotionalState } from "$lib/types";
 import { getLocalDatePart } from "$lib/utils";

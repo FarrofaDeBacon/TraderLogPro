@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
   import { currenciesStore } from "$lib/stores/currencies.svelte";
   import { accountsStore } from "$lib/stores/accounts.svelte";
     import * as Dialog from "$lib/components/ui/dialog";
@@ -6,7 +7,7 @@
     import { Input } from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
     import { Button } from "$lib/components/ui/button";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import {
         ArrowRightLeft,
         Wallet,
@@ -83,7 +84,7 @@
 
         const fullIsoDate = formatLocalISO(date);
 
-        const result = await settingsStore.transferFunds({
+        const result = await financialConfigStore.transferFunds({
             fromAccountId,
             toAccountId,
             amountParams: {

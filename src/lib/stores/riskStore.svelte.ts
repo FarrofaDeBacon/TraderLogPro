@@ -4,7 +4,7 @@
 import { assetsStore } from "$lib/stores/assets.svelte";
 import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
 import { accountsStore } from "$lib/stores/accounts.svelte";
-import { settingsStore } from './settings.svelte';
+import { appStore } from "./app.svelte";
 import { tradesStore } from './trades.svelte';
 import { 
     buildRiskCockpitState, 
@@ -75,7 +75,7 @@ export class RiskStore {
      */
     get riskCockpitState(): RiskCockpitState | null {
         // 1. Obter Perfil Ativo
-        const activeProfile = settingsStore.activeProfile;
+        const activeProfile = riskSettingsStore.activeProfile;
         if (!activeProfile || !activeProfile.active) return null;
 
         // 2. Adaptar o perfil para a estrutura do Domínio Puro
@@ -116,7 +116,7 @@ export class RiskStore {
      * Retorna o Perfil de Risco de Ativo resolvido para o ativo selecionado na UI.
      */
     get resolvedAssetRiskProfile() {
-        const activeProfile = settingsStore.activeProfile;
+        const activeProfile = riskSettingsStore.activeProfile;
         if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
 
         const asset = assetsStore.assets.find(a => a.id === this.activeAssetId);
@@ -133,7 +133,7 @@ export class RiskStore {
      * Computa os trades fechados e valida regras operacionais da mesa.
      */
     get deskAuditState(): DeskAuditResult | null {
-        const activeProfile = settingsStore.activeProfile;
+        const activeProfile = riskSettingsStore.activeProfile;
         if (!activeProfile || !activeProfile.active || !activeProfile.desk_config) return null;
 
         const closedTrades = tradesStore.trades.filter(t => t.exit_price !== null && t.exit_price !== undefined);
@@ -149,7 +149,7 @@ export class RiskStore {
      * Retorna o Status de Progressão de Estágio Operacional da Mesa.
      */
     get deskStageProgressionState() {
-        const activeProfile = settingsStore.activeProfile;
+        const activeProfile = riskSettingsStore.activeProfile;
         const audit = this.deskAuditState;
         
         if (!activeProfile || !activeProfile.active || !activeProfile.desk_config || !audit) return null;
@@ -161,7 +161,7 @@ export class RiskStore {
      * Retorna o Feedback Operacional da Mesa detalhando métricas faltantes e sugestões.
      */
     get deskProgressFeedback() {
-        const activeProfile = settingsStore.activeProfile;
+        const activeProfile = riskSettingsStore.activeProfile;
         const audit = this.deskAuditState;
         
         if (!activeProfile || !activeProfile.active || !activeProfile.desk_config || !audit) return null;
@@ -176,7 +176,7 @@ export class RiskStore {
      * 2. Global RiskProfile Phase
      */
     get resolvedGrowthContext(): ResolvedGrowthContext | null {
-        const activeProfile = settingsStore.activeProfile;
+        const activeProfile = riskSettingsStore.activeProfile;
         if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
 
         const asset = assetsStore.assets.find(a => a.id === this.activeAssetId);
@@ -224,7 +224,7 @@ export class RiskStore {
      * Motor de Position Sizing (Entrada Pura formatada pelo Adapter)
      */
     get positionSizingInput(): PositionSizingInput | null {
-        const activeProfile = settingsStore.activeProfile;
+        const activeProfile = riskSettingsStore.activeProfile;
         if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
 
         const asset = assetsStore.assets.find(a => a.id === this.activeAssetId);
@@ -273,7 +273,7 @@ export class RiskStore {
      * Auditoria de Mesa Operacional (Prop Firm Desk Validation)
      */
     get deskValidationResult(): DeskValidationResult | null {
-        const activeProfile = settingsStore.activeProfile;
+        const activeProfile = riskSettingsStore.activeProfile;
         if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
 
         const assetRiskProfile = this.resolvedAssetRiskProfile;

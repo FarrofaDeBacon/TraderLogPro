@@ -6,7 +6,7 @@
     import * as Select from "$lib/components/ui/select";
     import * as Card from "$lib/components/ui/card";
     import { Key, Info } from "lucide-svelte";
-    import type { ApiConfig } from "$lib/stores/settings.svelte";
+    import type { ApiConfig } from "$lib/types";
     import { toast } from "svelte-sonner";
     import { t } from "svelte-i18n";
 

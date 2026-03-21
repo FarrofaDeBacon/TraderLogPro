@@ -14,7 +14,8 @@
     import { Input } from "$lib/components/ui/input";
     import * as Dialog from "$lib/components/ui/dialog";
     import { Separator } from "$lib/components/ui/separator";
-    import { settingsStore, type ChartType } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { ChartType } from "$lib/types";
     import ChartTypeForm from "$lib/components/settings/ChartTypeForm.svelte";
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";

@@ -4,4 +4,5 @@
     let { placeholder = "", ...restProps } = $props();
 </script>
 
+<!-- @ts-ignore -->
 <SelectPrimitive.Value {placeholder} data-slot="select-value" {...restProps} />

@@ -7,7 +7,7 @@
     import { Button } from "$lib/components/ui/button";
     import { Badge } from "$lib/components/ui/badge";
     import { tradesStore } from "$lib/stores/trades.svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { Zap, TrendingUp, TrendingDown, CheckSquare, Loader2 } from "lucide-svelte";
     import { toast } from "svelte-sonner";

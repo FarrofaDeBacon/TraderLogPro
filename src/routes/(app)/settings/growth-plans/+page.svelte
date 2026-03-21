@@ -5,7 +5,7 @@
     import * as Card from "$lib/components/ui/card";
     import * as Dialog from "$lib/components/ui/dialog";
     import { Separator } from "$lib/components/ui/separator";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import type { GrowthPlan } from "$lib/types";
     import GrowthPlanForm from "$lib/components/settings/growth/GrowthPlanForm.svelte";
     import { Badge } from "$lib/components/ui/badge";

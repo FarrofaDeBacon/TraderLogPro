@@ -3,7 +3,7 @@
     import { Label } from "$lib/components/ui/label";
     import { Button } from "$lib/components/ui/button";
     import { t } from "svelte-i18n";
-    import type { Timeframe } from "$lib/stores/settings.svelte";
+    import type { Timeframe } from "$lib/types";
 
     let { initialData, onSave, onCancel } = $props<{
         initialData?: Timeframe;

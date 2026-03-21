@@ -4,7 +4,7 @@
     import { Button } from "$lib/components/ui/button";
     import * as Select from "$lib/components/ui/select";
     import { t } from "svelte-i18n";
-    import type { ChartType } from "$lib/stores/settings.svelte";
+    import type { ChartType } from "$lib/types";
 
     let { initialData, onSave, onCancel } = $props<{
         initialData?: ChartType;

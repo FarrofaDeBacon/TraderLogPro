@@ -7,7 +7,7 @@
     import * as Table from "$lib/components/ui/table";
     import * as Select from "$lib/components/ui/select";
     import { rtdStore } from "$lib/stores/rtd.svelte";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
     import { t } from "svelte-i18n";
     import { RefreshCcw, FileSpreadsheet, Check } from "lucide-svelte";
     import { toast } from "svelte-sonner";
@@ -129,8 +129,8 @@
         }
 
         // Save all at once before refreshing
-        await settingsStore.saveAssets();
-        await settingsStore.loadData(true); // Refresh to ensure sync (silent mode)
+        await assetsStore.saveAssets();
+        await appStore.loadData(true); // Refresh to ensure sync (silent mode)
 
         toast.success($t("settings.assets.importDialog.success", { values: { count: toImport.length } }));
         open = false;
@@ -228,7 +228,7 @@
                                         <Select.Trigger
                                             class="h-8 border-none bg-transparent hover:bg-muted/50 transition-colors"
                                         >
-                                            {assetTypesStore.getAssetTypeCode(
+                                            {assetTypesStore.getAssetTypeName(
                                                 item.typeId,
                                             )}
                                         </Select.Trigger>

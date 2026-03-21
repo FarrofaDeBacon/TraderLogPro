@@ -9,7 +9,7 @@
     import { Badge } from "$lib/components/ui/badge";
     import { Button } from "$lib/components/ui/button";
     import { TrendingUp, Activity, Target, ArrowRight } from "lucide-svelte";
-    import type { Strategy } from "$lib/stores/settings.svelte";
+    import type { Strategy } from "$lib/types";
     import { goto } from "$app/navigation";
     import { t, locale } from "svelte-i18n";
     import { formatCurrency } from "$lib/utils";

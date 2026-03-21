@@ -8,7 +8,7 @@ vi.mock('@tauri-apps/api/core', () => ({
 
 // Mock Settings Store dependency
 vi.mock('./settings.svelte', () => ({
-    settingsStore: {
+    appStore: {
         loadCashTransactions: vi.fn(),
         accounts: []
     }

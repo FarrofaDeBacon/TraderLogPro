@@ -5,10 +5,8 @@
     import * as Card from "$lib/components/ui/card";
     import * as Dialog from "$lib/components/ui/dialog";
     import { Separator } from "$lib/components/ui/separator";
-    import {
-        settingsStore,
-        type RiskProfile,
-    } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { RiskProfile } from "$lib/types";
     import RiskForm from "$lib/components/settings/RiskForm.svelte";
     import { Badge } from "$lib/components/ui/badge";
     import { t } from "svelte-i18n";

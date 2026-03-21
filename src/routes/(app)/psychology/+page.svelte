@@ -1,7 +1,8 @@
 <script lang="ts">
   import { accountsStore } from "$lib/stores/accounts.svelte";
     import { t, locale } from "svelte-i18n";
-    import { settingsStore } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+    import { financialConfigStore } from "$lib/stores/financial-config.svelte";
     import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { tradesStore } from "$lib/stores/trades.svelte";
     import * as Card from "$lib/components/ui/card";
@@ -65,7 +66,7 @@
         if (entry) {
             // Check if there are daily closures associated with this date
             const dateStr = entry.date.split("T")[0];
-            const closures = settingsStore.cashTransactions.filter(
+            const closures = financialConfigStore.cashTransactions.filter(
                 (t) =>
                     t.id.includes("daily_closure_") &&
                     getLocalDatePart(t.date) === dateStr,
@@ -83,7 +84,7 @@
     async function confirmDeleteJournalWithClosure(deleteClosures: boolean) {
         if (entryToDelete) {
             const result =
-                await workspaceStore.removeJournalEntry(entryToDelete);
+                await workspaceStore.deleteJournalEntry(entryToDelete);
             if (result && result.success === false) {
                 toast.error("Erro ao excluir o registro: " + result.error);
             } else {
@@ -91,7 +92,7 @@
                     let hasError = false;
                     for (const cid of associatedClosureIds) {
                         const cres =
-                            await settingsStore.removeCashTransaction(cid);
+                            await financialConfigStore.removeCashTransaction(cid);
                         if (!cres.success) hasError = true;
                     }
                     if (hasError) {
@@ -120,7 +121,7 @@
     async function confirmDeleteJournal() {
         if (entryToDelete) {
             const result =
-                await workspaceStore.removeJournalEntry(entryToDelete);
+                await workspaceStore.deleteJournalEntry(entryToDelete);
             if (result && result.success === false) {
                 toast.error("Erro ao excluir: " + result.error);
             } else {
@@ -305,7 +306,7 @@
     }
 
     const hierarchicalPsychologyData = $derived.by(() => {
-        if (settingsStore.isLoadingData) return [];
+        if (appStore.isLoadingData) return [];
         const t0 = performance.now();
         const monthsMap = new Map<string, any>();
 
@@ -452,7 +453,7 @@
     async function syncWeights() {
         try {
             await invoke("seed_emotional_states");
-            await settingsStore.loadData();
+            await appStore.loadData();
             toast.success("Pesos sincronizados com sucesso!");
         } catch (e) {
             toast.error("Erro ao sincronizar pesos.");
@@ -568,7 +569,7 @@
 
     // --- KPI & Summary Logic (Restored from Backup) ---
     const statsByEmotion = $derived.by(() => {
-        if (settingsStore.isLoadingData) return [];
+        if (appStore.isLoadingData) return [];
         const stats = new Map<
             string,
             {
@@ -754,7 +755,7 @@
     }
 
     const isLoading = $derived(
-        tradesStore.isLoading || settingsStore.isLoadingData,
+        tradesStore.isLoading || appStore.isLoadingData,
     );
 
     let expandedMonths = $state(new Set<string>());

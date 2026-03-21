@@ -5,7 +5,8 @@
     import { Input } from "$lib/components/ui/input";
     import * as Dialog from "$lib/components/ui/dialog";
     import { Separator } from "$lib/components/ui/separator";
-    import { settingsStore, type Timeframe } from "$lib/stores/settings.svelte";
+    import { appStore } from "$lib/stores/app.svelte";
+import type { Timeframe } from "$lib/types";
     import TimeframeForm from "$lib/components/settings/TimeframeForm.svelte";
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
