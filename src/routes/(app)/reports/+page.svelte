@@ -104,13 +104,26 @@
       if (isExporting) return;
       isExporting = true;
 
+      // 1. ABRE A JANELA PRIMEIRO síncronamente (Dribla o bloqueador de Pop-ups do Chrome)
+      const printWindow = window.open('', '_blank', 'width=1000,height=800');
+      
+      if (!printWindow) {
+          console.error("Popup Bloqueado pelo navegador");
+          // Removemos o 'alert()' nativo pois ele quebra o Tauri Plugin-Dialog caso não esteja configurado corretamente no app.html
+          isExporting = false;
+          return;
+      }
+      
+      // Feedback temporário durante o render offline
+      printWindow.document.write("<h1>Gerando Relatório Institucional. Aguarde...</h1>");
+
       try {
-          // 1. Cria contêiner off-screen para montar o componente
+          // 2. Cria contêiner off-screen para montar o componente
           const container = document.createElement('div');
           container.style.display = 'none';
           document.body.appendChild(container);
 
-          // 2. Monta dinamicamente a UI de Impressão (PdfExportTemplate já está formatado com HEX e tags de print)
+          // 3. Monta dinamicamente a UI de Impressão (PdfExportTemplate já está formatado com HEX e tags de print)
           const mountedComponent = mount(PdfExportTemplate, {
               target: container,
               props: {
@@ -120,30 +133,23 @@
               }
           });
 
-          // Hack para garantir rendering completo do DOM pelo Svelte
-          await new Promise(r => setTimeout(r, 100));
+          // Hack para garantir rendering completo do DOM pelo Svelte (isso matava a sincronicidade do click)
+          await new Promise(r => setTimeout(r, 150));
 
-          // 3. Pega o HTML gerado
+          // 4. Pega o HTML gerado
           const reportHTML = container.innerHTML;
 
           // Limpa o componente logo após pegar o HTML
           unmount(mountedComponent);
           document.body.removeChild(container);
 
-          // 4. Copia os estilos atuais (Tailwind + CSS Global) para não perder formatação
+          // 5. Copia os estilos expostos para nova tela (Tailwind)
           const styleTags = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
               .map(node => node.outerHTML)
               .join('\n');
 
-          // 5. Abre Nova Janela
-          const printWindow = window.open('', '_blank', 'width=1000,height=800');
-          if (!printWindow) {
-              alert("Por favor, permita pop-ups para gerar o documento.");
-              isExporting = false;
-              return;
-          }
-
-          // 6. Injeta HTML e Script de Auto-Impressão
+          // 6. Injeta tudo direto na nova Janela Aberta, apagando o feedback e botando o conteúdo final
+          printWindow.document.open();
           printWindow.document.write(`
               <!DOCTYPE html>
               <html lang="pt-BR">
@@ -172,7 +178,7 @@
               </head>
               <body class="bg-white text-black">
                   ${reportHTML}
-                  <script>
+                  <scr` + `ipt>
                       // Aguarda o carregamento de fontes e folhas de estilo externas
                       window.onload = () => {
                           setTimeout(() => {
@@ -180,15 +186,15 @@
                               window.close();
                           }, 500); 
                       };
-                  <\/script>
+                  </scr` + `ipt>
               </body>
               </html>
           `);
-          
           printWindow.document.close();
 
       } catch (error) {
           console.error("Erro ao exportar PDF: ", error);
+          printWindow.close();
       } finally {
           isExporting = false;
       }
