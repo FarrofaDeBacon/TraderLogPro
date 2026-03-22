@@ -104,26 +104,13 @@
       if (isExporting) return;
       isExporting = true;
 
-      // 1. ABRE A JANELA PRIMEIRO síncronamente (Dribla o bloqueador de Pop-ups do Chrome)
-      const printWindow = window.open('', '_blank', 'width=1000,height=800');
-      
-      if (!printWindow) {
-          console.error("Popup Bloqueado pelo navegador");
-          // Removemos o 'alert()' nativo pois ele quebra o Tauri Plugin-Dialog caso não esteja configurado corretamente no app.html
-          isExporting = false;
-          return;
-      }
-      
-      // Feedback temporário durante o render offline
-      printWindow.document.write("<h1>Gerando Relatório Institucional. Aguarde...</h1>");
-
       try {
-          // 2. Cria contêiner off-screen para montar o componente
+          // 1. Cria contêiner off-screen para montar o componente temporariamente
           const container = document.createElement('div');
           container.style.display = 'none';
           document.body.appendChild(container);
 
-          // 3. Monta dinamicamente a UI de Impressão (PdfExportTemplate já está formatado com HEX e tags de print)
+          // 2. Monta dinamicamente a UI de Impressão (PdfExportTemplate já está formatado com HEX e tags de print)
           const mountedComponent = mount(PdfExportTemplate, {
               target: container,
               props: {
@@ -133,24 +120,39 @@
               }
           });
 
-          // Hack para garantir rendering completo do DOM pelo Svelte (isso matava a sincronicidade do click)
-          await new Promise(r => setTimeout(r, 150));
+          // Hack para garantir rendering completo do DOM pelo Svelte 5
+          await new Promise(r => setTimeout(r, 100));
 
-          // 4. Pega o HTML gerado
+          // 3. Pega o HTML gerado
           const reportHTML = container.innerHTML;
 
-          // Limpa o componente logo após pegar o HTML
+          // Limpa a montagem em Svelte logo após pegar a renderização limpa
           unmount(mountedComponent);
           document.body.removeChild(container);
 
-          // 5. Copia os estilos expostos para nova tela (Tailwind)
+          // 4. Copia os estilos expostos para nova tela (Tailwind)
           const styleTags = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
               .map(node => node.outerHTML)
               .join('\n');
 
-          // 6. Injeta tudo direto na nova Janela Aberta, apagando o feedback e botando o conteúdo final
-          printWindow.document.open();
-          printWindow.document.write(`
+          // 5. Injeta Iframe Invisível (Dribla bloqueios de pop-up)
+          // Usar 'left: -2000vw' e tamanhos reais preservam o layout grid/flex como se estivesse na tela cheia!
+          const iframe = document.createElement('iframe');
+          iframe.style.position = 'absolute';
+          iframe.style.left = '-2000vw';
+          iframe.style.top = '0';
+          iframe.style.width = '1000px'; 
+          iframe.style.height = '1414px';
+          iframe.style.border = 'none';
+          
+          document.body.appendChild(iframe);
+          
+          const doc = iframe.contentWindow?.document || iframe.contentDocument;
+          if (!doc) throw new Error("Falha ao criar iframe para PDF");
+
+          // 6. Injeta tudo direto no Iframe, botando o conteúdo final e script para janela
+          doc.open();
+          doc.write(`
               <!DOCTYPE html>
               <html lang="pt-BR">
               <head>
@@ -179,22 +181,43 @@
               <body class="bg-white text-black">
                   ${reportHTML}
                   <scr` + `ipt>
-                      // Aguarda o carregamento de fontes e folhas de estilo externas
-                      window.onload = () => {
+                      // Garante impressao mesmo se onload falhar em iframes
+                      let printed = false;
+                      const doPrint = () => {
+                          if (printed) return;
+                          printed = true;
                           setTimeout(() => {
+                              window.focus();
                               window.print();
-                              window.close();
-                          }, 500); 
+                              // Dispara evento pro parent destruir o iframe dps
+                              window.parent.postMessage('print_complete', '*');
+                          }, 500);
                       };
+                      
+                      // Aguarda folhas de estilo externas
+                      window.onload = doPrint;
+                      // Fallback de segurança 
+                      setTimeout(doPrint, 2000); 
                   </scr` + `ipt>
               </body>
               </html>
           `);
-          printWindow.document.close();
+          doc.close();
+
+          // Aguarda retorno da msg do script interno para apagar a sujeira
+          window.addEventListener('message', function cleanup(e) {
+              if (e.data === 'print_complete') {
+                  setTimeout(() => {
+                      if (document.body.contains(iframe)) {
+                         document.body.removeChild(iframe);
+                      }
+                  }, 1000);
+                  window.removeEventListener('message', cleanup);
+              }
+          });
 
       } catch (error) {
           console.error("Erro ao exportar PDF: ", error);
-          printWindow.close();
       } finally {
           isExporting = false;
       }
