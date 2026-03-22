@@ -38,6 +38,7 @@
       SelectTrigger,
   } from "$lib/components/ui/select";
   import { Button } from "$lib/components/ui/button";
+  import DateFilter from "$lib/components/filters/DateFilter.svelte";
   import {
     startOfDay,
     endOfDay,
@@ -45,35 +46,59 @@
     endOfWeek,
     startOfMonth,
     endOfMonth,
-    subMonths
+    startOfYear,
+    endOfYear,
+    subDays,
+    subWeeks,
+    subMonths,
+    subYears,
+    parseISO
   } from "date-fns";
 
   // State
-  let selectedPeriod = $state('hoje');
+  let timeFilter = $state("this_month");
+  let customStartDate = $state("");
+  let customEndDate = $state("");
   let isExporting = $state(false);
 
   // Reatividade do DateRange
-  const getDateRanges = (period: string) => {
+  let dateRanges = $derived.by(() => {
     const now = new Date();
-    switch (period) {
-      case "hoje":
+    switch (timeFilter) {
+      case "today":
         return { start: startOfDay(now), end: endOfDay(now) };
-      case "semana":
+      case "yesterday": {
+        const y = subDays(now, 1);
+        return { start: startOfDay(y), end: endOfDay(y) };
+      }
+      case "this_week":
         return { start: startOfWeek(now, { weekStartsOn: 1 }), end: endOfWeek(now, { weekStartsOn: 1 }) };
-      case "mes":
+      case "last_week": {
+        const lw = subWeeks(now, 1);
+        return { start: startOfWeek(lw, { weekStartsOn: 1 }), end: endOfWeek(lw, { weekStartsOn: 1 }) };
+      }
+      case "this_month":
         return { start: startOfMonth(now), end: endOfMonth(now) };
-      case "mes_passado":
-        const lastMonth = subMonths(now, 1);
-        return { start: startOfMonth(lastMonth), end: endOfMonth(lastMonth) };
+      case "last_month": {
+        const lm = subMonths(now, 1);
+        return { start: startOfMonth(lm), end: endOfMonth(lm) };
+      }
+      case "this_year":
+        return { start: startOfYear(now), end: endOfYear(now) };
+      case "last_year": {
+        const ly = subYears(now, 1);
+        return { start: startOfYear(ly), end: endOfYear(ly) };
+      }
+      case "all":
+        return { start: new Date(2000, 0, 1), end: endOfDay(now) };
+      case "custom":
+        if (customStartDate && customEndDate) {
+            return { start: parseISO(customStartDate), end: endOfDay(parseISO(customEndDate)) };
+        }
+        return { start: startOfMonth(now), end: endOfMonth(now) };
       default:
         return { start: startOfMonth(now), end: endOfMonth(now) };
     }
-  };
-
-  let dateRanges = $state(getDateRanges(selectedPeriod));
-
-  $effect(() => {
-      dateRanges = getDateRanges(selectedPeriod);
   });
 
   // Format Helper
@@ -115,7 +140,7 @@
               target: container,
               props: {
                  report: report,
-                 selectedPeriod: selectedPeriod,
+                 selectedPeriod: timeFilter,
                  dateRanges: dateRanges
               }
           });
@@ -157,12 +182,12 @@
               <html lang="pt-BR">
               <head>
                   <meta charset="UTF-8">
-                  <title>TraderLogPro_Performance_${selectedPeriod}</title>
+                  <title>TraderLogPro_Performance_${timeFilter}</title>
                   ${styleTags}
                   <style>
                       @page {
                           size: A4 portrait;
-                          margin: 10mm;
+                          margin: 0; /* Remove rodapés e cabeçalhos automáticos com URLs */
                       }
                       body {
                           background-color: #ffffff !important;
@@ -170,7 +195,8 @@
                           -webkit-print-color-adjust: exact !important;
                           print-color-adjust: exact !important;
                           margin: 0;
-                          padding: 0;
+                          padding: 12mm 15mm !important; /* Cria a margem dentro do papel */
+                          box-sizing: border-box;
                       }
                       /* Força a remoção de fundos escuros e sombras na hora de imprimir */
                       * {
@@ -248,28 +274,16 @@
 
     <!-- CABEÇALHO DA ROTA ON-SCREEN -->
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 pb-4 border-b border-border/40 gap-4">
-        <div class="report-header">
-            <h1 class="text-3xl font-black tracking-tighter flex items-center gap-3">
-                <FileText class="w-8 h-8 text-primary" />
-                Performance Report
-            </h1>
-            <p class="text-sm text-muted-foreground mt-1 font-medium">
-                Auditoria Profissional Consolidada ({formatReportDate(dateRanges.start)} a {formatReportDate(dateRanges.end)})
-            </p>
-        </div>
-        
-        <div class="flex items-center gap-3">
-            <Select type="single" bind:value={selectedPeriod}>
-                <SelectTrigger class="w-[180px] h-10 bg-background border-border/50 text-xs font-bold uppercase tracking-wider">
-                   {selectedPeriod === 'hoje' ? 'Hoje' : selectedPeriod === 'semana' ? 'Esta Semana' : selectedPeriod === 'mes' ? 'Este Mês' : 'Mês Passado'}
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="hoje">Hoje</SelectItem>
-                    <SelectItem value="semana">Esta Semana (Seg-Dom)</SelectItem>
-                    <SelectItem value="mes">Este Mês</SelectItem>
-                    <SelectItem value="mes_passado">Mês Passado</SelectItem>
-                </SelectContent>
-            </Select>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h2 class="text-3xl font-bold tracking-tight">Performance Report</h2>
+                <p class="text-muted-foreground flex items-center gap-2 mt-1">
+                    <FileText class="w-4 h-4" /> Auditoria Profissional Consolidada ({formatReportDate(dateRanges.start)} a {formatReportDate(dateRanges.end)})
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <DateFilter bind:value={timeFilter} bind:startDate={customStartDate} bind:endDate={customEndDate} />
+            </div>
         </div>
     </div>
 
