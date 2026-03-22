@@ -37,7 +37,8 @@
   } from "date-fns";
 
   // State
-  let selectedPeriod = $state<string>("mes");
+  let selectedPeriod = $state('hoje');
+  let isExporting = $state(false);
 
   // Format Helper
   const formatReportDate = (d: Date) => d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -72,32 +73,106 @@
     );
   });
 
-  function handlePrint() {
-      // Pequeno timeout opcional mas em geral chama logo a impressão do navegador
-      window.print();
+  // UI Helpers
+  function getPillarColor(score: number) {
+      if (score >= 80) return 'text-emerald-500 border-emerald-500/30 bg-emerald-500/10';
+      if (score >= 50) return 'text-amber-500 border-amber-500/30 bg-amber-500/10';
+      return 'text-rose-500 border-rose-500/30 bg-rose-500/10';
   }
 
-  // UI Helpers
-  function getPillarColor(score: number): string {
-      if (score >= 80) return "text-emerald-500 bg-emerald-500/10 border-emerald-500/30";
-      if (score >= 50) return "text-amber-500 bg-amber-500/10 border-amber-500/30";
-      return "text-rose-500 bg-rose-500/10 border-rose-500/30";
+  async function handleExportPDF() {
+      if (isExporting) return;
+      isExporting = true;
+
+      try {
+          // 1. Carrega o html2pdf nativamente
+          if (!(window as any).html2pdf) {
+              await new Promise((resolve, reject) => {
+                  const script = document.createElement('script');
+                  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                  script.onload = resolve;
+                  script.onerror = reject;
+                  document.head.appendChild(script);
+              });
+          }
+
+          // 2. Extrai container oficial e gera clone off-screen
+          const originalNode = document.querySelector('.print-container') as HTMLElement;
+          if (!originalNode) throw new Error("Container não encontrado");
+
+          const clonedNode = originalNode.cloneNode(true) as HTMLElement;
+          
+          // 3. Hack Supremo: Transformar as classes "print:xxx" em utilitárias normais ativas
+          // Isso engana o html2canvas fazendo-o desenhar o grid multi-colunas mesmo fora do print preview.
+          clonedNode.innerHTML = clonedNode.innerHTML.replace(/print:/g, '');
+          clonedNode.className = clonedNode.className.replace(/print:/g, '');
+          
+          // 4. Injeta Força-Bruta de Light Mode e Tamanho Fixo Desktop
+          clonedNode.classList.add('bg-white', 'text-black');
+          clonedNode.style.position = 'absolute';
+          clonedNode.style.left = '-15000px';
+          clonedNode.style.top = '0';
+          clonedNode.style.width = '1024px'; // Força largura ideal A4 Landscape/Portrait
+
+          // Forçar background branco nos cards para não herdarem opacidade estranha
+          const cards = clonedNode.querySelectorAll('.bg-background\\/60, .bg-muted\\/20');
+          cards.forEach((c: any) => {
+               c.style.backgroundColor = '#ffffff';
+               c.style.borderColor = '#e2e8f0'; // slate-200
+               c.style.color = '#000000';
+          });
+          // Ocultar barras da UI on-screen que tivessem .no-print
+          const noPrintItems = clonedNode.querySelectorAll('.no-print');
+          noPrintItems.forEach((c: any) => c.style.display = 'none');
+          // Exibir header institucional que era oculto
+          const hiddenHeaders = clonedNode.querySelectorAll('.hidden');
+          hiddenHeaders.forEach((c: any) => c.classList.remove('hidden'));
+
+          document.body.appendChild(clonedNode);
+
+          // 5. Opções de Exportação
+          const opt = {
+              margin:       [10, 10, 10, 10], // top, left, bottom, right (em mm)
+              filename:     `TraderLogPro_Performance_${selectedPeriod}.pdf`,
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { 
+                  scale: 2, // Retained Retina quality
+                  useCORS: true,
+                  backgroundColor: '#ffffff'
+              },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+
+          // 6. Gera Documento e Limpa
+          await (window as any).html2pdf().set(opt).from(clonedNode).save();
+          document.body.removeChild(clonedNode);
+
+      } catch (error) {
+          console.error("Erro ao gerar PDF: ", error);
+      } finally {
+          isExporting = false;
+      }
   }
 </script>
 
 <div class="flex-1 w-full max-w-5xl mx-auto p-4 md:p-6 flex flex-col min-h-full pb-24 print-container text-foreground relative">
     
-    <!-- AVISO DE CONFIGURAÇÃO DE IMPRESSORA (Browser Limitações) -->
-    <div class="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-lg lg:flex items-start justify-between no-print gap-6">
+    <!-- AVISO DE CONFIGURAÇÃO DE IMPRESSORA (Substituído por Loading no Export) -->
+    <div class="mb-6 p-4 bg-primary/10 border border-primary/20 text-primary-foreground rounded-lg flex items-center justify-between no-print gap-6">
         <div>
-            <h3 class="font-bold text-sm mb-1 flex items-center gap-2"><AlertTriangle class="w-4 h-4"/> Configuração Necessária para o PDF</h3>
-            <p class="text-xs opacity-90 leading-relaxed">
-                Navegadores inserem seus próprios textos na impressão. Na janela suspensa de PDF, abra <strong>"Mais Definições"</strong> e <strong>DESMARQUE a opção "Cabeçalhos e rodapés"</strong>. Ative também <strong>"Gráficos de fundo"</strong> se as cores não aparecerem.
+            <h3 class="font-bold text-sm mb-1 flex items-center gap-2">Exportação Direta em PDF</h3>
+            <p class="text-xs opacity-90 leading-relaxed text-foreground/80">
+                O arquivo será processado localmente e baixado automaticamente. O formato "Print-Perfect" institucional já está configurado.
             </p>
         </div>
-        <Button onclick={handlePrint} class="mt-4 lg:mt-0 shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-10 gap-2 shadow-lg">
-            <Printer class="w-4 h-4" />
-            Imprimir Formato Institucional
+        <Button onclick={handleExportPDF} disabled={isExporting} class="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-10 gap-2 shadow-lg w-[220px]">
+            {#if isExporting}
+                <div class="h-4 w-4 rounded-full border-2 border-primary-foreground border-r-transparent animate-spin"></div>
+                Gerando Documento...
+            {:else}
+                <Printer class="w-4 h-4" />
+                Exportar para PDF
+            {/if}
         </Button>
     </div>
 
