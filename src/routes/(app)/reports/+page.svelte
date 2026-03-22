@@ -108,23 +108,33 @@
       let mountedComponent: any = null;
 
       try {
-          // 1. Carrega o html2pdf nativamente
-          if (!(window as any).html2pdf) {
+          // 1. Carrega dependências modernas (html-to-image suporta OKLCH nativamente via <foreignObject> do browser)
+          if (!(window as any).htmlToImage) {
               await new Promise((resolve, reject) => {
                   const script = document.createElement('script');
-                  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js';
+                  script.onload = resolve;
+                  script.onerror = reject;
+                  document.head.appendChild(script);
+              });
+          }
+          if (!(window as any).jspdf) {
+              await new Promise((resolve, reject) => {
+                  const script = document.createElement('script');
+                  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
                   script.onload = resolve;
                   script.onerror = reject;
                   document.head.appendChild(script);
               });
           }
 
-          // 2. Cria contêiner off-screen para gerar o PDF via Template
+          // 2. Cria contêiner off-screen (deve estar visível no DOM mas fora da tela)
           container = document.createElement('div');
           container.style.position = 'absolute';
           container.style.left = '-20000px';
           container.style.top = '0';
-          container.style.width = '1200px';
+          // Fixa a largura em pixels para garantir a proporção do PDF (1200px / 1697px = A4 Ratio)
+          container.style.width = '1200px'; 
           document.body.appendChild(container);
 
           // 3. Monta dinamicamente a UI de Impressão usando Svelte 5
@@ -138,23 +148,33 @@
           });
 
           // Hack para garantir rendering completo do DOM na memória do Svelte 5
-          await new Promise(r => setTimeout(r, 150));
+          await new Promise(r => setTimeout(r, 200));
 
-          // 4. Opções de Exportação
-          const opt = {
-              margin:       [10, 10, 10, 10],
-              filename:     `TraderLogPro_Performance_${selectedPeriod}.pdf`,
-              image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { 
-                  scale: 2, 
-                  useCORS: true,
-                  backgroundColor: '#ffffff'
-              },
-              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-          };
+          // 4. Gera a imagem da página 1x via browser engine nativa (compatível com Tailwind V4 oklch)
+          const dataUrl = await (window as any).htmlToImage.toPng(container, { 
+              backgroundColor: '#ffffff',
+              pixelRatio: 2, // Retira o scaling exagerado pra caber
+              style: {
+                  margin: '0',
+              }
+          });
 
-          // 5. Gera Documento
-          await (window as any).html2pdf().set(opt).from(container).save();
+          // 5. Instancia PDF A4, joga a imagem lá dentro com as margens padrao
+          const { jsPDF } = (window as any).jspdf;
+          const pdf = new jsPDF({
+              orientation: 'portrait',
+              unit: 'mm',
+              format: 'a4'
+          });
+
+          // A4 proporção em retrato: 210x297mm.
+          // Deixamos margens de 10mm de cada lado: 190mm livres de largura
+          const pdfWidth = 190;
+          // E ajusta a proporção exata da altura conforme a imagem gerada (container.offsetHeight proporcianal a width)
+          const pdfHeight = (container.offsetHeight * pdfWidth) / container.offsetWidth;
+
+          pdf.addImage(dataUrl, 'PNG', 10, 10, pdfWidth, pdfHeight);
+          pdf.save(`TraderLogPro_Performance_${selectedPeriod}.pdf`);
 
       } catch (error) {
           console.error("Erro ao gerar PDF: ", error);
@@ -164,6 +184,7 @@
           isExporting = false;
       }
   }
+
 </script>
 
 <div class="flex-1 w-full max-w-5xl mx-auto p-4 md:p-6 flex flex-col min-h-full pb-24 text-foreground relative">

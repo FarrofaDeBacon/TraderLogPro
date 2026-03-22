@@ -19,8 +19,6 @@
       FileText,
       BarChart3
   } from "lucide-svelte";
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
-  import { Badge } from "$lib/components/ui/badge";
 
   // PROPS RECEBIDOS PELO COMPONENTE MONTADO VIA SVELTE 5
   let { report, selectedPeriod, dateRanges } = $props<{
@@ -33,20 +31,20 @@
   const formatReportDate = (d: Date) => d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
   const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
-  // UI Helpers
+  // UI Helpers (Usando apenas cores HEX seguras para html2canvas não quebrar no Tailwind 4 oklch)
   function getPillarColor(score: number) {
-      if (score >= 80) return 'text-emerald-500 border-emerald-500/30 bg-emerald-500/10';
-      if (score >= 50) return 'text-amber-500 border-amber-500/30 bg-amber-500/10';
-      return 'text-rose-500 border-rose-500/30 bg-rose-500/10';
+      if (score >= 80) return 'color: #059669; border-color: #a7f3d0; background-color: #ecfdf5;'; // emerald
+      if (score >= 50) return 'color: #d97706; border-color: #fde68a; background-color: #fffbeb;'; // amber
+      return 'color: #e11d48; border-color: #fecdd3; background-color: #fff1f2;'; // rose
   }
 </script>
 
-<div class="flex-1 w-full max-w-5xl mx-auto p-4 md:p-6 flex flex-col min-h-full text-black bg-white" id="pdf-export-template">
+<div style="font-family: inherit; color: #000000; background-color: #ffffff;" class="flex-1 w-full max-w-5xl mx-auto p-4 md:p-6 flex flex-col min-h-full" id="pdf-export-template">
     <!-- HEADER INSTITUCIONAL -->
-    <div class="flex flex-col border-b-2 border-black pb-4 mb-6 relative">
-        <h1 class="text-2xl font-black uppercase tracking-widest text-black">TraderLog Pro</h1>
-        <h2 class="text-lg font-bold text-gray-700 mt-0.5">Relatório de Performance Operacional</h2>
-        <div class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-2 border-t border-gray-200 inline-block pt-1 w-max">
+    <div style="border-bottom-width: 2px; border-color: #000000;" class="flex flex-col pb-4 mb-6 relative border-solid">
+        <h1 style="color: #000000;" class="text-2xl font-black uppercase tracking-widest">TraderLog Pro</h1>
+        <h2 style="color: #374151;" class="text-lg font-bold mt-0.5">Relatório de Performance Operacional</h2>
+        <div style="color: #6b7280; border-top-width: 1px; border-color: #e5e7eb; padding-top: 0.25rem;" class="text-[11px] font-bold uppercase tracking-widest mt-2 border-solid inline-block w-max">
             Período Auditado: {formatReportDate(dateRanges.start)} a {formatReportDate(dateRanges.end)}
         </div>
     </div>
@@ -56,234 +54,234 @@
         
         <!-- BLOCO 1: RESUMO FINANCEIRO -->
         <section class="break-inside-avoid col-span-12">
-            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-2">
-                <BarChart3 class="w-3.5 h-3.5" /> Estatística Financeira Oficial
+            <h2 style="color: #6b7280;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
+                <BarChart3 class="w-3.5 h-3.5" color="#6b7280" /> Estatística Financeira Oficial
             </h2>
             
             {#if report.summary.tradeCount === 0}
-                <div class="p-8 text-center border border-dashed rounded-xl border-gray-300 text-gray-500 bg-gray-50">
+                <div style="color: #6b7280; background-color: #f9fafb; border-width: 1px; border-color: #d1d5db;" class="p-8 text-center border-dashed rounded-xl">
                     Nenhuma operação registrada na janela selecionada.
                 </div>
             {:else}
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                    <Card class="bg-white shadow-sm border-gray-200">
-                        <CardContent class="p-3">
-                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Líquido (PnL)</p>
-                            <p class="text-xl font-black tracking-tighter {report.summary.totalPnL >= 0 ? 'text-emerald-600' : 'text-rose-600'}">
+                    <div style="background-color: #ffffff; border-width: 1px; border-color: #e5e7eb;" class="rounded-xl border-solid flex flex-col">
+                        <div class="p-3">
+                            <p style="color: #6b7280;" class="text-[10px] font-bold uppercase tracking-wider mb-1">Líquido (PnL)</p>
+                            <p style="color: {report.summary.totalPnL >= 0 ? '#059669' : '#e11d48'};" class="text-xl font-black tracking-tighter">
                                 {formatCurrency(report.summary.totalPnL)}
                             </p>
-                        </CardContent>
-                    </Card>
-                    <Card class="bg-white shadow-sm border-gray-200">
-                        <CardContent class="p-3">
-                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Win Rate</p>
-                            <p class="text-xl font-black tracking-tighter font-mono text-black">
+                        </div>
+                    </div>
+                    <div style="background-color: #ffffff; border-width: 1px; border-color: #e5e7eb;" class="rounded-xl border-solid flex flex-col">
+                        <div class="p-3">
+                            <p style="color: #6b7280;" class="text-[10px] font-bold uppercase tracking-wider mb-1">Win Rate</p>
+                            <p style="color: #000000;" class="text-xl font-black tracking-tighter font-mono">
                                 {(report.summary.winRate * 100).toFixed(0)}%
                             </p>
-                        </CardContent>
-                    </Card>
-                    <Card class="bg-white shadow-sm border-gray-200">
-                        <CardContent class="p-3">
-                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Profit Factor</p>
-                            <p class="text-xl font-black tracking-tighter font-mono text-black">
+                        </div>
+                    </div>
+                    <div style="background-color: #ffffff; border-width: 1px; border-color: #e5e7eb;" class="rounded-xl border-solid flex flex-col">
+                        <div class="p-3">
+                            <p style="color: #6b7280;" class="text-[10px] font-bold uppercase tracking-wider mb-1">Profit Factor</p>
+                            <p style="color: #000000;" class="text-xl font-black tracking-tighter font-mono">
                                 {report.summary.profitFactor.toFixed(2)}
                             </p>
-                        </CardContent>
-                    </Card>
-                    <Card class="bg-white shadow-sm border-gray-200">
-                        <CardContent class="p-3">
-                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Volume de Negócios</p>
-                            <p class="text-base font-black tracking-tighter font-mono mt-1 text-black">
-                                {report.summary.tradeCount} <span class="text-xs font-medium text-gray-500">Trades em</span> {report.period.daysActive}ds
+                        </div>
+                    </div>
+                    <div style="background-color: #ffffff; border-width: 1px; border-color: #e5e7eb;" class="rounded-xl border-solid flex flex-col">
+                        <div class="p-3">
+                            <p style="color: #6b7280;" class="text-[10px] font-bold uppercase tracking-wider mb-1">Volume de Negócios</p>
+                            <p style="color: #000000;" class="text-base font-black tracking-tighter font-mono mt-1">
+                                {report.summary.tradeCount} <span style="color: #6b7280;" class="text-xs font-medium">Trades em</span> {report.period.daysActive}ds
                             </p>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
             {/if}
         </section>
 
         <!-- BLOCO 2: SCORE E DISCIPLINA DA JANELA -->
         <section class="break-inside-avoid col-span-12">
-            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-2">
-                <Trophy class="w-3.5 h-3.5" /> Avaliação Qualitativa (Score)
+            <h2 style="color: #6b7280;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
+                <Trophy class="w-3.5 h-3.5" color="#6b7280" /> Avaliação Qualitativa (Score)
             </h2>
             
             {#if report.summary.tradeCount === 0}
-                <div class="p-8 text-center border border-dashed rounded-xl border-gray-300 text-gray-500 bg-gray-50">
+                <div style="color: #6b7280; background-color: #f9fafb; border-width: 1px; border-color: #d1d5db;" class="p-8 text-center border-dashed rounded-xl">
                     Score indisponível sem volume operacional.
                 </div>
             {:else}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                    <Card class="lg:col-span-2 bg-white shadow-sm border-gray-200">
-                        <CardContent class="p-4 flex flex-col md:flex-row items-center gap-5">
+                    <div style="background-color: #ffffff; border-width: 1px; border-color: #e5e7eb;" class="lg:col-span-2 rounded-xl border-solid flex flex-col">
+                        <div class="p-4 flex flex-col md:flex-row items-center gap-5">
                             <div class="text-center shrink-0">
-                                <div class="w-16 h-16 rounded-full border-[3px] flex items-center justify-center score-circle {report.scoreAndDiscipline.windowScore >= 80 ? 'border-emerald-500 text-emerald-600' : report.scoreAndDiscipline.windowScore >= 50 ? 'border-amber-500 text-amber-600' : 'border-rose-500 text-rose-600'}">
+                                <div style="background-color: #ffffff; border-width: 3px; border-color: {report.scoreAndDiscipline.windowScore >= 80 ? '#059669' : report.scoreAndDiscipline.windowScore >= 50 ? '#d97706' : '#e11d48'}; color: {report.scoreAndDiscipline.windowScore >= 80 ? '#059669' : report.scoreAndDiscipline.windowScore >= 50 ? '#d97706' : '#e11d48'};" class="w-16 h-16 rounded-full border-solid flex items-center justify-center">
                                     <span class="text-2xl font-black tracking-tighter">{report.scoreAndDiscipline.windowScore.toFixed(0)}</span>
                                 </div>
-                                <p class="text-[8px] font-bold uppercase tracking-widest text-gray-500 mt-1.5">Master Score</p>
+                                <p style="color: #6b7280;" class="text-[8px] font-bold uppercase tracking-widest mt-1.5">Master Score</p>
                             </div>
                             
                             <div class="flex-1 grid grid-cols-2 gap-3 w-full">
                                 <div>
-                                    <div class="text-[8px] uppercase tracking-wider text-gray-500 mb-1">Corte Execução (Econômico)</div>
-                                    <div class="font-mono font-bold text-xs w-max px-2 py-0.5 rounded border {getPillarColor(report.scoreAndDiscipline.executionScore)}">
+                                    <div style="color: #6b7280;" class="text-[8px] uppercase tracking-wider mb-1">Corte Execução (Econômico)</div>
+                                    <div style="border-width: 1px; {getPillarColor(report.scoreAndDiscipline.executionScore)}" class="font-mono font-bold text-xs border-solid w-max px-2 py-0.5 rounded">
                                         {report.scoreAndDiscipline.executionScore.toFixed(0)} / 100
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="text-[8px] uppercase tracking-wider text-gray-500 mb-1">Gestão Risco (Limites)</div>
-                                    <div class="font-mono font-bold text-xs w-max px-2 py-0.5 rounded border {getPillarColor(report.scoreAndDiscipline.riskScore)}">
+                                    <div style="color: #6b7280;" class="text-[8px] uppercase tracking-wider mb-1">Gestão Risco (Limites)</div>
+                                    <div style="border-width: 1px; {getPillarColor(report.scoreAndDiscipline.riskScore)}" class="font-mono font-bold text-xs border-solid w-max px-2 py-0.5 rounded">
                                         {report.scoreAndDiscipline.riskScore.toFixed(0)} / 100
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="text-[8px] uppercase tracking-wider text-gray-500 mb-1">Auditoria IA (Mecânica)</div>
-                                    <div class="font-mono font-bold text-xs w-max px-2 py-0.5 rounded border {getPillarColor(report.scoreAndDiscipline.behaviorScore)}">
+                                    <div style="color: #6b7280;" class="text-[8px] uppercase tracking-wider mb-1">Auditoria IA (Mecânica)</div>
+                                    <div style="border-width: 1px; {getPillarColor(report.scoreAndDiscipline.behaviorScore)}" class="font-mono font-bold text-xs border-solid w-max px-2 py-0.5 rounded">
                                         {report.scoreAndDiscipline.behaviorScore.toFixed(0)} / 100
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="text-[8px] uppercase tracking-wider text-gray-500 mb-1">Psicológico (Diário)</div>
-                                    <div class="font-mono font-bold text-xs w-max px-2 py-0.5 rounded border {getPillarColor(report.scoreAndDiscipline.psychoScore)}">
+                                    <div style="color: #6b7280;" class="text-[8px] uppercase tracking-wider mb-1">Psicológico (Diário)</div>
+                                    <div style="border-width: 1px; {getPillarColor(report.scoreAndDiscipline.psychoScore)}" class="font-mono font-bold text-xs border-solid w-max px-2 py-0.5 rounded">
                                         {report.scoreAndDiscipline.psychoScore.toFixed(0)} / 100
                                     </div>
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
 
-                    <Card class="bg-white shadow-sm border-gray-200 flex flex-col justify-center h-full">
-                        <CardHeader class="p-4 pb-2">
-                            <CardTitle class="text-[9px] uppercase font-black tracking-widest text-gray-500">Streaks Preservadas (Janela)</CardTitle>
-                        </CardHeader>
-                        <CardContent class="space-y-2 px-4 pb-4 border-t border-gray-100 pt-4">
+                    <div style="background-color: #ffffff; border-width: 1px; border-color: #e5e7eb;" class="rounded-xl border-solid flex flex-col justify-center h-full">
+                        <div class="p-4 pb-2 flex flex-col space-y-1.5">
+                            <div style="color: #6b7280;" class="font-black text-[9px] uppercase tracking-widest leading-none">Streaks Preservadas (Janela)</div>
+                        </div>
+                        <div style="border-top-width: 1px; border-color: #f3f4f6;" class="space-y-2 px-4 pb-4 pt-4 border-solid">
                             <div class="flex items-center justify-between">
-                                <span class="text-[11px] font-bold text-black">Disciplina Inquebrável</span>
-                                <span class="font-mono font-bold text-[11px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.discipline} d</span>
+                                <span style="color: #000000;" class="text-[11px] font-bold">Disciplina Inquebrável</span>
+                                <span style="background-color: #d1fae5; color: #047857;" class="font-mono font-bold text-[11px] px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.discipline} d</span>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-[11px] font-bold text-black">Controle Emocional</span>
-                                <span class="font-mono font-bold text-[11px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.emotionalControl} d</span>
+                                <span style="color: #000000;" class="text-[11px] font-bold">Controle Emocional</span>
+                                <span style="background-color: #e0e7ff; color: #4338ca;" class="font-mono font-bold text-[11px] px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.emotionalControl} d</span>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-[11px] font-bold text-black">Prevenção a Tilt</span>
-                                <span class="font-mono font-bold text-[11px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.noTilt} d</span>
+                                <span style="color: #000000;" class="text-[11px] font-bold">Prevenção a Tilt</span>
+                                <span style="background-color: #f3f4f6; color: #4b5563;" class="font-mono font-bold text-[11px] px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.noTilt} d</span>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
             {/if}
         </section>
 
         <!-- BLOCO 3: COMPORTAMENTO (Col-6) -->
         <section class="break-inside-avoid col-span-6 flex flex-col h-full">
-            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-2">
-                <Brain class="w-3.5 h-3.5" /> Ofensores & Edges
+            <h2 style="color: #6b7280;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
+                <Brain class="w-3.5 h-3.5" color="#6b7280" /> Ofensores & Edges
             </h2>
             
             {#if report.behavior.topNegativeImpacts.length === 0 && report.behavior.topPositiveImpacts.length === 0}
-                <div class="p-8 text-center border border-dashed rounded-xl border-gray-300 text-gray-500 bg-gray-50 flex-1">
+                <div style="color: #6b7280; background-color: #f9fafb; border-width: 1px; border-color: #d1d5db;" class="p-8 text-center border-dashed rounded-xl flex-1">
                     Operação linear sem desvios relevantes do Setup.
                 </div>
             {:else}
                 <div class="flex flex-col gap-3 flex-1 h-full">
-                    <Card class="bg-rose-50 border-rose-200 shadow-none flex-1">
-                        <CardHeader class="p-3 pb-2">
-                            <CardTitle class="text-[10px] font-black tracking-widest text-rose-600 flex items-center gap-2 uppercase">
-                                <ShieldAlert class="w-3 h-3" /> Infrações (Alta Severidade)
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent class="p-3 pt-0">
+                    <div style="background-color: #fff1f2; border-width: 1px; border-color: #fecdd3;" class="rounded-xl border-solid flex flex-col flex-1">
+                        <div class="p-3 pb-2 flex flex-col space-y-1.5">
+                            <div style="color: #e11d48;" class="text-[10px] font-black tracking-widest flex items-center gap-2 uppercase leading-none">
+                                <ShieldAlert class="w-3 h-3" color="#e11d48" /> Infrações (Alta Severidade)
+                            </div>
+                        </div>
+                        <div class="p-3 pt-0">
                             {#each report.behavior.topNegativeImpacts as neg}
-                                <div class="flex items-start justify-between border-b border-rose-100 pb-1.5 mb-1.5 last:border-0 last:pb-0 last:mb-0">
+                                <div style="border-bottom-width: 1px; border-color: #ffe4e6;" class="flex items-start justify-between pb-1.5 mb-1.5 border-solid last:border-b-0 last:pb-0 last:mb-0">
                                     <div class="pr-2">
-                                        <p class="text-[10px] font-bold text-black leading-tight">{neg.title}</p>
+                                        <p style="color: #000000;" class="text-[10px] font-bold leading-tight">{neg.title}</p>
                                     </div>
-                                    <Badge variant="outline" class="text-rose-600 border-rose-300 rounded-sm font-mono shrink-0 text-[9px]">{neg.points}</Badge>
+                                    <div style="color: #e11d48; border-width: 1px; border-color: #fda4af;" class="inline-flex items-center rounded-sm border-solid px-2.5 py-0.5 font-mono shrink-0 text-[9px] font-semibold">{neg.points}</div>
                                 </div>
                             {/each}
                             {#if report.behavior.topNegativeImpacts.length === 0}
-                                <p class="text-[10px] text-gray-500">Sistema funcional, zero falhas críticas.</p>
+                                <p style="color: #6b7280;" class="text-[10px]">Sistema funcional, zero falhas críticas.</p>
                             {/if}
-                        </CardContent>
-                    </Card>
-                    <Card class="bg-emerald-50 border-emerald-200 shadow-none flex-1 mt-auto">
-                        <CardHeader class="p-3 pb-2">
-                            <CardTitle class="text-[10px] font-black tracking-widest text-emerald-600 flex items-center gap-2 uppercase">
-                                <Zap class="w-3 h-3" /> Vantagens Competitivas
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent class="p-3 pt-0">
+                        </div>
+                    </div>
+                    <div style="background-color: #ecfdf5; border-width: 1px; border-color: #a7f3d0;" class="rounded-xl border-solid flex flex-col flex-1 mt-auto">
+                        <div class="p-3 pb-2 flex flex-col space-y-1.5">
+                            <div style="color: #059669;" class="text-[10px] font-black tracking-widest flex items-center gap-2 uppercase leading-none">
+                                <Zap class="w-3 h-3" color="#059669" /> Vantagens Competitivas
+                            </div>
+                        </div>
+                        <div class="p-3 pt-0">
                             {#each report.behavior.topPositiveImpacts as pos}
-                                <div class="flex items-start justify-between border-b border-emerald-100 pb-1.5 mb-1.5 last:border-0 last:pb-0 last:mb-0">
+                                <div style="border-bottom-width: 1px; border-color: #d1fae5;" class="flex items-start justify-between pb-1.5 mb-1.5 border-solid last:border-b-0 last:pb-0 last:mb-0">
                                     <div class="pr-2">
-                                        <p class="text-[10px] font-bold text-black leading-tight">{pos.title}</p>
+                                        <p style="color: #000000;" class="text-[10px] font-bold leading-tight">{pos.title}</p>
                                     </div>
-                                    <Badge variant="outline" class="text-emerald-600 border-emerald-300 rounded-sm font-mono shrink-0 text-[9px]">+{pos.points}</Badge>
+                                    <div style="color: #059669; border-width: 1px; border-color: #6ee7b7;" class="inline-flex items-center rounded-sm border-solid px-2.5 py-0.5 font-mono shrink-0 text-[9px] font-semibold">+{pos.points}</div>
                                 </div>
                             {/each}
                             {#if report.behavior.topPositiveImpacts.length === 0}
-                                <p class="text-[10px] text-gray-500">Mediano, sem saltos matemáticos a favor.</p>
+                                <p style="color: #6b7280;" class="text-[10px]">Mediano, sem saltos matemáticos a favor.</p>
                             {/if}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
             {/if}
         </section>
 
         <!-- BLOCO 4: REFLEXÃO DO PÓS-MERCADO (Col-6) -->
         <section class="break-inside-avoid col-span-6 flex flex-col h-full">
-            <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-2">
-                <BookOpen class="w-3.5 h-3.5" /> Resumo Pós-Mercado
+            <h2 style="color: #6b7280;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
+                <BookOpen class="w-3.5 h-3.5" color="#6b7280" /> Resumo Pós-Mercado
             </h2>
 
             {#if report.reflection.reviewCount === 0}
-                <div class="p-8 text-center border border-dashed rounded-xl border-gray-300 text-gray-500 bg-gray-50 flex-1">
+                <div style="color: #6b7280; background-color: #f9fafb; border-width: 1px; border-color: #d1d5db;" class="p-8 text-center border-dashed rounded-xl flex-1">
                     Sem Daily Reviews no período. Pós-mercado inexistente.
                 </div>
             {:else}
                 <div class="flex flex-col gap-3 flex-1 h-full">
-                    <Card class="bg-white shadow-sm border-gray-200">
-                        <CardContent class="p-3 grid grid-cols-2 gap-4 items-center h-full">
+                    <div style="background-color: #ffffff; border-width: 1px; border-color: #e5e7eb;" class="rounded-xl border-solid flex flex-col">
+                        <div class="p-3 grid grid-cols-2 gap-4 items-center h-full">
                             <div>
-                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Sessões Documentadas</p>
-                                <div class="text-2xl font-black text-black">{report.reflection.reviewCount} <span class="text-xs font-medium text-gray-500 tracking-normal">Dias Lidos</span></div>
+                                <p style="color: #6b7280;" class="text-[10px] font-bold uppercase tracking-widest mb-1.5">Sessões Documentadas</p>
+                                <div style="color: #000000;" class="text-2xl font-black">{report.reflection.reviewCount} <span style="color: #6b7280;" class="text-xs font-medium tracking-normal">Dias Lidos</span></div>
                             </div>
-                            <div class="flex flex-col gap-1.5 border-l border-gray-100 pl-3">
+                            <div style="border-left-width: 1px; border-color: #f3f4f6;" class="flex flex-col gap-1.5 pl-3 border-solid">
                                 <div class="flex items-center justify-between text-[10px]">
-                                   <span class="text-emerald-600 font-bold uppercase">Good</span>
-                                   <span class="font-mono text-gray-500 font-bold">{report.reflection.distribution.good}</span>
+                                   <span style="color: #059669;" class="font-bold uppercase">Good</span>
+                                   <span style="color: #6b7280;" class="font-mono font-bold">{report.reflection.distribution.good}</span>
                                 </div>
                                 <div class="flex items-center justify-between text-[10px]">
-                                   <span class="text-amber-500 font-bold uppercase">Neutral</span>
-                                   <span class="font-mono text-gray-500 font-bold">{report.reflection.distribution.neutral}</span>
+                                   <span style="color: #d97706;" class="font-bold uppercase">Neutral</span>
+                                   <span style="color: #6b7280;" class="font-mono font-bold">{report.reflection.distribution.neutral}</span>
                                 </div>
                                 <div class="flex items-center justify-between text-[10px]">
-                                   <span class="text-rose-600 font-bold uppercase">Bad</span>
-                                   <span class="font-mono text-gray-500 font-bold">{report.reflection.distribution.bad}</span>
+                                   <span style="color: #e11d48;" class="font-bold uppercase">Bad</span>
+                                   <span style="color: #6b7280;" class="font-mono font-bold">{report.reflection.distribution.bad}</span>
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
 
-                    <Card class="bg-white shadow-sm border-gray-200 flex-1 mb-auto">
-                        <CardHeader class="p-4 pb-2">
-                            <CardTitle class="text-[10px] uppercase font-black tracking-widest text-gray-500">Observações Primárias (Extracts)</CardTitle>
-                        </CardHeader>
-                        <CardContent class="px-4 pb-4 border-t border-gray-100 pt-4">
+                    <div style="background-color: #ffffff; border-width: 1px; border-color: #e5e7eb;" class="rounded-xl border-solid flex flex-col flex-1 mb-auto">
+                        <div class="p-4 pb-2 flex flex-col space-y-1.5">
+                            <div style="color: #6b7280;" class="text-[10px] uppercase font-black tracking-widest leading-none">Observações Primárias (Extracts)</div>
+                        </div>
+                        <div style="border-top-width: 1px; border-color: #f3f4f6;" class="px-4 pb-4 pt-4 border-solid">
                             {#if report.reflection.relevantNotes.length === 0}
-                                <p class="text-xs italic text-gray-500">Avaliações não suportadas por textos discritivos o suficiente.</p>
+                                <p style="color: #6b7280;" class="text-xs italic">Avaliações não suportadas por textos discritivos o suficiente.</p>
                             {:else}
                                 <div class="space-y-3">
                                     {#each report.reflection.relevantNotes as note}
-                                        <div class="bg-gray-50 border-l-[3px] border-gray-300 p-3 text-[11px] italic text-gray-700 leading-relaxed rounded-r border-t border-r border-b border-gray-200">
+                                        <div style="background-color: #f9fafb; border-left-width: 3px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-color: #d1d5db; color: #374151;" class="p-3 text-[11px] italic leading-relaxed rounded-r border-solid">
                                             "{note}"
                                         </div>
                                     {/each}
                                 </div>
                             {/if}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
             {/if}
         </section>
