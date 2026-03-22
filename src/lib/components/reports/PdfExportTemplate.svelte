@@ -39,21 +39,21 @@
   }
 </script>
 
-<div style="font-family: inherit; color: #000000; background-color: #ffffff;" class="flex-1 w-full max-w-5xl mx-auto p-4 md:p-6 flex flex-col min-h-full" id="pdf-export-template">
+<div style="font-family: inherit; color: #000000; background-color: #ffffff;" class="w-full max-w-5xl mx-auto p-4 md:p-6 block" id="pdf-export-template">
     <!-- HEADER INSTITUCIONAL -->
-    <div style="border-bottom-width: 2px; border-color: #000000;" class="flex flex-col pb-4 mb-6 relative border-solid">
-        <h1 style="color: #000000;" class="text-2xl font-black uppercase tracking-widest">TraderLog Pro</h1>
-        <h2 style="color: #374151;" class="text-lg font-bold mt-0.5">Relatório de Performance Operacional</h2>
+    <div style="border-bottom-width: 2px; border-color: #000000;" class="pb-4 mb-6 relative border-solid block">
+        <h1 style="color: #000000;" class="text-2xl font-black uppercase tracking-widest leading-none">TraderLog Pro</h1>
+        <h2 style="color: #374151;" class="text-lg font-bold mt-1 leading-none">Relatório de Performance Operacional</h2>
         <div style="color: #6b7280; border-top-width: 1px; border-color: #e5e7eb; padding-top: 0.25rem;" class="text-[11px] font-bold uppercase tracking-widest mt-2 border-solid inline-block w-max">
             Período Auditado: {formatReportDate(dateRanges.start)} a {formatReportDate(dateRanges.end)}
         </div>
     </div>
 
-    <!-- CORPO DO RELATÓRIO: Grid Dinâmico (Colunas) -->
-    <div class="space-y-0 grid grid-cols-12 gap-6">
+    <!-- CORPO DO RELATÓRIO: Layout em Blocos Nativos (Anti-Bug de Paginação do Chrome) -->
+    <div class="space-y-6 block">
         
         <!-- BLOCO 1: RESUMO FINANCEIRO -->
-        <section class="break-inside-avoid col-span-12">
+        <section class="break-inside-avoid w-full">
             <h2 style="color: #6b7280;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
                 <BarChart3 class="w-3.5 h-3.5" color="#6b7280" /> Estatística Financeira Oficial
             </h2>
@@ -101,7 +101,7 @@
         </section>
 
         <!-- BLOCO 2: SCORE E DISCIPLINA DA JANELA -->
-        <section class="break-inside-avoid col-span-12">
+        <section class="break-inside-avoid w-full">
             <h2 style="color: #6b7280;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
                 <Trophy class="w-3.5 h-3.5" color="#6b7280" /> Avaliação Qualitativa (Score)
             </h2>
@@ -173,11 +173,14 @@
             {/if}
         </section>
 
-        <!-- BLOCO 3: COMPORTAMENTO (Col-6) -->
-        <section class="break-inside-avoid col-span-6 flex flex-col h-full">
-            <h2 style="color: #6b7280;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
-                <Brain class="w-3.5 h-3.5" color="#6b7280" /> Ofensores & Edges
-            </h2>
+        <!-- SUB-GRID DE 2 COLUNAS (Restrito à uma página para evitar Bug do Chrome) -->
+        <div class="grid grid-cols-2 gap-6 break-inside-avoid w-full">
+            
+            <!-- BLOCO 3: COMPORTAMENTO (Metade Esq) -->
+            <section class="flex flex-col h-full">
+                <h2 style="color: #6b7280;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Brain class="w-3.5 h-3.5" color="#6b7280" /> Ofensores & Edges
+                </h2>
             
             {#if report.behavior.topNegativeImpacts.length === 0 && report.behavior.topPositiveImpacts.length === 0}
                 <div style="color: #6b7280; background-color: #f9fafb; border-width: 1px; border-color: #d1d5db;" class="p-8 text-center border-dashed rounded-xl flex-1">
@@ -229,11 +232,11 @@
             {/if}
         </section>
 
-        <!-- BLOCO 4: REFLEXÃO DO PÓS-MERCADO (Col-6) -->
-        <section class="break-inside-avoid col-span-6 flex flex-col h-full">
-            <h2 style="color: #6b7280;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
-                <BookOpen class="w-3.5 h-3.5" color="#6b7280" /> Resumo Pós-Mercado
-            </h2>
+            <!-- BLOCO 4: REFLEXÃO DO PÓS-MERCADO (Metade Dir) -->
+            <section class="flex flex-col h-full">
+                <h2 style="color: #6b7280;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <BookOpen class="w-3.5 h-3.5" color="#6b7280" /> Resumo Pós-Mercado
+                </h2>
 
             {#if report.reflection.reviewCount === 0}
                 <div style="color: #6b7280; background-color: #f9fafb; border-width: 1px; border-color: #d1d5db;" class="p-8 text-center border-dashed rounded-xl flex-1">
@@ -284,6 +287,7 @@
                     </div>
                 </div>
             {/if}
-        </section>
+            </section>
+        </div>
     </div>
 </div>
