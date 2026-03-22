@@ -1,31 +1,43 @@
 <script lang="ts">
   import {
-    Activity,
-    Calendar,
-    BarChart3,
-    Trophy,
-    Target,
-    BookOpen,
-    AlertTriangle,
-    ShieldAlert,
-    Zap,
-    Printer,
-    FileText,
-    Brain
+      WalletCards,
+      CalendarDays,
+      Trophy,
+      TrendingUp,
+      TrendingDown,
+      Target,
+      Brain,
+      Zap,
+      ShieldAlert,
+      BookOpen,
+      Clock,
+      Award,
+      CheckCircle2,
+      XCircle,
+      MinusCircle,
+      Activity,
+      FileText,
+      BarChart3,
+      Printer,
+      AlertTriangle
   } from "lucide-svelte";
-  import { Button } from "$lib/components/ui/button";
-  import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "$lib/components/ui/card";
-  import { Badge } from "$lib/components/ui/badge";
-  import { Select, SelectContent, SelectItem, SelectTrigger } from "$lib/components/ui/select";
-  
-  import { tradesStore } from "$lib/stores/trades.svelte";
-  import { dailyReviewsStore } from "$lib/stores/daily-reviews.svelte";
+  import { mount, unmount } from "svelte";
+  import PdfExportTemplate from "$lib/components/reports/PdfExportTemplate.svelte";
   import { accountsStore } from "$lib/stores/accounts.svelte";
   import { currenciesStore } from "$lib/stores/currencies.svelte";
+  import { tradesStore } from "$lib/stores/trades.svelte";
+  import { dailyReviewsStore } from "$lib/stores/daily-reviews.svelte";
   import { workspaceStore } from "$lib/stores/workspace.svelte";
   import { generateReport } from "$lib/domain/reports/report-engine";
-  import { formatCurrency } from "$lib/utils";
-  
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import { Badge } from "$lib/components/ui/badge";
+  import {
+      Select,
+      SelectContent,
+      SelectItem,
+      SelectTrigger,
+  } from "$lib/components/ui/select";
+  import { Button } from "$lib/components/ui/button";
   import {
     startOfDay,
     endOfDay,
@@ -40,12 +52,10 @@
   let selectedPeriod = $state('hoje');
   let isExporting = $state(false);
 
-  // Format Helper
-  const formatReportDate = (d: Date) => d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-
-  const dateRanges = $derived.by(() => {
+  // Reatividade do DateRange
+  const getDateRanges = (period: string) => {
     const now = new Date();
-    switch (selectedPeriod) {
+    switch (period) {
       case "hoje":
         return { start: startOfDay(now), end: endOfDay(now) };
       case "semana":
@@ -58,7 +68,17 @@
       default:
         return { start: startOfMonth(now), end: endOfMonth(now) };
     }
+  };
+
+  let dateRanges = $state(getDateRanges(selectedPeriod));
+
+  $effect(() => {
+      dateRanges = getDateRanges(selectedPeriod);
   });
+
+  // Format Helper
+  const formatReportDate = (d: Date) => d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+  const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
   const report = $derived.by(() => {
     return generateReport(
@@ -84,6 +104,9 @@
       if (isExporting) return;
       isExporting = true;
 
+      let container: HTMLDivElement | null = null;
+      let mountedComponent: any = null;
+
       try {
           // 1. Carrega o html2pdf nativamente
           if (!(window as any).html2pdf) {
@@ -96,73 +119,61 @@
               });
           }
 
-          // 2. Extrai container oficial e gera clone off-screen
-          const originalNode = document.querySelector('.print-container') as HTMLElement;
-          if (!originalNode) throw new Error("Container não encontrado");
+          // 2. Cria contêiner off-screen para gerar o PDF via Template
+          container = document.createElement('div');
+          container.style.position = 'absolute';
+          container.style.left = '-20000px';
+          container.style.top = '0';
+          container.style.width = '1200px';
+          document.body.appendChild(container);
 
-          const clonedNode = originalNode.cloneNode(true) as HTMLElement;
-          
-          // 3. Hack Supremo: Transformar as classes "print:xxx" em utilitárias normais ativas
-          // Isso engana o html2canvas fazendo-o desenhar o grid multi-colunas mesmo fora do print preview.
-          clonedNode.innerHTML = clonedNode.innerHTML.replace(/print:/g, '');
-          clonedNode.className = clonedNode.className.replace(/print:/g, '');
-          
-          // 4. Injeta Força-Bruta de Light Mode e Tamanho Fixo Desktop
-          clonedNode.classList.add('bg-white', 'text-black');
-          clonedNode.style.position = 'absolute';
-          clonedNode.style.left = '-15000px';
-          clonedNode.style.top = '0';
-          clonedNode.style.width = '1024px'; // Força largura ideal A4 Landscape/Portrait
-
-          // Forçar background branco nos cards para não herdarem opacidade estranha
-          const cards = clonedNode.querySelectorAll('.bg-background\\/60, .bg-muted\\/20');
-          cards.forEach((c: any) => {
-               c.style.backgroundColor = '#ffffff';
-               c.style.borderColor = '#e2e8f0'; // slate-200
-               c.style.color = '#000000';
+          // 3. Monta dinamicamente a UI de Impressão usando Svelte 5
+          mountedComponent = mount(PdfExportTemplate, {
+              target: container,
+              props: {
+                 report: report,
+                 selectedPeriod: selectedPeriod,
+                 dateRanges: dateRanges
+              }
           });
-          // Ocultar barras da UI on-screen que tivessem .no-print
-          const noPrintItems = clonedNode.querySelectorAll('.no-print');
-          noPrintItems.forEach((c: any) => c.style.display = 'none');
-          // Exibir header institucional que era oculto
-          const hiddenHeaders = clonedNode.querySelectorAll('.hidden');
-          hiddenHeaders.forEach((c: any) => c.classList.remove('hidden'));
 
-          document.body.appendChild(clonedNode);
+          // Hack para garantir rendering completo do DOM na memória do Svelte 5
+          await new Promise(r => setTimeout(r, 150));
 
-          // 5. Opções de Exportação
+          // 4. Opções de Exportação
           const opt = {
-              margin:       [10, 10, 10, 10], // top, left, bottom, right (em mm)
+              margin:       [10, 10, 10, 10],
               filename:     `TraderLogPro_Performance_${selectedPeriod}.pdf`,
               image:        { type: 'jpeg', quality: 0.98 },
               html2canvas:  { 
-                  scale: 2, // Retained Retina quality
+                  scale: 2, 
                   useCORS: true,
                   backgroundColor: '#ffffff'
               },
               jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
           };
 
-          // 6. Gera Documento e Limpa
-          await (window as any).html2pdf().set(opt).from(clonedNode).save();
-          document.body.removeChild(clonedNode);
+          // 5. Gera Documento
+          await (window as any).html2pdf().set(opt).from(container).save();
 
       } catch (error) {
           console.error("Erro ao gerar PDF: ", error);
       } finally {
+          if (mountedComponent) unmount(mountedComponent);
+          if (container && document.body.contains(container)) document.body.removeChild(container);
           isExporting = false;
       }
   }
 </script>
 
-<div class="flex-1 w-full max-w-5xl mx-auto p-4 md:p-6 flex flex-col min-h-full pb-24 print-container text-foreground relative">
+<div class="flex-1 w-full max-w-5xl mx-auto p-4 md:p-6 flex flex-col min-h-full pb-24 text-foreground relative">
     
-    <!-- AVISO DE CONFIGURAÇÃO DE IMPRESSORA (Substituído por Loading no Export) -->
-    <div class="mb-6 p-4 bg-primary/10 border border-primary/20 text-primary-foreground rounded-lg flex items-center justify-between no-print gap-6">
+    <!-- EXPORTAÇÃO -->
+    <div class="mb-6 p-4 bg-primary/10 border border-primary/20 text-primary-foreground rounded-lg flex items-center justify-between gap-6">
         <div>
             <h3 class="font-bold text-sm mb-1 flex items-center gap-2">Exportação Direta em PDF</h3>
             <p class="text-xs opacity-90 leading-relaxed text-foreground/80">
-                O arquivo será processado localmente e baixado automaticamente. O formato "Print-Perfect" institucional já está configurado.
+                O arquivo será gerado de maneira oculta garantindo o formato Institucional em 2 páginas. O visual na tela permanecerá limpo (Dark Mode).
             </p>
         </div>
         <Button onclick={handleExportPDF} disabled={isExporting} class="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-10 gap-2 shadow-lg w-[220px]">
@@ -176,12 +187,12 @@
         </Button>
     </div>
 
-    <!-- CABEÇALHO DA ROTA ON-SCREEN (Escondido no Print) -->
-    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 pb-4 border-b border-border/40 gap-4 no-print">
+    <!-- CABEÇALHO DA ROTA ON-SCREEN -->
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 pb-4 border-b border-border/40 gap-4">
         <div class="report-header">
             <h1 class="text-3xl font-black tracking-tighter flex items-center gap-3">
                 <FileText class="w-8 h-8 text-primary" />
-                Relatório de Performance Operacional
+                Performance Report
             </h1>
             <p class="text-sm text-muted-foreground mt-1 font-medium">
                 Auditoria Profissional Consolidada ({formatReportDate(dateRanges.start)} a {formatReportDate(dateRanges.end)})
@@ -203,23 +214,13 @@
         </div>
     </div>
 
-    <!-- HEADER INSTITUCIONAL ESTRITO NO PRINT (Visível apenas na imperssão) -->
-    <div class="hidden print:flex flex-col border-b-2 border-black pb-4 mb-6 relative">
-        <div class="absolute right-0 top-0 text-[10px] uppercase font-bold text-gray-400">Pág. 1</div>
-        <h1 class="text-2xl font-black uppercase tracking-widest text-black">TraderLog Pro</h1>
-        <h2 class="text-lg font-bold text-gray-700 mt-0.5">Relatório de Performance Operacional</h2>
-        <div class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-2 border-t border-gray-200 inline-block pt-1 w-max">
-            Período Auditado: {formatReportDate(dateRanges.start)} a {formatReportDate(dateRanges.end)}
-        </div>
-    </div>
-
-    <!-- CORPO DO RELATÓRIO: Grid Dinâmico (Colunas no Print) -->
-    <div class="space-y-6 print:space-y-0 print:grid print:grid-cols-12 print:gap-6">
+    <!-- CORPO DO RELATÓRIO PELA JANELA DO WEB APP -->
+    <div class="space-y-6">
         
         <!-- BLOCO 1: RESUMO FINANCEIRO -->
-        <section class="break-inside-avoid print-section print:col-span-12">
-            <h2 class="text-xs print:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-                <BarChart3 class="w-4 h-4 print:w-3.5 print:h-3.5" /> Estatística Financeira Oficial
+        <section>
+            <h2 class="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                <BarChart3 class="w-4 h-4" /> 1. Resumo do Período
             </h2>
             
             {#if report.summary.tradeCount === 0}
@@ -227,36 +228,36 @@
                     Nenhuma operação registrada na janela selecionada.
                 </div>
             {:else}
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 print:gap-3">
-                    <Card class="bg-background/60 shadow-sm border-border/50 print-card">
-                        <CardContent class="p-4 print:p-3">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Card class="bg-background/60 shadow-sm border-border/50">
+                        <CardContent class="p-4">
                             <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Líquido (PnL)</p>
-                            <p class="text-2xl print:text-xl font-black tracking-tighter {report.summary.totalPnL >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
+                            <p class="text-2xl font-black tracking-tighter {report.summary.totalPnL >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
                                 {formatCurrency(report.summary.totalPnL)}
                             </p>
                         </CardContent>
                     </Card>
-                    <Card class="bg-background/60 shadow-sm border-border/50 print-card">
-                        <CardContent class="p-4 print:p-3">
+                    <Card class="bg-background/60 shadow-sm border-border/50">
+                        <CardContent class="p-4">
                             <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Win Rate</p>
-                            <p class="text-2xl print:text-xl font-black tracking-tighter font-mono">
+                            <p class="text-2xl font-black tracking-tighter font-mono">
                                 {(report.summary.winRate * 100).toFixed(0)}%
                             </p>
                         </CardContent>
                     </Card>
-                    <Card class="bg-background/60 shadow-sm border-border/50 print-card">
-                        <CardContent class="p-4 print:p-3">
+                    <Card class="bg-background/60 shadow-sm border-border/50">
+                        <CardContent class="p-4">
                             <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Profit Factor</p>
-                            <p class="text-2xl print:text-xl font-black tracking-tighter font-mono">
+                            <p class="text-2xl font-black tracking-tighter font-mono">
                                 {report.summary.profitFactor.toFixed(2)}
                             </p>
                         </CardContent>
                     </Card>
-                    <Card class="bg-background/60 shadow-sm border-border/50 print-card">
-                        <CardContent class="p-4 print:p-3">
-                            <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Volume de Negócios</p>
-                            <p class="text-lg print:text-base font-black tracking-tighter font-mono mt-1">
-                                {report.summary.tradeCount} <span class="text-sm print:text-xs font-medium text-muted-foreground">Trades em</span> {report.period.daysActive}ds
+                    <Card class="bg-background/60 shadow-sm border-border/50">
+                        <CardContent class="p-4">
+                            <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Volume (Trades / Dias)</p>
+                            <p class="text-lg font-black tracking-tighter font-mono mt-1">
+                                {report.summary.tradeCount} <span class="text-sm font-medium text-muted-foreground">in</span> {report.period.daysActive}d
                             </p>
                         </CardContent>
                     </Card>
@@ -265,9 +266,9 @@
         </section>
 
         <!-- BLOCO 2: SCORE E DISCIPLINA DA JANELA -->
-        <section class="break-inside-avoid print-section print:col-span-12">
-            <h2 class="text-xs print:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-                <Trophy class="w-4 h-4 print:w-3.5 print:h-3.5" /> Avaliação Qualitativa (Score)
+        <section class="pt-2">
+            <h2 class="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                <Trophy class="w-4 h-4" /> 2. Score Oficial da Janela (Avaliação Qualitativa)
             </h2>
             
             {#if report.summary.tradeCount === 0}
@@ -275,39 +276,39 @@
                     Score indisponível sem volume operacional.
                 </div>
             {:else}
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 print:gap-3">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     <!-- Grade do Score -->
-                    <Card class="lg:col-span-2 bg-background/60 shadow-sm border-border/50 print-card">
-                        <CardContent class="p-5 print:p-4 flex flex-col md:flex-row items-center gap-6 print:gap-5">
+                    <Card class="lg:col-span-2 bg-background/60 shadow-sm border-border/50">
+                        <CardContent class="p-5 flex flex-col md:flex-row items-center gap-6">
                             <div class="text-center shrink-0">
-                                <div class="w-24 h-24 print:w-16 print:h-16 rounded-full border-4 print:border-[3px] flex items-center justify-center score-circle {report.scoreAndDiscipline.windowScore >= 80 ? 'border-emerald-500 text-emerald-500' : report.scoreAndDiscipline.windowScore >= 50 ? 'border-amber-500 text-amber-500' : 'border-rose-500 text-rose-500'}">
-                                    <span class="text-4xl print:text-2xl font-black tracking-tighter">{report.scoreAndDiscipline.windowScore.toFixed(0)}</span>
+                                <div class="w-24 h-24 rounded-full border-4 flex items-center justify-center {report.scoreAndDiscipline.windowScore >= 80 ? 'border-emerald-500 text-emerald-500' : report.scoreAndDiscipline.windowScore >= 50 ? 'border-amber-500 text-amber-500' : 'border-rose-500 text-rose-500'}">
+                                    <span class="text-4xl font-black tracking-tighter">{report.scoreAndDiscipline.windowScore.toFixed(0)}</span>
                                 </div>
-                                <p class="text-[9px] print:text-[8px] font-bold uppercase tracking-widest text-muted-foreground mt-3 print:mt-1.5">Master Score</p>
+                                <p class="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-3">Master Score</p>
                             </div>
                             
                             <div class="flex-1 grid grid-cols-2 gap-3 w-full">
                                 <div>
-                                    <div class="text-[9px] print:text-[8px] uppercase tracking-wider text-muted-foreground mb-1">Corte Execução (Econômico)</div>
-                                    <div class="font-mono font-bold text-sm print:text-xs print-badge {getPillarColor(report.scoreAndDiscipline.executionScore)} w-max px-2 py-0.5 rounded border">
+                                    <div class="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Corte Execução</div>
+                                    <div class="font-mono font-bold text-sm border w-max px-2 py-0.5 rounded {getPillarColor(report.scoreAndDiscipline.executionScore)}">
                                         {report.scoreAndDiscipline.executionScore.toFixed(0)} / 100
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="text-[9px] print:text-[8px] uppercase tracking-wider text-muted-foreground mb-1">Gestão Risco (Limites)</div>
-                                    <div class="font-mono font-bold text-sm print:text-xs print-badge {getPillarColor(report.scoreAndDiscipline.riskScore)} w-max px-2 py-0.5 rounded border">
+                                    <div class="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Corte Risco</div>
+                                    <div class="font-mono font-bold text-sm border w-max px-2 py-0.5 rounded {getPillarColor(report.scoreAndDiscipline.riskScore)}">
                                         {report.scoreAndDiscipline.riskScore.toFixed(0)} / 100
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="text-[9px] print:text-[8px] uppercase tracking-wider text-muted-foreground mb-1">Auditoria IA (Mecânica)</div>
-                                    <div class="font-mono font-bold text-sm print:text-xs print-badge {getPillarColor(report.scoreAndDiscipline.behaviorScore)} w-max px-2 py-0.5 rounded border">
+                                    <div class="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Comportamento</div>
+                                    <div class="font-mono font-bold text-sm border w-max px-2 py-0.5 rounded {getPillarColor(report.scoreAndDiscipline.behaviorScore)}">
                                         {report.scoreAndDiscipline.behaviorScore.toFixed(0)} / 100
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="text-[9px] print:text-[8px] uppercase tracking-wider text-muted-foreground mb-1">Psicológico (Diário)</div>
-                                    <div class="font-mono font-bold text-sm print:text-xs print-badge {getPillarColor(report.scoreAndDiscipline.psychoScore)} w-max px-2 py-0.5 rounded border">
+                                    <div class="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Psicológico</div>
+                                    <div class="font-mono font-bold text-sm border w-max px-2 py-0.5 rounded {getPillarColor(report.scoreAndDiscipline.psychoScore)}">
                                         {report.scoreAndDiscipline.psychoScore.toFixed(0)} / 100
                                     </div>
                                 </div>
@@ -316,22 +317,22 @@
                     </Card>
 
                     <!-- Fechamento das Streaks na Janela -->
-                    <Card class="bg-background/60 shadow-sm border-border/50 flex flex-col justify-center print-card h-full">
-                        <CardHeader class="pb-2 print:p-4 print:pb-2">
-                            <CardTitle class="text-[10px] print:text-[9px] uppercase font-black tracking-widest text-muted-foreground">Streaks Preservadas (Janela)</CardTitle>
+                    <Card class="bg-background/60 shadow-sm border-border/50 flex flex-col justify-center">
+                        <CardHeader class="pb-2">
+                            <CardTitle class="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Streaks da Janela</CardTitle>
                         </CardHeader>
-                        <CardContent class="space-y-3 print:space-y-2 print:px-4 print:pb-4 border-t border-border/10 print:pt-4">
+                        <CardContent class="space-y-3 p-3 pt-0">
                             <div class="flex items-center justify-between">
-                                <span class="text-xs print:text-[11px] font-bold text-foreground">Disciplina Inquebrável</span>
-                                <span class="font-mono font-bold text-xs print:text-[11px] bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded print-badge-solid">{report.scoreAndDiscipline.streaks.discipline} d</span>
+                                <span class="text-xs font-bold text-foreground">Disciplina Inquebrável</span>
+                                <span class="font-mono font-bold text-xs bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.discipline}d</span>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-xs print:text-[11px] font-bold text-foreground">Controle Emocional</span>
-                                <span class="font-mono font-bold text-xs print:text-[11px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded print-badge-solid">{report.scoreAndDiscipline.streaks.emotionalControl} d</span>
+                                <span class="text-xs font-bold text-foreground">Controle Emocional</span>
+                                <span class="font-mono font-bold text-xs bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.emotionalControl}d</span>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-xs print:text-[11px] font-bold text-foreground">Prevenção a Tilt</span>
-                                <span class="font-mono font-bold text-xs print:text-[11px] bg-muted text-muted-foreground px-2 py-0.5 rounded print-badge-solid">{report.scoreAndDiscipline.streaks.noTilt} d</span>
+                                <span class="text-xs font-bold text-foreground">No-Tilt (Blindagem)</span>
+                                <span class="font-mono font-bold text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.noTilt}d</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -339,55 +340,57 @@
             {/if}
         </section>
 
-        <!-- BLOCO 3: COMPORTAMENTO (Col-6 no Print) -->
-        <section class="break-inside-avoid print-section print:col-span-6 flex flex-col h-full">
-            <h2 class="text-xs print:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-                <Brain class="w-4 h-4 print:w-3.5 print:h-3.5" /> Ofensores & Edges
+        <!-- BLOCO 3: COMPORTAMENTO (AUDITORIA IA) -->
+        <section class="pt-2">
+            <h2 class="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                <Brain class="w-4 h-4" /> 3. Auditoria Comportamental
             </h2>
             
             {#if report.behavior.topNegativeImpacts.length === 0 && report.behavior.topPositiveImpacts.length === 0}
-                <div class="p-8 text-center border border-dashed rounded-xl border-border/50 text-muted-foreground bg-muted/20 flex-1">
-                    Operação linear sem desvios relevantes do Setup.
+                <div class="p-8 text-center border border-dashed rounded-xl border-border/50 text-muted-foreground bg-muted/20">
+                    Sem comportamentos críticos detectados no período. Rotação operacional neutra.
                 </div>
             {:else}
-                <div class="flex flex-col gap-4 print:gap-3 flex-1 h-full">
-                    <Card class="bg-rose-500/5 border-rose-500/20 shadow-none print-card-color flex-1">
-                        <CardHeader class="pb-2 print:p-3 print:pb-2">
-                            <CardTitle class="text-[10px] font-black tracking-widest text-rose-500 flex items-center gap-2 uppercase">
-                                <ShieldAlert class="w-3.5 h-3.5 print:w-3 print:h-3" /> Infrações (Alta Severidade)
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                    <Card class="bg-rose-500/5 border-rose-500/20 shadow-none">
+                        <CardHeader class="pb-2">
+                            <CardTitle class="text-[10px] uppercase font-black tracking-widest text-rose-500 flex items-center gap-2">
+                                <ShieldAlert class="w-3.5 h-3.5" /> Ofensores de Sistema (Top Punições)
                             </CardTitle>
                         </CardHeader>
-                        <CardContent class="space-y-3 print:p-3 print:pt-0">
+                        <CardContent class="space-y-3">
                             {#each report.behavior.topNegativeImpacts as neg}
-                                <div class="flex items-start justify-between border-b border-rose-500/10 pb-2 print:pb-1.5 last:border-0 last:pb-0">
-                                    <div class="pr-2">
-                                        <p class="text-xs print:text-[10px] font-bold text-foreground leading-tight">{neg.title}</p>
+                                <div class="flex items-start justify-between border-b border-rose-500/10 pb-2 last:border-0 last:pb-0">
+                                    <div class="pr-4">
+                                        <p class="text-xs font-bold text-foreground leading-tight">{neg.title}</p>
+                                        <p class="text-[10px] text-muted-foreground leading-tight mt-0.5">{neg.description}</p>
                                     </div>
-                                    <Badge variant="outline" class="text-rose-500 border-rose-500/30 rounded-sm font-mono shrink-0 print:text-[9px] print-badge-outline">{neg.points}</Badge>
+                                    <Badge variant="outline" class="text-rose-500 border-rose-500/30 rounded-sm font-mono shrink-0">{neg.points}</Badge>
                                 </div>
                             {/each}
                             {#if report.behavior.topNegativeImpacts.length === 0}
-                                <p class="text-[10px] text-muted-foreground">Sistema funcional, zero falhas críticas.</p>
+                                <p class="text-xs text-muted-foreground">Sistema em perfeito funcionamento mecânico. Zero falhas.</p>
                             {/if}
                         </CardContent>
                     </Card>
-                    <Card class="bg-emerald-500/5 border-emerald-500/20 shadow-none print-card-color flex-1 mt-auto">
-                        <CardHeader class="pb-2 print:p-3 print:pb-2">
-                            <CardTitle class="text-[10px] font-black tracking-widest text-emerald-500 flex items-center gap-2 uppercase">
-                                <Zap class="w-3.5 h-3.5 print:w-3 print:h-3" /> Vantagens Competitivas
+                    <Card class="bg-emerald-500/5 border-emerald-500/20 shadow-none">
+                        <CardHeader class="pb-2">
+                            <CardTitle class="text-[10px] uppercase font-black tracking-widest text-emerald-500 flex items-center gap-2">
+                                <Zap class="w-3.5 h-3.5" /> Edges Encontrados (Top Bônus)
                             </CardTitle>
                         </CardHeader>
-                        <CardContent class="space-y-3 print:p-3 print:pt-0">
+                        <CardContent class="space-y-3">
                             {#each report.behavior.topPositiveImpacts as pos}
-                                <div class="flex items-start justify-between border-b border-emerald-500/10 pb-2 print:pb-1.5 last:border-0 last:pb-0">
-                                    <div class="pr-2">
-                                        <p class="text-xs print:text-[10px] font-bold text-foreground leading-tight">{pos.title}</p>
+                                <div class="flex items-start justify-between border-b border-emerald-500/10 pb-2 last:border-0 last:pb-0">
+                                    <div class="pr-4">
+                                        <p class="text-xs font-bold text-foreground leading-tight">{pos.title}</p>
+                                        <p class="text-[10px] text-muted-foreground leading-tight mt-0.5">{pos.description}</p>
                                     </div>
-                                    <Badge variant="outline" class="text-emerald-500 border-emerald-500/30 rounded-sm font-mono shrink-0 print:text-[9px] print-badge-outline">+{pos.points}</Badge>
+                                    <Badge variant="outline" class="text-emerald-500 border-emerald-500/30 rounded-sm font-mono shrink-0">+{pos.points}</Badge>
                                 </div>
                             {/each}
                             {#if report.behavior.topPositiveImpacts.length === 0}
-                                <p class="text-[10px] text-muted-foreground">Mediano, sem saltos matemáticos a favor.</p>
+                                <p class="text-xs text-muted-foreground">Sem vantagens excepcionais contabilizadas.</p>
                             {/if}
                         </CardContent>
                     </Card>
@@ -395,52 +398,50 @@
             {/if}
         </section>
 
-        <!-- BLOCO 4: REFLEXÃO DO PÓS-MERCADO (Col-6 no Print) -->
-        <section class="break-inside-avoid print-section print:col-span-6 flex flex-col h-full">
-            <h2 class="text-xs print:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-                <BookOpen class="w-4 h-4 print:w-3.5 print:h-3.5" /> Resumo Pós-Mercado
+        <!-- BLOCO 4: REFLEXÃO DO PÓS-MERCADO (DAILY REVIEWS) -->
+        <section class="pt-2">
+            <h2 class="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                <BookOpen class="w-4 h-4" /> 4. Diário & Reflexão Subjetiva
             </h2>
 
             {#if report.reflection.reviewCount === 0}
-                <div class="p-8 text-center border border-dashed rounded-xl border-border/50 text-muted-foreground bg-muted/20 flex-1">
-                    Sem Daily Reviews no período. Pós-mercado inexistente.
+                <div class="p-8 text-center border border-dashed rounded-xl border-border/50 text-muted-foreground bg-muted/20">
+                    Nenhum Daily Review encontrado na janela. É crucial formalizar o Pós-Mercado para evoluir.
                 </div>
             {:else}
-                <div class="flex flex-col gap-4 print:gap-3 flex-1 h-full">
-                    <Card class="bg-background/60 shadow-sm border-border/50 print-card">
-                        <CardContent class="p-4 print:p-3 grid grid-cols-2 gap-4 items-center h-full">
-                            <div>
-                                <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Sessões Documentadas</p>
-                                <div class="text-3xl print:text-2xl font-black text-foreground">{report.reflection.reviewCount} <span class="text-xs font-medium text-muted-foreground tracking-normal">Dias Lidos</span></div>
-                            </div>
-                            <div class="flex flex-col gap-1.5 border-l border-border/20 pl-4 print:pl-3">
-                                <div class="flex items-center justify-between text-xs print:text-[10px]">
-                                   <span class="text-emerald-500 font-bold uppercase">Good</span>
-                                   <span class="font-mono text-muted-foreground font-bold">{report.reflection.distribution.good}</span>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <Card class="bg-background/60 shadow-sm border-border/50 md:col-span-1 flex flex-col justify-center">
+                        <CardContent class="p-4 flex flex-col justify-center h-full">
+                            <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Ritmo de Registro</p>
+                            <div class="text-3xl font-black mb-1 text-foreground">{report.reflection.reviewCount} <span class="text-sm font-medium text-muted-foreground tracking-normal">Reviews</span></div>
+                            <div class="flex flex-col gap-1 mt-3">
+                                <div class="flex items-center justify-between text-xs">
+                                   <span class="text-emerald-500 font-bold">Good</span>
+                                   <span class="font-mono text-muted-foreground">{report.reflection.distribution.good}</span>
                                 </div>
-                                <div class="flex items-center justify-between text-xs print:text-[10px]">
-                                   <span class="text-amber-500 font-bold uppercase">Neutral</span>
-                                   <span class="font-mono text-muted-foreground font-bold">{report.reflection.distribution.neutral}</span>
+                                <div class="flex items-center justify-between text-xs">
+                                   <span class="text-amber-500 font-bold">Neutral</span>
+                                   <span class="font-mono text-muted-foreground">{report.reflection.distribution.neutral}</span>
                                 </div>
-                                <div class="flex items-center justify-between text-xs print:text-[10px]">
-                                   <span class="text-rose-500 font-bold uppercase">Bad</span>
-                                   <span class="font-mono text-muted-foreground font-bold">{report.reflection.distribution.bad}</span>
+                                <div class="flex items-center justify-between text-xs">
+                                   <span class="text-rose-500 font-bold">Bad</span>
+                                   <span class="font-mono text-muted-foreground">{report.reflection.distribution.bad}</span>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card class="bg-background/60 shadow-sm border-border/50 print-card flex-1 mb-auto">
-                        <CardHeader class="pb-2 print:p-4 print:pb-2">
-                            <CardTitle class="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Observações Primárias (Extracts)</CardTitle>
+                    <Card class="bg-background/60 shadow-sm border-border/50 md:col-span-3">
+                        <CardHeader class="pb-2">
+                            <CardTitle class="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Extratos Relevantes do Diário</CardTitle>
                         </CardHeader>
-                        <CardContent class="print:px-4 print:pb-4 border-t border-border/10 print:pt-4">
+                        <CardContent>
                             {#if report.reflection.relevantNotes.length === 0}
-                                <p class="text-sm print:text-xs italic text-muted-foreground">Avaliações não suportadas por textos discritivos o suficiente.</p>
+                                <p class="text-sm italic text-muted-foreground">As avaliações registradas não contêm textos extensos para análise qualitativa.</p>
                             {:else}
-                                <div class="space-y-4 print:space-y-3">
+                                <div class="space-y-4">
                                     {#each report.reflection.relevantNotes as note}
-                                        <div class="bg-muted/30 print:bg-gray-50 border-l-2 print:border-l-[3px] border-primary/40 p-3 print:p-3 text-sm print:text-[11px] italic text-foreground/80 leading-relaxed rounded-r border-t border-r border-b border-border/20 print-note">
+                                        <div class="bg-muted/30 border-l-2 border-primary/40 p-3 text-sm italic text-foreground/80 leading-relaxed rounded-r-md">
                                             "{note}"
                                         </div>
                                     {/each}
@@ -451,101 +452,5 @@
                 </div>
             {/if}
         </section>
-
     </div>
 </div>
-
-<style>
-    /* O SEGREDO DO PRINT-PERFECT: FORÇAR AS VARIÁVEIS SHADCN PARA LIGHT MODE APENAS NO PAPEL */
-    @media print {
-        @page {
-            /* Margem fina, tamanho padrão. Para 1 página. */
-            margin: 0.8cm 1cm;
-            size: A4 portrait;
-        }
-
-        /* 
-           Reset brutal de variáveis globais que o Shadcn/Tailwind usam.
-           Mesmo que o app esteja em Dark Mode, a classe container no print vai forçar o fundo branco absoluto 
-           e fonte preta absoluta, simulando Light Mode perfeito sem quebrar a interface na tela normal.
-        */
-        :global(:root), :global(.dark), :global(body) {
-            --background: 0 0% 100% !important;
-            --foreground: 222.2 84% 4.9% !important;
-            --card: 0 0% 100% !important;
-            --card-foreground: 222.2 84% 4.9% !important;
-            --border: 214.3 31.8% 91.4% !important;
-            --input: 214.3 31.8% 91.4% !important;
-            --primary: 222.2 47.4% 11.2% !important;
-            --primary-foreground: 210 40% 98% !important;
-            --secondary: 210 40% 96.1% !important;
-            --secondary-foreground: 222.2 47.4% 11.2% !important;
-            --accent: 210 40% 96.1% !important;
-            --accent-foreground: 222.2 47.4% 11.2% !important;
-            --destructive: 0 84.2% 60.2% !important;
-            --destructive-foreground: 210 40% 98% !important;
-            --ring: 222.2 84% 4.9% !important;
-            --radius: 0.5rem;
-            --sidebar-background: 0 0% 98% !important;
-        }
-
-        :global(body) {
-            background-color: white !important;
-            color: black !important;
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
-        }
-
-        :global(.no-print) {
-            display: none !important;
-        }
-
-        .print-container {
-            padding: 0 !important;
-            margin: 0 !important;
-            max-width: none !important;
-            width: 100% !important;
-            background: white !important;
-        }
-
-        /* Otimizações diretas da impressora */
-        .break-inside-avoid {
-            page-break-inside: avoid;
-        }
-
-        .print-card {
-            border: 1px solid #e2e8f0 !important;
-            box-shadow: none !important;
-            background-color: white !important;
-            color: black !important;
-        }
-
-        .print-card-color {
-            border: 1px solid #e2e8f0 !important;
-            box-shadow: none !important;
-            /* Force white background even for the colored behavior cards on print 
-               to save ink and look cleaner, maintaining just the border or icon color */
-            background-color: white !important; 
-        }
-
-        .print-note {
-            background-color: #f8fafc !important;
-            color: #334155 !important;
-        }
-
-        .score-circle {
-            background-color: white !important;
-        }
-
-        /* Cores estritas de texto que não dependem do foreground mutável */
-        .text-emerald-500 { color: #10b981 !important; }
-        .text-amber-500 { color: #f59e0b !important; }
-        .text-rose-500 { color: #f43f5e !important; }
-        .text-indigo-400 { color: #818cf8 !important; }
-        .text-primary { color: #000000 !important; }
-        
-        /* Textos de suporte não tão pretos pra não explodir visualmente */
-        .text-muted-foreground { color: #64748b !important; }
-    }
-</style>
-<!-- Trigger HMR: v3 Print Strict Mode -->
