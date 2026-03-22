@@ -498,6 +498,7 @@
                                 </div>
                                 <div class="flex items-center justify-between text-xs">
                                    <span class="text-rose-500 font-bold">Bad</span>
+                                   <span class="font-mono text-muted-foreground">{report.reflection.distribution.bad}</span>
                                 </div>
                             </div>
                             <!-- Cross-Psychology Stats -->
