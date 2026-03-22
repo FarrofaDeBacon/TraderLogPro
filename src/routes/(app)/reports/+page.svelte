@@ -100,45 +100,18 @@
       return 'text-rose-500 border-rose-500/30 bg-rose-500/10';
   }
 
-  async function handleExportPDF() {
+  async function exportReport() {
       if (isExporting) return;
       isExporting = true;
 
-      let container: HTMLDivElement | null = null;
-      let mountedComponent: any = null;
-
       try {
-          // 1. Carrega dependências modernas (html-to-image suporta OKLCH nativamente via <foreignObject> do browser)
-          if (!(window as any).htmlToImage) {
-              await new Promise((resolve, reject) => {
-                  const script = document.createElement('script');
-                  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js';
-                  script.onload = resolve;
-                  script.onerror = reject;
-                  document.head.appendChild(script);
-              });
-          }
-          if (!(window as any).jspdf) {
-              await new Promise((resolve, reject) => {
-                  const script = document.createElement('script');
-                  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-                  script.onload = resolve;
-                  script.onerror = reject;
-                  document.head.appendChild(script);
-              });
-          }
-
-          // 2. Cria contêiner off-screen (deve estar visível no DOM mas fora da tela)
-          container = document.createElement('div');
-          container.style.position = 'absolute';
-          container.style.left = '-20000px';
-          container.style.top = '0';
-          // Fixa a largura em pixels para garantir a proporção do PDF (1200px / 1697px = A4 Ratio)
-          container.style.width = '1200px'; 
+          // 1. Cria contêiner off-screen para montar o componente
+          const container = document.createElement('div');
+          container.style.display = 'none';
           document.body.appendChild(container);
 
-          // 3. Monta dinamicamente a UI de Impressão usando Svelte 5
-          mountedComponent = mount(PdfExportTemplate, {
+          // 2. Monta dinamicamente a UI de Impressão (PdfExportTemplate já está formatado com HEX e tags de print)
+          const mountedComponent = mount(PdfExportTemplate, {
               target: container,
               props: {
                  report: report,
@@ -147,40 +120,76 @@
               }
           });
 
-          // Hack para garantir rendering completo do DOM na memória do Svelte 5
-          await new Promise(r => setTimeout(r, 200));
+          // Hack para garantir rendering completo do DOM pelo Svelte
+          await new Promise(r => setTimeout(r, 100));
 
-          // 4. Gera a imagem da página 1x via browser engine nativa (compatível com Tailwind V4 oklch)
-          const dataUrl = await (window as any).htmlToImage.toPng(container, { 
-              backgroundColor: '#ffffff',
-              pixelRatio: 2, // Retira o scaling exagerado pra caber
-              style: {
-                  margin: '0',
-              }
-          });
+          // 3. Pega o HTML gerado
+          const reportHTML = container.innerHTML;
 
-          // 5. Instancia PDF A4, joga a imagem lá dentro com as margens padrao
-          const { jsPDF } = (window as any).jspdf;
-          const pdf = new jsPDF({
-              orientation: 'portrait',
-              unit: 'mm',
-              format: 'a4'
-          });
+          // Limpa o componente logo após pegar o HTML
+          unmount(mountedComponent);
+          document.body.removeChild(container);
 
-          // A4 proporção em retrato: 210x297mm.
-          // Deixamos margens de 10mm de cada lado: 190mm livres de largura
-          const pdfWidth = 190;
-          // E ajusta a proporção exata da altura conforme a imagem gerada (container.offsetHeight proporcianal a width)
-          const pdfHeight = (container.offsetHeight * pdfWidth) / container.offsetWidth;
+          // 4. Copia os estilos atuais (Tailwind + CSS Global) para não perder formatação
+          const styleTags = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+              .map(node => node.outerHTML)
+              .join('\n');
 
-          pdf.addImage(dataUrl, 'PNG', 10, 10, pdfWidth, pdfHeight);
-          pdf.save(`TraderLogPro_Performance_${selectedPeriod}.pdf`);
+          // 5. Abre Nova Janela
+          const printWindow = window.open('', '_blank', 'width=1000,height=800');
+          if (!printWindow) {
+              alert("Por favor, permita pop-ups para gerar o documento.");
+              isExporting = false;
+              return;
+          }
+
+          // 6. Injeta HTML e Script de Auto-Impressão
+          printWindow.document.write(`
+              <!DOCTYPE html>
+              <html lang="pt-BR">
+              <head>
+                  <meta charset="UTF-8">
+                  <title>TraderLogPro_Performance_${selectedPeriod}</title>
+                  ${styleTags}
+                  <style>
+                      @page {
+                          size: A4 portrait;
+                          margin: 10mm;
+                      }
+                      body {
+                          background-color: #ffffff !important;
+                          color: #000000 !important;
+                          -webkit-print-color-adjust: exact !important;
+                          print-color-adjust: exact !important;
+                          margin: 0;
+                          padding: 0;
+                      }
+                      /* Força a remoção de fundos escuros e sombras na hora de imprimir */
+                      * {
+                          box-shadow: none !important;
+                      }
+                  </style>
+              </head>
+              <body class="bg-white text-black">
+                  ${reportHTML}
+                  <script>
+                      // Aguarda o carregamento de fontes e folhas de estilo externas
+                      window.onload = () => {
+                          setTimeout(() => {
+                              window.print();
+                              window.close();
+                          }, 500); 
+                      };
+                  <\/script>
+              </body>
+              </html>
+          `);
+          
+          printWindow.document.close();
 
       } catch (error) {
-          console.error("Erro ao gerar PDF: ", error);
+          console.error("Erro ao exportar PDF: ", error);
       } finally {
-          if (mountedComponent) unmount(mountedComponent);
-          if (container && document.body.contains(container)) document.body.removeChild(container);
           isExporting = false;
       }
   }
@@ -197,7 +206,7 @@
                 O arquivo será gerado de maneira oculta garantindo o formato Institucional em 2 páginas. O visual na tela permanecerá limpo (Dark Mode).
             </p>
         </div>
-        <Button onclick={handleExportPDF} disabled={isExporting} class="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-10 gap-2 shadow-lg w-[220px]">
+        <Button onclick={exportReport} disabled={isExporting} class="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-10 gap-2 shadow-lg w-[220px]">
             {#if isExporting}
                 <div class="h-4 w-4 rounded-full border-2 border-primary-foreground border-r-transparent animate-spin"></div>
                 Gerando Documento...
