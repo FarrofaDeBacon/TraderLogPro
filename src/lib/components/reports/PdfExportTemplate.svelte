@@ -17,7 +17,8 @@
       MinusCircle,
       Activity,
       FileText,
-      BarChart3
+      BarChart3,
+      AlertTriangle
   } from "lucide-svelte";
 
   // PROPS RECEBIDOS PELO COMPONENTE MONTADO VIA SVELTE 5
@@ -239,8 +240,8 @@
                 </h2>
 
             {#if report.reflection.reviewCount === 0}
-                <div style="color: #6b7280; background-color: #f9fafb; border-width: 1px; border-color: #d1d5db;" class="p-8 text-center border-dashed rounded-xl flex-1">
-                    Sem Daily Reviews no período. Pós-mercado inexistente.
+                <div style="color: #e11d48; background-color: #fff1f2; border-width: 1px; border-color: #fda4af;" class="p-8 text-center border-dashed rounded-xl flex-1 font-bold">
+                    Você operou sem registrar revisão diária. Isso reduz a capacidade de auditoria e aprendizado do período.
                 </div>
             {:else}
                 <div class="flex flex-col gap-3 flex-1 h-full">
@@ -263,6 +264,15 @@
                                    <span style="color: #e11d48;" class="font-bold uppercase">Bad</span>
                                    <span style="color: #6b7280;" class="font-mono font-bold">{report.reflection.distribution.bad}</span>
                                 </div>
+
+                                <!-- Cross-Psychology Stats -->
+                                {#if report.psychologyStats.lossPercentageInNegativeState !== null}
+                                <div style="border-top-width: 1px; border-color: #e5e7eb;" class="mt-3 pt-2 border-solid">
+                                    <p style="color: #6b7280;" class="text-[8px] leading-tight">
+                                        <span style="color: #e11d48; font-weight: bold;">{(report.psychologyStats.lossPercentageInNegativeState * 100).toFixed(0)}% dos prejuízos</span> ocorreram sob estado emocional negativo <span style="font-weight: bold; text-transform: uppercase;">({report.psychologyStats.dominantNegativeEmotion})</span>. 
+                                    </p>
+                                </div>
+                                {/if}
                             </div>
                         </div>
                     </div>
@@ -289,5 +299,57 @@
             {/if}
             </section>
         </div>
+
+        <!-- BLOCO 5: DECISION LAYER (PLANO TÁTICO) -->
+        <section class="break-inside-avoid w-full">
+            <h2 style="color: #111827;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2 mt-2 pt-5 border-t border-solid border-gray-200">
+                <Target class="w-4 h-4" color="#111827" /> 5. Decision Layer (Plano de Ação Tático)
+            </h2>
+            
+            <div class="grid grid-cols-3 gap-4">
+                
+                <!-- Diagnóstico Final -->
+                <div style="background-color: #f0fdf4; border-width: 1px; border-color: #bbf7d0;" class="rounded-xl border-solid flex flex-col p-4">
+                    <div style="color: #059669;" class="text-[9px] font-black tracking-widest uppercase mb-2 flex items-center gap-1.5 leading-none">
+                        <Activity class="w-3.5 h-3.5" color="#059669" /> Diagnóstico Final
+                    </div>
+                    <p style="color: #000000;" class="text-[11px] font-bold leading-tight mt-1">{report.tactical.diagnosis.main}</p>
+                    {#if report.tactical.diagnosis.sub}
+                        <p style="color: #4b5563;" class="text-[9px] mt-1.5 leading-tight">{report.tactical.diagnosis.sub}</p>
+                    {/if}
+                </div>
+
+                <!-- Riscos Atuais -->
+                <div style="background-color: #fff1f2; border-width: 1px; border-color: #fecdd3;" class="rounded-xl border-solid flex flex-col p-4">
+                    <div style="color: #e11d48;" class="text-[9px] font-black tracking-widest uppercase mb-2 flex items-center gap-1.5 leading-none">
+                        <AlertTriangle class="w-3.5 h-3.5" color="#e11d48" /> Riscos Iminentes
+                    </div>
+                    <ul class="space-y-1.5 pl-3 mt-1 text-[9px] m-0" style="color: #be123c; list-style-type: disc;">
+                        {#each report.tactical.risks as risk}
+                            <li class="leading-tight">{risk}</li>
+                        {/each}
+                        {#if report.tactical.risks.length === 0}
+                            <li class="leading-tight text-emerald-600 font-bold" style="list-style-type: none; margin-left: -12px;">Nenhum risco matricial grave identificado.</li>
+                        {/if}
+                    </ul>
+                </div>
+
+                <!-- Plano de Execução -->
+                <div style="background-color: #f8fafc; border-width: 1px; border-color: #e2e8f0;" class="rounded-xl border-solid flex flex-col p-4">
+                    <div style="color: #0f172a;" class="text-[9px] font-black tracking-widest uppercase mb-2 flex items-center gap-1.5 leading-none">
+                        <CheckCircle2 class="w-3.5 h-3.5" color="#0f172a" /> Plano de Execução
+                    </div>
+                    <ul class="space-y-2 m-0 mt-2">
+                        {#each report.tactical.actionPlan as action}
+                            <li class="text-[9px] font-bold leading-tight flex items-start gap-1.5" style="color: #1e293b;">
+                                <span style="color: #3b82f6; font-size: 10px;">•</span>
+                                <span>{action}</span>
+                            </li>
+                        {/each}
+                    </ul>
+                </div>
+
+            </div>
+        </section>
     </div>
 </div>

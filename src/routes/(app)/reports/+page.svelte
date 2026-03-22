@@ -478,8 +478,8 @@
             </h2>
 
             {#if report.reflection.reviewCount === 0}
-                <div class="p-8 text-center border border-dashed rounded-xl border-border/50 text-muted-foreground bg-muted/20">
-                    Nenhum Daily Review encontrado na janela. É crucial formalizar o Pós-Mercado para evoluir.
+                <div class="p-8 text-center border border-dashed rounded-xl border-rose-500/30 text-rose-500/80 bg-rose-500/5 font-medium">
+                    Você operou sem registrar revisão diária. Isso reduz a capacidade de auditoria e aprendizado do período.
                 </div>
             {:else}
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -498,9 +498,16 @@
                                 </div>
                                 <div class="flex items-center justify-between text-xs">
                                    <span class="text-rose-500 font-bold">Bad</span>
-                                   <span class="font-mono text-muted-foreground">{report.reflection.distribution.bad}</span>
                                 </div>
                             </div>
+                            <!-- Cross-Psychology Stats -->
+                            {#if report.psychologyStats.lossPercentageInNegativeState !== null}
+                                <div class="mt-4 pt-3 border-t border-border/50">
+                                    <p class="text-[10px] text-muted-foreground leading-tight">
+                                        <span class="font-bold text-rose-500">{(report.psychologyStats.lossPercentageInNegativeState * 100).toFixed(0)}% dos prejuízos</span> ocorreram sob estado emocional negativo <span class="uppercase font-bold">({report.psychologyStats.dominantNegativeEmotion})</span>. 
+                                    </p>
+                                </div>
+                            {/if}
                         </CardContent>
                     </Card>
 
@@ -524,6 +531,69 @@
                     </Card>
                 </div>
             {/if}
+        </section>
+
+        <!-- BLOCO 5: DECISION LAYER (PLANO TÁTICO) -->
+        <section class="pt-4 border-t border-border/40 mt-4">
+            <h2 class="text-xs font-black uppercase tracking-widest text-primary mb-3 flex items-center gap-2">
+                <Target class="w-4 h-4" /> 5. Decision Layer (Direção Tática)
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                
+                <!-- Diagnóstico -->
+                <Card class="bg-primary/5 shadow-none border-primary/20">
+                    <CardHeader class="pb-2">
+                        <CardTitle class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
+                            <Activity class="w-3.5 h-3.5" /> Diagnóstico Final
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p class="text-sm font-bold text-foreground leading-tight">{report.tactical.diagnosis.main}</p>
+                        {#if report.tactical.diagnosis.sub}
+                            <p class="text-xs text-muted-foreground mt-1 leading-tight">{report.tactical.diagnosis.sub}</p>
+                        {/if}
+                    </CardContent>
+                </Card>
+
+                <!-- Riscos Atuais -->
+                <Card class="bg-background/60 shadow-sm border-border/50">
+                    <CardHeader class="pb-2">
+                        <CardTitle class="text-[10px] uppercase font-black tracking-widest text-rose-500 flex items-center gap-2">
+                            <AlertTriangle class="w-3.5 h-3.5" /> Riscos Iminentes
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul class="space-y-1.5 list-disc pl-4 text-xs text-muted-foreground">
+                            {#each report.tactical.risks as risk}
+                                <li class="leading-tight">{risk}</li>
+                            {/each}
+                            {#if report.tactical.risks.length === 0}
+                                <li class="leading-tight text-emerald-500/80">Nenhum risco matricial grave identificado.</li>
+                            {/if}
+                        </ul>
+                    </CardContent>
+                </Card>
+
+                <!-- Plano de Execução -->
+                <Card class="bg-background/80 shadow-sm border-border">
+                    <CardHeader class="pb-2">
+                        <CardTitle class="text-[10px] uppercase font-black tracking-widest text-foreground flex items-center gap-2">
+                            <CheckCircle2 class="w-3.5 h-3.5" /> Plano de Execução
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul class="space-y-2">
+                            {#each report.tactical.actionPlan as action}
+                                <li class="text-xs font-semibold text-foreground/90 leading-tight flex items-start gap-2">
+                                    <span class="text-primary mt-0.5">•</span>
+                                    <span>{action}</span>
+                                </li>
+                            {/each}
+                        </ul>
+                    </CardContent>
+                </Card>
+
+            </div>
         </section>
     </div>
 </div>

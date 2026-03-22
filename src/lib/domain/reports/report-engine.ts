@@ -47,12 +47,26 @@ export interface ReportReflection {
     relevantNotes: string[];
 }
 
+export interface ReportTactical {
+    diagnosis: { main: string; sub?: string };
+    risks: string[];
+    actionPlan: string[];
+}
+
+export interface ReportPsychologyStats {
+    lossPercentageInNegativeState: number | null;
+    dominantNegativeEmotion?: string;
+    sampleSize: number;
+}
+
 export interface ReportViewModel {
     period: ReportPeriod;
     summary: ReportSummary;
     scoreAndDiscipline: ReportScoreAndDiscipline;
     behavior: ReportBehavior;
     reflection: ReportReflection;
+    tactical: ReportTactical;
+    psychologyStats: ReportPsychologyStats;
 }
 
 export function generateReport(
@@ -60,7 +74,9 @@ export function generateReport(
     reviews: DailyReview[],
     fromDate: Date,
     toDate: Date,
-    deps: TradeConversionDeps
+    deps: TradeConversionDeps & {
+        getEmotionalState?: (id: string) => any;
+    }
 ): ReportViewModel {
     // 1. Filtrar Entidades pelo Período
     const filteredTrades = trades.filter(t => {
@@ -137,6 +153,97 @@ export function generateReport(
         }
     }
 
+    // --- Psicologia Cruzada ---
+    let losingTradesCount = 0;
+    let lossesInNegativeState = 0;
+    const negativeStateCounts = new Map<string, number>();
+
+    filteredTrades.forEach(t => {
+        const res = deps.getConvertedResult(t);
+        if (res < 0) {
+            losingTradesCount++;
+            if (t.entry_emotional_state_id && deps.getEmotionalState) {
+                const emotionalState = deps.getEmotionalState(t.entry_emotional_state_id);
+                if (emotionalState && emotionalState.impact === 'Negative') {
+                    lossesInNegativeState++;
+                    const emoteName = emotionalState.name;
+                    negativeStateCounts.set(emoteName, (negativeStateCounts.get(emoteName) || 0) + 1);
+                }
+            }
+        }
+    });
+
+    let lossPercentageInNegativeState = null;
+    let dominantNegativeEmotion = undefined;
+    
+    // Regra: Apenas registrar estatística percentual de emoção negativa sob loss se hover amostra >= 3
+    if (losingTradesCount >= 3) {
+        lossPercentageInNegativeState = (lossesInNegativeState / losingTradesCount);
+        if (negativeStateCounts.size > 0) {
+            dominantNegativeEmotion = [...negativeStateCounts.entries()].reduce((a, b) => a[1] > b[1] ? a : b)[0];
+        }
+    }
+
+    // --- Decision Layer (Tático) ---
+    const score = breakdown.stats.score;
+    let diagMain = "";
+    let diagSub = undefined;
+    
+    if (score >= 80) {
+        diagMain = "Operação consistente com risco controlado.";
+        diagSub = "Manutenção disciplinar de alto nível identificada na linha do tempo.";
+    } else if (score >= 50) {
+        diagMain = "Desempenho Mediano e Instável.";
+        if (topNegativeImpacts.length > 0) {
+            diagSub = `Atenção à restrição em: ${topNegativeImpacts[0].title}.`;
+        }
+    } else {
+        diagMain = "Risco de Capital Elevado.";
+        diagSub = "Urgente: Pausa operacional e revisão de regras de sobrevivência recomendada.";
+    }
+
+    const risks: string[] = [];
+    if (filteredReviews.length === 0 && tradeCount > 0) {
+         risks.push("Ausência de Daily Review impossibilitando auditoria diária");
+    }
+    if (topNegativeImpacts.length > 0) {
+        risks.push(`Violação contínua: ${topNegativeImpacts[0].title}`);
+    }
+    if (risks.length < 2 && winRate < 0.4 && tradeCount > 0) {
+        risks.push("Desequilíbrio de Win Rate ameaçando o limite de Drawdown");
+    }
+
+    const actionPlan: string[] = [];
+    
+    // 1. Operacional
+    if (winRate > 0.6) {
+        actionPlan.push("Preservar a taxa atual mantendo regras rigorosas de seleção dos setups.");
+    } else {
+        actionPlan.push("Reduzir a frequência técnica até normalizar a taxa de validação (Win Rate).");
+    }
+
+    // 2. Comportamental
+    if (lossPercentageInNegativeState !== null && lossPercentageInNegativeState > 0.5) {
+        actionPlan.push(`Encerrar operações sob primeiros sintomas de estado propício a perdas.`);
+    } else if (windowStreaks.noTiltStreak < activeDays.size) {
+        actionPlan.push("Evitar reentradas ou dobras após violações emocionais evidentes.");
+    } else {
+        actionPlan.push("Vigiar sinais sutis de estresse para manter a blindagem de Tilt atual.");
+    }
+
+    // 3. Gerencial
+    if (filteredReviews.length === 0) {
+        actionPlan.push("Registrar as revisões (Daily Review) no final de cada dia ativo.");
+    } else if (profitFactor < 1 && profitFactor > 0) {
+        actionPlan.push("Limitar as perdas respeitando cegamente o stop técnico matemático.");
+    } else {
+        actionPlan.push("Controlar expectativas futuras para não devolver a gordura adquirida.");
+    }
+    
+    // Limitar para não falhar a spec do cliente
+    actionPlan.length = Math.min(actionPlan.length, 3);
+    risks.length = Math.min(risks.length, 2);
+
     return {
         period: {
             from: fromDate.toISOString(),
@@ -172,6 +279,16 @@ export function generateReport(
             reviewCount: filteredReviews.length,
             distribution: { good, neutral, bad },
             relevantNotes
+        },
+        tactical: {
+            diagnosis: { main: diagMain, sub: diagSub },
+            risks,
+            actionPlan
+        },
+        psychologyStats: {
+            lossPercentageInNegativeState,
+            dominantNegativeEmotion,
+            sampleSize: losingTradesCount
         }
     };
 }
