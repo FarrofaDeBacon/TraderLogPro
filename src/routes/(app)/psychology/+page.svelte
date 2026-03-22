@@ -21,9 +21,9 @@
         ChevronDown,
         Trash2,
         Info,
+        MinusCircle,
     } from "lucide-svelte";
 
-    import EChart from "$lib/components/ui/echart.svelte";
     import { Button } from "$lib/components/ui/button";
     import DailyCheckinDialog from "$lib/components/psychology/DailyCheckinDialog.svelte";
     import DateFilter from "$lib/components/filters/DateFilter.svelte";
@@ -32,10 +32,9 @@
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { invoke } from "@tauri-apps/api/core";
     import { untrack } from "svelte";
-    import type { EChartsOption } from "echarts";
-    import Skeleton from "$lib/components/ui/skeleton.svelte";
     import { getLocalDatePart } from "$lib/utils";
     import type { Trade } from "$lib/types";
+    import { analyzePsychology } from "$lib/domain/stats/psychology-engine";
 
     let showCheckinDialog = $state(false);
     let showDeleteConfirm = $state(false);
@@ -460,287 +459,14 @@
         }
     }
 
-    // Chart Logic (optimized)
-    const correlationChartOption = $derived.by(() => {
-        const t0 = performance.now();
-        const trades = filteredTrades;
-        const journals = filteredJournal;
-
-        if (trades.length === 0 && journals.length === 0) return {};
-
-        // Use Maps for O(1) lookup
-        const journalMap = new Map<string, any>();
-        for (const j of journals) {
-            journalMap.set(j.date.split("T")[0], j);
-        }
-
-        const tradeMap = new Map<string, any[]>();
-        for (const t of trades) {
-            const date = t.date.split("T")[0];
-            if (!tradeMap.has(date)) tradeMap.set(date, []);
-            tradeMap.get(date)!.push(t);
-        }
-
-        const tradeDates = trades.map((t) => t.date.split("T")[0]);
-        const journalDates = journals.map((j) => j.date.split("T")[0]);
-        const allDates = [...new Set([...tradeDates, ...journalDates])].sort();
-
-        const data = allDates.map((date) => {
-            const dailyTrades = tradeMap.get(date) || [];
-            const pnl = dailyTrades.reduce((acc, t) => acc + t.result, 0);
-            const journal = journalMap.get(date);
-            const intensity = journal ? journal.intensity : null;
-            const emotionId = journal?.emotional_state_id;
-            const emotionName = emotionId
-                ? emotionalStates.find((e) => e.id === emotionId)?.name
-                : "";
-            return { date, pnl, intensity, emotionName };
-        });
-
-        console.log(
-            `[PsychologyHub] correlationChartOption optimized calculation in ${performance.now() - t0}ms`,
+    const psychoDiagnosis = $derived.by(() => {
+        if (appStore.isLoadingData) return null;
+        return analyzePsychology(
+            filteredTrades,
+            filteredJournal,
+            emotionalStates,
+            (t) => Number(t.result) || 0
         );
-
-        return {
-            backgroundColor: "transparent",
-            tooltip: { trigger: "axis", axisPointer: { type: "cross" } },
-            xAxis: {
-                type: "category",
-                data: data.map((d) => d.date),
-                axisLabel: {
-                    color: "#888",
-                    fontSize: 10,
-                    formatter: function (value: string) {
-                        try {
-                            const date = new Date(value + "T12:00:00");
-                            return date
-                                .toLocaleDateString($locale || "pt-BR", {
-                                    day: "2-digit",
-                                    month: "short",
-                                })
-                                .replace(".", "");
-                        } catch (e) {
-                            return value;
-                        }
-                    },
-                },
-            },
-            yAxis: [
-                {
-                    type: "value",
-                    name: $t("general.result"),
-                    axisLabel: { color: "#888" },
-                },
-                {
-                    type: "value",
-                    name:
-                        $t("general.intensityLabel") ||
-                        $t("general.intensity_short") ||
-                        "Intensidade",
-                    min: 0,
-                    max: 10,
-                    axisLabel: { color: "#888" },
-                },
-            ],
-            series: [
-                {
-                    name: $t("general.result"),
-                    type: "bar",
-                    data: data.map((d) => d.pnl),
-                    itemStyle: {
-                        color: (p: any) =>
-                            p.value >= 0 ? "#10b981" : "#f43f5e",
-                    },
-                },
-                {
-                    name:
-                        $t("general.intensityLabel") ||
-                        $t("general.intensity_short") ||
-                        "Intensidade",
-                    type: "line",
-                    yAxisIndex: 1,
-                    data: data.map((d) => d.intensity),
-                    smooth: true,
-                    lineStyle: { color: "#3b82f6" },
-                },
-            ],
-        } as EChartsOption;
-    });
-
-    // --- KPI & Summary Logic (Restored from Backup) ---
-    const statsByEmotion = $derived.by(() => {
-        if (appStore.isLoadingData) return [];
-        const stats = new Map<
-            string,
-            {
-                id: string;
-                name: string;
-                color: string;
-                count: number;
-                wins: number;
-                losses: number;
-                totalResult: number;
-                impact: string;
-            }
-        >();
-
-        const statesMap = new Map<string, any>();
-        for (const s of emotionalStates || []) statesMap.set(s.id, s);
-
-        for (const state of emotionalStates || []) {
-            let stateColor = "#71717a"; // Neutral/Zinc-500 fallback
-            if (state.impact === "Positive")
-                stateColor = "#10b981"; // Emerald-500
-            else if (state.impact === "Negative") stateColor = "#ef4444"; // Red-500
-
-            stats.set(state.id, {
-                id: state.id,
-                name: state.name,
-                color: stateColor,
-                count: 0,
-                wins: 0,
-                losses: 0,
-                totalResult: 0,
-                impact: state.impact || "Neutral",
-            });
-        }
-
-        // Ensure unknown is always there
-        stats.set("unknown", {
-            id: "unknown",
-            name: "Não informado",
-            color: "#71717a",
-            count: 0,
-            wins: 0,
-            losses: 0,
-            totalResult: 0,
-            impact: "Neutral",
-        });
-
-        for (const trade of filteredTrades || []) {
-            const stateId = trade.entry_emotional_state_id || "unknown";
-            const current = stats.get(stateId);
-            if (current) {
-                current.count++;
-                current.totalResult += Number(trade.result) || 0;
-                if (trade.result > 0) current.wins++;
-                else if (trade.result < 0) current.losses++;
-            }
-        }
-
-        return Array.from(stats.values()).filter(
-            (s) => s.count > 0 || s.id !== "unknown",
-        );
-    });
-
-    const bestMindset = $derived.by(() => {
-        const sorted = [...statsByEmotion].sort(
-            (a, b) => b.totalResult - a.totalResult,
-        );
-        return sorted[0];
-    });
-
-    const worstMindset = $derived.by(() => {
-        const sorted = [...statsByEmotion].sort(
-            (a, b) => a.totalResult - b.totalResult,
-        );
-        return sorted[0];
-    });
-
-    const tiltTrades = $derived(
-        filteredTrades.filter(
-            (t) =>
-                t.entry_emotional_state_id &&
-                emotionalStates.find((e) => e.id === t.entry_emotional_state_id)
-                    ?.impact === "Negative",
-        ),
-    );
-
-    const tiltResult = $derived(
-        tiltTrades.reduce((acc, t) => acc + t.result, 0),
-    );
-
-    const winRateChartOption = $derived.by(() => {
-        const data = statsByEmotion.map((s) => ({
-            name: s.name,
-            value:
-                s.count > 0
-                    ? parseFloat(((s.wins / s.count) * 100).toFixed(1))
-                    : 0,
-            color:
-                s.impact === "Positive"
-                    ? "#10b981"
-                    : s.impact === "Negative"
-                      ? "#f43f5e"
-                      : "#64748b",
-        }));
-
-        return {
-            backgroundColor: "transparent",
-            tooltip: { trigger: "axis", formatter: "{b}: {c}%" },
-            xAxis: {
-                type: "category",
-                data: data.map((d) => d.name),
-                axisLabel: { color: "#888", fontSize: 10 },
-            },
-            yAxis: {
-                type: "value",
-                max: 100,
-                axisLabel: {
-                    formatter: "{value}%",
-                    color: "#888",
-                    fontSize: 10,
-                },
-            },
-            series: [
-                {
-                    data: data.map((d) => d.value),
-                    type: "bar",
-                    barWidth: "40%",
-                    itemStyle: {
-                        borderRadius: [4, 4, 0, 0],
-                        color: (p: any) => data[p.dataIndex].color,
-                    },
-                },
-            ],
-        } as EChartsOption;
-    });
-
-    const resultByEmotionChartOption = $derived.by(() => {
-        const data = statsByEmotion.map((s) => ({
-            name: s.name,
-            value: parseFloat(s.totalResult.toFixed(2)),
-        }));
-
-        return {
-            backgroundColor: "transparent",
-            tooltip: {
-                trigger: "axis",
-                formatter: (params: any) =>
-                    `${params[0].name}: R$ ${params[0].value.toLocaleString($locale || "pt-BR")}`,
-            },
-            xAxis: {
-                type: "category",
-                data: data.map((d) => d.name),
-                axisLabel: { color: "#888", fontSize: 10 },
-            },
-            yAxis: {
-                type: "value",
-                axisLabel: { color: "#888", fontSize: 10 },
-            },
-            series: [
-                {
-                    data: data.map((d) => d.value),
-                    type: "bar",
-                    barWidth: "40%",
-                    itemStyle: {
-                        borderRadius: [4, 4, 0, 0],
-                        color: (p: any) =>
-                            p.value >= 0 ? "#10b981" : "#f43f5e",
-                    },
-                },
-            ],
-        } as EChartsOption;
     });
 
     function formatCurrency(val: number, currency: string = "BRL") {
@@ -875,240 +601,154 @@
 
         <Separator class="bg-border/20" />
 
-        <!-- KPI Cards (Padronização Estilo Financeiro) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {#if isLoading}
+        <!-- DECISION LAYER: Score & Recomendações -->
+        {#if isLoading || !psychoDiagnosis}
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {#each Array(4) as _}
-                    <Skeleton class="h-32 rounded-xl" />
+                    <div class="h-32 rounded-xl bg-muted/50 animate-pulse"></div>
                 {/each}
-            {:else}
-                <!-- Melhor Mindset -->
-                <div
-                    class="card-glass border-l-4 border-l-emerald-500 overflow-hidden"
-                >
-                    <div class="flex items-start justify-between py-1.5 px-3">
-                        <span
-                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60"
-                        >
-                            {$t("psychology.kpi.bestMindset")}
-                        </span>
-                        <Brain class="h-3 w-3 text-emerald-500" />
-                    </div>
-                    <div class="py-1 px-3 pb-2">
-                        <div
-                            class="text-base font-mono font-bold text-emerald-500 uppercase tracking-tight leading-none"
-                        >
-                            {bestMindset?.name || "-"}
-                        </div>
-                        <p
-                            class="text-[10px] text-muted-foreground mt-1 underline decoration-emerald-500/30 underline-offset-2 decoration-dotted"
-                        >
-                            {$t("psychology.kpi.consolidated")}:
-                            <span class="font-mono font-bold"
-                                >{formatCurrency(
-                                    bestMindset?.totalResult || 0,
-                                )}</span
-                            >
-                        </p>
+            </div>
+        {:else}
+            <!-- DECISION LAYER: Topo -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- SCORE GERAL -->
+                <div class="col-span-1 lg:col-span-1 border-2 border-border/50 rounded-2xl flex flex-col justify-center items-center p-6 bg-card/40 backdrop-blur-md relative overflow-hidden shadow-sm">
+                    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
+                    <div class="text-[10px] font-black tracking-widest uppercase text-muted-foreground mb-4 relative z-10">Psycho Score</div>
+                    <div class="text-6xl font-black {
+                        psychoDiagnosis.psychoScore >= 70 ? 'text-emerald-500' : 
+                        psychoDiagnosis.psychoScore >= 40 ? 'text-amber-500' : 'text-rose-500'
+                    } relative z-10 transition-colors duration-500">
+                        {psychoDiagnosis.psychoScore}
                     </div>
                 </div>
 
-                <!-- Pior Mindset -->
-                <div
-                    class="card-glass border-l-4 border-l-rose-500 overflow-hidden"
-                >
-                    <div class="flex items-start justify-between py-1.5 px-3">
-                        <span
-                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60"
-                        >
-                            {$t("psychology.kpi.worstMindset")}
-                        </span>
-                        <AlertTriangle class="h-3 w-3 text-rose-500" />
-                    </div>
-                    <div class="py-1 px-3 pb-2">
-                        <div
-                            class="text-base font-mono font-bold text-rose-500 uppercase tracking-tight leading-none"
-                        >
-                            {worstMindset?.name || "-"}
-                        </div>
-                        <p
-                            class="text-[10px] text-muted-foreground mt-1 underline decoration-rose-500/30 underline-offset-2 decoration-dotted"
-                        >
-                            {$t("psychology.kpi.accumulatedLoss")}:
-                            <span class="font-mono font-bold"
-                                >{formatCurrency(
-                                    worstMindset?.totalResult || 0,
-                                )}</span
-                            >
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Custo do Tilt -->
-                <div
-                    class="card-glass border-l-4 border-l-orange-500 overflow-hidden"
-                >
-                    <div class="flex items-start justify-between py-1.5 px-3">
-                        <span
-                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60"
-                        >
-                            {$t("psychology.kpi.tiltCost")}
-                        </span>
-                        <TrendingDown class="h-3 w-3 text-orange-500" />
-                    </div>
-                    <div class="py-1 px-3 pb-2">
-                        <div
-                            class="text-base font-mono font-bold text-orange-500 tracking-tight leading-none"
-                        >
-                            {formatCurrency(tiltResult)}
-                        </div>
-                        <p
-                            class="text-[10px] text-muted-foreground mt-1 whitespace-nowrap opacity-70"
-                        >
-                            {$t("psychology.kpi.tiltDescription", {
-                                values: { count: tiltTrades.length },
-                            })}
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Registros -->
-                <div
-                    class="card-glass border-l-4 border-l-blue-500 overflow-hidden"
-                >
-                    <div class="flex items-start justify-between py-1.5 px-3">
-                        <span
-                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60"
-                        >
-                            {$t("psychology.kpi.records")}
-                        </span>
-                        <CheckCircle2 class="h-3 w-3 text-blue-500" />
-                    </div>
-                    <div class="py-1 px-3 pb-2">
-                        <div
-                            class="text-base font-mono font-bold text-blue-500 tracking-tight leading-none"
-                        >
-                            {filteredJournal.length}
-                        </div>
-                        <p
-                            class="text-[10px] text-muted-foreground mt-1 opacity-70"
-                        >
-                            {$t("psychology.kpi.recordsDescription")}
-                        </p>
-                    </div>
-                </div>
-            {/if}
-        </div>
-
-        <!-- Charts Section (3 Columns - Restored) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {#if isLoading}
-                {#each Array(3) as _}
-                    <Card.Root
-                        class="bg-card/50 backdrop-blur-md border-border/50 h-[300px]"
-                    >
-                        <Card.Content class="p-6">
-                            <Skeleton class="w-full h-full" />
+                <!-- DIAGNÓSTICO E ACTION PLAN -->
+                <div class="col-span-1 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card.Root class="bg-background/80 shadow-sm border-border">
+                        <Card.Header class="pb-2">
+                            <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
+                                <Brain class="w-3.5 h-3.5" /> Diagnóstico Psicológico Automático
+                            </Card.Title>
+                        </Card.Header>
+                        <Card.Content>
+                            <ul class="space-y-2">
+                                {#each psychoDiagnosis.conclusions as concl}
+                                    <li class="text-xs font-medium text-muted-foreground leading-tight flex items-start gap-2">
+                                        <span class="text-primary mt-0.5">•</span>
+                                        <span>{concl}</span>
+                                    </li>
+                                {/each}
+                                {#if psychoDiagnosis.conclusions.length === 0}
+                                    <p class="text-xs text-muted-foreground italic">Volume insuficiente de dados para leitura comportamental.</p>
+                                {/if}
+                            </ul>
                         </Card.Content>
                     </Card.Root>
-                {/each}
-            {:else}
-                <Card.Root class="card-glass h-full">
-                    <Card.Header class="pb-1">
-                        <Card.Title
-                            class="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70"
-                            >{$t("psychology.charts.pnlByEmotion")}</Card.Title
-                        >
-                    </Card.Header>
-                    <Card.Content class="h-[250px] p-2">
-                        <EChart options={resultByEmotionChartOption} />
-                    </Card.Content>
-                </Card.Root>
 
-                <Card.Root class="card-glass h-full">
-                    <Card.Header class="pb-1">
-                        <Card.Title
-                            class="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70"
-                            >{$t("psychology.charts.winRate")}</Card.Title
-                        >
-                    </Card.Header>
-                    <Card.Content class="h-[250px] p-2">
-                        <EChart options={winRateChartOption} />
-                    </Card.Content>
-                </Card.Root>
+                    <Card.Root class="bg-primary/5 shadow-none border-primary/20">
+                        <Card.Header class="pb-2">
+                            <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
+                                <CheckCircle2 class="w-3.5 h-3.5" /> Protocolo de Ação Exigido
+                            </Card.Title>
+                        </Card.Header>
+                        <Card.Content>
+                            <ul class="space-y-2">
+                                {#each psychoDiagnosis.recommendations as rec}
+                                    <li class="text-xs font-bold text-foreground/90 leading-tight flex items-start gap-2">
+                                        <span class="text-primary mt-0.5">→</span>
+                                        <span>{rec}</span>
+                                    </li>
+                                {/each}
+                            </ul>
+                        </Card.Content>
+                    </Card.Root>
+                </div>
+            </div>
 
-                <Card.Root class="card-glass h-full">
-                    <Card.Header class="pb-1">
-                        <Card.Title
-                            class="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70"
-                            >{$t("psychology.charts.correlation")}</Card.Title
-                        >
-                    </Card.Header>
-                    <Card.Content class="h-[250px] p-2">
-                        <EChart options={correlationChartOption} />
-                    </Card.Content>
-                </Card.Root>
-            {/if}
-        </div>
+            <!-- TIMELINE EMOCIONAL (Raio-X) -->
+            <div class="mt-8 border-t border-border/40 pt-6">
+                <div class="flex flex-col sm:flex-row gap-4 justify-between items-end mb-4">
+                    <h3 class="text-sm font-black uppercase tracking-widest text-muted-foreground">
+                        Raio-X: Retrospectiva de Resultados
+                    </h3>
+                    <div class="flex items-center gap-2">
+                        <DateFilter
+                            bind:value={timeFilter}
+                            bind:startDate
+                            bind:endDate
+                        />
+                    </div>
+                </div>
+                
+                <div class="flex flex-nowrap overflow-x-auto gap-3 pb-4 custom-scrollbar items-end pt-2">
+                    {#each hierarchicalPsychologyData as month}
+                        {#each month.weeks as week}
+                            {#each week.days as day}
+                                {@const dailyPnl = Object.values(day.totalPnlByCurrency).reduce((a:any,b:any)=>a+b, 0) as number}
+                                <div class="flex flex-col items-center gap-2 min-w-[70px]">
+                                    <span class="text-[9px] font-bold text-muted-foreground mb-1">{new Date(day.date + "T12:00:00").toLocaleDateString($locale || "pt-BR", { day: '2-digit', month: '2-digit' })}</span>
+                                    
+                                    <!-- Círculo de PnL -->
+                                    <div class="w-10 h-10 rounded-full flex items-center justify-center shadow-inner border {dailyPnl > 0 ? 'bg-emerald-500/20 text-emerald-500 border-emerald-500/30' : dailyPnl < 0 ? 'bg-rose-500/20 text-rose-500 border-rose-500/30' : 'bg-muted/50 text-muted-foreground border-border'}">
+                                        {#if dailyPnl > 0} <TrendingUp class="w-5 h-5" /> {:else if dailyPnl < 0} <TrendingDown class="w-5 h-5" /> {:else} <MinusCircle class="w-5 h-5" /> {/if}
+                                    </div>
+                                    
+                                    <!-- Linha Conectora de Emoção -->
+                                    <div class="h-8 w-1.5 rounded-full mt-1 {day.equivalentState?.impact === 'Positive' ? 'bg-emerald-500' : day.equivalentState?.impact === 'Negative' ? 'bg-rose-500' : 'bg-slate-400'}"></div>
+                                    <span class="text-[8px] uppercase font-bold max-w-[60px] text-center truncate mt-1 {day.equivalentState?.impact === 'Positive' ? 'text-emerald-500' : day.equivalentState?.impact === 'Negative' ? 'text-rose-500' : 'text-slate-400'}">
+                                        {day.equivalentState?.name || 'Neutro'}
+                                    </span>
+                                </div>
+                            {/each}
+                        {/each}
+                    {/each}
+                    {#if hierarchicalPsychologyData.length === 0}
+                        <div class="w-full text-center text-xs text-muted-foreground italic h-24 flex items-center justify-center border-2 border-dashed border-border/40 rounded-xl">Nenhum evento detectado no período filtrado.</div>
+                    {/if}
+                </div>
+            </div>
 
-        <!-- Detailed Analysis & Filters -->
-        <div
-            class="flex flex-col sm:flex-row gap-4 justify-between items-end card-glass p-4"
-        >
-            <div class="space-y-1">
-                <h3
-                    class="text-sm font-black uppercase tracking-widest text-muted-foreground"
-                >
-                    {$t("psychology.analysis.title")}
+            <!-- MATRIZ FINANCEIRA-EMOCIONAL -->
+            <div class="mt-8 border-t border-border/40 pt-6 mb-8">
+                <h3 class="text-sm font-black uppercase tracking-widest text-muted-foreground mb-4">
+                    A Matriz Financeira (Preço do Sentimento)
                 </h3>
-                <p
-                    class="text-[10px] text-muted-foreground/60 font-bold uppercase tracking-tighter"
-                >
-                    {$t("psychology.analysis.hierarchy")}
-                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {#each psychoDiagnosis.matrix as row}
+                        <div class="card-glass border-l-4 overflow-hidden {row.impact === 'Positive' ? 'border-l-emerald-500' : row.impact === 'Negative' ? 'border-l-rose-500' : 'border-l-slate-400'}">
+                            <div class="flex items-start justify-between py-2 px-3">
+                                <span class="text-[11px] font-black uppercase tracking-wider text-foreground">
+                                    {row.emotionName}
+                                </span>
+                                <span class="text-[9px] font-bold text-muted-foreground/60 uppercase">{row.tradeCount} Operações</span>
+                            </div>
+                            <div class="py-1 px-3 pb-3 border-t border-border/40 bg-muted/10">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] text-muted-foreground uppercase font-bold">Win Rate</span>
+                                    <span class="font-mono font-bold text-xs {(row.winRate*100) >= 50 ? 'text-emerald-500' : 'text-rose-500'}">
+                                        {(row.winRate * 100).toFixed(0)}%
+                                    </span>
+                                </div>
+                                <div class="flex justify-between items-center mt-1">
+                                    <span class="text-[10px] text-muted-foreground uppercase font-bold">Saldo</span>
+                                    <span class="font-mono font-bold text-sm {row.totalPnL >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
+                                        {formatCurrency(row.totalPnL)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {/each}
+                    {#if psychoDiagnosis.matrix.length === 0}
+                        <div class="col-span-full p-8 text-center border-2 border-dashed rounded-xl border-border/50 text-muted-foreground">
+                            Não há dados suficientes no período filtrado para tabular a matriz emocional.
+                        </div>
+                    {/if}
+                </div>
             </div>
+        {/if}
 
-            <div class="flex items-center gap-2">
-                <DateFilter
-                    bind:value={timeFilter}
-                    bind:startDate
-                    bind:endDate
-                />
-                <Select.Root type="single" bind:value={itemsLimit}>
-                    <Select.Trigger
-                        class="w-[120px] h-9 bg-background/50 border-border/50 text-[10px] font-bold uppercase"
-                    >
-                        {itemsLimit === "all"
-                            ? $t("general.all")
-                            : `${itemsLimit} items`}
-                    </Select.Trigger>
-                    <Select.Content class="bg-popover border-border">
-                        <Select.Item
-                            value="10"
-                            class="text-[10px] font-bold uppercase"
-                            >10 Itens</Select.Item
-                        >
-                        <Select.Item
-                            value="25"
-                            class="text-[10px] font-bold uppercase"
-                            >25 Itens</Select.Item
-                        >
-                        <Select.Item
-                            value="50"
-                            class="text-[10px] font-bold uppercase"
-                            >50 Itens</Select.Item
-                        >
-                        <Select.Item
-                            value="all"
-                            class="text-[10px] font-bold uppercase"
-                            >TUDO</Select.Item
-                        >
-                    </Select.Content>
-                </Select.Root>
-            </div>
-        </div>
-
-        <!-- Main Split Content -->
+        <!-- Main Split Content (Detalhes e Sessões) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-20">
             <!-- Left: Hierarchical Analysis -->
             <div class="lg:col-span-8 space-y-4">
