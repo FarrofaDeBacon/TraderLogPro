@@ -480,6 +480,11 @@
         }
     }
 
+    function getDayPnl(day: any) {
+        if (!day || !day.totalPnlByCurrency) return 0;
+        return Object.values(day.totalPnlByCurrency).reduce((a:any, b:any) => a + b, 0) as number;
+    }
+
     const isLoading = $derived(
         tradesStore.isLoading || appStore.isLoadingData,
     );
@@ -681,24 +686,63 @@
                     </div>
                 </div>
                 
-                <div class="flex flex-nowrap overflow-x-auto gap-3 pb-4 custom-scrollbar items-end pt-2">
+                <!-- INSIGHT AUTOMÁTICO DA TIMELINE -->
+                {#if psychoDiagnosis.killerEmotion || psychoDiagnosis.saviorEmotion}
+                    <div class="mb-4 flex flex-wrap gap-2">
+                        {#if psychoDiagnosis.killerEmotion}
+                            <div class="bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-1.5 flex items-center gap-2 shrink-0 shadow-sm">
+                                <TrendingDown class="w-3.5 h-3.5 text-rose-500" />
+                                <span class="text-[10px] text-foreground font-medium">
+                                    <strong class="text-rose-500 font-black uppercase text-[11px]">{psychoDiagnosis.killerEmotion.emotionName}</strong>
+                                    está presente em <strong class="text-rose-400">{((psychoDiagnosis.killerEmotionLossPercent || 0) * 100).toFixed(0)}%</strong> 
+                                    das perdas.
+                                </span>
+                            </div>
+                        {/if}
+                        {#if psychoDiagnosis.saviorEmotion}
+                            <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-1.5 flex items-center gap-2 shrink-0 shadow-sm">
+                                <TrendingUp class="w-3.5 h-3.5 text-emerald-500" />
+                                <span class="text-[10px] text-foreground font-medium">
+                                    <strong class="text-emerald-500 font-black uppercase text-[11px]">{psychoDiagnosis.saviorEmotion.emotionName}</strong>
+                                    entrega <strong class="text-emerald-400">{((psychoDiagnosis.saviorEmotion.winRate || 0) * 100).toFixed(0)}%</strong> de acerto.
+                                </span>
+                            </div>
+                        {/if}
+                    </div>
+                {/if}
+                
+                <div class="flex flex-nowrap overflow-x-auto gap-3 items-end pt-5 pb-4 pl-2 scroll-smooth [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border/40 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-border/80">
                     {#each hierarchicalPsychologyData as month}
                         {#each month.weeks as week}
-                            {#each week.days as day}
-                                {@const dailyPnl = Object.values(day.totalPnlByCurrency).reduce((a:any,b:any)=>a+b, 0) as number}
-                                <div class="flex flex-col items-center gap-2 min-w-[70px]">
-                                    <span class="text-[9px] font-bold text-muted-foreground mb-1">{new Date(day.date + "T12:00:00").toLocaleDateString($locale || "pt-BR", { day: '2-digit', month: '2-digit' })}</span>
+                            {#each week.days as day, i}
+                                {@const dailyPnl = getDayPnl(day)}
+                                {@const isToday = day.date === filterLimits.today}
+                                {@const isPrevLossStreak = i > 0 && getDayPnl((week.days as any[])[i-1]) < 0 && dailyPnl < 0}
+                                
+                                <div class="flex flex-col items-center min-w-[64px] relative group cursor-default transition-all hover:-translate-y-1">
+                                    {#if isToday}
+                                        <div class="absolute -top-6 px-1.5 py-0.5 bg-primary/20 text-primary border border-primary/30 rounded text-[7px] font-black tracking-widest animate-pulse">HOJE</div>
+                                    {:else if isPrevLossStreak}
+                                        <div class="absolute -top-3 w-4/5 h-[2px] -left-1/2 bg-rose-500/30 -z-10 rounded-full"></div>
+                                    {/if}
                                     
-                                    <!-- Círculo de PnL -->
-                                    <div class="w-10 h-10 rounded-full flex items-center justify-center shadow-inner border {dailyPnl > 0 ? 'bg-emerald-500/20 text-emerald-500 border-emerald-500/30' : dailyPnl < 0 ? 'bg-rose-500/20 text-rose-500 border-rose-500/30' : 'bg-muted/50 text-muted-foreground border-border'}">
-                                        {#if dailyPnl > 0} <TrendingUp class="w-5 h-5" /> {:else if dailyPnl < 0} <TrendingDown class="w-5 h-5" /> {:else} <MinusCircle class="w-5 h-5" /> {/if}
+                                    <span class="text-[9px] font-bold {isToday ? 'text-primary' : 'text-muted-foreground/60'} mb-1.5">{new Date(day.date + "T12:00:00").toLocaleDateString($locale || "pt-BR", { day: '2-digit', month: '2-digit' })}</span>
+                                    
+                                    <!-- Círculo de PnL (Metade Superior) -->
+                                    <div class="w-12 h-10 rounded-t-xl flex items-center justify-center border-t border-x shadow-inner 
+                                        {dailyPnl > 0 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' : dailyPnl < 0 ? 'bg-rose-500/10 text-rose-500 border-rose-500/30' : 'bg-muted/30 text-muted-foreground border-border/50'}
+                                        {isToday ? 'border-b-0 ring-1 ring-primary/30 shadow-[0_0_10px_rgba(var(--primary),0.2)]' : 'border-b-0'} transition-colors duration-300 relative z-10">
+                                        {#if dailyPnl > 0} <TrendingUp class="w-5 h-5 opacity-80" /> {:else if dailyPnl < 0} <TrendingDown class="w-5 h-5 opacity-80" /> {:else} <MinusCircle class="w-5 h-5 opacity-40" /> {/if}
                                     </div>
                                     
-                                    <!-- Linha Conectora de Emoção -->
-                                    <div class="h-8 w-1.5 rounded-full mt-1 {day.equivalentState?.impact === 'Positive' ? 'bg-emerald-500' : day.equivalentState?.impact === 'Negative' ? 'bg-rose-500' : 'bg-slate-400'}"></div>
-                                    <span class="text-[8px] uppercase font-bold max-w-[60px] text-center truncate mt-1 {day.equivalentState?.impact === 'Positive' ? 'text-emerald-500' : day.equivalentState?.impact === 'Negative' ? 'text-rose-500' : 'text-slate-400'}">
-                                        {day.equivalentState?.name || 'Neutro'}
-                                    </span>
+                                    <!-- Base da Pílula Emocional (Metade Inferior colada) -->
+                                    <div class="w-12 py-1.5 flex flex-col items-center justify-center rounded-b-xl shadow-sm border
+                                        {day.equivalentState?.impact === 'Positive' ? 'bg-emerald-600 text-white border-emerald-700' : day.equivalentState?.impact === 'Negative' ? 'bg-rose-600 text-slate-100 border-rose-700' : 'bg-slate-700 text-slate-200 border-slate-800'}
+                                        {isToday ? 'ring-1 ring-primary/30 ring-offset-0 relative z-20' : 'z-10'} transition-colors duration-300">
+                                        <span class="text-[7.5px] uppercase font-black tracking-tighter truncate w-full px-1 text-center">
+                                            {day.equivalentState?.name || 'Neutro'}
+                                        </span>
+                                    </div>
                                 </div>
                             {/each}
                         {/each}

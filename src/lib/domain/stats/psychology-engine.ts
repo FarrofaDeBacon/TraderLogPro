@@ -19,6 +19,7 @@ export interface PsychologyDiagnosis {
     saviorEmotion: EmotionMatrixRow | null;
     matrix: EmotionMatrixRow[];
     lossesInNegativeStatePercent: number | null;
+    killerEmotionLossPercent: number | null;
     totalLosses: number;
     psychoScore: number;
 }
@@ -103,8 +104,13 @@ export function analyzePsychology(
 
     // Calcula % de prejuízo atrelado diretamente a estados negativos
     let lossesInNegativeStatePercent = null;
+    let killerEmotionLossPercent = null;
+
     if (totalLosingTrades >= 3) {
         lossesInNegativeStatePercent = lossesInNegativeStates / totalLosingTrades;
+        if (killerEmotion) {
+            killerEmotionLossPercent = killerEmotion.lossCount / totalLosingTrades;
+        }
     }
 
     // --- DIAGNÓSTICO (1 a 3 conclusões) ---
@@ -181,6 +187,7 @@ export function analyzePsychology(
         killerEmotion,
         saviorEmotion,
         lossesInNegativeStatePercent,
+        killerEmotionLossPercent,
         totalLosses: totalLosingTrades,
         psychoScore: Math.round(Math.max(0, psychoScore))
     };
