@@ -893,6 +893,9 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-20">
             <!-- Left: Hierarchical Analysis -->
             <div class="lg:col-span-8 space-y-4">
+                <h3 class="text-sm font-black uppercase tracking-widest text-muted-foreground/60">
+                    Sessões e Estrutura Hierárquica
+                </h3>
                 {#if hierarchicalPsychologyData.length === 0}
                     <div
                         class="h-40 flex items-center justify-center text-muted-foreground border-2 border-dashed rounded-xl border-border/50 uppercase text-[10px] font-black"
