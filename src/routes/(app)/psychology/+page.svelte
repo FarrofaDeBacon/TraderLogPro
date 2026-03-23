@@ -10,6 +10,8 @@
     import { Separator } from "$lib/components/ui/separator";
     import HierarchicalList from "$lib/components/shared/HierarchicalList.svelte";
     import * as Select from "$lib/components/ui/select";
+    import EChart from "$lib/components/ui/echart.svelte";
+    import * as echarts from "echarts";
     import {
         Brain,
         TrendingUp,
@@ -524,6 +526,86 @@
         return days.sort((a,b) => a.date.localeCompare(b.date)); // Chronological order
     });
 
+    const donutChartOptions = $derived.by(() => {
+        if (!psychoDiagnosis || psychoDiagnosis.matrix.length === 0) return null;
+        let sorted = [...psychoDiagnosis.matrix].sort((a,b) => b.tradeCount - a.tradeCount);
+        let top5 = sorted.slice(0, 5);
+        let others = sorted.slice(5);
+        let data = top5.map(r => ({ name: r.emotionName, value: r.tradeCount, itemStyle: { color: r.impact === 'Positive' ? '#10b981' : r.impact === 'Negative' ? '#f43f5e' : '#94a3b8' } }));
+        if (others.length > 0) {
+            let othersCount = others.reduce((acc, r) => acc + r.tradeCount, 0);
+            data.push({ name: 'OUTROS', value: othersCount, itemStyle: { color: '#64748b' } });
+        }
+        return {
+            tooltip: { trigger: 'item', backgroundColor: 'rgba(10, 10, 10, 0.9)', borderColor: '#27272a', textStyle: { color: '#fff' } },
+            legend: { show: false },
+            series: [{ type: 'pie', radius: ['45%', '75%'], avoidLabelOverlap: true, itemStyle: { borderColor: '#09090b', borderWidth: 2 }, label: { show: true, formatter: '{b}\n{d}%', color: '#a1a1aa', fontSize: 9, fontWeight: 'bold' }, labelLine: { smooth: 0.2, length: 10, length2: 10 }, data }]
+        };
+    });
+
+    const barChartOptions = $derived.by(() => {
+        if (!psychoDiagnosis || psychoDiagnosis.matrix.length === 0) return null;
+        let sorted = [...psychoDiagnosis.matrix].sort((a,b) => a.totalPnL - b.totalPnL); // worst to best
+        let names = sorted.map(r => r.emotionName);
+        let seriesData = sorted.map(r => ({ value: parseFloat(r.totalPnL.toFixed(2)), winRate: r.winRate, itemStyle: { color: r.totalPnL >= 0 ? '#10b981' : '#f43f5e', borderRadius: [0, 4, 4, 0] } }));
+        
+        return {
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: 'rgba(10, 10, 10, 0.9)', borderColor: '#27272a', textStyle: { color: '#fff' }, formatter: (params:any) => { let p = params[0]; return `<div class="font-bold mb-1">${p.name}</div><div class="flex justify-between gap-4"><span>PnL:</span><span class="${p.data.value >= 0 ? 'text-emerald-500':'text-rose-500'} font-bold">${formatCurrency(p.data.value)}</span></div><div class="flex justify-between gap-4 mt-1"><span>Win Rate:</span><span class="font-bold text-foreground">${(p.data.winRate*100).toFixed(0)}%</span></div>`; } },
+            grid: { left: '3%', right: '4%', bottom: '3%', top: '5%', containLabel: true },
+            xAxis: { type: 'value', splitLine: { lineStyle: { color: '#27272a', type: 'dashed' } }, axisLabel: { color: '#71717a', fontSize: 10 } },
+            yAxis: { type: 'category', data: names, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#a1a1aa', fontSize: 9, fontWeight: 'bold', width: 70, overflow: 'truncate' } },
+            series: [{ type: 'bar', data: seriesData, barMaxWidth: 24, label: { show: true, position: 'insideRight', formatter: (p:any) => formatCurrency(p.value), color: '#fff', fontSize: 9, textShadowColor: '#000', textShadowBlur: 2, fontWeight: 'bold' } }]
+        };
+    });
+
+    const lineChartOptions = $derived.by(() => {
+        if (!chartDays || chartDays.length === 0) return null;
+        let cumulative = 0;
+        let dates: string[] = [];
+        let data: number[] = [];
+
+        chartDays.forEach(day => {
+            cumulative += day.dailyPnl;
+            dates.push(day.shortDate);
+            data.push(parseFloat(cumulative.toFixed(2)));
+        });
+
+        const sortedDesc = [...chartDays].sort((a,b) => b.dailyPnl - a.dailyPnl);
+        const topGains = sortedDesc.slice(0, 2).filter(d => d.dailyPnl > 0);
+        const topLosses = sortedDesc.slice(sortedDesc.length > 2 ? sortedDesc.length - 2 : 0).reverse().filter(d => d.dailyPnl < 0);
+        
+        let customMarkPoints = [...topGains, ...topLosses].map(d => {
+             let cIndex = chartDays.findIndex(x => x.shortDate === d.shortDate);
+             let val = data[cIndex];
+             return {
+                 name: d.emotionName,
+                 value: d.emotionName,
+                 xAxis: d.shortDate,
+                 yAxis: val,
+                 symbol: 'pin',
+                 symbolSize: 40,
+                 itemStyle: { color: d.impact === 'Positive' ? '#10b981' : d.impact === 'Negative' ? '#f43f5e' : '#64748b' },
+                 label: { formatter: '{b}', color: '#fff', fontSize: 7, fontWeight: 'bold' }
+             };
+        });
+
+        return {
+            tooltip: { trigger: 'axis', backgroundColor: 'rgba(10, 10, 10, 0.9)', borderColor: '#27272a', textStyle: { color: '#fff' } },
+            grid: { left: '2%', right: '2%', bottom: '5%', top: '10%', containLabel: true },
+            xAxis: { type: 'category', boundaryGap: false, data: dates, axisLine: { lineStyle: { color: '#27272a' } }, axisLabel: { color: '#71717a', fontSize: 10 } },
+            yAxis: { type: 'value', splitLine: { lineStyle: { color: '#27272a', type: 'dashed' } }, axisLabel: { color: '#71717a', fontSize: 10, formatter: (val:number) => val >= 1000 || val <= -1000 ? (val/1000).toFixed(1)+'k' : val } },
+            series: [{
+                type: 'line',
+                data: data,
+                smooth: true,
+                showSymbol: false,
+                lineStyle: { width: 3, color: '#3b82f6' },
+                areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(59, 130, 246, 0.2)' }, { offset: 1, color: 'rgba(59, 130, 246, 0.0)' }]) },
+                markPoint: { data: customMarkPoints }
+            }]
+        };
+    });
+
     const isLoading = $derived(
         tradesStore.isLoading || appStore.isLoadingData,
     );
@@ -653,197 +735,100 @@
                 {/each}
             </div>
         {:else}
-            <!-- DECISION LAYER: Topo -->
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <!-- SCORE GERAL -->
-                <div class="col-span-1 lg:col-span-1 border-2 border-border/50 rounded-2xl flex flex-col justify-center items-center p-6 bg-card/40 backdrop-blur-md relative overflow-hidden shadow-sm">
-                    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
-                    <div class="text-[10px] font-black tracking-widest uppercase text-muted-foreground mb-4 relative z-10">Psycho Score</div>
-                    <div class="text-6xl font-black {
-                        psychoDiagnosis.psychoScore >= 70 ? 'text-emerald-500' : 
-                        psychoDiagnosis.psychoScore >= 40 ? 'text-amber-500' : 'text-rose-500'
-                    } relative z-10 transition-colors duration-500">
-                        {psychoDiagnosis.psychoScore}
-                    </div>
+            <!-- Camada Tática: 4 KPIs -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 flex-wrap">
+                <!-- SCORE -->
+                <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-primary/50 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 opacity-5"><Brain class="w-16 h-16"/></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Psycho Score</span>
+                    <span class="text-3xl font-black mt-2 {psychoDiagnosis.psychoScore >= 70 ? 'text-emerald-500' : psychoDiagnosis.psychoScore >= 40 ? 'text-amber-500' : 'text-rose-500'}">{psychoDiagnosis.psychoScore}</span>
                 </div>
-
-                <!-- DIAGNÓSTICO E ACTION PLAN -->
-                <div class="col-span-1 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card.Root class="bg-background/80 shadow-sm border-border">
-                        <Card.Header class="pb-2">
-                            <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
-                                <Brain class="w-3.5 h-3.5" /> Diagnóstico Psicológico Automático
-                            </Card.Title>
-                        </Card.Header>
-                        <Card.Content>
-                            <ul class="space-y-2">
-                                {#each psychoDiagnosis.conclusions as concl}
-                                    <li class="text-xs font-medium text-muted-foreground leading-tight flex items-start gap-2">
-                                        <span class="text-primary mt-0.5">•</span>
-                                        <span>{concl}</span>
-                                    </li>
-                                {/each}
-                                {#if psychoDiagnosis.conclusions.length === 0}
-                                    <p class="text-xs text-muted-foreground italic">Volume insuficiente de dados para leitura comportamental.</p>
-                                {/if}
-                            </ul>
-                        </Card.Content>
-                    </Card.Root>
-
-                    <Card.Root class="bg-primary/5 shadow-none border-primary/20">
-                        <Card.Header class="pb-2">
-                            <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
-                                <CheckCircle2 class="w-3.5 h-3.5" /> Protocolo de Ação Exigido
-                            </Card.Title>
-                        </Card.Header>
-                        <Card.Content>
-                            <ul class="space-y-2">
-                                {#each psychoDiagnosis.recommendations as rec}
-                                    <li class="text-xs font-bold text-foreground/90 leading-tight flex items-start gap-2">
-                                        <span class="text-primary mt-0.5">→</span>
-                                        <span>{rec}</span>
-                                    </li>
-                                {/each}
-                            </ul>
-                        </Card.Content>
-                    </Card.Root>
+                <!-- MELHOR EMOÇÃO -->
+                <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-emerald-500/50">
+                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Melhor Performance</span>
+                    <span class="text-xl font-black mt-2 text-emerald-500 uppercase truncate">{psychoDiagnosis.saviorEmotion?.emotionName || '-'}</span>
+                </div>
+                <!-- PIOR EMOÇÃO -->
+                <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-rose-500/50">
+                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">O Ofensor</span>
+                    <span class="text-xl font-black mt-2 text-rose-500 uppercase truncate">{psychoDiagnosis.killerEmotion?.emotionName || '-'}</span>
+                </div>
+                <!-- % LOSSES ESTADO NEGATIVO -->
+                <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-amber-500/50">
+                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Losses Negativos</span>
+                    <span class="text-3xl font-black mt-2 text-amber-500">{psychoDiagnosis.killerEmotionLossPercent ? (psychoDiagnosis.killerEmotionLossPercent * 100).toFixed(0) : 0}%</span>
                 </div>
             </div>
 
-            <!-- TIMELINE EMOCIONAL (Raio-X) -->
-            <div class="mt-8 border-t border-border/40 pt-6">
-                <div class="flex flex-col sm:flex-row gap-4 justify-between items-end mb-4">
-                    <h3 class="text-sm font-black uppercase tracking-widest text-muted-foreground">
-                        Raio-X: Retrospectiva de Resultados
-                    </h3>
-                    <div class="flex items-center gap-2">
-                        <DateFilter
-                            bind:value={timeFilter}
-                            bind:startDate
-                            bind:endDate
-                        />
+            <!-- Camada de Decisão: Diagnóstico e Protocolo (Versões Curtas 2 cols) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card.Root class="bg-card shadow-sm border-border h-full">
+                    <Card.Header class="pb-2 pt-4 px-4">
+                        <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2"><Brain class="w-3.5 h-3.5" /> Diagnóstico Rápido</Card.Title>
+                    </Card.Header>
+                    <Card.Content class="px-4 pb-4">
+                        <ul class="space-y-1">
+                            {#each psychoDiagnosis.conclusions.slice(0, 2) as concl}
+                                <li class="text-xs font-medium text-muted-foreground leading-tight flex items-start gap-2"><span class="text-primary mt-0.5">•</span><span>{concl}</span></li>
+                            {/each}
+                            {#if psychoDiagnosis.conclusions.length === 0}<span class="text-xs text-muted-foreground italic">Sem dados.</span>{/if}
+                        </ul>
+                    </Card.Content>
+                </Card.Root>
+                <Card.Root class="bg-primary/5 shadow-none border-primary/20 h-full">
+                    <Card.Header class="pb-2 pt-4 px-4">
+                        <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2"><CheckCircle2 class="w-3.5 h-3.5" /> Protocolo Tático</Card.Title>
+                    </Card.Header>
+                    <Card.Content class="px-4 pb-4">
+                        <ul class="space-y-1">
+                            {#each psychoDiagnosis.recommendations.slice(0, 2) as rec}
+                                <li class="text-xs font-bold text-foreground/90 leading-tight flex items-start gap-2"><span class="text-primary mt-0.5">→</span><span>{rec}</span></li>
+                            {/each}
+                        </ul>
+                    </Card.Content>
+                </Card.Root>
+            </div>
+
+            <!-- Camada Estratégica: Gráficos -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4">
+                <!-- Pie Chart (Donut) -->
+                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
+                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Distribuição Emocional</h3>
+                    <div class="flex-1 w-full relative">
+                        {#if donutChartOptions && donutChartOptions.series[0].data.length > 0}
+                            <EChart options={donutChartOptions} />
+                        {:else}
+                            <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Sem dados</div>
+                        {/if}
                     </div>
                 </div>
-                
-                <!-- INSIGHT AUTOMÁTICO DA TIMELINE -->
-                {#if psychoDiagnosis.killerEmotion || psychoDiagnosis.saviorEmotion}
-                    <div class="mb-4 flex flex-wrap gap-2">
-                        {#if psychoDiagnosis.killerEmotion}
-                            <div class="bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-1.5 flex items-center gap-2 shrink-0 shadow-sm">
-                                <TrendingDown class="w-3.5 h-3.5 text-rose-500" />
-                                <span class="text-[10px] text-foreground font-medium">
-                                    <strong class="text-rose-500 font-black uppercase text-[11px]">{psychoDiagnosis.killerEmotion.emotionName}</strong>
-                                    está presente em <strong class="text-rose-400">{((psychoDiagnosis.killerEmotionLossPercent || 0) * 100).toFixed(0)}%</strong> 
-                                    das perdas.
-                                </span>
-                            </div>
-                        {/if}
-                        {#if psychoDiagnosis.saviorEmotion}
-                            <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-1.5 flex items-center gap-2 shrink-0 shadow-sm">
-                                <TrendingUp class="w-3.5 h-3.5 text-emerald-500" />
-                                <span class="text-[10px] text-foreground font-medium">
-                                    <strong class="text-emerald-500 font-black uppercase text-[11px]">{psychoDiagnosis.saviorEmotion.emotionName}</strong>
-                                    entrega <strong class="text-emerald-400">{((psychoDiagnosis.saviorEmotion.winRate || 0) * 100).toFixed(0)}%</strong> de acerto.
-                                </span>
-                            </div>
+
+                <!-- Horizontal Bar Chart -->
+                <div class="lg:col-span-8 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
+                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Preço do Sentimento (PnL por Emoção)</h3>
+                    <div class="flex-1 w-full relative">
+                        {#if barChartOptions && barChartOptions.series[0].data.length > 0}
+                            <EChart options={barChartOptions} />
+                        {:else}
+                            <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Sem dados</div>
                         {/if}
                     </div>
-                {/if}
-                
-                <div class="h-64 flex flex-nowrap overflow-x-auto gap-1 items-center relative pl-2 pb-4 scroll-smooth [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border/40 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-border/80">
-                    {#if chartDays.length > 0}
-                        <div class="absolute w-full h-[1px] bg-muted-foreground/30 left-0 top-1/2 -translate-y-1/2 pointer-events-none z-0"></div>
-                    {/if}
-
-                    {#each chartDays as day}
-                        <div class="h-full w-10 min-w-[40px] flex flex-col shrink-0 relative z-10 group cursor-default {day.isToday ? 'bg-primary/5 rounded-md shadow-[0_0_10px_rgba(var(--primary),0.05)] ring-1 ring-primary/20' : ''}">
-                            
-                            <!-- Tooltip Hover Area -->
-                            <div class="absolute -top-[125px] opacity-0 group-hover:opacity-100 transition-opacity z-50 bg-popover/95 backdrop-blur-sm border border-border shadow-2xl rounded-lg p-3 text-xs w-48 pointer-events-none left-1/2 -translate-x-1/2 flex flex-col gap-2">
-                                <div class="font-bold border-b border-border/40 pb-1.5 flex justify-between items-center text-[10px] uppercase text-muted-foreground tracking-wider">
-                                    {day.dateLabel}
-                                    {#if day.isToday}<span class="text-primary font-black animate-pulse bg-primary/20 px-1 rounded">HOJE</span>{/if}
-                                </div>
-                                <div class="flex flex-col gap-1 mt-0.5">
-                                    <div class="flex justify-between items-center bg-muted/30 px-2 py-1 rounded">
-                                        <span class="font-semibold text-[10px] text-muted-foreground">Resultado</span> 
-                                        <span class="font-mono font-bold {day.dailyPnl >= 0 ? 'text-emerald-500':'text-rose-500'}">{formatCurrency(day.dailyPnl)}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center px-2 py-0.5">
-                                        <span class="font-semibold text-[10px] text-muted-foreground">Operações</span> 
-                                        <span class="font-bold text-foreground">{day.tradesCount}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center mt-1 pt-2 border-t border-border/40 px-1">
-                                        <span class="font-semibold text-[10px] text-muted-foreground">Emoção</span> 
-                                        <span class="font-black {day.emotionTextClass} uppercase text-[9px] tracking-widest">{day.emotionName}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Top half (Profits) -->
-                            <div class="flex-1 flex items-end justify-center pb-[1px]">
-                                {#if day.dailyPnl > 0}
-                                    <div class="w-5 rounded-t-sm {day.emotionBgClass} hover:opacity-100 transition-all opacity-80 shadow-sm border border-emerald-500/30" style="height: {day.heightPercent}%;"></div>
-                                {/if}
-                            </div>
-                            
-                            <!-- Bottom half (Losses) -->
-                            <div class="flex-1 flex items-start justify-center pt-[1px]">
-                                {#if day.dailyPnl < 0}
-                                    <div class="w-5 rounded-b-sm {day.emotionBgClass} hover:opacity-100 transition-all opacity-80 shadow-sm border border-rose-500/30" style="height: {day.heightPercent}%;"></div>
-                                {/if}
-                                {#if day.dailyPnl === 0 && day.tradesCount > 0}
-                                    <!-- Breakeven tiny block -->
-                                    <div class="w-5 rounded-sm {day.emotionBgClass} opacity-50 h-[3px] absolute top-1/2 -translate-y-1/2 shadow-inner"></div>
-                                {/if}
-                            </div>
-
-                            <!-- X-axis Text (Date) -->
-                            <div class="absolute bottom-1 w-full text-center text-[9px] font-bold text-muted-foreground/50 group-hover:text-foreground transition-colors group-hover:scale-110">
-                                {day.shortDate}
-                            </div>
-                        </div>
-                    {/each}
-                    {#if chartDays.length === 0}
-                        <div class="w-full text-center text-xs text-muted-foreground italic h-24 flex items-center justify-center border-2 border-dashed border-border/40 rounded-xl">Nenhum evento detectado no período filtrado.</div>
-                    {/if}
                 </div>
             </div>
 
-            <!-- MATRIZ FINANCEIRA-EMOCIONAL -->
-            <div class="mt-8 border-t border-border/40 pt-6 mb-8">
-                <h3 class="text-sm font-black uppercase tracking-widest text-muted-foreground mb-4">
-                    A Matriz Financeira (Preço do Sentimento)
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {#each psychoDiagnosis.matrix as row}
-                        <div class="card-glass border-l-4 overflow-hidden {row.impact === 'Positive' ? 'border-l-emerald-500' : row.impact === 'Negative' ? 'border-l-rose-500' : 'border-l-slate-400'}">
-                            <div class="flex items-start justify-between py-2 px-3">
-                                <span class="text-[11px] font-black uppercase tracking-wider text-foreground">
-                                    {row.emotionName}
-                                </span>
-                                <span class="text-[9px] font-bold text-muted-foreground/60 uppercase">{row.tradeCount} Operações</span>
-                            </div>
-                            <div class="py-1 px-3 pb-3 border-t border-border/40 bg-muted/10">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-[10px] text-muted-foreground uppercase font-bold">Win Rate</span>
-                                    <span class="font-mono font-bold text-xs {(row.winRate*100) >= 50 ? 'text-emerald-500' : 'text-rose-500'}">
-                                        {(row.winRate * 100).toFixed(0)}%
-                                    </span>
-                                </div>
-                                <div class="flex justify-between items-center mt-1">
-                                    <span class="text-[10px] text-muted-foreground uppercase font-bold">Saldo</span>
-                                    <span class="font-mono font-bold text-sm {row.totalPnL >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
-                                        {formatCurrency(row.totalPnL)}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    {/each}
-                    {#if psychoDiagnosis.matrix.length === 0}
-                        <div class="col-span-full p-8 text-center border-2 border-dashed rounded-xl border-border/50 text-muted-foreground">
-                            Não há dados suficientes no período filtrado para tabular a matriz emocional.
-                        </div>
+            <!-- Camada Retrospectiva: Linha do Tempo -->
+            <div class="w-full card-glass rounded-xl p-4 shadow-sm flex flex-col h-[380px] mb-4">
+                <div class="flex justify-between items-center mb-4 border-b border-border/40 pb-3">
+                     <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Curva de Capital no Período</h3>
+                     <div class="scale-90 origin-right">
+                        <DateFilter bind:value={timeFilter} bind:startDate bind:endDate />
+                     </div>
+                </div>
+                <div class="flex-1 w-full relative">
+                    {#if lineChartOptions && lineChartOptions.series[0].data.length > 0}
+                        <EChart options={lineChartOptions} />
+                    {:else}
+                        <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Filtre um período com dados</div>
                     {/if}
                 </div>
             </div>
