@@ -58,7 +58,7 @@ export const llmService = {
         if (config.provider === 'google_gemini') {
             const API_KEY = config.api_key.trim();
             // Try visible models
-            const models = ['gemini-1.5-flash', 'gemini-2.0-flash-exp'];
+            const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
 
             for (const model of models) {
                 try {
@@ -72,11 +72,17 @@ export const llmService = {
                     if (response.ok) {
                         const data = await response.json();
                         return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sem resposta da IA.";
+                    } else {
+                        const errData = await response.json().catch(() => ({}));
+                        const errMsg = errData.error?.message || `HTTP ${response.status}`;
+                        if (response.status === 400 || response.status === 403 || response.status === 429) {
+                            return `Erro API Google: ${errMsg}`;
+                        }
                     }
                 } catch (e) { console.error(e); }
             }
             // Last attempt error
-            return "Erro ao contatar Gemini. Verifique a chave.";
+            return "Erro ao contatar Gemini. Verifique a chave e cota disponível.";
         }
 
         if (config.provider === 'openai') {
@@ -115,29 +121,31 @@ export const llmService = {
 
     async processPsychologyDashboardPrompt(payloadJson: string, config: any): Promise<string> {
         const prompt = `
-            Você é um analista de risco e comportamento de traders auxiliando como camada interpretativa complementar.
-            Abaixo estão as métricas estruturadas e matemáticas do dashboard psicológico do trader para a janela atual:
+            Você é um Mentor de Psicologia Esportiva de Alta Performance focado em Traders. 
+            Abaixo estão as métricas estruturadas e matemáticas atuais do estado do seu mentorado na tela:
             
             ${payloadJson}
             
-            Sua meta:
-            Interpretar o JSON acima e retornar estritamente a seguinte máscara textual:
+            Sua meta é cruzar esses dados frios e entregar uma INTERPRETAÇÃO COMPORTAMENTAL PROFUNDA (sintética), totalmente diferente da simples leitura de números. O trader já leu os relatórios numéricos listados no campo 'system_mathematical_conclusions' ao seu lado.
             
-            [RESUMO]: (Máximo de 2 frases resumindo o padrão dominante).
-            [MAIOR RISCO]: (1 linha apontando a principal fragilidade ou ralo financeiro listado no JSON).
-            [SUGESTÕES PRÁTICAS]:
-            - (Dica 1)
-            - (Dica 2)
+            Retorne estritamente o seguinte formato (com esse markdown):
             
-            Regras de Engajamento:
-            - Nunca recalcule valores, o sistema matemático já o fez. Apenas cruze e expanda em conselhos.
-            - Não adicione mais do que 2 sugestões sob nenhuma hipótese.
-            - Remova as tags de formatação literal como "[RESUMO]:" e use formatação Markdown sem os pronomes (exemplo: **Resumo do Padrão**, **Risco Principal**, etc). Enxugue o texto para caber em Cards com scroll fixo.
+            **Sintoma Mental Dominante:** (1 a 2 frases lendo as entrelinhas: o que as emoções mais ativas dizem sobre a ansiedade/paciência financeira dele?)
+            **Ponto Cego (Gatilho de Risco):** (1 linha apontando a principal armadilha mental, com base na 'top_vulnerability' e no peso de loss que ela representa.)
+            **Conselho de Mentor (Curto Prazo):**
+            - (Dica 1 - Um gatilho defensivo mental que ele possa usar no próximo pregão baseado nos dados)
+            - (Dica 2 - Como prolongar ou recriar o estado de 'top_edge' ou cortar a raiz matemática da emoção de perigo)
+            
+            Regras Livres e Rígidas:
+            - NUNCA repita textualmente as 'system_mathematical_conclusions' enviadas no JSON. Em vez disso, leia elas em silêncio e as use apenas como sub-contexto.
+            - Fale diretamente com o Trader em tom curto, clínico e consultivo como um mentor sênior experiente ("Notei que você...", "Cuidado com a ilusão do...").
+            - Não adicione mais do que 2 dicas nem parágrafos soltos. Nada de preâmbulos de simpatia "Olá, trader!". Pule para a análise.
         `;
 
         if (config.provider === 'google_gemini') {
             const API_KEY = config.api_key.trim();
-            const models = ['gemini-1.5-flash', 'gemini-2.0-flash-exp'];
+            const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+            let lastGeminiError = "Falha desconhecida";
 
             for (const model of models) {
                 try {
@@ -151,10 +159,23 @@ export const llmService = {
                     if (response.ok) {
                         const data = await response.json();
                         return data.candidates?.[0]?.content?.parts?.[0]?.text || "Falha na análise.";
+                    } else {
+                        const errData = await response.json().catch(() => ({}));
+                        lastGeminiError = errData.error?.message || `HTTP ${response.status}`;
+                        
+                        // Break immediately on fatal API errors to prevent masking the true error!
+                        if (response.status === 400 || response.status === 403 || response.status === 429) {
+                            throw new Error(lastGeminiError);
+                        }
                     }
-                } catch (e) { console.error(e); }
+                } catch (e: any) { 
+                    console.error("Falha no fetch:", e); 
+                    lastGeminiError = e.message;
+                    // If it was a fatal error thrown above, break outer loop
+                    if (e.message !== "Failed to fetch") break;
+                }
             }
-            throw new Error("gemini_error");
+            throw new Error(`Google API: ${lastGeminiError}`);
         }
 
         if (config.provider === 'openai') {

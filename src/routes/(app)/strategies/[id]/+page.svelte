@@ -37,6 +37,7 @@
     import * as echarts from "echarts";
     import { t, locale } from "svelte-i18n";
     import { mode } from "mode-watcher";
+    import { invoke } from "@tauri-apps/api/core";
 
     // Theme-aware colors for ECharts
     const chartTheme = $derived(
@@ -474,6 +475,29 @@
 
     // Image viewer logic
     let selectedImageIndex = $state<number | null>(null);
+
+    // --- PHASE 19 BACKEND MIGRATION VALIDATION ---
+    let rustStats = $state<any>(null);
+    let isRustLoading = $state(false);
+
+    $effect(() => {
+        // Run whenever strategyId or selectedMarketId changes
+        if (strategyId) {
+            isRustLoading = true;
+            invoke("get_strategy_comprehensive_stats", { strategyId, marketId: selectedMarketId })
+                .then(res => {
+                    rustStats = res;
+                    console.log("============= PHASE 19 MIGRATION VALIDATION =============");
+                    console.log("OLD SVELTE STATS:", stats);
+                    console.log("NEW RUST STATS:", rustStats);
+                    console.log("EQUIVALENCE CHECK (Net Result):", stats.netResult, "vs", rustStats.net_result);
+                    console.log("=========================================================");
+                })
+                .catch(err => console.error("Rust Analytics Error:", err))
+                .finally(() => isRustLoading = false);
+        }
+    });
+
 </script>
 
 {#if !strategy}

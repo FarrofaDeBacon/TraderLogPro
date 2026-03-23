@@ -319,6 +319,7 @@ pub fn run() {
             commands::diagnostic_closure_dump,
             commands::open_detached_trade_window,
             commands::profit_import::import_profit_trades,
+            commands::strategies_analytics::get_strategy_comprehensive_stats,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

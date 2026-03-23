@@ -17,6 +17,7 @@ use base64::Engine as _;
 
 pub mod irpf;
 pub mod profit_import;
+pub mod strategies_analytics;
 
 const LICENSE_SECRET_KEY: &[u8] = b"TRADERLOGPRO_SECRET_KEY_2026";
 
