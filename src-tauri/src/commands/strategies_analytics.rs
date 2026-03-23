@@ -110,6 +110,12 @@ pub struct StrategyComprehensiveStats {
     pub max_drawdown: f64,
     pub recovery_factor: f64,
     pub total_trades: usize,
+    pub winning_trades: usize,
+    pub best_trade: f64,
+    pub worst_trade: f64,
+    pub avg_duration_win: i64,
+    pub avg_duration_loss: i64,
+    pub avg_time_between_trades: f64,
     pub plan_adherence: f64,
     
     pub equity_curve: DatasetCurve,
@@ -201,7 +207,9 @@ pub async fn get_strategy_comprehensive_stats(
     if total_trades == 0 {
         return Ok(StrategyComprehensiveStats {
             net_result: 0.0, win_rate: 0.0, profit_factor: 0.0, payoff: 0.0, math_expectation: 0.0,
-            max_drawdown: 0.0, recovery_factor: 0.0, total_trades: 0, plan_adherence: 0.0,
+            max_drawdown: 0.0, recovery_factor: 0.0, total_trades: 0,
+            winning_trades: 0, best_trade: 0.0, worst_trade: 0.0, avg_duration_win: 0, avg_duration_loss: 0, avg_time_between_trades: 0.0,
+            plan_adherence: 0.0,
             equity_curve: DatasetCurve { dates: vec![], data: vec![] },
             drawdown_curve: DatasetCurve { dates: vec![], data: vec![] },
             heatmap: vec![vec![0.0; 24]; 7],
@@ -224,6 +232,11 @@ pub async fn get_strategy_comprehensive_stats(
     let mut total_loss = 0.0;
     let mut wins = 0;
     let mut followed_plan_count = 0;
+    
+    let mut best_trade: f64 = f64::MIN;
+    let mut worst_trade: f64 = f64::MAX;
+    let mut total_duration_win_minutes: f64 = 0.0;
+    let mut total_duration_loss_minutes: f64 = 0.0;
     
     let mut equity_dates = vec!["Start".to_string()];
     let mut equity_data = vec![0.0];
@@ -254,12 +267,25 @@ pub async fn get_strategy_comprehensive_stats(
         let pnl = convert_trade_result(trade, &accounts, &currencies);
         net_result += pnl;
         
+        let mut trade_dur_min = 0.0;
+        if let Some(edate) = &trade.exit_date {
+            if let (Ok(s_dt), Ok(e_dt)) = (DateTime::parse_from_rfc3339(&trade.date), DateTime::parse_from_rfc3339(edate)) {
+                trade_dur_min = (e_dt - s_dt).num_minutes() as f64;
+            } else if let (Ok(s_dt), Ok(e_dt)) = (chrono::NaiveDateTime::parse_from_str(&trade.date, "%Y-%m-%d %H:%M:%S"), chrono::NaiveDateTime::parse_from_str(edate, "%Y-%m-%d %H:%M:%S")) {
+                trade_dur_min = (e_dt - s_dt).num_minutes() as f64;
+            }
+        }
+        
         if pnl > 0.0 {
             wins += 1;
             total_win += pnl;
+            if pnl > best_trade { best_trade = pnl; }
+            total_duration_win_minutes += trade_dur_min;
         } else {
             total_loss += pnl.abs();
             cumulative_gross_loss += pnl.abs();
+            if pnl < worst_trade { worst_trade = pnl; }
+            total_duration_loss_minutes += trade_dur_min;
             
             // Check if entered in a negative emotional state
             if let Some(entry_emo) = &trade.entry_emotional_state_id {
@@ -320,6 +346,28 @@ pub async fn get_strategy_comprehensive_stats(
     } else { 0.0 };
     let recovery_factor = if max_dd == 0.0 { 0.0 } else { net_result / max_dd };
     let plan_adherence = (followed_plan_count as f64 / total_trades as f64) * 100.0;
+    
+    if best_trade == f64::MIN { best_trade = 0.0; }
+    if worst_trade == f64::MAX { worst_trade = 0.0; }
+    
+    let avg_duration_win = if wins > 0 { (total_duration_win_minutes / wins as f64).round() as i64 } else { 0 };
+    let losses = total_trades - wins;
+    let avg_duration_loss = if losses > 0 { (total_duration_loss_minutes / losses as f64).round() as i64 } else { 0 };
+    
+    let avg_time_between_trades = if total_trades > 1 {
+        let first_date = &trades[0].date;
+        let last_date = &trades[total_trades - 1].date;
+        let diff_ms = if let (Ok(f), Ok(l)) = (DateTime::parse_from_rfc3339(first_date), DateTime::parse_from_rfc3339(last_date)) {
+            (l - f).num_milliseconds() as f64
+        } else if let (Ok(f), Ok(l)) = (chrono::NaiveDateTime::parse_from_str(first_date, "%Y-%m-%d %H:%M:%S"), chrono::NaiveDateTime::parse_from_str(last_date, "%Y-%m-%d %H:%M:%S")) {
+            (l - f).num_milliseconds() as f64
+        } else {
+            0.0
+        };
+        let diff_days = diff_ms / (1000.0 * 3600.0 * 24.0);
+        let avg = diff_days / (total_trades - 1) as f64;
+        (avg * 10.0).round() / 10.0
+    } else { 0.0 };
     
     let negative_state_loss_ratio = if cumulative_gross_loss > 0.0 {
         (negative_state_loss / cumulative_gross_loss) * 100.0
@@ -424,6 +472,12 @@ pub async fn get_strategy_comprehensive_stats(
         max_drawdown: max_dd,
         recovery_factor,
         total_trades,
+        winning_trades: wins,
+        best_trade,
+        worst_trade,
+        avg_duration_win,
+        avg_duration_loss,
+        avg_time_between_trades,
         plan_adherence,
         
         equity_curve: DatasetCurve { dates: equity_dates.clone(), data: equity_data },

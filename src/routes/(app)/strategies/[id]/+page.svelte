@@ -1,8 +1,6 @@
 <script lang="ts">
   import { marketsStore } from "$lib/stores/markets.svelte";
-  import { accountsStore } from "$lib/stores/accounts.svelte";
   import { assetsStore } from "$lib/stores/assets.svelte";
-  import { currenciesStore } from "$lib/stores/currencies.svelte";
   import { assetTypesStore } from "$lib/stores/asset-types.svelte";
   import { page } from "$app/stores";
   import { workspaceStore } from "$lib/stores/workspace.svelte";
@@ -63,6 +61,24 @@
         workspaceStore.strategies.find((s) => s.id === strategyId),
     );
 
+    // --- PHASE 20 BACKEND MIGRATION ---
+    let rustStats = $state<any>(null);
+    let isRustLoading = $state(false);
+
+    $effect(() => {
+        // Run whenever strategyId or selectedMarketId changes
+        if (strategyId) {
+            isRustLoading = true;
+            invoke("get_strategy_comprehensive_stats", { strategyId, marketId: selectedMarketId })
+                .then(res => {
+                    rustStats = res;
+                    console.log("[Phase 20] UI Successfully Switched to Rust Payload.");
+                })
+                .catch(err => console.error("Rust Analytics Error:", err))
+                .finally(() => isRustLoading = false);
+        }
+    });
+
     // Default Stats (Zeroed)
     // Filtered trades based on strategy and selected market
     const strategyTrades = $derived.by(() => {
@@ -87,132 +103,26 @@
         );
     });
 
-    // Derived Stats
-    const stats = $derived.by(() => {
-        const total = strategyTrades.length;
-        if (total === 0) {
-            return {
-                netResult: 0,
-                drawdown: 0,
-                winRate: 0,
-                profitFactor: 0,
-                payoff: 0,
-                mathExpectation: 0,
-                maxDrawdown: 0,
-                recoveryFactor: 0,
-                planAdherence: 0,
-                totalTrades: 0,
-                winningTrades: 0,
-                bestTrade: 0,
-                worstTrade: 0,
-                avgDurationWin: 0,
-                avgDurationLoss: 0,
-                avgTimeBetweenTrades: 0,
-                equityCurve: { dates: [], data: [0] },
-                drawdownCurve: { dates: [], data: [0] },
-            };
-        }
-
-        let netResult = 0;
-        let totalWin = 0;
-        let totalLoss = 0;
-        let wins = 0;
-        let best = -Infinity;
-        let worst = Infinity;
-        let followedPlanCount = 0;
-        let totalDurationWin = 0;
-        let totalDurationLoss = 0;
-
-        const equityData: number[] = [0];
-        const drawdownData: number[] = [0];
-        const dates: string[] = ["Start"];
-        let peak = 0;
-        let maxDD = 0;
-
-        strategyTrades.forEach((t) => {
-            const res = tradesStore.getConvertedTradeResult(
-                t,
-                accountsStore.accounts,
-                currenciesStore.currencies,
-            );
-            netResult += res;
-
-            if (res > 0) {
-                wins++;
-                totalWin += res;
-                if (res > best) best = res;
-                // Calculate duration if available
-                if (t.exit_date) {
-                    const dur =
-                        (new Date(t.exit_date).getTime() -
-                            new Date(t.date).getTime()) /
-                        60000;
-                    totalDurationWin += dur;
-                }
-            } else {
-                totalLoss += Math.abs(res);
-                if (res < worst) worst = res;
-                if (t.exit_date) {
-                    const dur =
-                        (new Date(t.exit_date).getTime() -
-                            new Date(t.date).getTime()) /
-                        60000;
-                    totalDurationLoss += dur;
-                }
-            }
-
-            if (t.followed_plan) followedPlanCount++;
-
-            // Equity & Drawdown Curve
-            equityData.push(Number(netResult.toFixed(2)));
-            dates.push(new Date(t.date).toLocaleDateString($locale || "pt-BR"));
-
-            if (netResult > peak) peak = netResult;
-            const dd = peak - netResult;
-            drawdownData.push(Number(-dd.toFixed(2)));
-            if (dd > maxDD) maxDD = dd;
-        });
-
-        const winRate = (wins / total) * 100;
-        const profitFactor =
-            totalLoss === 0 ? (totalWin > 0 ? 99 : 0) : totalWin / totalLoss;
-        const payoff =
-            wins > 0 && total - wins > 0
-                ? totalWin / wins / (totalLoss / (total - wins))
-                : 0;
-        const recoveryFactor = maxDD === 0 ? 0 : netResult / maxDD;
-
-        // Time between trades
-        let avgTimeBetween = 0;
-        if (total > 1) {
-            const first = new Date(strategyTrades[0].date).getTime();
-            const last = new Date(strategyTrades[total - 1].date).getTime();
-            avgTimeBetween = (last - first) / (total - 1) / (1000 * 3600 * 24);
-        }
-
-        return {
-            netResult,
-            drawdown: Number((peak - netResult).toFixed(2)),
-            winRate,
-            profitFactor,
-            payoff,
-            mathExpectation: netResult / total,
-            maxDrawdown: maxDD,
-            recoveryFactor,
-            planAdherence: (followedPlanCount / total) * 100,
-            totalTrades: total,
-            winningTrades: wins,
-            bestTrade: best === -Infinity ? 0 : best,
-            worstTrade: worst === Infinity ? 0 : worst,
-            avgDurationWin: wins > 0 ? Math.round(totalDurationWin / wins) : 0,
-            avgDurationLoss:
-                total - wins > 0
-                    ? Math.round(totalDurationLoss / (total - wins))
-                    : 0,
-            avgTimeBetweenTrades: Number(avgTimeBetween.toFixed(1)),
-            equityCurve: { dates, data: equityData },
-            drawdownCurve: { dates, data: drawdownData },
-        };
+    // Derived Stats from Rust Payload (Safeguarded Fallbacks)
+    const stats = $derived({
+        netResult: rustStats?.net_result ?? 0,
+        drawdown: rustStats?.drawdown ?? 0,
+        winRate: rustStats?.win_rate ?? 0,
+        profitFactor: rustStats?.profit_factor ?? 0,
+        payoff: rustStats?.payoff ?? 0,
+        mathExpectation: rustStats?.math_expectation ?? 0,
+        maxDrawdown: rustStats?.max_drawdown ?? 0,
+        recoveryFactor: rustStats?.recovery_factor ?? 0,
+        planAdherence: rustStats?.plan_adherence ?? 0,
+        totalTrades: rustStats?.total_trades ?? 0,
+        winningTrades: rustStats?.winning_trades ?? 0,
+        bestTrade: rustStats?.best_trade ?? 0,
+        worstTrade: rustStats?.worst_trade ?? 0,
+        avgDurationWin: rustStats?.avg_duration_win ?? 0,
+        avgDurationLoss: rustStats?.avg_duration_loss ?? 0,
+        avgTimeBetweenTrades: rustStats?.avg_time_between_trades ?? 0,
+        equityCurve: rustStats?.equity_curve ?? { dates: [], data: [] },
+        drawdownCurve: rustStats?.drawdown_curve ?? { dates: [], data: [] },
     });
 
     // Reference Price for Gann Analysis
@@ -428,37 +338,11 @@
         return market.trading_days.map((d) => dayNames[d]);
     });
 
-    // Generate blocks grid (rows = days, cols = hours) with varied intensity
-    const blocks = $derived.by(() => {
-        const numDays = days.length;
-        const numHours = hourLabels.length;
-        const grid = Array(numDays)
-            .fill(0)
-            .map(() => Array(numHours).fill(0));
-
-        strategyTrades.forEach((t) => {
-            const date = new Date(t.date);
-            const dayIdx = (date.getDay() + 6) % 7; // Map Sun(0)-Sat(6) to Mon(0)-Sun(6)? Let's check `market.trading_days`
-            // Actually `market.trading_days` uses 0=Sun. But our heatmap rows are based on `days` array.
-            // Let's find the matching day index in the `days` array.
-            const dayName = dayNames[date.getDay()];
-            const dayRow = days.indexOf(dayName);
-
-            const hour = date.getHours();
-            const hourCol = hourLabels.indexOf(`${hour}h`);
-
-            if (dayRow !== -1 && hourCol !== -1) {
-                const res = tradesStore.getConvertedTradeResult(
-                    t,
-                    accountsStore.accounts,
-                    currenciesStore.currencies,
-                );
-                grid[dayRow][hourCol] += res;
-            }
-        });
-
-        return grid;
-    });
+    // Heatmap Grid from Rust Payload
+    const blocks = $derived(
+        rustStats?.heatmap ?? 
+        Array(days.length).fill(0).map(() => Array(hourLabels.length).fill(0))
+    );
 
     function getBlockColor(val: number) {
         if (val === 0) return "bg-muted/10 hover:bg-muted/20";
@@ -476,28 +360,6 @@
     // Image viewer logic
     let selectedImageIndex = $state<number | null>(null);
 
-    // --- PHASE 19 BACKEND MIGRATION VALIDATION ---
-    let rustStats = $state<any>(null);
-    let isRustLoading = $state(false);
-
-    $effect(() => {
-        // Run whenever strategyId or selectedMarketId changes
-        if (strategyId) {
-            isRustLoading = true;
-            invoke("get_strategy_comprehensive_stats", { strategyId, marketId: selectedMarketId })
-                .then(res => {
-                    rustStats = res;
-                    console.log("============= PHASE 19 MIGRATION VALIDATION =============");
-                    console.log("OLD SVELTE STATS:", stats);
-                    console.log("NEW RUST STATS:", rustStats);
-                    console.log("EQUIVALENCE CHECK (Net Result):", stats.netResult, "vs", rustStats.net_result);
-                    console.log("=========================================================");
-                })
-                .catch(err => console.error("Rust Analytics Error:", err))
-                .finally(() => isRustLoading = false);
-        }
-    });
-
 </script>
 
 {#if !strategy}
@@ -508,7 +370,7 @@
         >
     </div>
 {:else}
-    <div class="space-y-4 p-2 md:p-0 animate-in fade-in duration-500">
+    <div class="space-y-4 p-2 md:p-0 transition-opacity duration-300 {isRustLoading ? 'opacity-50 pointer-events-none scale-[0.99]' : 'opacity-100 scale-100'}">
         <!-- Header -->
         <div class="flex items-center gap-4 mb-2">
             <Button
