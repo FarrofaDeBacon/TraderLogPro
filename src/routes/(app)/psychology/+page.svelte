@@ -543,18 +543,67 @@
         };
     });
 
-    const barChartOptions = $derived.by(() => {
+    const scatterChartOptions = $derived.by(() => {
         if (!psychoDiagnosis || psychoDiagnosis.matrix.length === 0) return null;
-        let sorted = [...psychoDiagnosis.matrix].sort((a,b) => a.totalPnL - b.totalPnL); // worst to best
-        let names = sorted.map(r => r.emotionName);
-        let seriesData = sorted.map(r => ({ value: parseFloat(r.totalPnL.toFixed(2)), winRate: r.winRate, itemStyle: { color: r.totalPnL >= 0 ? '#10b981' : '#f43f5e', borderRadius: [0, 4, 4, 0] } }));
+        
+        let seriesData = psychoDiagnosis.matrix.map(r => [
+            parseFloat((r.winRate * 100).toFixed(1)), 
+            parseFloat(r.totalPnL.toFixed(2)),        
+            r.tradeCount,                             
+            r.emotionName,                            
+            r.impact                                  
+        ]);
         
         return {
-            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: 'rgba(10, 10, 10, 0.9)', borderColor: '#27272a', textStyle: { color: '#fff' }, formatter: (params:any) => { let p = params[0]; return `<div class="font-bold mb-1">${p.name}</div><div class="flex justify-between gap-4"><span>PnL:</span><span class="${p.data.value >= 0 ? 'text-emerald-500':'text-rose-500'} font-bold">${formatCurrency(p.data.value)}</span></div><div class="flex justify-between gap-4 mt-1"><span>Win Rate:</span><span class="font-bold text-foreground">${(p.data.winRate*100).toFixed(0)}%</span></div>`; } },
-            grid: { left: '3%', right: '4%', bottom: '3%', top: '5%', containLabel: true },
-            xAxis: { type: 'value', splitLine: { lineStyle: { color: '#27272a', type: 'dashed' } }, axisLabel: { color: '#71717a', fontSize: 10 } },
-            yAxis: { type: 'category', data: names, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#a1a1aa', fontSize: 9, fontWeight: 'bold', width: 70, overflow: 'truncate' } },
-            series: [{ type: 'bar', data: seriesData, barMaxWidth: 24, label: { show: true, position: 'insideRight', formatter: (p:any) => formatCurrency(p.value), color: '#fff', fontSize: 9, textShadowColor: '#000', textShadowBlur: 2, fontWeight: 'bold' } }]
+            tooltip: { 
+                trigger: 'item', 
+                backgroundColor: 'rgba(10, 10, 10, 0.95)', 
+                borderColor: '#27272a', 
+                textStyle: { color: '#fff' },
+                formatter: (params:any) => { 
+                    // Se for um markPoint, acesse diferentemente ou trate
+                    if (params.componentType === 'markPoint') return params.name;
+                    let d = params.data; 
+                    if (!d) return '';
+                    return `<div class="font-bold mb-1 uppercase tracking-widest text-[10px] text-muted-foreground">${d[3]}</div><div class="flex justify-between gap-4"><span>PnL:</span><span class="${d[1] >= 0 ? 'text-emerald-500':'text-rose-500'} font-bold">${formatCurrency(d[1])}</span></div><div class="flex justify-between gap-4 mt-1"><span>Win Rate:</span><span class="font-bold text-foreground">${d[0]}%</span></div><div class="flex justify-between gap-4 mt-1"><span>Trades:</span><span class="font-bold text-foreground">${d[2]}</span></div>`; 
+                } 
+            },
+            grid: { left: '4%', right: '5%', bottom: '5%', top: '10%', containLabel: true },
+            xAxis: { 
+                type: 'value', 
+                name: 'Win Rate (%)',
+                nameLocation: 'middle',
+                nameGap: 25,
+                nameTextStyle: { color: '#71717a', fontSize: 9, fontWeight: 'bold' },
+                splitLine: { lineStyle: { color: '#27272a', type: 'dashed' } }, 
+                axisLabel: { color: '#71717a', fontSize: 10, formatter: '{value}%' },
+                min: 0,
+                max: 100
+            },
+            yAxis: { 
+                type: 'value', 
+                name: 'PNL Dinheiro',
+                nameTextStyle: { color: '#71717a', fontSize: 9, fontWeight: 'bold' },
+                splitLine: { lineStyle: { color: '#27272a', type: 'dashed' } }, 
+                axisLabel: { color: '#71717a', fontSize: 10, formatter: (val:number) => val >= 1000 || val <= -1000 ? (val/1000).toFixed(1)+'k' : val } 
+            },
+            series: [{ 
+                type: 'scatter', 
+                data: seriesData, 
+                symbolSize: (data:any) => Math.max(15, Math.min(60, data[2] * 4)),
+                itemStyle: { 
+                    color: (params:any) => params.data[1] >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(244, 63, 94, 0.7)',
+                    borderColor: (params:any) => params.data[1] >= 0 ? '#10b981' : '#f43f5e',
+                    borderWidth: 2
+                },
+                label: { show: true, formatter: (params:any) => params.data[3], position: 'top', color: '#a1a1aa', fontSize: 9, fontWeight: 'bold' },
+                markPoint: {
+                    data: [
+                        { type: 'max', name: 'Maior Lucro', itemStyle: { color: '#10b981' }, label: { formatter: 'Melhor', color: '#fff', fontSize: 8, fontWeight: 'bold'} },
+                        { type: 'min', name: 'Maior Prejuízo', itemStyle: { color: '#f43f5e' }, label: { formatter: 'Pior', color: '#fff', fontSize: 8, fontWeight: 'bold'} }
+                    ]
+                }
+            }]
         };
     });
 
@@ -803,12 +852,12 @@
                     </div>
                 </div>
 
-                <!-- Horizontal Bar Chart -->
+                <!-- Scatter/Bubble Chart -->
                 <div class="lg:col-span-8 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Preço do Sentimento (PnL por Emoção)</h3>
+                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Dispersão de Performance (Win Rate x PnL)</h3>
                     <div class="flex-1 w-full relative">
-                        {#if barChartOptions && barChartOptions.series[0].data.length > 0}
-                            <EChart options={barChartOptions} />
+                        {#if scatterChartOptions && scatterChartOptions.series[0].data.length > 0}
+                            <EChart options={scatterChartOptions} />
                         {:else}
                             <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Sem dados</div>
                         {/if}
