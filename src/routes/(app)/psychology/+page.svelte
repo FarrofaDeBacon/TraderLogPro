@@ -548,6 +548,7 @@
             if (othersNeu > 0) data.push({ name: 'Outros (Neutros)', value: othersNeu, itemStyle: { color: 'rgba(148, 163, 184, 0.4)' } });
         }
         return {
+            backgroundColor: 'transparent',
             tooltip: { trigger: 'item', backgroundColor: 'rgba(10, 10, 10, 0.95)', borderColor: '#27272a', textStyle: { color: '#fff' } },
             legend: { show: false },
             series: [{ type: 'pie', radius: ['45%', '75%'], avoidLabelOverlap: true, itemStyle: { borderColor: '#09090b', borderWidth: 2 }, label: { show: true, formatter: '{b}\n{d}%', color: '#a1a1aa', fontSize: 9, fontWeight: 'bold' }, labelLine: { smooth: 0.2, length: 15, length2: 15 }, data }]
@@ -564,6 +565,7 @@
         let freqData = topEmotions.map(e => e.tradeCount);
 
         return {
+            backgroundColor: 'transparent',
             tooltip: {
                 trigger: 'item',
                 backgroundColor: 'rgba(10, 10, 10, 0.95)',
@@ -637,8 +639,8 @@
                  label: { formatter: '{b}', color: '#fff', fontSize: 7, fontWeight: 'bold' }
              };
         });
-
         return {
+            backgroundColor: 'transparent',
             tooltip: { trigger: 'axis', backgroundColor: 'rgba(10, 10, 10, 0.9)', borderColor: '#27272a', textStyle: { color: '#fff' } },
             grid: { left: '2%', right: '2%', bottom: '5%', top: '10%', containLabel: true },
             xAxis: { type: 'category', boundaryGap: false, data: dates, axisLine: { lineStyle: { color: '#27272a' } }, axisLabel: { color: '#71717a', fontSize: 10 } },
