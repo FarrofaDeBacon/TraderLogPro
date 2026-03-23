@@ -100,6 +100,88 @@ export const llmService = {
         return "Modo Simulação: Ótimo registro! Continue monitorando suas emoções. (Configure uma chave real para análise real)";
     },
 
+    async analyzePsychologyDashboard(payloadJson: string): Promise<string> {
+        const configId = integrationsStore.psychologyApiId;
+        const config = integrationsStore.apiConfigs.find(c => c.id === configId && c.enabled);
+
+        if (!config || !config.api_key) {
+            const fallbackConfig = integrationsStore.apiConfigs.find(c => (c.provider === 'openai' || c.provider === 'google_gemini') && c.enabled);
+            if (!fallbackConfig) throw new Error("no_provider");
+            return this.processPsychologyDashboardPrompt(payloadJson, fallbackConfig);
+        }
+
+        return this.processPsychologyDashboardPrompt(payloadJson, config);
+    },
+
+    async processPsychologyDashboardPrompt(payloadJson: string, config: any): Promise<string> {
+        const prompt = `
+            Você é um analista de risco e comportamento de traders auxiliando como camada interpretativa complementar.
+            Abaixo estão as métricas estruturadas e matemáticas do dashboard psicológico do trader para a janela atual:
+            
+            ${payloadJson}
+            
+            Sua meta:
+            Interpretar o JSON acima e retornar estritamente a seguinte máscara textual:
+            
+            [RESUMO]: (Máximo de 2 frases resumindo o padrão dominante).
+            [MAIOR RISCO]: (1 linha apontando a principal fragilidade ou ralo financeiro listado no JSON).
+            [SUGESTÕES PRÁTICAS]:
+            - (Dica 1)
+            - (Dica 2)
+            
+            Regras de Engajamento:
+            - Nunca recalcule valores, o sistema matemático já o fez. Apenas cruze e expanda em conselhos.
+            - Não adicione mais do que 2 sugestões sob nenhuma hipótese.
+            - Remova as tags de formatação literal como "[RESUMO]:" e use formatação Markdown sem os pronomes (exemplo: **Resumo do Padrão**, **Risco Principal**, etc). Enxugue o texto para caber em Cards com scroll fixo.
+        `;
+
+        if (config.provider === 'google_gemini') {
+            const API_KEY = config.api_key.trim();
+            const models = ['gemini-1.5-flash', 'gemini-2.0-flash-exp'];
+
+            for (const model of models) {
+                try {
+                    const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
+                    const response = await fetch(ENDPOINT, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.candidates?.[0]?.content?.parts?.[0]?.text || "Falha na análise.";
+                    }
+                } catch (e) { console.error(e); }
+            }
+            throw new Error("gemini_error");
+        }
+
+        if (config.provider === 'openai') {
+            const API_KEY = config.api_key.trim();
+            try {
+                const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [
+                            { role: "system", content: "Você é um AI analítico complementar ao painel de matemática estatística de um Trader. Seja curto, direto, pragmático." },
+                            { role: "user", content: prompt }
+                        ],
+                        temperature: 0.3
+                    })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.choices?.[0]?.message?.content || "Sem resposta.";
+                }
+            } catch (e) { throw new Error("openai_error"); }
+        }
+
+        throw new Error("provider_unknown");
+    },
+
     async processWithConfig(html: string, config: any): Promise<EconomicEvent[]> {
 
         const API_KEY = config.api_key.trim();

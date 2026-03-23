@@ -24,7 +24,13 @@
         Trash2,
         Info,
         MinusCircle,
+        Sparkles,
+        ArrowRight,
+        Loader2,
+        RefreshCw
     } from "lucide-svelte";
+    import { llmService } from "$lib/services/llmService";
+    import { integrationsStore } from "$lib/stores/integrations.svelte";
 
     import { Button } from "$lib/components/ui/button";
     import DailyCheckinDialog from "$lib/components/psychology/DailyCheckinDialog.svelte";
@@ -482,6 +488,70 @@
         }
     }
 
+    // --- AI Assist Layer ---
+    let aiIsLoading = $state(false);
+    let aiAnalysisResponse = $state<string | null>(null);
+    let aiLastAnalyzedHash = $state<string | null>(null);
+
+    const hasActiveAiProvider = $derived.by(() => {
+        const id = integrationsStore.psychologyApiId;
+        const config = integrationsStore.apiConfigs.find((c) => c.id === id && c.enabled);
+        if (config && config.api_key) return true;
+        const fallback = integrationsStore.apiConfigs.find((c) => (c.provider === 'openai' || c.provider === 'google_gemini') && c.enabled);
+        return !!fallback?.api_key;
+    });
+
+    function getAiContextHash() {
+        if (!psychoDiagnosis) return null;
+        return JSON.stringify({
+            start: startDate,
+            end: endDate,
+            score: psychoDiagnosis.psychoScore,
+            killer: psychoDiagnosis.killerEmotion?.emotionName,
+            savior: psychoDiagnosis.saviorEmotion?.emotionName,
+            killerPnl: psychoDiagnosis.killerEmotion?.totalPnL,
+            saviorPnl: psychoDiagnosis.saviorEmotion?.totalPnL,
+            topNegImpact: psychoDiagnosis.killerEmotionLossPercent,
+            tradeCount: psychoDiagnosis.matrix.reduce((acc, curr) => acc + curr.tradeCount, 0)
+        });
+    }
+
+    async function generateAiAnalysis() {
+        if (!psychoDiagnosis) return;
+        const hash = getAiContextHash();
+        if (hash && hash === aiLastAnalyzedHash && aiAnalysisResponse) return;
+        
+        aiIsLoading = true;
+        aiLastAnalyzedHash = hash;
+        aiAnalysisResponse = null;
+
+        const payload = {
+            analytics_period: `${startDate || 'Início'} Até ${endDate || 'Hoje'}`,
+            global_psycho_score: psychoDiagnosis.psychoScore,
+            top_vulnerability: psychoDiagnosis.killerEmotion ? {
+                emotion: psychoDiagnosis.killerEmotion.emotionName,
+                financial_drain: psychoDiagnosis.killerEmotion.totalPnL,
+                occurrences: psychoDiagnosis.killerEmotion.tradeCount,
+                percent_of_all_negative_losses: psychoDiagnosis.killerEmotionLossPercent ? (psychoDiagnosis.killerEmotionLossPercent * 100).toFixed(1) + "%" : "0%"
+            } : null,
+            top_edge: psychoDiagnosis.saviorEmotion ? {
+                emotion: psychoDiagnosis.saviorEmotion.emotionName,
+                financial_gain: psychoDiagnosis.saviorEmotion.totalPnL,
+                occurrences: psychoDiagnosis.saviorEmotion.tradeCount
+            } : null,
+            system_mathematical_conclusions: psychoDiagnosis.conclusions
+        };
+        
+        try {
+            aiAnalysisResponse = await llmService.analyzePsychologyDashboard(JSON.stringify(payload, null, 2));
+        } catch (err) {
+            console.error(err);
+            aiAnalysisResponse = "Erro ao contatar IA. Verifique suas chaves de integração e permissões de rede.";
+        } finally {
+            aiIsLoading = false;
+        }
+    }
+
     function getDayPnl(day: any) {
         if (!day || !day.totalPnlByCurrency) return 0;
         return Object.values(day.totalPnlByCurrency).reduce((a:any, b:any) => a + b, 0) as number;
@@ -535,26 +605,14 @@
         if (!psychoDiagnosis || psychoDiagnosis.matrix.length === 0) return null;
         let sorted = [...psychoDiagnosis.matrix].filter(r => r.tradeCount > 0).sort((a,b) => b.tradeCount - a.tradeCount);
         let top5 = sorted.slice(0, 5);
-        let others = sorted.slice(5);
         
         let data: any[] = top5.map(r => ({ name: r.emotionName, value: r.tradeCount, itemStyle: { color: r.impact === 'Positive' ? '#10b981' : r.impact === 'Negative' ? '#f43f5e' : '#94a3b8' } }));
-        if (others.length > 0) {
-            let othersTotal = others.reduce((acc, r) => acc + r.tradeCount, 0);
-            if (othersTotal > 0) {
-                data.push({ 
-                    name: 'Outros', 
-                    value: othersTotal, 
-                    itemStyle: { color: '#18181b', borderColor: '#27272a', borderWidth: 1 },
-                    label: { show: false },
-                    labelLine: { show: false }
-                });
-            }
-        }
+        
         return {
             backgroundColor: 'transparent',
             tooltip: { trigger: 'item', backgroundColor: 'rgba(10, 10, 10, 0.95)', borderColor: '#27272a', textStyle: { color: '#fff' } },
             legend: { show: false },
-            series: [{ type: 'pie', radius: ['45%', '75%'], avoidLabelOverlap: true, itemStyle: { borderColor: '#09090b', borderWidth: 2 }, label: { show: true, formatter: '{b}\n{d}%', color: '#a1a1aa', fontSize: 9, fontWeight: 'bold' }, labelLine: { smooth: 0.2, length: 15, length2: 15 }, data }]
+            series: [{ type: 'pie', radius: ['45%', '72%'], avoidLabelOverlap: true, itemStyle: { borderColor: '#09090b', borderWidth: 2 }, label: { show: true, formatter: '{b}\n{c} trds', color: '#a1a1aa', fontSize: 10, fontWeight: 'bold' }, labelLine: { smooth: 0.2, length: 15, length2: 15 }, data }]
         };
     });
 
@@ -853,10 +911,10 @@
 
 
 
-            <!-- Camada de Decisão: O Mapa, O Overview e Os Protocolos (Todos com 1/4 de largura respectiva) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 pt-4 mb-4">
-                <!-- Radar Chart (Comportamento) - 1/4 -->
-                <div class="lg:col-span-3 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
+            <!-- Camada de Decisão: O Mapa, O Overview e Os Protocolos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 pt-4 mb-4 lg:items-stretch">
+                <!-- Radar Chart (Comportamento) - 4/12 -->
+                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px] lg:h-auto lg:min-h-[400px]">
                     <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">O Mapa</h3>
                     <div class="flex-1 w-full relative">
                         {#if radarChartOptions}
@@ -867,8 +925,8 @@
                     </div>
                 </div>
 
-                <!-- Pie Chart (Donut) - 1/4 -->
-                <div class="lg:col-span-3 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
+                <!-- Pie Chart (Donut) - 4/12 -->
+                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px] lg:h-auto lg:min-h-[400px]">
                     <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">Top 5 Segmentados</h3>
                     <div class="flex-1 w-full relative">
                         {#if donutChartOptions && donutChartOptions.series[0].data.length > 0}
@@ -879,14 +937,15 @@
                     </div>
                 </div>
 
-                <!-- Diagnóstico Rápido - 1/4 -->
-                <div class="lg:col-span-3 h-[340px] flex">
-                    <Card.Root class="bg-card shadow-sm border-border flex-1 flex flex-col w-full">
-                        <Card.Header class="pb-2 pt-4 px-4">
+                <!-- Diagnóstico & Protocolo - Stacked - 4/12 -->
+                <div class="lg:col-span-4 flex flex-col gap-4 h-[500px] lg:h-full lg:min-h-[400px]">
+                    <!-- Diagnóstico Rápido -->
+                    <Card.Root class="bg-card shadow-sm border-border flex-1 flex flex-col overflow-hidden min-h-0">
+                        <Card.Header class="pb-2 pt-4 px-4 shrink-0">
                             <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2"><Brain class="w-3.5 h-3.5" /> Diagnóstico</Card.Title>
                         </Card.Header>
                         <Card.Content class="px-4 pb-4 flex-1 overflow-y-auto custom-scrollbar">
-                            <ul class="space-y-1">
+                            <ul class="space-y-1.5">
                                 {#each psychoDiagnosis.conclusions.slice(0, 3) as concl}
                                     <li class="text-[11px] font-medium text-muted-foreground leading-tight flex items-start gap-2"><span class="text-primary mt-0.5">•</span><span>{concl}</span></li>
                                 {/each}
@@ -894,22 +953,67 @@
                             </ul>
                         </Card.Content>
                     </Card.Root>
-                </div>
 
-                <!-- Protocolo Tático - 1/4 -->
-                <div class="lg:col-span-3 h-[340px] flex">
-                    <Card.Root class="bg-primary/5 shadow-none border-primary/20 flex-1 flex flex-col w-full">
-                        <Card.Header class="pb-2 pt-4 px-4">
+                    <!-- Protocolo Tático -->
+                    <Card.Root class="bg-primary/5 shadow-none border-primary/20 flex-1 flex flex-col overflow-hidden min-h-0">
+                        <Card.Header class="pb-2 pt-4 px-4 shrink-0">
                             <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2"><CheckCircle2 class="w-3.5 h-3.5" /> Protocolo Tático</Card.Title>
                         </Card.Header>
                         <Card.Content class="px-4 pb-4 flex-1 overflow-y-auto custom-scrollbar">
-                            <ul class="space-y-1">
+                            <ul class="space-y-1.5">
                                 {#each psychoDiagnosis.recommendations.slice(0, 3) as rec}
                                     <li class="text-[11px] font-bold text-foreground/90 leading-tight flex items-start gap-2"><span class="text-primary mt-0.5">→</span><span>{rec}</span></li>
                                 {/each}
                             </ul>
                         </Card.Content>
                     </Card.Root>
+                </div>
+            </div>
+
+            <!-- Camada Interpretativa de IA -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-4">
+                <div class="lg:col-span-12 card-glass rounded-xl p-4 shadow-sm flex flex-col min-h-[140px] border border-primary/20 bg-primary/5">
+                    <div class="flex justify-between items-center mb-4 border-b border-primary/10 pb-3">
+                         <h3 class="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                             <Sparkles class="w-3.5 h-3.5" /> Análise Interpretativa por IA <span class="text-muted-foreground font-medium lowercase tracking-normal ml-2 opacity-70">(Baseada nas métricas estruturadas)</span>
+                         </h3>
+                    </div>
+                    
+                    <div class="flex-1 w-full flex flex-col relative text-sm">
+                         {#if !hasActiveAiProvider}
+                             <div class="flex-1 flex flex-col items-center justify-center py-6 text-center gap-3">
+                                 <Sparkles class="w-8 h-8 text-muted-foreground/30 mb-2" />
+                                 <p class="text-xs text-muted-foreground max-w-sm">Nenhuma IA vinculada à sua camada de Psicologia. Ative sua chave para desbloquear o analisador interpretativo da base matemática.</p>
+                                 <Button variant="outline" size="sm" class="text-xs font-bold" href="/settings?tab=integrations">
+                                    <ArrowRight class="w-3.5 h-3.5 mr-2" /> Configurar Integração
+                                 </Button>
+                             </div>
+                         {:else if !aiAnalysisResponse}
+                             <div class="flex-1 flex flex-col items-center justify-center py-6 gap-3">
+                                 <p class="text-xs text-muted-foreground max-w-sm text-center">Cruzamos as descobertas matemáticas do sistema com o motor da Inteligência Artificial para gerar um sumário tático instantâneo.</p>
+                                 <Button disabled={aiIsLoading} onclick={generateAiAnalysis} size="sm" class="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-8 shadow-sm">
+                                     {#if aiIsLoading}
+                                         <Loader2 class="w-3.5 h-3.5 mr-2 animate-spin" /> Processando Análise...
+                                     {:else}
+                                         <Sparkles class="w-3.5 h-3.5 mr-2" /> Gerar Análise Profunda
+                                     {/if}
+                                 </Button>
+                             </div>
+                         {:else}
+                            <div class="text-[12.5px] text-foreground/90 whitespace-pre-wrap leading-relaxed pb-4 custom-scrollbar overflow-x-hidden">
+                                {aiAnalysisResponse}
+                            </div>
+                            <div class="flex justify-end border-t border-primary/10 pt-3">
+                                 <Button disabled={aiIsLoading} variant="ghost" onclick={generateAiAnalysis} size="sm" class="text-xs text-primary/80 hover:text-primary hover:bg-primary/10">
+                                     {#if aiIsLoading}
+                                         <Loader2 class="w-3.5 h-3.5 mr-2 animate-spin" /> Refazendo...
+                                     {:else}
+                                         <RefreshCw class="w-3.5 h-3.5 mr-2" /> Nova Análise (Atualizar Período)
+                                     {/if}
+                                 </Button>
+                            </div>
+                         {/if}
+                    </div>
                 </div>
             </div>
 
