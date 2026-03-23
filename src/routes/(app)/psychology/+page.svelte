@@ -485,6 +485,45 @@
         return Object.values(day.totalPnlByCurrency).reduce((a:any, b:any) => a + b, 0) as number;
     }
 
+    const chartDays = $derived.by(() => {
+        const days: any[] = [];
+        let maxAbsPnl = 0;
+
+        for (const month of hierarchicalPsychologyData) {
+            for (const week of month.weeks) {
+                for (const d of week.days) {
+                    const dailyPnl = getDayPnl(d);
+                    const absPnl = Math.abs(dailyPnl);
+                    if (absPnl > maxAbsPnl) maxAbsPnl = absPnl;
+
+                    days.push({
+                        ...d,
+                        dailyPnl,
+                        absPnl,
+                        tradesCount: d.trades?.length || 0,
+                        dateLabel: new Date(d.date + "T12:00:00").toLocaleDateString($locale || "pt-BR", { weekday: 'short', day: '2-digit', month: '2-digit' }),
+                        shortDate: d.date.slice(8, 10) + '/' + d.date.slice(5, 7),
+                        impact: d.equivalentState?.impact || 'Neutral',
+                        emotionName: d.equivalentState?.name || 'Neutro',
+                        isToday: d.date === filterLimits.today
+                    });
+                }
+            }
+        }
+
+        const safeMax = maxAbsPnl === 0 ? 1 : maxAbsPnl;
+        for (const d of days) {
+            let pct = (d.absPnl / safeMax) * 100;
+            if (d.tradesCount > 0 && pct < 4) pct = 4;
+            d.heightPercent = pct;
+            
+            d.emotionBgClass = d.impact === 'Positive' ? 'bg-emerald-500' : d.impact === 'Negative' ? 'bg-rose-500' : 'bg-slate-500';
+            d.emotionTextClass = d.impact === 'Positive' ? 'text-emerald-500' : d.impact === 'Negative' ? 'text-rose-500' : 'text-slate-500';
+        }
+
+        return days.sort((a,b) => a.date.localeCompare(b.date)); // Chronological order
+    });
+
     const isLoading = $derived(
         tradesStore.isLoading || appStore.isLoadingData,
     );
@@ -711,43 +750,61 @@
                     </div>
                 {/if}
                 
-                <div class="flex flex-nowrap overflow-x-auto gap-3 items-end pt-5 pb-4 pl-2 scroll-smooth [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border/40 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-border/80">
-                    {#each hierarchicalPsychologyData as month}
-                        {#each month.weeks as week}
-                            {#each week.days as day, i}
-                                {@const dailyPnl = getDayPnl(day)}
-                                {@const isToday = day.date === filterLimits.today}
-                                {@const isPrevLossStreak = i > 0 && getDayPnl((week.days as any[])[i-1]) < 0 && dailyPnl < 0}
-                                
-                                <div class="flex flex-col items-center min-w-[64px] relative group cursor-default transition-all hover:-translate-y-1">
-                                    {#if isToday}
-                                        <div class="absolute -top-6 px-1.5 py-0.5 bg-primary/20 text-primary border border-primary/30 rounded text-[7px] font-black tracking-widest animate-pulse">HOJE</div>
-                                    {:else if isPrevLossStreak}
-                                        <div class="absolute -top-3 w-4/5 h-[2px] -left-1/2 bg-rose-500/30 -z-10 rounded-full"></div>
-                                    {/if}
-                                    
-                                    <span class="text-[9px] font-bold {isToday ? 'text-primary' : 'text-muted-foreground/60'} mb-1.5">{new Date(day.date + "T12:00:00").toLocaleDateString($locale || "pt-BR", { day: '2-digit', month: '2-digit' })}</span>
-                                    
-                                    <!-- Círculo de PnL (Metade Superior) -->
-                                    <div class="w-12 h-10 rounded-t-xl flex items-center justify-center border-t border-x shadow-inner 
-                                        {dailyPnl > 0 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' : dailyPnl < 0 ? 'bg-rose-500/10 text-rose-500 border-rose-500/30' : 'bg-muted/30 text-muted-foreground border-border/50'}
-                                        {isToday ? 'border-b-0 ring-1 ring-primary/30 shadow-[0_0_10px_rgba(var(--primary),0.2)]' : 'border-b-0'} transition-colors duration-300 relative z-10">
-                                        {#if dailyPnl > 0} <TrendingUp class="w-5 h-5 opacity-80" /> {:else if dailyPnl < 0} <TrendingDown class="w-5 h-5 opacity-80" /> {:else} <MinusCircle class="w-5 h-5 opacity-40" /> {/if}
+                <div class="h-64 flex flex-nowrap overflow-x-auto gap-1 items-center relative pl-2 pb-4 scroll-smooth [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border/40 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-border/80">
+                    {#if chartDays.length > 0}
+                        <div class="absolute w-full h-[1px] bg-muted-foreground/30 left-0 top-1/2 -translate-y-1/2 pointer-events-none z-0"></div>
+                    {/if}
+
+                    {#each chartDays as day}
+                        <div class="h-full w-10 min-w-[40px] flex flex-col shrink-0 relative z-10 group cursor-default {day.isToday ? 'bg-primary/5 rounded-md shadow-[0_0_10px_rgba(var(--primary),0.05)] ring-1 ring-primary/20' : ''}">
+                            
+                            <!-- Tooltip Hover Area -->
+                            <div class="absolute -top-[125px] opacity-0 group-hover:opacity-100 transition-opacity z-50 bg-popover/95 backdrop-blur-sm border border-border shadow-2xl rounded-lg p-3 text-xs w-48 pointer-events-none left-1/2 -translate-x-1/2 flex flex-col gap-2">
+                                <div class="font-bold border-b border-border/40 pb-1.5 flex justify-between items-center text-[10px] uppercase text-muted-foreground tracking-wider">
+                                    {day.dateLabel}
+                                    {#if day.isToday}<span class="text-primary font-black animate-pulse bg-primary/20 px-1 rounded">HOJE</span>{/if}
+                                </div>
+                                <div class="flex flex-col gap-1 mt-0.5">
+                                    <div class="flex justify-between items-center bg-muted/30 px-2 py-1 rounded">
+                                        <span class="font-semibold text-[10px] text-muted-foreground">Resultado</span> 
+                                        <span class="font-mono font-bold {day.dailyPnl >= 0 ? 'text-emerald-500':'text-rose-500'}">{formatCurrency(day.dailyPnl)}</span>
                                     </div>
-                                    
-                                    <!-- Base da Pílula Emocional (Metade Inferior colada) -->
-                                    <div class="w-12 py-1.5 flex flex-col items-center justify-center rounded-b-xl shadow-sm border
-                                        {day.equivalentState?.impact === 'Positive' ? 'bg-emerald-600 text-white border-emerald-700' : day.equivalentState?.impact === 'Negative' ? 'bg-rose-600 text-slate-100 border-rose-700' : 'bg-slate-700 text-slate-200 border-slate-800'}
-                                        {isToday ? 'ring-1 ring-primary/30 ring-offset-0 relative z-20' : 'z-10'} transition-colors duration-300">
-                                        <span class="text-[7.5px] uppercase font-black tracking-tighter truncate w-full px-1 text-center">
-                                            {day.equivalentState?.name || 'Neutro'}
-                                        </span>
+                                    <div class="flex justify-between items-center px-2 py-0.5">
+                                        <span class="font-semibold text-[10px] text-muted-foreground">Operações</span> 
+                                        <span class="font-bold text-foreground">{day.tradesCount}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mt-1 pt-2 border-t border-border/40 px-1">
+                                        <span class="font-semibold text-[10px] text-muted-foreground">Emoção</span> 
+                                        <span class="font-black {day.emotionTextClass} uppercase text-[9px] tracking-widest">{day.emotionName}</span>
                                     </div>
                                 </div>
-                            {/each}
-                        {/each}
+                            </div>
+
+                            <!-- Top half (Profits) -->
+                            <div class="flex-1 flex items-end justify-center pb-[1px]">
+                                {#if day.dailyPnl > 0}
+                                    <div class="w-5 rounded-t-sm {day.emotionBgClass} hover:opacity-100 transition-all opacity-80 shadow-sm border border-emerald-500/30" style="height: {day.heightPercent}%;"></div>
+                                {/if}
+                            </div>
+                            
+                            <!-- Bottom half (Losses) -->
+                            <div class="flex-1 flex items-start justify-center pt-[1px]">
+                                {#if day.dailyPnl < 0}
+                                    <div class="w-5 rounded-b-sm {day.emotionBgClass} hover:opacity-100 transition-all opacity-80 shadow-sm border border-rose-500/30" style="height: {day.heightPercent}%;"></div>
+                                {/if}
+                                {#if day.dailyPnl === 0 && day.tradesCount > 0}
+                                    <!-- Breakeven tiny block -->
+                                    <div class="w-5 rounded-sm {day.emotionBgClass} opacity-50 h-[3px] absolute top-1/2 -translate-y-1/2 shadow-inner"></div>
+                                {/if}
+                            </div>
+
+                            <!-- X-axis Text (Date) -->
+                            <div class="absolute bottom-1 w-full text-center text-[9px] font-bold text-muted-foreground/50 group-hover:text-foreground transition-colors group-hover:scale-110">
+                                {day.shortDate}
+                            </div>
+                        </div>
                     {/each}
-                    {#if hierarchicalPsychologyData.length === 0}
+                    {#if chartDays.length === 0}
                         <div class="w-full text-center text-xs text-muted-foreground italic h-24 flex items-center justify-center border-2 border-dashed border-border/40 rounded-xl">Nenhum evento detectado no período filtrado.</div>
                     {/if}
                 </div>
