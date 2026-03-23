@@ -562,7 +562,41 @@
 
         let maxFreq = Math.max(...topEmotions.map(e => e.tradeCount));
         let radarIndicators = topEmotions.map(e => ({ name: e.emotionName, max: maxFreq * 1.1, min: 0 }));
-        let freqData = topEmotions.map(e => e.tradeCount);
+        
+        let radarDataSeries = [];
+        if (topEmotions.some(e => e.impact === 'Positive')) {
+            radarDataSeries.push({
+                value: topEmotions.map(e => e.impact === 'Positive' ? e.tradeCount : 0),
+                name: 'Positivas',
+                symbol: 'circle',
+                symbolSize: 4,
+                itemStyle: { color: '#10b981' },
+                areaStyle: { color: 'rgba(16, 185, 129, 0.4)' },
+                lineStyle: { width: 2, color: '#10b981' }
+            });
+        }
+        if (topEmotions.some(e => e.impact === 'Negative')) {
+            radarDataSeries.push({
+                value: topEmotions.map(e => e.impact === 'Negative' ? e.tradeCount : 0),
+                name: 'Negativas',
+                symbol: 'circle',
+                symbolSize: 4,
+                itemStyle: { color: '#f43f5e' },
+                areaStyle: { color: 'rgba(244, 63, 94, 0.4)' },
+                lineStyle: { width: 2, color: '#f43f5e' }
+            });
+        }
+        if (topEmotions.some(e => e.impact === 'Neutral')) {
+            radarDataSeries.push({
+                value: topEmotions.map(e => e.impact === 'Neutral' ? e.tradeCount : 0),
+                name: 'Neutras',
+                symbol: 'circle',
+                symbolSize: 4,
+                itemStyle: { color: '#94a3b8' },
+                areaStyle: { color: 'rgba(148, 163, 184, 0.4)' },
+                lineStyle: { width: 2, color: '#94a3b8' }
+            });
+        }
 
         return {
             backgroundColor: 'transparent',
@@ -574,7 +608,8 @@
                 formatter: (params: any) => {
                     let html = `<div class="font-bold mb-3 uppercase tracking-widest text-[10px] text-muted-foreground">Volume Comportamental</div>`;
                     topEmotions.forEach(e => {
-                        html += `<div class="flex justify-between gap-4 mb-1"><span class="text-xs text-muted-foreground">${e.emotionName}:</span><span class="font-bold text-foreground text-xs">${e.tradeCount} trades</span></div>`;
+                        let color = e.impact === 'Positive' ? '#10b981' : e.impact === 'Negative' ? '#f43f5e' : '#94a3b8';
+                        html += `<div class="flex justify-between gap-4 mb-1"><span class="text-xs font-bold" style="color: ${color}">${e.emotionName}</span><span class="font-bold text-foreground text-xs">${e.tradeCount} <span class="text-[9px] text-muted-foreground/60">trades</span></span></div>`;
                     });
                     return html;
                 }
@@ -587,22 +622,14 @@
                 center: ['50%', '50%'],
                 radius: '65%',
                 axisName: { color: '#a1a1aa', fontSize: 10, fontWeight: 'bold', textShadowColor: '#000', textShadowBlur: 2 },
-                splitLine: { lineStyle: { color: ['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.08)', 'rgba(99, 102, 241, 0.2)'] } },
+                splitLine: { lineStyle: { color: ['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.02)'] } },
                 splitArea: { show: false },
                 axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.1)' } }
             },
             series: [{
                 name: 'Exposição de Risco Psicológico',
                 type: 'radar',
-                data: [{
-                    value: freqData,
-                    name: 'Frequência (Trades)',
-                    symbol: 'circle',
-                    symbolSize: 6,
-                    itemStyle: { color: '#6366f1' },
-                    areaStyle: { color: 'rgba(99, 102, 241, 0.3)' },
-                    lineStyle: { width: 2, color: '#6366f1' }
-                }]
+                data: radarDataSeries
             }]
         };
     });
