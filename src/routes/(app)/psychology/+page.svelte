@@ -838,38 +838,10 @@
                 </Card.Root>
             </div>
 
-            <!-- Camada de Decisão: Impacto, Frequência e Perfil Clínico -->
+            <!-- Camada de Decisão: Frequência e Perfil Clínico -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4">
-                <!-- RANKING: Impacto Financeiro (Decisão Principal) -->
-                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Ação: Impacto Direto (Do Pior p/ Melhor)</h3>
-                    <div class="flex-1 w-full overflow-y-auto pr-2 space-y-3 custom-scrollbar relative">
-                        {#if emotionRanking.length > 0}
-                            {#each emotionRanking as item, idx}
-                                <div class="flex justify-between items-center pb-2 border-b border-border/40 last:border-0 relative {idx === 0 && item.totalPnL < 0 ? 'bg-rose-500/10 px-2 py-2.5 -mx-2 rounded-lg border border-rose-500/20' : ''}">
-                                    {#if idx === 0 && item.totalPnL < 0}
-                                        <div class="absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-[70%] bg-rose-500 rounded-r"></div>
-                                    {/if}
-                                    <div class="flex flex-col">
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="text-xs font-bold uppercase tracking-wider {item.totalPnL >= 0 ? 'text-emerald-500' : 'text-rose-500'}">{item.emotionName}</span>
-                                            {#if idx === 0 && item.totalPnL < 0}<span class="text-[8px] uppercase bg-rose-500 text-white px-1.5 py-0.5 rounded font-black tracking-widest leading-none">Ofensor Primário</span>{/if}
-                                        </div>
-                                        <span class="text-[10px] text-muted-foreground font-medium mt-0.5">WR: {(item.winRate * 100).toFixed(0)}% • {item.tradeCount} trades</span>
-                                    </div>
-                                    <div class="font-black text-sm {item.totalPnL >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
-                                        {formatCurrency(item.totalPnL)}
-                                    </div>
-                                </div>
-                            {/each}
-                        {:else}
-                            <div class="text-xs text-muted-foreground flex justify-center items-center h-full border-2 border-dashed border-border/40 rounded-lg">Sem dados</div>
-                        {/if}
-                    </div>
-                </div>
-
                 <!-- Radar Chart (Comportamento) -->
-                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
+                <div class="lg:col-span-6 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
                     <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Perfil Comportamental Diário</h3>
                     <div class="flex-1 w-full relative">
                         {#if radarChartOptions}
@@ -881,7 +853,7 @@
                 </div>
 
                 <!-- Pie Chart (Donut) -->
-                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
+                <div class="lg:col-span-6 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
                     <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Top 5 Frequências + Segmentados</h3>
                     <div class="flex-1 w-full relative">
                         {#if donutChartOptions && donutChartOptions.series[0].data.length > 0}
