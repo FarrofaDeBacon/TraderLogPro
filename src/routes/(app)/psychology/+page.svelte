@@ -850,23 +850,23 @@
 
 
 
-            <!-- Camada de Decisão: Frequência e Perfil Clínico -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4">
-                <!-- Radar Chart (Comportamento) -->
-                <div class="lg:col-span-6 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Perfil Comportamental Diário</h3>
+            <!-- Camada de Decisão: O Mapa, O Overview e Os Protocolos (Todos com 1/4 de largura respectiva) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 pt-4 mb-4">
+                <!-- Radar Chart (Comportamento) - 1/4 -->
+                <div class="lg:col-span-3 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
+                    <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">O Mapa</h3>
                     <div class="flex-1 w-full relative">
                         {#if radarChartOptions}
                             <EChart options={radarChartOptions} />
                         {:else}
-                            <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Sem dados suficientes</div>
+                            <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Sem dados</div>
                         {/if}
                     </div>
                 </div>
 
-                <!-- Pie Chart (Donut) -->
-                <div class="lg:col-span-6 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Top 5 Frequências + Segmentados</h3>
+                <!-- Pie Chart (Donut) - 1/4 -->
+                <div class="lg:col-span-3 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
+                    <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">Top 5 Segmentados</h3>
                     <div class="flex-1 w-full relative">
                         {#if donutChartOptions && donutChartOptions.series[0].data.length > 0}
                             <EChart options={donutChartOptions} />
@@ -875,55 +875,61 @@
                         {/if}
                     </div>
                 </div>
+
+                <!-- Diagnóstico Rápido - 1/4 -->
+                <div class="lg:col-span-3 h-[340px] flex">
+                    <Card.Root class="bg-card shadow-sm border-border flex-1 flex flex-col w-full">
+                        <Card.Header class="pb-2 pt-4 px-4">
+                            <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2"><Brain class="w-3.5 h-3.5" /> Diagnóstico</Card.Title>
+                        </Card.Header>
+                        <Card.Content class="px-4 pb-4 flex-1 overflow-y-auto custom-scrollbar">
+                            <ul class="space-y-1">
+                                {#each psychoDiagnosis.conclusions.slice(0, 3) as concl}
+                                    <li class="text-[11px] font-medium text-muted-foreground leading-tight flex items-start gap-2"><span class="text-primary mt-0.5">•</span><span>{concl}</span></li>
+                                {/each}
+                                {#if psychoDiagnosis.conclusions.length === 0}<span class="text-xs text-muted-foreground italic">Sem dados.</span>{/if}
+                            </ul>
+                        </Card.Content>
+                    </Card.Root>
+                </div>
+
+                <!-- Protocolo Tático - 1/4 -->
+                <div class="lg:col-span-3 h-[340px] flex">
+                    <Card.Root class="bg-primary/5 shadow-none border-primary/20 flex-1 flex flex-col w-full">
+                        <Card.Header class="pb-2 pt-4 px-4">
+                            <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2"><CheckCircle2 class="w-3.5 h-3.5" /> Protocolo Tático</Card.Title>
+                        </Card.Header>
+                        <Card.Content class="px-4 pb-4 flex-1 overflow-y-auto custom-scrollbar">
+                            <ul class="space-y-1">
+                                {#each psychoDiagnosis.recommendations.slice(0, 3) as rec}
+                                    <li class="text-[11px] font-bold text-foreground/90 leading-tight flex items-start gap-2"><span class="text-primary mt-0.5">→</span><span>{rec}</span></li>
+                                {/each}
+                            </ul>
+                        </Card.Content>
+                    </Card.Root>
+                </div>
             </div>
 
-
-            <!-- Camada Retrospectiva: Linha do Tempo + Protocolos Clínicos -->
+            <!-- Camada Retrospectiva: Curva de Capital -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-4">
-                <!-- Curva de Capital (3/4 da largura) -->
-                <div class="lg:col-span-9 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[380px]">
+                <!-- Curva de Capital (Largura Total - 12/12) -->
+                <div class="lg:col-span-12 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
                     <div class="flex justify-between items-center mb-4 border-b border-border/40 pb-3">
-                         <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Curva de Capital no Período</h3>
+                         <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Curva de Capital Tática no Período</h3>
                          <div class="scale-90 origin-right">
+                             <!-- Make sure lines inside <script> defined variables are correct -->
                             <DateFilter bind:value={timeFilter} bind:startDate bind:endDate />
                          </div>
                     </div>
                     <div class="flex-1 w-full relative">
+                        <!-- Make sure the div is hidden/displayed correctly based on data -->
+                        <div class="w-full text-transparent absolute top-0 z-[-1]"></div>
                         {#if lineChartOptions && lineChartOptions.series[0].data.length > 0}
                             <EChart options={lineChartOptions} />
                         {:else}
                             <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Filtre um período com dados</div>
                         {/if}
                     </div>
-                </div>
-
-                <!-- Painel Diagnóstico Vertical (1/4 da largura) -->
-                <div class="lg:col-span-3 flex flex-col gap-4 h-[380px]">
-                    <Card.Root class="bg-card shadow-sm border-border flex-1 flex flex-col">
-                        <Card.Header class="pb-2 pt-4 px-4">
-                            <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2"><Brain class="w-3.5 h-3.5" /> Diagnóstico Rápido</Card.Title>
-                        </Card.Header>
-                        <Card.Content class="px-4 pb-4 flex-1 overflow-y-auto custom-scrollbar">
-                            <ul class="space-y-1">
-                                {#each psychoDiagnosis.conclusions.slice(0, 2) as concl}
-                                    <li class="text-xs font-medium text-muted-foreground leading-tight flex items-start gap-2"><span class="text-primary mt-0.5">•</span><span>{concl}</span></li>
-                                {/each}
-                                {#if psychoDiagnosis.conclusions.length === 0}<span class="text-xs text-muted-foreground italic">Sem dados.</span>{/if}
-                            </ul>
-                        </Card.Content>
-                    </Card.Root>
-                    <Card.Root class="bg-primary/5 shadow-none border-primary/20 flex-1 flex flex-col">
-                        <Card.Header class="pb-2 pt-4 px-4">
-                            <Card.Title class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2"><CheckCircle2 class="w-3.5 h-3.5" /> Protocolo Tático</Card.Title>
-                        </Card.Header>
-                        <Card.Content class="px-4 pb-4 flex-1 overflow-y-auto custom-scrollbar">
-                            <ul class="space-y-1">
-                                {#each psychoDiagnosis.recommendations.slice(0, 2) as rec}
-                                    <li class="text-xs font-bold text-foreground/90 leading-tight flex items-start gap-2"><span class="text-primary mt-0.5">→</span><span>{rec}</span></li>
-                                {/each}
-                            </ul>
-                        </Card.Content>
-                    </Card.Root>
                 </div>
             </div>
         {/if}
