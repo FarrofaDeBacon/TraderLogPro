@@ -556,8 +556,18 @@
     });
 
     const radarChartOptions = $derived.by(() => {
-        if (!psychoDiagnosis || psychoDiagnosis.matrix.length === 0) return null;
-        let topEmotions = [...psychoDiagnosis.matrix].filter(r => r.tradeCount > 0).sort((a,b) => b.tradeCount - a.tradeCount).slice(0, 8);
+        if (!psychoDiagnosis || !psychoDiagnosis.matrix || psychoDiagnosis.matrix.length === 0) return null;
+        let topEmotions = [...psychoDiagnosis.matrix]
+            .filter(r => r.tradeCount > 0)
+            .sort((a,b) => b.tradeCount - a.tradeCount)
+            .slice(0, 8);
+            
+        // Agora ordenamos para agrupar fisicamente no Radar as de mesma polaridade juntas
+        topEmotions.sort((a,b) => {
+            const order: Record<string, number> = { 'Positive': 1, 'Negative': 2, 'Neutral': 3 };
+            return (order[a.impact] || 4) - (order[b.impact] || 4);
+        });
+        
         if (topEmotions.length === 0) return null;
 
         let maxFreq = Math.max(...topEmotions.map(e => e.tradeCount));
