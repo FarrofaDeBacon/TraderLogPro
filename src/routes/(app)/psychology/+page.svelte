@@ -605,36 +605,7 @@
         };
     });
 
-    const scatterChartOptions = $derived.by(() => {
-        if (!psychoDiagnosis || psychoDiagnosis.matrix.length === 0) return null;
-        let seriesData = psychoDiagnosis.matrix.map(r => [
-            parseFloat((r.winRate * 100).toFixed(1)), 
-            parseFloat(r.totalPnL.toFixed(2)),        
-            r.tradeCount,                             
-            r.emotionName,                            
-            r.impact                                  
-        ]);
-        return {
-            tooltip: { 
-                trigger: 'item', backgroundColor: 'rgba(10, 10, 10, 0.95)', borderColor: '#27272a', textStyle: { color: '#fff' },
-                formatter: (params:any) => { 
-                    if (params.componentType === 'markPoint') return params.name;
-                    let d = params.data; 
-                    if (!d) return '';
-                    return `<div class="font-bold mb-1 uppercase tracking-widest text-[10px] text-muted-foreground">${d[3]}</div><div class="flex justify-between gap-4"><span>PnL:</span><span class="${d[1] >= 0 ? 'text-emerald-500':'text-rose-500'} font-bold">${formatCurrency(d[1])}</span></div><div class="flex justify-between gap-4 mt-1"><span>Win Rate:</span><span class="font-bold text-foreground">${d[0]}%</span></div><div class="flex justify-between gap-4 mt-1"><span>Trades:</span><span class="font-bold text-foreground">${d[2]}</span></div>`; 
-                } 
-            },
-            grid: { left: '4%', right: '5%', bottom: '5%', top: '10%', containLabel: true },
-            xAxis: { type: 'value', name: 'Win Rate (%)', nameLocation: 'middle', nameGap: 25, nameTextStyle: { color: '#71717a', fontSize: 9, fontWeight: 'bold' }, splitLine: { lineStyle: { color: '#27272a', type: 'dashed' } }, axisLabel: { color: '#71717a', fontSize: 10, formatter: '{value}%' }, min: 0, max: 100 },
-            yAxis: { type: 'value', name: 'PNL Dinheiro', nameTextStyle: { color: '#71717a', fontSize: 9, fontWeight: 'bold' }, splitLine: { lineStyle: { color: '#27272a', type: 'dashed' } }, axisLabel: { color: '#71717a', fontSize: 10, formatter: (val:number) => val >= 1000 || val <= -1000 ? (val/1000).toFixed(1)+'k' : val } },
-            series: [{ 
-                type: 'scatter', data: seriesData, symbolSize: (data:any) => Math.max(15, Math.min(60, data[2] * 4)),
-                itemStyle: { color: (params:any) => params.data[1] >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(244, 63, 94, 0.7)', borderColor: (params:any) => params.data[1] >= 0 ? '#10b981' : '#f43f5e', borderWidth: 2 },
-                label: { show: true, formatter: (params:any) => params.data[3], position: 'top', color: '#a1a1aa', fontSize: 9, fontWeight: 'bold' },
-                markPoint: { data: [{ type: 'max', name: 'Maior Lucro', itemStyle: { color: '#10b981' }, label: { formatter: 'Melhor', color: '#fff', fontSize: 8, fontWeight: 'bold'} }, { type: 'min', name: 'Maior Prejuízo', itemStyle: { color: '#f43f5e' }, label: { formatter: 'Pior', color: '#fff', fontSize: 8, fontWeight: 'bold'} }] }
-            }]
-        };
-    });
+
 
     const lineChartOptions = $derived.by(() => {
         if (!chartDays || chartDays.length === 0) return null;
@@ -922,20 +893,6 @@
                 </div>
             </div>
 
-            <!-- Camada Secundária de Análise Profunda -->
-            <div class="grid grid-cols-1 gap-6 pt-4">
-                <!-- Scatter/Bubble Chart -->
-                <div class="card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Análise Profunda Secundária (Dispersão Tática: Win Rate x PnL)</h3>
-                    <div class="flex-1 w-full relative">
-                        {#if scatterChartOptions && scatterChartOptions.series[0].data.length > 0}
-                            <EChart options={scatterChartOptions} />
-                        {:else}
-                            <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Sem dados</div>
-                        {/if}
-                    </div>
-                </div>
-            </div>
 
             <!-- Camada Retrospectiva: Linha do Tempo -->
             <div class="w-full card-glass rounded-xl p-4 shadow-sm flex flex-col h-[380px] mb-4">
