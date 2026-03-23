@@ -537,15 +537,18 @@
         let top5 = sorted.slice(0, 5);
         let others = sorted.slice(5);
         
-        let data = top5.map(r => ({ name: r.emotionName, value: r.tradeCount, itemStyle: { color: r.impact === 'Positive' ? '#10b981' : r.impact === 'Negative' ? '#f43f5e' : '#94a3b8' } }));
+        let data: any[] = top5.map(r => ({ name: r.emotionName, value: r.tradeCount, itemStyle: { color: r.impact === 'Positive' ? '#10b981' : r.impact === 'Negative' ? '#f43f5e' : '#94a3b8' } }));
         if (others.length > 0) {
-            let othersPos = others.filter(r => r.impact === 'Positive').reduce((acc, r) => acc + r.tradeCount, 0);
-            let othersNeg = others.filter(r => r.impact === 'Negative').reduce((acc, r) => acc + r.tradeCount, 0);
-            let othersNeu = others.filter(r => r.impact === 'Neutral').reduce((acc, r) => acc + r.tradeCount, 0);
-            
-            if (othersPos > 0) data.push({ name: 'Outros (Ganhos)', value: othersPos, itemStyle: { color: 'rgba(16, 185, 129, 0.4)' } });
-            if (othersNeg > 0) data.push({ name: 'Outros (Perdas)', value: othersNeg, itemStyle: { color: 'rgba(244, 63, 94, 0.4)' } });
-            if (othersNeu > 0) data.push({ name: 'Outros (Neutros)', value: othersNeu, itemStyle: { color: 'rgba(148, 163, 184, 0.4)' } });
+            let othersTotal = others.reduce((acc, r) => acc + r.tradeCount, 0);
+            if (othersTotal > 0) {
+                data.push({ 
+                    name: 'Outros', 
+                    value: othersTotal, 
+                    itemStyle: { color: '#18181b', borderColor: '#27272a', borderWidth: 1 },
+                    label: { show: false },
+                    labelLine: { show: false }
+                });
+            }
         }
         return {
             backgroundColor: 'transparent',
