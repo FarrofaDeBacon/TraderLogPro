@@ -543,67 +543,88 @@
         };
     });
 
-    const scatterChartOptions = $derived.by(() => {
+    const radarChartOptions = $derived.by(() => {
         if (!psychoDiagnosis || psychoDiagnosis.matrix.length === 0) return null;
         
-        let seriesData = psychoDiagnosis.matrix.map(r => [
-            parseFloat((r.winRate * 100).toFixed(1)), 
-            parseFloat(r.totalPnL.toFixed(2)),        
-            r.tradeCount,                             
-            r.emotionName,                            
-            r.impact                                  
-        ]);
+        // Usar as Top 8 Emoções mais frequentes
+        let topEmotions = [...psychoDiagnosis.matrix].filter(r => r.tradeCount > 0).sort((a,b) => b.tradeCount - a.tradeCount).slice(0, 8);
+        if (topEmotions.length === 0) return null;
         
+        let rawPnLValues = topEmotions.map(e => e.totalPnL);
+        let maxAbsPnl = Math.max(...rawPnLValues.map(v => Math.abs(v)), 100); // Prevenindo divisão por 0
+        
+        let radarIndicators = topEmotions.map(e => ({ name: e.emotionName, max: 100, min: 0 }));
+        
+        let normalizedPnLData = topEmotions.map(e => {
+            let score = ((e.totalPnL / maxAbsPnl) * 50) + 50; 
+            return isNaN(score) ? 50 : Math.max(0, Math.min(100, score));
+        });
+        
+        let winRateData = topEmotions.map(e => (e.winRate * 100));
+
         return {
-            tooltip: { 
-                trigger: 'item', 
-                backgroundColor: 'rgba(10, 10, 10, 0.95)', 
-                borderColor: '#27272a', 
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: 'rgba(10, 10, 10, 0.95)',
+                borderColor: '#27272a',
                 textStyle: { color: '#fff' },
-                formatter: (params:any) => { 
-                    // Se for um markPoint, acesse diferentemente ou trate
-                    if (params.componentType === 'markPoint') return params.name;
-                    let d = params.data; 
-                    if (!d) return '';
-                    return `<div class="font-bold mb-1 uppercase tracking-widest text-[10px] text-muted-foreground">${d[3]}</div><div class="flex justify-between gap-4"><span>PnL:</span><span class="${d[1] >= 0 ? 'text-emerald-500':'text-rose-500'} font-bold">${formatCurrency(d[1])}</span></div><div class="flex justify-between gap-4 mt-1"><span>Win Rate:</span><span class="font-bold text-foreground">${d[0]}%</span></div><div class="flex justify-between gap-4 mt-1"><span>Trades:</span><span class="font-bold text-foreground">${d[2]}</span></div>`; 
-                } 
+                formatter: (params: any) => {
+                    let html = `<div class="font-bold mb-3 uppercase tracking-widest text-[10px] text-muted-foreground">${params.name}</div>`;
+                    if (params.seriesIndex === 0) { // PnL Data
+                        topEmotions.forEach(e => {
+                            html += `<div class="flex justify-between gap-4 mb-2"><span class="text-xs text-muted-foreground">${e.emotionName}:</span><span class="${e.totalPnL >= 0 ? 'text-emerald-500':'text-rose-500'} font-bold text-xs">${formatCurrency(e.totalPnL)}</span></div>`;
+                        });
+                    } else { // Win Rate Data
+                        topEmotions.forEach(e => {
+                            html += `<div class="flex justify-between gap-4 mb-2"><span class="text-xs text-muted-foreground">${e.emotionName}:</span><span class="font-bold text-foreground text-xs">${(e.winRate*100).toFixed(0)}%</span></div>`;
+                        });
+                    }
+                    return html;
+                }
             },
-            grid: { left: '4%', right: '5%', bottom: '5%', top: '10%', containLabel: true },
-            xAxis: { 
-                type: 'value', 
-                name: 'Win Rate (%)',
-                nameLocation: 'middle',
-                nameGap: 25,
-                nameTextStyle: { color: '#71717a', fontSize: 9, fontWeight: 'bold' },
-                splitLine: { lineStyle: { color: '#27272a', type: 'dashed' } }, 
-                axisLabel: { color: '#71717a', fontSize: 10, formatter: '{value}%' },
-                min: 0,
-                max: 100
+            legend: {
+                data: ['Impacto Financeiro Líquido (PnL)', 'Defesa Analítica (Win Rate)'],
+                bottom: 0,
+                textStyle: { color: '#a1a1aa', fontSize: 10, fontWeight: 'bold' },
+                itemGap: 15
             },
-            yAxis: { 
-                type: 'value', 
-                name: 'PNL Dinheiro',
-                nameTextStyle: { color: '#71717a', fontSize: 9, fontWeight: 'bold' },
-                splitLine: { lineStyle: { color: '#27272a', type: 'dashed' } }, 
-                axisLabel: { color: '#71717a', fontSize: 10, formatter: (val:number) => val >= 1000 || val <= -1000 ? (val/1000).toFixed(1)+'k' : val } 
+            radar: {
+                indicator: radarIndicators,
+                shape: 'polygon',
+                splitNumber: 5,
+                center: ['50%', '42%'],
+                radius: '65%',
+                axisName: { color: '#a1a1aa', fontSize: 10, fontWeight: 'bold', textShadowColor: '#000', textShadowBlur: 2 },
+                splitLine: { lineStyle: { color: ['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.08)', 'rgba(59, 130, 246, 0.2)'] } },
+                splitArea: { show: false },
+                axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.1)' } }
             },
-            series: [{ 
-                type: 'scatter', 
-                data: seriesData, 
-                symbolSize: (data:any) => Math.max(15, Math.min(60, data[2] * 4)),
-                itemStyle: { 
-                    color: (params:any) => params.data[1] >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(244, 63, 94, 0.7)',
-                    borderColor: (params:any) => params.data[1] >= 0 ? '#10b981' : '#f43f5e',
-                    borderWidth: 2
-                },
-                label: { show: true, formatter: (params:any) => params.data[3], position: 'top', color: '#a1a1aa', fontSize: 9, fontWeight: 'bold' },
-                markPoint: {
+            series: [
+                {
+                    name: 'Psicologia Analítica',
+                    type: 'radar',
                     data: [
-                        { type: 'max', name: 'Maior Lucro', itemStyle: { color: '#10b981' }, label: { formatter: 'Melhor', color: '#fff', fontSize: 8, fontWeight: 'bold'} },
-                        { type: 'min', name: 'Maior Prejuízo', itemStyle: { color: '#f43f5e' }, label: { formatter: 'Pior', color: '#fff', fontSize: 8, fontWeight: 'bold'} }
+                        {
+                            value: normalizedPnLData,
+                            name: 'Impacto Financeiro Líquido (PnL)',
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            itemStyle: { color: '#10b981' },
+                            areaStyle: { color: 'rgba(16, 185, 129, 0.3)' },
+                            lineStyle: { width: 2, color: '#10b981' }
+                        },
+                        {
+                            value: winRateData,
+                            name: 'Defesa Analítica (Win Rate)',
+                            symbol: 'circle',
+                            symbolSize: 4,
+                            itemStyle: { color: '#3b82f6' },
+                            areaStyle: { color: 'rgba(59, 130, 246, 0.1)' },
+                            lineStyle: { type: 'dashed', width: 2, color: '#3b82f6' }
+                        }
                     ]
                 }
-            }]
+            ]
         };
     });
 
@@ -841,8 +862,8 @@
             <!-- Camada Estratégica: Gráficos -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4">
                 <!-- Pie Chart (Donut) -->
-                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Distribuição Emocional</h3>
+                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
+                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Freqüência de Exposição</h3>
                     <div class="flex-1 w-full relative">
                         {#if donutChartOptions && donutChartOptions.series[0].data.length > 0}
                             <EChart options={donutChartOptions} />
@@ -852,14 +873,14 @@
                     </div>
                 </div>
 
-                <!-- Scatter/Bubble Chart -->
-                <div class="lg:col-span-8 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Dispersão de Performance (Win Rate x PnL)</h3>
+                <!-- Radar Chart (Teia de Aranha) -->
+                <div class="lg:col-span-8 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
+                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Mapeamento Clínico (Perfil Impacto x Assertividade)</h3>
                     <div class="flex-1 w-full relative">
-                        {#if scatterChartOptions && scatterChartOptions.series[0].data.length > 0}
-                            <EChart options={scatterChartOptions} />
+                        {#if radarChartOptions}
+                            <EChart options={radarChartOptions} />
                         {:else}
-                            <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Sem dados</div>
+                            <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Sem dados de emoções suficientes</div>
                         {/if}
                     </div>
                 </div>
