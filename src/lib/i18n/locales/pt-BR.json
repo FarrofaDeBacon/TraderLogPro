@@ -1096,6 +1096,7 @@
             "labels": {
                 "brokerageProfile": "Perfil de Corretagem",
                 "fiscalProfile": "Perfil Fiscal",
+                "none": "Nenhum",
                 "noneDefault": "Nenhum / Padrão",
                 "noneExempt": "Nenhum / Isento"
             },
