@@ -19,7 +19,7 @@
             "pnlByEmotion": "Pnl By Emotion",
             "resultTitle": "Résultat Financier par Émotion",
             "winRate": "Win Rate",
-            "winRateTitle": "Taux de Réussite par Émotion (%)",
+            "winRateTitle": "Win Rate par Émotion (%)",
             "theMap": "La Carte",
             "top5": "Top 5 Segmentés",
             "equityCurve": "Courbe de Capital Tactique pour la Période",
@@ -80,7 +80,7 @@
             "tiltCost": "Coût du Tilt",
             "tiltDescription": "Sur {count} trades avec émotions négatives",
             "unregistered": "Trades Non Enregistrés",
-            "unregisteredDescription": "Opérations sans état émotionnel",
+            "unregisteredDescription": "Trades sans état émotionnel",
             "worstMindset": "Pire État d'Esprit"
         },
         "list": {
@@ -100,7 +100,7 @@
             "psychoScore": "Psycho Score",
             "bestPerformance": "Meilleure Performance",
             "offender": "Le Délinquant",
-            "negativeLosses": "Pertes Négatives",
+            "negativeLosses": "Losses Négatives",
             "score": "SCORE"
         },
         "ai": {

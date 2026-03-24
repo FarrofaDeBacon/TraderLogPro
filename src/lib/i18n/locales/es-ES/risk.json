@@ -154,7 +154,7 @@
             "max_exposure": "La suma de contratos excede el límite permitido.",
             "day_trade_only": "El plan de la Firma solo permite el modo Day Trade.",
             "min_operated_days": "Días mínimos operados no alcanzados.",
-            "max_share_50": "La ganancia del mejor día excede el límite (Regla del 50%).",
+            "max_share_50": "La Gain del mejor día excede el límite (Regla del 50%).",
             "consistency_failed": "La regla de consistencia falló.",
             "consistency_pending": "Regla de consistencia pendiente."
         },

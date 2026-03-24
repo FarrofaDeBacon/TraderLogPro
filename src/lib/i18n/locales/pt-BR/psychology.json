@@ -19,7 +19,7 @@
             "pnlByEmotion": "Resultado Financeiro por Emoção",
             "resultTitle": "Resultado vs Emocional",
             "winRate": "Eficiência %",
-            "winRateTitle": "Taxa de Acerto vs Emocional",
+            "winRateTitle": "Win Rate vs Emocional",
             "theMap": "O Mapa",
             "top5": "Top 5 Segmentados",
             "equityCurve": "Curva de Capital Tática no Período",
@@ -61,7 +61,7 @@
             "exitStateShort": "ESTADO EXT. (CURTO)",
             "intensityShort": "INTENSIDADE",
             "score": "Nota (0-10)",
-            "title": "Registros e Entradas Diretas"
+            "title": "Registros e Trades Diretos"
         },
         "journalList": {
             "date": "Data",
@@ -72,7 +72,7 @@
             "title": "Diário Emocional"
         },
         "kpi": {
-            "accumulatedLoss": "Perda Acumulada",
+            "accumulatedLoss": "Prejuízo Acumulado",
             "bestMindset": "Melhor Estado Mental",
             "consolidated": "Consolidado",
             "records": "Registros de Diário",

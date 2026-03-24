@@ -5,9 +5,9 @@
             "delete": "Supprimer",
             "delete_day": "Supprimer Jour",
             "edit": "Modifier",
-            "import": "Importer Opérations",
+            "import": "Importer Trades",
             "import_profit": "Importer Profit",
-            "new_trade": "Enregistrer Opération",
+            "new_trade": "Enregistrer Trade",
             "view": "Voir Détails"
         },
         "status": {
@@ -18,10 +18,10 @@
             "weekOf": "Semaine du {date}"
         },
         "delete": {
-            "confirmation": "Êtes-vous sûr de vouloir supprimer cette opération ? Cette action ne peut pas être annulée.",
-            "confirmation_with_closure": "Cette opération fait partie d'une Clôture Journalière. Le solde sera automatiquement recalculé après la suppression. Êtes-vous sûr de vouloir supprimer ?",
-            "day_confirmation": "Êtes-vous sûr de vouloir supprimer toutes les {count} opérations du jour {date} ? Cette action ne peut pas être annulée.",
-            "title": "Supprimer Opération"
+            "confirmation": "Êtes-vous sûr de vouloir supprimer cette Trade ? Cette action ne peut pas être annulée.",
+            "confirmation_with_closure": "Cette Trade fait partie d'une Clôture Journalière. Le solde sera automatiquement recalculé après la suppression. Êtes-vous sûr de vouloir supprimer ?",
+            "day_confirmation": "Êtes-vous sûr de vouloir supprimer toutes les {count} Trades du jour {date} ? Cette action ne peut pas être annulée.",
+            "title": "Supprimer Trade"
         },
         "details": {
             "basic_info": "Informations de Base",
@@ -37,7 +37,7 @@
             "no_media": "Aucune image jointe.",
             "no_notes": "Aucune note enregistrée.",
             "no_records": "Aucun enregistrement",
-            "notes": "Notes de l'Opération",
+            "notes": "Notes de l'Trade",
             "partial_exits": "Sorties Partielles",
             "partial_date": "Date/Heure",
             "partial_price": "Prix",
@@ -46,7 +46,7 @@
             "psychology": "Psychologie",
             "stop_loss": "Stop Loss",
             "take_profit": "Take Profit",
-            "title": "Détails de l'Opération"
+            "title": "Détails de l'Trade"
         },
         "empty": {
             "description": "Connectez votre plateforme ou ajoutez des trades manuellement.",
@@ -64,10 +64,10 @@
             "strategy": "Stratégie",
             "title": "Filtres"
         },
-        "import": "Importer Opérations",
+        "import": "Importer Trades",
         "messages": {
             "all_period": "Toute la Période",
-            "delete_success": "Opération supprimée avec succès.",
+            "delete_success": "Trade supprimée avec succès.",
             "trade_created": "Transaction créée!",
             "trade_updated": "Transaction mise à jour!",
             "trades_count": "transactions",
@@ -81,13 +81,13 @@
         },
         "quickStats": {
             "openTrades": "Ouverts",
-            "openTradesDesc": "Positions Actuelles",
+            "openTradesDesc": "Trades Actuelles",
             "avgInterval": "Intervalle Entre Trades",
-            "avgIntervalDesc": "Temps moyen entre les opérations exécutées",
+            "avgIntervalDesc": "Temps moyen entre les Trades exécutées",
             "profitFactor": "Facteur de Profit",
             "profitFactorDesc": "Facteur de Rentabilité",
             "totalBalance": "Solde Total",
-            "winRate": "Taux de Réussite",
+            "winRate": "Win Rate",
             "winRateDesc": "{winners} sur {total} Trades"
         },
         "sidebar": {
@@ -99,7 +99,7 @@
         },
         "stats": {
             "avg_rr": "R:R Moyen",
-            "closed_trades": "Opérations Clôturées",
+            "closed_trades": "Trades Clôturées",
             "daily_pnl": "P&L Quotidien",
             "open_trades": "ouvertes",
             "profit_factor": "Profit Factor",
@@ -107,10 +107,10 @@
             "total_pnl": "P&L Total",
             "total_trades": "Total de Trades",
             "trades": "trades",
-            "win_rate": "Taux de Réussite",
+            "win_rate": "Win Rate",
             "winners": "gagnants"
         },
-        "subtitle": "Visualisez et gérez votre historique d'opérations.",
+        "subtitle": "Visualisez et gérez votre historique d'Trades.",
         "table": {
             "actions": "Actions",
             "asset": "Actif",
@@ -129,12 +129,12 @@
             "status_open": "Ouvert",
             "strategy": "Stratégie"
         },
-        "title": "Mes Opérations",
+        "title": "Mes Trades",
         "wizard": {
             "adherence": {
                 "no_msg": "Il y a eu déviation des règles du setup.",
                 "title": "Adhérence au Plan",
-                "yes_msg": "Opération exécutée selon la stratégie."
+                "yes_msg": "Trade exécutée selon la stratégie."
             },
             "auto_detection": {
                 "ignore": "Ignorer",
@@ -146,13 +146,13 @@
                 "equity": {
                     "capital": "Capital",
                     "drawdown": "Drawdown",
-                    "empty": "Aucune opération dans la période"
+                    "empty": "Aucune Trade dans la période"
                 },
                 "outcome": {
                     "be": "BE",
-                    "empty": "Aucune opération",
+                    "empty": "Aucune Trade",
                     "gain": "Gain",
-                    "loss": "Perte",
+                    "loss": "Loss",
                     "trades_label": "TRADES",
                     "vazio": "V vide"
                 }
@@ -231,8 +231,8 @@
                 "save_success": "Trade enregistré !",
                 "save_success_with_sync": "Trade enregistré et clôture journalière mise à jour !",
                 "select_asset": "Sélectionner un actif",
-                "update_error": "Erreur lors de la mise à jour de l'opération.",
-                "update_success": "Opération mise à jour !",
+                "update_error": "Erreur lors de la mise à jour de l'Trade.",
+                "update_success": "Trade mise à jour !",
                 "valid_asset_type": "Veuillez sélectionner un type d'actif valide.",
                 "complementary_darf_warning": "Atenção: Aumento de resultado detectado!",
                 "invalid_asset_symbol": "Symbole d'actif invalide ou non enregistré.",
@@ -268,8 +268,8 @@
             "risk": {
                 "alerts_title": "Alertes de Risque",
                 "emotional_warning": "Déviation Émotionnelle : Votre poids actuel ({weight}) est inférieur au seuil ({threshold}). Nous suggérons de réduire le lot de {percent}%.",
-                "outlier_warning": "Détection d'Outlier : Nous avons identifié des pertes récentes en dehors de la courbe statistique normale.",
-                "sniper_warning": "Limite Sniper : Vous avez déjà effectué {current} des {limit} opérations autorisées pour aujourd'hui.",
+                "outlier_warning": "Détection d'Outlier : Nous avons identifié des Losses récentes en dehors de la courbe statistique normale.",
+                "sniper_warning": "Limite Sniper : Vous avez déjà effectué {current} des {limit} Trades autorisées pour aujourd'hui.",
                 "reduce_lot_button": "RÉDUIRE LE LOT DE {percent}%",
                 "toast_lot_adjusted": "Lot ajusté avec succès !"
             },
@@ -277,7 +277,7 @@
                 "asset_direction": "Actif et Direction",
                 "calc_memory": "Mémoire de Calcul",
                 "closing_data": "Données de Clôture",
-                "context": "Contexte de l'Opération",
+                "context": "Contexte de l'Trade",
                 "execution_details": "Détails de l'Exécution",
                 "final_summary": "Résumé Final",
                 "partial_management": {
@@ -337,9 +337,9 @@
                 "partial_exit": "Sortie Partielle",
                 "plan": "Plan",
                 "prev": "Précédent",
-                "recording": "Enregistrement de l'Opération...",
+                "recording": "Enregistrement de l'Trade...",
                 "s": "O",
-                "save_btn": "ENREGISTRER L'OPÉRATION",
+                "save_btn": "ENREGISTRER L'Trade",
                 "save_trade": "Enregistrer le Trade",
                 "saving": "Enregistrement...",
                 "total_fees": "Total des Frais",
@@ -353,8 +353,8 @@
                 "60m": "60 Minutes",
                 "d": "Quotidien"
             },
-            "title_edit": "Modifier l'Opération",
-            "title_new": "Nouvelle Opération",
+            "title_edit": "Modifier l'Trade",
+            "title_new": "Nouvelle Trade",
             "tooltips": {
                 "risk": "Risque",
                 "target": "Cible"

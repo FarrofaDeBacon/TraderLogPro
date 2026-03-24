@@ -25,7 +25,7 @@
             "title": "Estrategia vs Psicología",
             "dominantState": "Estado Dominante",
             "netProfit": "Beneficio Neto",
-            "loss": "Pérdida",
+            "loss": "Loss",
             "history": "Su historial algorítmico de comportamiento en la mesa."
         }
     }

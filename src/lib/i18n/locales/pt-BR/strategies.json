@@ -184,7 +184,7 @@
             "analyticalConfluence": "Confluência Analítica",
             "confluenceDesc": "Como esta estratégia reage às Leis Matemáticas de Gann",
             "cycleWatch": "Vigilância de Ciclo",
-            "cycleWatchDesc": "Taxa de Acerto em Datas Naturais",
+            "cycleWatchDesc": "Win Rate em Datas Naturais",
             "geometricPrecision": "Precisão Geométrica",
             "geometryLaw": "Lei da Geometria",
             "geometryLawDesc": "A Aderência ao Ângulo representa o equilíbrio entre Preço e Tempo. Estratégias que respeitam os ângulos geométricos (como 45°) são consideradas estáveis e sustentáveis ao longo do Ciclo Mestre.",
@@ -212,7 +212,7 @@
                     "newsDetected": "⚠️ Notícias de Alto Impacto Detectadas:",
                     "newsNone": "Sem notícias relevantes no calendário hoje.",
                     "prior_levels": "Níveis Chave: Marquei Máxima e Mínima de ontem?",
-                    "riskInput": "Limite de Perda Hoje (R$):",
+                    "riskInput": "Limite de Prejuízo Hoje (R$):",
                     "risk_limit": "Risco: Defini meu Stop Loss máximo para hoje?",
                     "trend_200ma": "Território (200MA): Acima (Touro) ou Abaixo (Urso)?",
                     "trend_20ma": "Tendência (20MA): Preço está respeitando a média de 20?"
@@ -277,7 +277,7 @@
                 "profitFactor": "Profit Factor",
                 "recoveryFactor": "Fator de Recuperação",
                 "totalTrades": "Total de Trades",
-                "winRate": "Taxa de Acerto",
+                "winRate": "Win Rate",
                 "winningTrades": "Trades Vencedores",
                 "worstTrade": "Pior Trade"
             },

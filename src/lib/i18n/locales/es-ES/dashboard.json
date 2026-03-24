@@ -26,7 +26,7 @@
             "equity": "Equity",
             "equitySubtitle": "Equity Subtitle",
             "losses": "DERROTAS",
-            "wins": "VICTORIAS"
+            "wins": "Gains"
         },
         "dailyDetail": {
             "asset": "Activo",
@@ -50,7 +50,7 @@
             "netResult": "Resultado Neto",
             "payoff": "Payoff",
             "profitFactor": "Factor de Beneficio",
-            "winRate": "Tasa de Acierto",
+            "winRate": "Win Rate",
             "avgInterval": "Intervalo Entre Trades"
         },
         "newTrade": "New Trade",
@@ -86,7 +86,7 @@
             "roadmapProgress": "Progreso Roadmap",
             "select": "Seleccionar",
             "statusAlpha": "Operacional Alpha",
-            "statusBlocked": "Bloqueado (Pérdida Máx)",
+            "statusBlocked": "Bloqueado (Loss Máx)",
             "statusRisk": "Alerta de Riesgo",
             "target": "Meta: ",
             "title": "Survivor Hub & Monitoreo",

@@ -1052,9 +1052,9 @@
             "applicability": "Aplicabilidade",
             "dailyGoal": "Meta de Lucro Diária",
             "dailyGoalShort": "Meta Diária",
-            "dailyLossLimit": "Limite de Perda Diária",
+            "dailyLossLimit": "Limite de Prejuízo Diária",
             "dailyLossLimitShort": "Limite Loss",
-            "description": "Defina seus limites de perda e metas para proteger seu capital.",
+            "description": "Defina seus limites de prejuízo e metas para proteger seu capital.",
             "discipline": "Regras de Disciplina",
             "downside": "Proteção (Downside)",
             "edit": "Editar Perfil",
@@ -1075,7 +1075,7 @@
                     "title": "Acoplamento Psicológico"
                 },
                 "sniper": {
-                    "description": "Aumenta o rigor da entrada após sequências de perda.",
+                    "description": "Aumenta o rigor da entrada após sequências de loss.",
                     "selectivity": "Grau de Seletividade",
                     "selectivityTip": "Quanto maior, mais filtros de entrada serão aplicados.",
                     "title": "Modo Sniper"
@@ -1173,7 +1173,7 @@
                 "activeStatus": "Plano de Crescimento Ativo",
                 "addPhase": "Adicionar Nova Fase",
                 "consistency": "Consistência de",
-                "dailyLoss": "Limite de Perda",
+                "dailyLoss": "Limite de Prejuízo",
                 "dailyLossLabel": "Limite Diário",
                 "drawdown": "Drawdown Máximo",
                 "enable": "Habilitar Plano de Crescimento",
@@ -1197,7 +1197,7 @@
                     "lossStreak": "Sequência de Loss",
                     "profit": "Meta de Lucro",
                     "promote": "Requisitos para Avançar",
-                    "winRate": "Taxa de Acerto (%)"
+                    "winRate": "Win Rate (%)"
                 },
                 "status": {
                     "approved": "Aprovado p/ Próxima Fase",

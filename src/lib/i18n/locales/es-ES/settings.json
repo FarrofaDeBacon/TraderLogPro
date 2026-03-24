@@ -46,7 +46,7 @@
         "darfDetails": {
             "calculationBasis": "Base de Cálculo",
             "calculationInfo": "Info de Cálculo",
-            "compensatedLosses": "Pérdidas Compensadas",
+            "compensatedLosses": "Losses Compensadas",
             "complementaryBadge": "Comprobante Complementario",
             "dateNotAvailable": "Fecha no disponible",
             "description": "Información completa de liquidación y pago.",
@@ -290,7 +290,7 @@
                         "netProfit": "Beneficio Neto",
                         "saleAmount": "Valor de Venta"
                     },
-                    "cumulative": "Compensar Pérdidas",
+                    "cumulative": "Compensar Losses",
                     "cumulativeHint": "Cumulative Hint",
                     "revenueCode": "Código de Ingreso",
                     "revenueCodePlaceholder": "Ej: 6015",
@@ -1052,9 +1052,9 @@
             "applicability": "Aplicabilidad",
             "dailyGoal": "Meta Diaria ($)",
             "dailyGoalShort": "Meta Diaria",
-            "dailyLossLimit": "Límite de Pérdida Diaria ($)",
-            "dailyLossLimitShort": "Límite Pérdida",
-            "description": "Define tus límites de pérdida y metas para proteger tu capital.",
+            "dailyLossLimit": "Límite de Loss Diaria ($)",
+            "dailyLossLimitShort": "Límite Loss",
+            "description": "Define tus límites de Loss y metas para proteger tu capital.",
             "discipline": "Disciplina",
             "downside": "Protección (Downside)",
             "edit": "Editar Perfil",
@@ -1075,7 +1075,7 @@
                     "title": "Acoplamiento Psicológico"
                 },
                 "sniper": {
-                    "description": "Aumenta el rigor de la entrada después de secuencias de pérdida.",
+                    "description": "Aumenta el rigor de la entrada después de secuencias de Loss.",
                     "selectivity": "Grado de Selectividad",
                     "selectivityTip": "Cuanto mayor, más filtros de entrada se aplicarán.",
                     "title": "Modo Sniper"
@@ -1114,7 +1114,7 @@
                     "targetType": {
                         "label": "Tipo de Regla",
                         "sum_contracts": "Suma de Contratos",
-                        "max_daily_loss": "Pérdida Máx. Diaria",
+                        "max_daily_loss": "Loss Máx. Diaria",
                         "profit_target": "Meta de Beneficio",
                         "day_trade_only": "Solo Day Trade",
                         "close_before_close": "Cerrar Antes del Cierre",
@@ -1139,7 +1139,7 @@
                     "cancel": "Cancelar",
                     "confirmDelete": "¿Está seguro de que desea eliminar esta regla?",
                     "presets": {
-                        "maxDailyLoss": "Pérdida Máx Diaria",
+                        "maxDailyLoss": "Loss Máx Diaria",
                         "profitTarget": "Meta Financiera",
                         "maxTrades": "Límite de Trades",
                         "dayTradeOnly": "Sólo Day Trade",
@@ -1154,12 +1154,12 @@
                         "combined": "Combinaciones"
                     },
                     "helpers": {
-                        "max_daily_loss": "Bloquea entradas si se alcanza la pérdida.",
-                        "profit_target": "Protege la meta de ganancias.",
+                        "max_daily_loss": "Bloquea entradas si se alcanza la Loss.",
+                        "profit_target": "Protege la meta de Gains.",
                         "sum_contracts": "Máximo de contratos abiertos.",
-                        "day_trade_only": "Evita posiciones overnight.",
+                        "day_trade_only": "Evita Trades overnight.",
                         "close_before_close": "Fuerza cierres antes del cierre de mercado.",
-                        "consistency": "Bloquea aumento de lotes tras pérdidas.",
+                        "consistency": "Bloquea aumento de lotes tras Losses.",
                         "rule_50_percent": "Protege 50% del lucro máximo irrealizado.",
                         "max_trades_per_day": "Limita el total de trades por día."
                     }
@@ -1173,12 +1173,12 @@
                 "activeStatus": "Estado Activo",
                 "addPhase": "Añadir Fase",
                 "consistency": "Consistencia de",
-                "dailyLoss": "Límite de Pérdida",
-                "dailyLossLabel": "Límite de Pérdida Diaria",
+                "dailyLoss": "Límite de Loss",
+                "dailyLossLabel": "Límite de Loss Diaria",
                 "drawdown": "Drawdown Máximo",
                 "enable": "Habilitar Plan de Crecimiento",
                 "enableDesc": "Gestión automática de lotes y límites basada en el rendimiento.",
-                "lossLabel": "Límite de Pérdida",
+                "lossLabel": "Límite de Loss",
                 "maxLotLabel": "Lotes Máx",
                 "maxLots": "Lotes Máximos",
                 "maxLotsLabel": "Lotes Máximos",
@@ -1190,14 +1190,14 @@
                 "regression": "Criterios de Regresión",
                 "requirements": {
                     "consistency": "Consistencia (Días)",
-                    "dailyLoss": "Pérdida Diaria",
+                    "dailyLoss": "Loss Diaria",
                     "days": "Sesiones Positivas",
                     "demote": "Criterios de Regresión",
                     "drawdown": "Drawdown Máximo",
-                    "lossStreak": "Secuencia de Pérdidas",
+                    "lossStreak": "Secuencia de Losses",
                     "profit": "Meta de Beneficio",
                     "promote": "Requisitos para Avanzar",
-                    "winRate": "Tasa de Acierto (%)"
+                    "winRate": "Win Rate (%)"
                 },
                 "status": {
                     "approved": "Aprobado para Siguiente Fase",
@@ -1212,8 +1212,8 @@
                 },
                 "tradingSessions": "Sesiones"
             },
-            "lockOnLoss": "Bloquear Plataforma al Alcanzar Pérdida",
-            "lockOnLossShort": "Bloqueo Pérdida",
+            "lockOnLoss": "Bloquear Plataforma al Alcanzar Loss",
+            "lockOnLossShort": "Bloqueo Loss",
             "lockWarning": "El usuario no podrá abrir nuevas órdenes hasta el día siguiente.",
             "maxRiskPerTrade": "Riesgo Máximo por Trade (%)",
             "maxRiskPerTradeShort": "Riesgo/Trade",
@@ -1226,7 +1226,7 @@
             "profiles": {
                 "activate": "Activar",
                 "active": "Activo",
-                "dailyLoss": "Pérdida Diaria",
+                "dailyLoss": "Loss Diaria",
                 "dailyTarget": "Meta Diaria"
             },
             "title": "Gestión de Riesgo",
@@ -1272,7 +1272,7 @@
                 "noProfileLinkedDesc": "El activo seleccionado no tiene un Perfil de Activo vinculado a este Perfil de Riesgo. Las reglas de Crecimiento no se aplican.",
                 "sourceGlobal": "Plan Global",
                 "sourceAsset": "Específico del Activo",
-                "consecutiveLossDays": "Días de Pérdida Consecutivos"
+                "consecutiveLossDays": "Días de Loss Consecutivos"
             }
         },
         "strategies": {

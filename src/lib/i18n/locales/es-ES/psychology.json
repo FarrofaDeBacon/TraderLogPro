@@ -19,7 +19,7 @@
             "pnlByEmotion": "Pnl By Emotion",
             "resultTitle": "Resultado Financiero por Emoción",
             "winRate": "Win Rate",
-            "winRateTitle": "Tasa de Acierto por Emoción (%)",
+            "winRateTitle": "Win Rate por Emoción (%)",
             "theMap": "El Mapa",
             "top5": "Top 5 Segmentados",
             "equityCurve": "Curva de Capital Táctica en el Período",
@@ -100,7 +100,7 @@
             "psychoScore": "Psycho Score",
             "bestPerformance": "Mejor Rendimiento",
             "offender": "El Ofensor",
-            "negativeLosses": "Pérdidas Negativas",
+            "negativeLosses": "Losses Negativas",
             "score": "SCORE"
         },
         "ai": {

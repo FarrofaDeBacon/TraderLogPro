@@ -184,7 +184,7 @@
             "analyticalConfluence": "Confluência Analítica",
             "confluenceDesc": "Cómo reacciona esta estrategia a las Leyes Matemáticas de Gann",
             "cycleWatch": "Vigilancia de Ciclo",
-            "cycleWatchDesc": "Tasa de Acierto en Fechas Naturales",
+            "cycleWatchDesc": "Win Rate en Fechas Naturales",
             "geometricPrecision": "Precisión Geométrica",
             "geometryLaw": "Ley de la Geometría",
             "geometryLawDesc": "La adherencia al ángulo representa el equilibrio entre Precio y Tiempo. Las estrategias que respetan los ángulos geométricos (como 45°) se consideran estables y sostenibles a lo largo del Ciclo Maestro.",
@@ -240,18 +240,18 @@
                 },
                 "legend": {
                     "breakeven": "Breakeven",
-                    "loss": "Pérdida",
-                    "profit": "Ganancia",
-                    "strongLoss": "Pérdida Alta",
-                    "strongProfit": "Ganancia Alta"
+                    "loss": "Loss",
+                    "profit": "Gain",
+                    "strongLoss": "Loss Alta",
+                    "strongProfit": "Gain Alta"
                 },
                 "noMarket": "Sin mercado vinculado",
                 "subtitle": "Rendimiento acumulado por Día y Hora",
                 "title": "Mapa de Calor (P&L)",
                 "tooltip": {
-                    "loss": "Pérdida",
+                    "loss": "Loss",
                     "neutral": "Neutro",
-                    "profit": "Ganancia",
+                    "profit": "Gain",
                     "status": "Estado"
                 }
             },
@@ -259,15 +259,15 @@
                 "noTrades": "Sin operaciones en el período seleccionado."
             },
             "stats": {
-                "averageLoss": "Pérdida Media",
-                "averageWin": "Ganancia Media",
-                "avgDurationLoss": "Duración Media (Pérdida)",
-                "avgDurationWin": "Duración Promedio (Ganancia)",
+                "averageLoss": "Loss Media",
+                "averageWin": "Gain Media",
+                "avgDurationLoss": "Duración Media (Loss)",
+                "avgDurationWin": "Duración Promedio (Gain)",
                 "avgInterval": "Intervalo Medio",
                 "avgTimeBetweenTrades": "Tiempo Medio entre Trades",
                 "bestTrade": "Mejor Trade",
-                "consecutiveLosses": "Pérdidas Consecutivas",
-                "consecutiveWins": "Victorias Consecutivas",
+                "consecutiveLosses": "Losses Consecutivas",
+                "consecutiveWins": "Gains Consecutivas",
                 "mathExpectation": "Expectativa Matemática",
                 "maxDrawdown": "Max Drawdown",
                 "netResult": "Resultado Neto",
@@ -277,7 +277,7 @@
                 "profitFactor": "Profit Factor",
                 "recoveryFactor": "Factor de Recuperación",
                 "totalTrades": "Total de Trades",
-                "winRate": "Tasa de Acierto",
+                "winRate": "Win Rate",
                 "winningTrades": "Trades Ganadores",
                 "worstTrade": "Peor Trade"
             },

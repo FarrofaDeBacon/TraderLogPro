@@ -50,7 +50,7 @@
             "netResult": "Resultado Líquido",
             "payoff": "Payoff",
             "profitFactor": "Fator de Lucro",
-            "winRate": "Taxa de Acerto",
+            "winRate": "Win Rate",
             "avgInterval": "Intervalo Entre Trades"
         },
         "newTrade": "Novo Trade",

@@ -153,13 +153,13 @@
             "invalid_asset": "L'actif sélectionné n'est pas autorisé par les règles.",
             "max_exposure": "La somme des contrats dépasse la limite autorisée.",
             "day_trade_only": "Le plan n'autorise que le mode Day Trade.",
-            "min_operated_days": "Jours d'opération minimum non atteints.",
+            "min_operated_days": "Jours d'Trade minimum non atteints.",
             "max_share_50": "Le bénéfice du meilleur jour dépasse la limite (Règle des 50%).",
             "consistency_failed": "La règle de cohérence a échoué.",
             "consistency_pending": "Règle de cohérence en attente."
         },
         "warnings": {
-            "day_trade_only": "Règle Day Trade Only activée, mais délai d'opération actuel non fourni.",
+            "day_trade_only": "Règle Day Trade Only activée, mais délai d'Trade actuel non fourni.",
             "time_constraint": "Règle de clôture temporaire configurée, mais contexte horaire actuel indisponible.",
             "table_disabled": "Firme désactivée. Audit ignoré."
         }

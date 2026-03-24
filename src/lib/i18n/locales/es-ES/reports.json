@@ -74,7 +74,7 @@
             "history": "Historial de Liquidaciones",
             "kpis": {
                 "dueYearHint": "Acumulado a pagar este año.",
-                "losses": "Pérdidas Acumuladas",
+                "losses": "Losses Acumuladas",
                 "paidYearHint": "Suma de comprobantes pagados.",
                 "pending": "Comprobantes Pendientes",
                 "pendingHint": "Tiene {count} DARF(s) pendiente(s).",
@@ -146,7 +146,7 @@
             "noDailyReview": "Operó sin revisión diaria. Reduce la capacidad de auditoría.",
             "documentedSessions": "Sesiones Documentadas",
             "daysRead": "Días Leídos",
-            "lossesUnderNegative": "de las pérdidas ocurrieron bajo estado negativo",
+            "lossesUnderNegative": "de las Losses ocurrieron bajo estado negativo",
             "primaryObservations": "Observaciones Primarias",
             "unsupportedEvaluations": "Evaluaciones no soportadas por textos.",
             "finalDiagnosis": "Diagnóstico Final",

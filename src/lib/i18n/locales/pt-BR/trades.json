@@ -87,7 +87,7 @@
             "profitFactor": "Fator de Lucro",
             "profitFactorDesc": "Fator de Lucratividade",
             "totalBalance": "Saldo Total",
-            "winRate": "Taxa de Acerto",
+            "winRate": "Win Rate",
             "winRateDesc": "{winners} de {total} Trades"
         },
         "sidebar": {
@@ -107,7 +107,7 @@
             "total_pnl": "P&L Total",
             "total_trades": "Trades Realizadas",
             "trades": "trades",
-            "win_rate": "Taxa de Acerto",
+            "win_rate": "Win Rate",
             "winners": "acertos"
         },
         "subtitle": "Visualize e gerencie seu histórico detalhado de trades.",

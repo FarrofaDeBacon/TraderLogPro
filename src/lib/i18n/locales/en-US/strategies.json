@@ -184,7 +184,7 @@
             "analyticalConfluence": "Analytical Confluence",
             "confluenceDesc": "How this strategy reacts to Gann's Mathematical Laws",
             "cycleWatch": "Cycle Watch",
-            "cycleWatchDesc": "Hit Rate on Natural Dates",
+            "cycleWatchDesc": "Win Rate on Natural Dates",
             "geometricPrecision": "Geometric Precision",
             "geometryLaw": "Law of Geometry",
             "geometryLawDesc": "Angle Adherence represents the balance between Price and Time. Strategies that respect geometric angles (like 45°) are considered stable and sustainable throughout the Master Cycle.",

@@ -1154,7 +1154,7 @@
                         "combined": "Combined Assets"
                     },
                     "helpers": {
-                        "max_daily_loss": "Blocks new entries if loss limit is hit.",
+                        "max_daily_loss": "Blocks new entries if Loss Limit is hit.",
                         "profit_target": "Blocks entries to protect profit target.",
                         "sum_contracts": "Maximum concurrent open contracts.",
                         "day_trade_only": "Prevents holding positions overnight.",

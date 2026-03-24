@@ -46,7 +46,7 @@
         "darfDetails": {
             "calculationBasis": "Base de Calcul",
             "calculationInfo": "Infos de Calcul",
-            "compensatedLosses": "Pertes Compensées",
+            "compensatedLosses": "Losses Compensées",
             "complementaryBadge": "Justificatif Complémentaire",
             "dateNotAvailable": "Date non disponible",
             "description": "Informations complètes sur l'évaluation et le paiement.",
@@ -168,7 +168,7 @@
                 "entryWithCurrency": "Entrée ({currency})",
                 "feePercent": "Taux (%)"
             },
-            "newOperation": "Nouvelle Opération",
+            "newOperation": "Nouvelle Trade",
             "operationShortDesc": "Enregistrez des dépôts, retraits ou transferts entre comptes.",
             "subtitle": "Enregistrez manuellement les dépôts ou retraits.",
             "tabs": {
@@ -290,7 +290,7 @@
                         "netProfit": "Bénéfice Net",
                         "saleAmount": "Montant de la Vente"
                     },
-                    "cumulative": "Compenser les Pertes",
+                    "cumulative": "Compenser les Losses",
                     "cumulativeHint": "Cumulative Hint",
                     "revenueCode": "Code de Recette",
                     "revenueCodePlaceholder": "Ex: 6015",
@@ -719,7 +719,7 @@
                 "currencySpreadHint": "Transfert international",
                 "customCosts": "Coûts Personnalisés",
                 "customTaxes": "Impôts Personnalisés",
-                "description": "Configurez tous les coûts impliqués dans l'opération.",
+                "description": "Configurez tous les coûts impliqués dans l'Trade.",
                 "exchangeFee": "Frais de Bourse (%)",
                 "exchangeFeeHint": "Taxe d'échange",
                 "fixed": "Fixe ($)",
@@ -748,7 +748,7 @@
                 "simExchange": "Bourse :",
                 "simFixed": "Fixe :",
                 "simPercent": "% Courtage :",
-                "simulation": "Simulation (Opération de {value})",
+                "simulation": "Simulation (Trade de {value})",
                 "taxConfiguration": "Configuration des Impôts (Revenu)",
                 "taxes": "Impôts",
                 "titleEdit": "Modifier Profil de Frais",
@@ -881,7 +881,7 @@
             "title": "Marchés"
         },
         "modalities": {
-            "description": "Définissez les types d'opérations que vous effectuez (Day Trade, Swing Trade, etc.).",
+            "description": "Définissez les types d'Trades que vous effectuez (Day Trade, Swing Trade, etc.).",
             "edit": "Modifier Modalité",
             "empty": "Aucune modalité trouvée",
             "form": {
@@ -1052,11 +1052,11 @@
             "applicability": "Applicabilité",
             "dailyGoal": "Objectif Journalier ($)",
             "dailyGoalShort": "Objectif Journalier",
-            "dailyLossLimit": "Limite de Perte Journalière ($)",
-            "dailyLossLimitShort": "Limite de Perte",
+            "dailyLossLimit": "Limite de Loss Journalière ($)",
+            "dailyLossLimitShort": "Limite de Loss",
             "description": "Définissez vos paramètres de gestion des risques et objectifs financiers.",
             "discipline": "Discipline",
-            "downside": "Protection (Perte Max)",
+            "downside": "Protection (Loss Max)",
             "edit": "Modifier Profil",
             "engine": {
                 "outlier": {
@@ -1069,13 +1069,13 @@
                     "lookback": "Fenêtre d'Activation",
                     "multiplier": "Facteur de Réduction",
                     "strategy": "Stratégie de Recherche",
-                    "strategySequence": "Séquentielle (Pertes Consécutives)",
+                    "strategySequence": "Séquentielle (Losses Consécutives)",
                     "strategyStrict": "Stricte (Moyenne Mobile)",
                     "threshold": "Limite de Déviation (Z-Score)",
                     "title": "Couplage Psychologique"
                 },
                 "sniper": {
-                    "description": "Augmente la rigueur d'entrée après des séquences de pertes.",
+                    "description": "Augmente la rigueur d'entrée après des séquences de Losses.",
                     "selectivity": "Degré de Sélectivité",
                     "selectivityTip": "Plus il est élevé, plus de filtres d'entrée seront appliqués.",
                     "title": "Mode Sniper"
@@ -1173,12 +1173,12 @@
                 "activeStatus": "Statut Actif",
                 "addPhase": "Ajouter une Phase",
                 "consistency": "Consistance de",
-                "dailyLoss": "Limite de Perte",
-                "dailyLossLabel": "Limite de Perte Quotidienne",
+                "dailyLoss": "Limite de Loss",
+                "dailyLossLabel": "Limite de Loss Quotidienne",
                 "drawdown": "Drawdown Maximum",
                 "enable": "Activer le Plan de Croissance",
                 "enableDesc": "Gestion automatique des lots et des limites basée sur la performance.",
-                "lossLabel": "Limite de Perte",
+                "lossLabel": "Limite de Loss",
                 "maxLotLabel": "Lots Max",
                 "maxLots": "Lots Maximum",
                 "maxLotsLabel": "Lots Maximum",
@@ -1190,14 +1190,14 @@
                 "regression": "Critères de Régression",
                 "requirements": {
                     "consistency": "Cohérence (Jours)",
-                    "dailyLoss": "Perte Quotidienne",
+                    "dailyLoss": "Loss Quotidienne",
                     "days": "Sessions Positives",
                     "demote": "Critères de Régression",
                     "drawdown": "Drawdown Maximum",
-                    "lossStreak": "Série de Pertes",
+                    "lossStreak": "Série de Losses",
                     "profit": "Objectif de Profit",
                     "promote": "Conditions de Progression",
-                    "winRate": "Taux de Réussite (%)"
+                    "winRate": "Win Rate (%)"
                 },
                 "status": {
                     "approved": "Approuvé pour la Phase Suivante",
@@ -1212,8 +1212,8 @@
                 },
                 "tradingSessions": "Sessions"
             },
-            "lockOnLoss": "Bloquer la Plateforme à la Limite de Perte",
-            "lockOnLossShort": "Blocage Perte",
+            "lockOnLoss": "Bloquer la Plateforme à la Limite de Loss",
+            "lockOnLossShort": "Blocage Loss",
             "lockWarning": "Attention : Cela empêchera l'ouverture de nouveaux ordres jusqu'au jour suivant.",
             "maxRiskPerTrade": "Risque Max par Trade (%)",
             "maxRiskPerTradeShort": "Risque/Trade",
@@ -1226,7 +1226,7 @@
             "profiles": {
                 "activate": "Activer",
                 "active": "Actif",
-                "dailyLoss": "Perte Quotidienne",
+                "dailyLoss": "Loss Quotidienne",
                 "dailyTarget": "Objectif Quotidien"
             },
             "title": "Risque & Objectifs",
@@ -1272,7 +1272,7 @@
                 "noProfileLinkedDesc": "L'actif sélectionné n'a pas de Profil d'Actif lié à ce Profil de Risque. Les règles de Croissance ne s'appliquent pas.",
                 "sourceGlobal": "Plan Global",
                 "sourceAsset": "Spécifique à l'Actif",
-                "consecutiveLossDays": "Jours de Perte Consécutifs"
+                "consecutiveLossDays": "Jours de Loss Consécutifs"
             }
         },
         "strategies": {
