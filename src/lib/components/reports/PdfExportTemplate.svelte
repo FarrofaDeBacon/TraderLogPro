@@ -270,7 +270,7 @@
                                 {#if report.psychologyStats.lossPercentageInNegativeState !== null}
                                 <div style="border-top-width: 1px; border-color: #e5e7eb;" class="mt-3 pt-2 border-solid">
                                     <p style="color: #6b7280;" class="text-[8px] leading-tight">
-                                        <span style="color: #e11d48; font-weight: bold;">{(report.psychologyStats.lossPercentageInNegativeState * 100).toFixed(0)}% {$t('reports.pdf.lossesUnderNegative')} <span style="font-weight: bold; text-transform: uppercase;">({report.psychologyStats.dominantNegativeEmotion})</span>. 
+                                        <span style="color: #e11d48; font-weight: bold;">{(report.psychologyStats.lossPercentageInNegativeState * 100).toFixed(0)}% {$t('reports.pdf.lossesUnderNegative')} <span style="font-weight: bold; text-transform: uppercase;">({report.psychologyStats.dominantNegativeEmotion})</span></span>. 
                                     </p>
                                 </div>
                                 {/if}

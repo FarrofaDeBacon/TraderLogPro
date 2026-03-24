@@ -177,28 +177,45 @@ O JSON deve obedecer estritamente esta estrutura:
         
         if (config.provider === 'google_gemini') {
             const API_KEY = config.api_key.trim();
-            const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-            
-            const reqBody = {
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: {
-                    temperature: 0.1,
-                    responseMimeType: "application/json"
+            const modelsToTry = ['gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-2.5-flash', 'gemini-1.5-pro'];
+            let lastGeminiError = "Falha desconhecida";
+
+            for (const model of modelsToTry) {
+                try {
+                    const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
+                    
+                    const reqBody = {
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: {
+                            temperature: 0.1,
+                            responseMimeType: "application/json"
+                        }
+                    };
+                    
+                    const response = await fetch(ENDPOINT, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(reqBody)
+                    });
+                    
+                    if (!response.ok) {
+                        const errData = await response.json().catch(()=>({}));
+                        lastGeminiError = errData.error?.message || `HTTP ${response.status}`;
+                        if (response.status === 403 || response.status === 401) {
+                            throw new Error("Chave de API do Gemini inválida ou sem permissão.");
+                        }
+                    } else {
+                        const data = await response.json();
+                        rawResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+                        break; // Sucesso, aborta o fallback
+                    }
+                } catch (e: any) {
+                    console.warn(`[AI WARN] Psych Insight skipped model ${model}:`, e.message);
+                    lastGeminiError = e.message;
+                    if (e.message.includes("inválida")) break;
                 }
-            };
-            
-            const response = await fetch(ENDPOINT, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(reqBody)
-            });
-            
-            if (!response.ok) {
-                const err = await response.json().catch(()=>({}));
-                throw new Error(err.error?.message || "Erro na API Gemini");
             }
-            const data = await response.json();
-            rawResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+            if (!rawResponse || rawResponse === "{}") throw new Error(`Google API: ${lastGeminiError}`);
             
         } else if (config.provider === 'openai') {
             const API_KEY = config.api_key.trim();
@@ -301,25 +318,42 @@ O JSON deve obedecer estritamente esta estrutura:
         
         if (config.provider === 'google_gemini') {
             const API_KEY = config.api_key.trim();
-            const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-            
-            const reqBody = {
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { temperature: 0.1, responseMimeType: "application/json" }
-            };
-            
-            const response = await fetch(ENDPOINT, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(reqBody)
-            });
-            
-            if (!response.ok) {
-                const err = await response.json().catch(()=>({}));
-                throw new Error(err.error?.message || "Erro na API Gemini");
+            const modelsToTry = ['gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-2.5-flash', 'gemini-1.5-pro'];
+            let lastGeminiError = "Falha desconhecida";
+
+            for (const model of modelsToTry) {
+                try {
+                    const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
+                    
+                    const reqBody = {
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { temperature: 0.1, responseMimeType: "application/json" }
+                    };
+                    
+                    const response = await fetch(ENDPOINT, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(reqBody)
+                    });
+                    
+                    if (!response.ok) {
+                        const errData = await response.json().catch(()=>({}));
+                        lastGeminiError = errData.error?.message || `HTTP ${response.status}`;
+                        if (response.status === 403 || response.status === 401) {
+                            throw new Error("Chave de API do Gemini inválida ou sem permissão.");
+                        }
+                    } else {
+                        const data = await response.json();
+                        rawResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+                        break; // Sucesso, aborta o fallback
+                    }
+                } catch (e: any) {
+                    console.warn(`[AI WARN] Strat Insight skipped model ${model}:`, e.message);
+                    lastGeminiError = e.message;
+                    if (e.message.includes("inválida")) break;
+                }
             }
-            const data = await response.json();
-            rawResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+            if (!rawResponse || rawResponse === "{}") throw new Error(`Google API: ${lastGeminiError}`);
             
         } else if (config.provider === 'openai') {
             const API_KEY = config.api_key.trim();
@@ -399,10 +433,15 @@ O JSON deve obedecer estritamente esta estrutura:
 
         if (config.provider === 'google_gemini') {
             const API_KEY = config.api_key.trim();
-            const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+            const modelsToTry = [
+                'gemini-1.5-flash-latest',
+                'gemini-1.5-flash',
+                'gemini-2.5-flash',
+                'gemini-1.5-pro'
+            ];
             let lastGeminiError = "Falha desconhecida";
 
-            for (const model of models) {
+            for (const model of modelsToTry) {
                 try {
                     const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
                     const response = await fetch(ENDPOINT, {
@@ -418,16 +457,15 @@ O JSON deve obedecer estritamente esta estrutura:
                         const errData = await response.json().catch(() => ({}));
                         lastGeminiError = errData.error?.message || `HTTP ${response.status}`;
                         
-                        // Break immediately on fatal API errors to prevent masking the true error!
-                        if (response.status === 400 || response.status === 403 || response.status === 429) {
-                            throw new Error(lastGeminiError);
+                        // Fatal auth bypass
+                        if (response.status === 403 || response.status === 401) {
+                            throw new Error("Chave de API do Gemini inválida ou sem permissão.");
                         }
                     }
                 } catch (e: any) { 
-                    console.error("Falha no fetch:", e); 
+                    console.warn(`[AI WARN] Skipped model ${model}:`, e.message);
                     lastGeminiError = e.message;
-                    // If it was a fatal error thrown above, break outer loop
-                    if (e.message !== "Failed to fetch") break;
+                    if (e.message.includes("inválida")) break;
                 }
             }
             throw new Error(`Google API: ${lastGeminiError}`);

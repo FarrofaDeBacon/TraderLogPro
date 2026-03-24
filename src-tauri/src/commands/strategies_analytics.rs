@@ -170,13 +170,15 @@ pub async fn get_strategy_comprehensive_stats(
     let emotions: Vec<EmotionalState> = emo_res.take(0).unwrap_or_default();
     
     // Fetch assets to resolve markets if filter is passed
-    let mut trades_query = "SELECT *, type::string(id) as id, type::string(account_id) as account_id, type::string(entry_emotional_state_id) as entry_emotional_state_id FROM trade WHERE strategy_id = $str_id ORDER BY date ASC".to_string();
+    let clean_str_id = strategy_id.replace("strategy:", "");
+    let mut trades_query = "SELECT *, type::string(id) as id, type::string(account_id) as account_id, type::string(strategy_id) as strategy_id, type::string(entry_emotional_state_id) as entry_emotional_state_id FROM trade WHERE type::string(strategy_id) = $full_id OR strategy_id = $clean_id OR strategy_id = type::thing('strategy', $clean_id) ORDER BY date ASC".to_string();
     
     let mut response = db.0.query(&trades_query)
-        .bind(("str_id", format!("strategy:{}", strategy_id.replace("strategy:", ""))))
+        .bind(("full_id", format!("strategy:{}", clean_str_id)))
+        .bind(("clean_id", clean_str_id))
         .await.map_err(|e| e.to_string())?;
         
-    let mut trades: Vec<Trade> = response.take(0).map_err(|e| e.to_string())?;
+    let mut trades: Vec<Trade> = response.take(0).map_err(|e| format!("Failed to parse Trade array: {}", e.to_string()))?;
     
     // 2. Optional Market Filter (if market_id is provided, filter trades by their asset market)
     if let Some(m_id) = market_id {
