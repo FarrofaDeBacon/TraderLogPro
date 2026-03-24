@@ -123,6 +123,24 @@
         avgTimeBetweenTrades: rustStats?.avg_time_between_trades ?? 0,
         equityCurve: rustStats?.equity_curve ?? { dates: [], data: [] },
         drawdownCurve: rustStats?.drawdown_curve ?? { dates: [], data: [] },
+        // Phase 21: Decision Layer Data (Not yet rendered)
+        diagnostic: rustStats?.diagnostic ?? {
+            status: "INSUFFICIENT_DATA",
+            recent_trend: "INSUFFICIENT_DATA",
+            stability: "INSUFFICIENT_DATA",
+            current_risk: "INSUFFICIENT_DATA",
+        },
+        psychology: rustStats?.psychology ?? {
+            emotion_breakdown: [],
+            negative_state_loss_ratio: 0,
+        },
+        operational: rustStats?.operational ?? {
+            best_time_of_day: null,
+            worst_time_of_day: null,
+            best_asset: null,
+            worst_asset: null,
+            best_direction: null,
+        },
     });
 
     // Reference Price for Gann Analysis
