@@ -4,7 +4,7 @@
             "title": "Estado Psicológico",
             "impact_detected": "Impacto {impact} detectado",
             "empty": "Sem registros recentes",
-            "placeholder": "Registro Cognitivo Pendente. Submeter dados para liberação da análise.",
+            "placeholder": "Registre o estado emocional para ativar análise.",
             "followed_plan": "Seguiu o Plano",
             "deviated_plan": "Desviou o Plano"
         },

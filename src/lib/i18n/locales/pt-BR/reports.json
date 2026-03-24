@@ -90,7 +90,7 @@
             },
             "newAppraisal": "Nova Apuração",
             "periodFilter": "Filtrar por Ano",
-            "saveBeforeDarf": "Salvar apuração atual antes de autorizar a emissão da DARF.",
+            "saveBeforeDarf": "Salvar apuração antes de gerar a DARF.",
             "table": {
                 "actions": "Ações",
                 "alreadyGenerated": "DARF gerada",

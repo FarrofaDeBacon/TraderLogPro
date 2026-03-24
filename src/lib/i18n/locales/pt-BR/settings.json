@@ -375,7 +375,7 @@
                 "cancel": "Cancelar",
                 "dailyLimit": "Limite Diário (Avisos)",
                 "dailyLimitHint": "Notifica quando o uso atingir este limite.",
-                "description": "Configure uma nova chave de API para habilitar integrações no TraderLog Pro.",
+                "description": "Configure uma nova chave de API para habilitar integrações no Bem-vindo ao TraderLog Pro.",
                 "editTitle": "Editar Configuração de API",
                 "enabled": "Habilitar esta API",
                 "enabledHint": "APIs desabilitadas não farão requisições.",
@@ -709,7 +709,7 @@
             "title": "Estados Emocionais"
         },
         "fees": {
-            "description": "Painel de Custos Operacionais e Emolumentos.",
+            "description": "Crie perfis de custos operacionais e emolumentos.",
             "empty": "Nenhum perfil de taxas encontrado",
             "form": {
                 "addItem": "Adicionar Item",
@@ -968,7 +968,7 @@
                 "formatAccepted": "Formato aceito: .lic",
                 "incompleteData": "DADOS INCOMPLETOS - PREENCHA SEU PERFIL",
                 "keyStatus": "Status da Chave",
-                "lifetime": "TraderLog Pro - Vitalício",
+                "lifetime": "Bem-vindo ao TraderLog Pro - Vitalício",
                 "loadFile": "Carregar Arquivo",
                 "management": "Gestão de Licença",
                 "noFile": "Nenhum arquivo de licença selecionado",
@@ -1054,7 +1054,7 @@
             "dailyGoalShort": "Meta Diária",
             "dailyLossLimit": "Limite de Prejuízo Diária",
             "dailyLossLimitShort": "Limite Loss",
-            "description": "Configuração Matricial de Risco e Limites Operacionais.",
+            "description": "Definir limites e metas de risco.",
             "discipline": "Regras de Disciplina",
             "downside": "Proteção (Downside)",
             "edit": "Editar Perfil",
@@ -1208,7 +1208,7 @@
                 "title": "Plano de Crescimento",
                 "toasts": {
                     "demote": "Atenção: Você retornou para a fase: {name}",
-                    "promote": "Aviso de Sistema: Progressão para Fase {name} aprovada."
+                    "promote": "Evolução aprovada. Nova fase: {name}."
                 },
                 "tradingSessions": "Sessões"
             },

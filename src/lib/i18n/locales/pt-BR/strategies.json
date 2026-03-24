@@ -6,7 +6,7 @@
         "wizard": {
             "accounts": {
                 "add_more_prompt": "Deseja adicionar mais contas agora?",
-                "description_intro": "Configuração de Contas Operacionais.",
+                "description_intro": "Configure suas contas para começar.",
                 "market_title": "Mercado",
                 "personalize": "Personalizar",
                 "skip": "Pular",
@@ -18,7 +18,7 @@
                     "desc": "Selecione manualmente o que deseja importar.",
                     "title": "Personalizado"
                 },
-                "description": "Seleção de Matriz de Dados.",
+                "description": "Escolha a configuração de dados.",
                 "standard": {
                     "desc": "Configuração recomendada com ativos padrão da B3.",
                     "title": "Padrão"
@@ -56,7 +56,7 @@
             },
             "license": {
                 "activated": "Licença Ativada!",
-                "description": "Se você possui uma Licença TraderLog Pro, selecione o arquivo .lic agora.",
+                "description": "Se você possui uma Licença Bem-vindo ao TraderLog Pro, selecione o arquivo .lic agora.",
                 "import": "Importar Licença",
                 "optional": "Opcional: Você pode pular este passo para usar a versão Trial gratuita.",
                 "planDetected": "Plano detectado",
@@ -72,15 +72,15 @@
             "profile": {
                 "confirmPasswordLabel": "Confirmar Senha",
                 "confirmPasswordPlaceholder": "Repita a senha",
-                "description": "Preenchimento de Credenciais Básicas.",
+                "description": "Insira suas informações básicas.",
                 "emailHint": "Usado para recuperação ou vínculo de licença especial.",
                 "emailLabel": "E-mail ou Chave de Acesso",
-                "nameLabel": "Nome do Operador",
+                "nameLabel": "Nome",
                 "namePlaceholder": "Seu nome completo",
                 "passwordLabel": "Senha de Acesso do App",
                 "passwordPlaceholder": "Crie uma senha forte",
                 "testAccount": "Conta de Teste reconhecida. Dados de demonstração serão injetados.",
-                "title": "Definição de Perfil"
+                "title": "Seu Perfil"
             },
             "recovery": {
                 "clickToCopy": "Clique para copiar",
@@ -99,8 +99,8 @@
                 "title": "Estilo e Preferências"
             },
             "welcome": {
-                "description": "Setup Inicial de Workspace.",
-                "title": "TraderLog Pro",
+                "description": "Configurando área de trabalho...",
+                "title": "Bem-vindo ao TraderLog Pro",
                 "select_language": "SELECIONE SEU IDIOMA",
                 "select_theme": "SELECIONE O TEMA VISUAL",
                 "dark": "Dark (Noite)",
@@ -131,7 +131,7 @@
                 "asset_types_title": "Tipos de Assets",
                 "asset_types_desc": "Quais instrumentos financeiros fazem parte do seu dia a dia?",
                 "rtd_title": "Conexão Real-Time (RTD)",
-                "rtd_desc": "Conecte o TraderLog Pro ao seu terminal de negociação via Excel.",
+                "rtd_desc": "Conecte o Bem-vindo ao TraderLog Pro ao seu terminal de negociação via Excel.",
                 "rtd_active_now": "Ativar RTD agora",
                 "rtd_active_desc": "Detecte trades do Profit/Tryd instantaneamente.",
                 "rtd_select_sheet": "SELECIONAR PLANILHA",
@@ -221,7 +221,7 @@
                 "reset": "Resetar",
                 "start": "Iniciar Sessão de Trading",
                 "subtitle": "Verifique os fundamentos antes do primeiro clique.",
-                "success": "Checklist Pré-Mercado concluído. Execução habilitada.",
+                "success": "Checklist concluído. Pronto para operar.",
                 "title": "Check-in Pré-Mercado (Oliver Velez)",
                 "verified": "verificados",
                 "newsUpdateError": "Erro ao atualizar feed de eventos econômicos.",

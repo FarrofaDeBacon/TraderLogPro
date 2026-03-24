@@ -2,7 +2,7 @@
     "auth": {
         "login": {
             "createAccount": "Criar conta",
-            "description": "Entre com suas credenciais para acessar o TraderLog Pro.",
+            "description": "Entre com suas credenciais para acessar o Bem-vindo ao TraderLog Pro.",
             "email": "Email",
             "error": {
                 "fillAll": "Preencha todos os campos.",
@@ -41,7 +41,7 @@
             "birthDate": "Data de Nascimento",
             "confirmPassword": "Confirmar Senha",
             "cpf": "CPF",
-            "description": "Crie sua conta no TraderLog Pro.",
+            "description": "Crie sua conta no Bem-vindo ao TraderLog Pro.",
             "email": "Email",
             "error": {
                 "fillAll": "Preencha todos os campos.",

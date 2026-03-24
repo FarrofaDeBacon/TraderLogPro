@@ -42,7 +42,7 @@
         "balance": "Saldo",
         "cancel": "Cancelar",
         "close": "Fechar",
-        "confirmDeleteDescription": "Ação irreversível.",
+        "confirmDeleteDescription": "Essa ação é irreversível.",
         "confirmDeleteTitle": "Tem certeza?",
         "currency": "Currency",
         "custom": "Custom",
@@ -114,11 +114,11 @@
     },
     "help": {
         "title": "Central de Ajuda",
-        "subtitle": "Encontre respostas e aprenda a usar todas as funcionalidades do TraderLog Pro.",
+        "subtitle": "Encontre respostas e aprenda a usar todas as funcionalidades do Bem-vindo ao TraderLog Pro.",
         "searchHint": "Pesquisar no manual (ex: DARF, RTD, Estratégias)...",
         "topics": "Tópicos",
         "emptyState": "Nenhum resultado encontrado",
-        "emptyStateDescription": "Parâmetros não encontrados. Modifique os termos de busca ou utilize o índice lateral."
+        "emptyStateDescription": "Nenhum resultado. Altere a busca ou use o menu lateral."
     },
     "months": {
         "april": "Abril",

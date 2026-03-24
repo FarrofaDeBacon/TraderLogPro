@@ -17,8 +17,8 @@
         },
         "ai": {
             "title": "Recomendação Tática (IA)",
-            "insufficientVolume": "Volume insuficiente para análise matricial. Manter execução original do plano.",
-            "healthy": "Avaliação de Integridade: Estável. Zero falhas de setup detectadas.",
+            "insufficientVolume": "Dados insuficientes para análise. Manter plano atual.",
+            "healthy": "Execução estável. Nenhuma falha detectada.",
             "desc": "Cruzamos as descobertas matemáticas da esquerda com o motor da Inteligência Artificial para gerar dicas táticas instantâneas."
         },
         "psychology": {
