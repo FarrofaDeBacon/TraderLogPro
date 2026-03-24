@@ -34,6 +34,7 @@
 
     import { Button } from "$lib/components/ui/button";
     import DailyCheckinDialog from "$lib/components/psychology/DailyCheckinDialog.svelte";
+    import PsychologyAICard from "$lib/components/psychology/PsychologyAICard.svelte";
     import DateFilter from "$lib/components/filters/DateFilter.svelte";
     import { toast } from "svelte-sonner";
     import * as Dialog from "$lib/components/ui/dialog";
@@ -489,10 +490,6 @@
     }
 
     // --- AI Assist Layer ---
-    let aiIsLoading = $state(false);
-    let aiAnalysisResponse = $state<string | null>(null);
-    let aiLastAnalyzedHash = $state<string | null>(null);
-
     const hasActiveAiProvider = $derived.by(() => {
         const id = integrationsStore.psychologyApiId;
         const config = integrationsStore.apiConfigs.find((c) => c.id === id && c.enabled);
@@ -501,39 +498,11 @@
         return !!fallback?.api_key;
     });
 
-    function getAiContextHash() {
-        if (!psychoDiagnosis) return null;
-        return JSON.stringify({
-            start: startDate,
-            end: endDate,
-            score: psychoDiagnosis.psychoScore,
-            killer: psychoDiagnosis.killerEmotion?.emotionName,
-            savior: psychoDiagnosis.saviorEmotion?.emotionName,
-            killerPnl: psychoDiagnosis.killerEmotion?.totalPnL,
-            saviorPnl: psychoDiagnosis.saviorEmotion?.totalPnL,
-            topNegImpact: psychoDiagnosis.killerEmotionLossPercent,
-            tradeCount: psychoDiagnosis.matrix.reduce((acc, curr) => acc + curr.tradeCount, 0)
-        });
-    }
-
-    async function generateAiAnalysis(forceReroll: boolean | Event = false) {
-        if (!psychoDiagnosis) return;
-        const hash = getAiContextHash();
-        
-        // Permite re-tentativa caso a resposta anterior seja um erro
-        const isError = aiAnalysisResponse?.includes("Erro");
-        
-        // Se forceReroll for boolean e true, ignoramos o cache
-        const force = forceReroll === true;
-
-        if (!force && !isError && hash && hash === aiLastAnalyzedHash && aiAnalysisResponse) return;
-        
-        aiIsLoading = true;
-        aiLastAnalyzedHash = hash;
-        aiAnalysisResponse = null;
-
-        const payload = {
-            analytics_period: `${startDate || 'Início'} Até ${endDate || 'Hoje'}`,
+    const currentPeriodStr = $derived(`${startDate || 'Início'} Até ${endDate || 'Hoje'}`);
+    
+    const metricsPayloadObj = $derived.by(() => {
+        if (!psychoDiagnosis) return {};
+        return {
             global_psycho_score: psychoDiagnosis.psychoScore,
             top_vulnerability: psychoDiagnosis.killerEmotion ? {
                 emotion: psychoDiagnosis.killerEmotion.emotionName,
@@ -548,16 +517,7 @@
             } : null,
             system_mathematical_conclusions: psychoDiagnosis.conclusions
         };
-        
-        try {
-            aiAnalysisResponse = await llmService.analyzePsychologyDashboard(JSON.stringify(payload, null, 2));
-        } catch (err: any) {
-            console.error(err);
-            aiAnalysisResponse = `Erro ao requisitar IA: ${err?.message || "Desconhecido"}. Verifique chaves ou cota.`;
-        } finally {
-            aiIsLoading = false;
-        }
-    }
+    });
 
     function getDayPnl(day: any) {
         if (!day || !day.totalPnlByCurrency) return 0;
@@ -945,48 +905,12 @@
                 </div>
 
                 <!-- Camada Interpretativa de IA (Substituindo Diagnóstico e Protocolo) - 4/12 -->
-                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-auto lg:h-full lg:min-h-[400px] border border-primary/20 bg-primary/5">
-                    <div class="flex justify-between items-center mb-4 border-b border-primary/10 pb-3 shrink-0">
-                         <h3 class="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                             <Sparkles class="w-3.5 h-3.5" /> Mentor IA <span class="text-muted-foreground font-medium lowercase tracking-normal ml-2 opacity-70">({$t('psychology.ai.behaviorAnalysis')})</span>
-                         </h3>
-                    </div>
-                    
-                    <div class="flex-1 w-full flex flex-col relative text-sm">
-                         {#if !hasActiveAiProvider}
-                             <div class="flex-1 flex flex-col items-center justify-center py-6 text-center gap-3">
-                                 <Sparkles class="w-8 h-8 text-muted-foreground/30 mb-2" />
-                                 <p class="text-[11px] text-muted-foreground max-w-[200px]">{$t('psychology.ai.noAiLinked')}</p>
-                                 <Button variant="outline" size="sm" class="text-xs font-bold" href="/settings?tab=integrations">
-                                    <ArrowRight class="w-3.5 h-3.5 mr-2" /> Integrações
-                                 </Button>
-                             </div>
-                         {:else if !aiAnalysisResponse}
-                             <div class="flex-1 flex flex-col items-center justify-center py-6 gap-3">
-                                 <p class="text-[11px] text-muted-foreground max-w-[200px] text-center">{$t('psychology.ai.crossReference')}</p>
-                                 <Button disabled={aiIsLoading} onclick={() => generateAiAnalysis()} size="sm" class="bg-primary hover:bg-primary/90 text-primary-foreground text-[10px] font-black tracking-wider uppercase px-4 shadow-sm mt-2">
-                                     {#if aiIsLoading}
-                                         <Loader2 class="w-3.5 h-3.5 mr-2 animate-spin" /> Mapeando...
-                                     {:else}
-                                         <Sparkles class="w-3.5 h-3.5 mr-2" /> Analisar
-                                     {/if}
-                                 </Button>
-                             </div>
-                         {:else}
-                            <div class="text-[12.5px] text-foreground/90 whitespace-pre-wrap leading-relaxed pb-4 custom-scrollbar overflow-x-hidden flex-1">
-                                {aiAnalysisResponse}
-                            </div>
-                            <div class="flex justify-end border-t border-primary/10 pt-3 shrink-0">
-                                 <Button disabled={aiIsLoading} variant="ghost" onclick={() => generateAiAnalysis(true)} size="sm" class="text-[10px] font-bold tracking-widest uppercase text-primary/80 hover:text-primary hover:bg-primary/10">
-                                     {#if aiIsLoading}
-                                         <Loader2 class="w-3.5 h-3.5 mr-2 animate-spin" /> Atualizando...
-                                     {:else}
-                                         <RefreshCw class="w-3.5 h-3.5 mr-2" /> Rediagnosticar
-                                     {/if}
-                                 </Button>
-                            </div>
-                         {/if}
-                    </div>
+                <div class="lg:col-span-4">
+                    <PsychologyAICard 
+                        periodStr={currentPeriodStr}
+                        metricsPayload={metricsPayloadObj}
+                        hasActiveAiProvider={hasActiveAiProvider}
+                    />
                 </div>
             </div>
 

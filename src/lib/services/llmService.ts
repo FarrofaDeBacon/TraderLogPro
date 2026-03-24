@@ -1,6 +1,20 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import { integrationsStore } from "$lib/stores/integrations.svelte";
 
+
+// Phase 26: AI Cache Hash Map
+const aiCache = new Map<string, { timestamp: number, payload: any, responseTime: number }>();
+
+function simpleHash(str: string): string {
+    let hash = 0;
+    for (let i = 0, len = str.length; i < len; i++) {
+        let chr = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + chr;
+        hash |= 0;
+    }
+    return Math.abs(hash).toString(36);
+}
+
 export interface EconomicEvent {
     time: string;
     currency: string;
@@ -106,6 +120,138 @@ export const llmService = {
         return "Modo Simulação: Ótimo registro! Continue monitorando suas emoções. (Configure uma chave real para análise real)";
     },
 
+
+    async generatePsychologyInsight(periodStr: string, metricsPayload: any): Promise<any> {
+        const PROMPT_VERSION = "v1.1";
+        const FEATURE_NAME = "psyc_dash";
+        
+        const payloadStr = JSON.stringify(metricsPayload);
+        const metricsHash = simpleHash(payloadStr);
+        const cacheKey = `${FEATURE_NAME}_${periodStr}_${metricsHash}_${PROMPT_VERSION}`;
+        
+        const startTime = performance.now();
+        
+        // 1. Check Cache
+        if (aiCache.has(cacheKey)) {
+            const cached = aiCache.get(cacheKey)!;
+            console.log("[AI CACHE HIT]", cacheKey);
+            return { 
+                ...cached.payload, 
+                _meta: { 
+                    hash: cacheKey, 
+                    origin: "cache", 
+                    responseTimeMs: Math.round(performance.now() - startTime),
+                    cachedAt: cached.timestamp
+                } 
+            };
+        }
+        
+        // 2. Fetch Config
+        const configId = integrationsStore.psychologyApiId;
+        const config = integrationsStore.apiConfigs.find(c => c.id === configId && c.enabled) 
+                    || integrationsStore.apiConfigs.find(c => (c.provider === 'openai' || c.provider === 'google_gemini') && c.enabled);
+                    
+        if (!config || !config.api_key) {
+            throw new Error("No enabled AI provider found.");
+        }
+        
+        // 3. Build Prompt
+        const prompt = `Você é um AI Analítico focado na interseção de Psicologia e Matemática de Trading.
+Analise os seguintes dados do período (${periodStr}):
+${payloadStr}
+
+SUA TAREFA:
+Identificar o padrão mental primário e gerar recomendações táticas baseadas EXCLUSIVAMENTE nos dados numéricos acima. Sem invenções.
+
+REGRA ABSOLUTA DE SAÍDA:
+Você DEVE retornar APENAS um objeto JSON válido, sem formatação markdown (sem \`\`\`json).
+O JSON deve obedecer estritamente esta estrutura:
+{
+  "dominantPattern": "Resumo objetivo (1 frase) do padrão comportamental financeiro observado.",
+  "majorRisk": "O maior risco matemático/psicológico atual (1 frase curta).",
+  "practicalActions": ["Ação prática 1", "Ação prática 2"]
+}`;
+
+        // 4. Request LLM
+        let rawResponse = "";
+        
+        if (config.provider === 'google_gemini') {
+            const API_KEY = config.api_key.trim();
+            const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+            
+            const reqBody = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    temperature: 0.1,
+                    responseMimeType: "application/json"
+                }
+            };
+            
+            const response = await fetch(ENDPOINT, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(reqBody)
+            });
+            
+            if (!response.ok) {
+                const err = await response.json().catch(()=>({}));
+                throw new Error(err.error?.message || "Erro na API Gemini");
+            }
+            const data = await response.json();
+            rawResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+            
+        } else if (config.provider === 'openai') {
+            const API_KEY = config.api_key.trim();
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    response_format: { type: "json_object" },
+                    messages: [{ role: "user", content: prompt }],
+                    temperature: 0.1
+                })
+            });
+            
+            if (!response.ok) throw new Error("Erro na API OpenAI");
+            const data = await response.json();
+            rawResponse = data.choices?.[0]?.message?.content || "{}";
+        } else {
+            throw new Error("Provider não suportado para análise estruturada.");
+        }
+        
+        // 5. Parse and Validate JSON
+        try {
+            const parsed = JSON.parse(rawResponse.replace(/```json/g, '').replace(/```/g, '').trim());
+            
+            if (!parsed.dominantPattern || !parsed.majorRisk || !Array.isArray(parsed.practicalActions)) {
+                throw new Error("Payload inválido (Campos ausentes)");
+            }
+            
+            const responseTime = Math.round(performance.now() - startTime);
+            
+            // 6. Save to Cache
+            aiCache.set(cacheKey, {
+                timestamp: Date.now(),
+                payload: parsed,
+                responseTime
+            });
+            
+            return {
+                ...parsed,
+                _meta: {
+                    hash: cacheKey,
+                    origin: "network",
+                    responseTimeMs: responseTime,
+                    cachedAt: Date.now()
+                }
+            };
+            
+        } catch (e: any) {
+            console.error("Erro no Parse JSON da IA:", rawResponse, e);
+            throw new Error("A IA falhou em retornar um formato JSON rigoroso: " + e.message);
+        }
+    },
     async analyzePsychologyDashboard(payloadJson: string): Promise<string> {
         const configId = integrationsStore.psychologyApiId;
         const config = integrationsStore.apiConfigs.find(c => c.id === configId && c.enabled);
