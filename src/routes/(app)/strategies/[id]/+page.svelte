@@ -356,11 +356,21 @@
         return market.trading_days.map((d) => dayNames[d]);
     });
 
-    // Heatmap Grid from Rust Payload
-    const blocks = $derived(
-        rustStats?.heatmap ?? 
-        Array(days.length).fill(0).map(() => Array(hourLabels.length).fill(0))
-    );
+    // Heatmap Grid from Rust Payload (Sliced for Matrix bounds)
+    const blocks = $derived.by(() => {
+        const defaultMatrix = Array(days.length).fill(0).map(() => Array(hourLabels.length).fill(0));
+        if (!rustStats?.heatmap) return defaultMatrix;
+        
+        const targetDaysIndices = market?.trading_days?.length ? market.trading_days : [1, 2, 3, 4, 5];
+        
+        return targetDaysIndices.map(dayIndex => {
+            const rustRow = rustStats.heatmap[dayIndex] || Array(24).fill(0);
+            return hourLabels.map(hourStr => {
+                const hourIndex = parseInt(hourStr);
+                return rustRow[hourIndex] || 0;
+            });
+        });
+    });
 
     function getBlockColor(val: number) {
         if (val === 0) return "bg-muted/10 hover:bg-muted/20";
