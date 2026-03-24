@@ -896,22 +896,22 @@
                 <!-- SCORE -->
                 <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-primary/50 relative overflow-hidden">
                     <div class="absolute -right-4 -bottom-4 opacity-5"><Brain class="w-16 h-16"/></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Psycho Score</span>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{$t('psychology.kpis.psychoScore')}</span>
                     <span class="text-3xl font-black mt-2 {psychoDiagnosis.psychoScore >= 70 ? 'text-emerald-500' : psychoDiagnosis.psychoScore >= 40 ? 'text-amber-500' : 'text-rose-500'}">{psychoDiagnosis.psychoScore}</span>
                 </div>
                 <!-- MELHOR EMOÇÃO -->
                 <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-emerald-500/50">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Melhor Performance</span>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{$t('psychology.kpis.bestPerformance')}</span>
                     <span class="text-xl font-black mt-2 text-emerald-500 uppercase truncate">{psychoDiagnosis.saviorEmotion?.emotionName || '-'}</span>
                 </div>
                 <!-- PIOR EMOÇÃO -->
                 <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-rose-500/50">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">O Ofensor</span>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{$t('psychology.kpis.offender')}</span>
                     <span class="text-xl font-black mt-2 text-rose-500 uppercase truncate">{psychoDiagnosis.killerEmotion?.emotionName || '-'}</span>
                 </div>
                 <!-- % LOSSES ESTADO NEGATIVO -->
                 <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-amber-500/50">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Losses Negativos</span>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{$t('psychology.kpis.negativeLosses')}</span>
                     <span class="text-3xl font-black mt-2 text-amber-500">{psychoDiagnosis.killerEmotionLossPercent ? (psychoDiagnosis.killerEmotionLossPercent * 100).toFixed(0) : 0}%</span>
                 </div>
             </div>
@@ -922,7 +922,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 pt-4 mb-4 lg:items-stretch">
                 <!-- Radar Chart (Comportamento) - 4/12 -->
                 <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px] lg:h-auto lg:min-h-[400px]">
-                    <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">O Mapa</h3>
+                    <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">{$t('psychology.charts.theMap')}</h3>
                     <div class="flex-1 w-full relative">
                         {#if radarChartOptions}
                             <EChart options={radarChartOptions} />
@@ -934,7 +934,7 @@
 
                 <!-- Pie Chart (Donut) - 4/12 -->
                 <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px] lg:h-auto lg:min-h-[400px]">
-                    <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">Top 5 Segmentados</h3>
+                    <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">{$t('psychology.charts.top5')}</h3>
                     <div class="flex-1 w-full relative">
                         {#if donutChartOptions && donutChartOptions.series[0].data.length > 0}
                             <EChart options={donutChartOptions} />
@@ -948,7 +948,7 @@
                 <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-auto lg:h-full lg:min-h-[400px] border border-primary/20 bg-primary/5">
                     <div class="flex justify-between items-center mb-4 border-b border-primary/10 pb-3 shrink-0">
                          <h3 class="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                             <Sparkles class="w-3.5 h-3.5" /> Mentor IA <span class="text-muted-foreground font-medium lowercase tracking-normal ml-2 opacity-70">(Análise Comportamental)</span>
+                             <Sparkles class="w-3.5 h-3.5" /> Mentor IA <span class="text-muted-foreground font-medium lowercase tracking-normal ml-2 opacity-70">({$t('psychology.ai.behaviorAnalysis')})</span>
                          </h3>
                     </div>
                     
@@ -956,14 +956,14 @@
                          {#if !hasActiveAiProvider}
                              <div class="flex-1 flex flex-col items-center justify-center py-6 text-center gap-3">
                                  <Sparkles class="w-8 h-8 text-muted-foreground/30 mb-2" />
-                                 <p class="text-[11px] text-muted-foreground max-w-[200px]">Nenhuma IA vinculada à sua camada de Psicologia. Ative sua chave para desbloquear o analisador interpretativo da base matemática.</p>
+                                 <p class="text-[11px] text-muted-foreground max-w-[200px]">{$t('psychology.ai.noAiLinked')}</p>
                                  <Button variant="outline" size="sm" class="text-xs font-bold" href="/settings?tab=integrations">
                                     <ArrowRight class="w-3.5 h-3.5 mr-2" /> Integrações
                                  </Button>
                              </div>
                          {:else if !aiAnalysisResponse}
                              <div class="flex-1 flex flex-col items-center justify-center py-6 gap-3">
-                                 <p class="text-[11px] text-muted-foreground max-w-[200px] text-center">Cruzamos as descobertas matemáticas da esqueda com o motor da Inteligência Artificial para gerar dicas táticas instantâneas.</p>
+                                 <p class="text-[11px] text-muted-foreground max-w-[200px] text-center">{$t('psychology.ai.crossReference')}</p>
                                  <Button disabled={aiIsLoading} onclick={() => generateAiAnalysis()} size="sm" class="bg-primary hover:bg-primary/90 text-primary-foreground text-[10px] font-black tracking-wider uppercase px-4 shadow-sm mt-2">
                                      {#if aiIsLoading}
                                          <Loader2 class="w-3.5 h-3.5 mr-2 animate-spin" /> Mapeando...
@@ -995,7 +995,7 @@
                 <!-- Curva de Capital (Largura Total - 12/12) -->
                 <div class="lg:col-span-12 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
                     <div class="flex justify-between items-center mb-4 border-b border-border/40 pb-3">
-                         <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Curva de Capital Tática no Período</h3>
+                         <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{$t('psychology.charts.equityCurve')}</h3>
                          <div class="scale-90 origin-right">
                              <!-- Make sure lines inside <script> defined variables are correct -->
                             <DateFilter bind:value={timeFilter} bind:startDate bind:endDate />
@@ -1007,7 +1007,7 @@
                         {#if lineChartOptions && lineChartOptions.series[0].data.length > 0}
                             <EChart options={lineChartOptions} />
                         {:else}
-                            <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Filtre um período com dados</div>
+                            <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">{$t('psychology.charts.filterPeriod')}</div>
                         {/if}
                     </div>
                 </div>
@@ -1049,7 +1049,7 @@
                                             >
                                             <span
                                                 class="text-[7px] font-bold text-muted-foreground uppercase tracking-tighter"
-                                                >SCORE</span
+                                                >{$t('psychology.kpis.score')}</span
                                             >
                                         </div>
                                         <Badge
@@ -1110,7 +1110,7 @@
                                 >
                                 <span
                                     class="text-[7px] font-bold text-muted-foreground uppercase tracking-tighter"
-                                    >SCORE</span
+                                    >{$t('psychology.kpis.score')}</span
                                 >
                             </div>
                         {/snippet}
@@ -1149,7 +1149,7 @@
                                             >
                                             <span
                                                 class="text-[7px] font-bold text-muted-foreground uppercase tracking-tighter"
-                                                >SCORE</span
+                                                >{$t('psychology.kpis.score')}</span
                                             >
                                         </div>
                                         <Badge
@@ -1477,7 +1477,7 @@
                             >
                             <span
                                 class="text-[10px] font-bold text-muted-foreground uppercase"
-                                >SCORE</span
+                                >{$t('psychology.kpis.score')}</span
                             >
                         </div>
                         <Badge

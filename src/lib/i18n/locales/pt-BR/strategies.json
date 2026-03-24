@@ -6,7 +6,7 @@
         "wizard": {
             "accounts": {
                 "add_more_prompt": "Deseja adicionar mais contas agora?",
-                "description_intro": "Configure suas contas bancárias ou de corretagem para começar.",
+                "description_intro": "Configuração de Contas Operacionais.",
                 "market_title": "Mercado",
                 "personalize": "Personalizar",
                 "skip": "Pular",
@@ -18,7 +18,7 @@
                     "desc": "Selecione manualmente o que deseja importar.",
                     "title": "Personalizado"
                 },
-                "description": "Escolha como deseja que seus dados iniciais sejam configurados.",
+                "description": "Seleção de Matriz de Dados.",
                 "standard": {
                     "desc": "Configuração recomendada com ativos padrão da B3.",
                     "title": "Padrão"
@@ -72,15 +72,15 @@
             "profile": {
                 "confirmPasswordLabel": "Confirmar Senha",
                 "confirmPasswordPlaceholder": "Repita a senha",
-                "description": "Insira suas informações básicas para o perfil.",
+                "description": "Preenchimento de Credenciais Básicas.",
                 "emailHint": "Usado para recuperação ou vínculo de licença especial.",
                 "emailLabel": "E-mail ou Chave de Acesso",
-                "nameLabel": "Como devemos te chamar?",
+                "nameLabel": "Nome do Operador",
                 "namePlaceholder": "Seu nome completo",
                 "passwordLabel": "Senha de Acesso do App",
                 "passwordPlaceholder": "Crie uma senha forte",
                 "testAccount": "Conta de Teste reconhecida. Dados de demonstração serão injetados.",
-                "title": "Gostaríamos de te conhecer"
+                "title": "Definição de Perfil"
             },
             "recovery": {
                 "clickToCopy": "Clique para copiar",
@@ -99,8 +99,8 @@
                 "title": "Estilo e Preferências"
             },
             "welcome": {
-                "description": "Estamos configurando o seu espaço de trabalho.",
-                "title": "Bem-vindo ao TraderLog Pro",
+                "description": "Setup Inicial de Workspace.",
+                "title": "TraderLog Pro",
                 "select_language": "SELECIONE SEU IDIOMA",
                 "select_theme": "SELECIONE O TEMA VISUAL",
                 "dark": "Dark (Noite)",
@@ -221,7 +221,7 @@
                 "reset": "Resetar",
                 "start": "Iniciar Sessão de Trading",
                 "subtitle": "Verifique os fundamentos antes do primeiro clique.",
-                "success": "Excelente! Você está preparado. Boas trades!",
+                "success": "Checklist Pré-Mercado concluído. Execução habilitada.",
                 "title": "Check-in Pré-Mercado (Oliver Velez)",
                 "verified": "verificados",
                 "newsUpdateError": "Erro ao atualizar feed de eventos econômicos.",

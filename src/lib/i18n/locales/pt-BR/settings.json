@@ -709,7 +709,7 @@
             "title": "Estados Emocionais"
         },
         "fees": {
-            "description": "Crie perfis de custos para aplicar em suas estratégias e trades.",
+            "description": "Painel de Custos Operacionais e Emolumentos.",
             "empty": "Nenhum perfil de taxas encontrado",
             "form": {
                 "addItem": "Adicionar Item",
@@ -1054,7 +1054,7 @@
             "dailyGoalShort": "Meta Diária",
             "dailyLossLimit": "Limite de Prejuízo Diária",
             "dailyLossLimitShort": "Limite Loss",
-            "description": "Defina seus limites de prejuízo e metas para proteger seu capital.",
+            "description": "Configuração Matricial de Risco e Limites Operacionais.",
             "discipline": "Regras de Disciplina",
             "downside": "Proteção (Downside)",
             "edit": "Editar Perfil",
@@ -1208,7 +1208,7 @@
                 "title": "Plano de Crescimento",
                 "toasts": {
                     "demote": "Atenção: Você retornou para a fase: {name}",
-                    "promote": "Parabéns! Você avançou para a fase: {name}"
+                    "promote": "Aviso de Sistema: Progressão para Fase {name} aprovada."
                 },
                 "tradingSessions": "Sessões"
             },
