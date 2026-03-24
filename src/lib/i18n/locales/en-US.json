@@ -202,7 +202,11 @@
                 "cycleDay": "Cycle Day",
                 "vibration": "Current Vibration",
                 "masterCycle": "Master Cycle",
-                "avgInterval": "Avg Interval Between Trades"
+                "avgInterval": "Avg Interval Between Trades",
+                "days": "Days",
+                "hot_window": "Hot Window (Imminent Reversal)",
+                "neutral": "Neutral Zone",
+                "outOfDays": "Out of Cycle"
             },
             "sq9": {
                 "expansion": "Expansion Targets",
@@ -210,7 +214,9 @@
                 "degrees": "{deg}°",
                 "reference": "Ref"
             }
-        }
+        },
+        "syncingTerminal": "Syncing Terminal...",
+        "waitingSurvivorData": "Waiting for Survivor Hub data matrix"
     },
     "filters": {
         "date": {
@@ -296,7 +302,8 @@
             "unpayAction": "Undo Payment",
             "unpayCancel": "Cancel",
             "unpayConfirm": "Confirm",
-            "unpayTitle": "Undo"
+            "unpayTitle": "Undo",
+            "operations": "Linked Trades"
         },
         "description": "Centralized cash management, statements, and closures.",
         "details": {
@@ -609,7 +616,17 @@
         "weight": "weight",
         "yes": "Yes",
         "progress": "Progress",
-        "add": "Add New"
+        "add": "Add New",
+        "confirmDelete": "Are you sure you want to delete?",
+        "form": {
+            "assetRequired": "Asset is required.",
+            "invaildContracts": "Invalid number of contracts.",
+            "invalidPoints": "Invalid points.",
+            "nameRequired": "Name is required."
+        },
+        "none": "None",
+        "saveSuccess": "Saved successfully!",
+        "unknown": "Unknown"
     },
     "help": {
         "title": "Help Center",
@@ -677,7 +694,11 @@
             "pnlByEmotion": "Financial Result by Emotion",
             "resultTitle": "Result vs Emotional",
             "winRate": "Efficiency %",
-            "winRateTitle": "Win Rate vs Emotional"
+            "winRateTitle": "Win Rate vs Emotional",
+            "theMap": "The Map",
+            "top5": "Top 5 Segments",
+            "equityCurve": "Tactical Equity Curve for the Period",
+            "filterPeriod": "Filter a period with data"
         },
         "checkin": {
             "button": "New Record",
@@ -692,7 +713,8 @@
             "success": "Record saved successfully!",
             "stateLabel": "Emotional State",
             "statePlaceholder": "Select predominant emotion",
-            "title": "Emotional Check-in"
+            "title": "Emotional Check-in",
+            "intensityLabel": "Intensity Level"
         },
         "deleteDialog": {
             "cancel": "Cancel",
@@ -748,7 +770,28 @@
             "unknownBadge": "Unknown"
         },
         "syncWeights": "Sync Weights",
-        "title": "Psychological Analysis"
+        "title": "Psychological Analysis",
+        "kpis": {
+            "psychoScore": "Psycho Score",
+            "bestPerformance": "Best Performance",
+            "offender": "The Offender",
+            "negativeLosses": "Negative Losses",
+            "score": "SCORE"
+        },
+        "ai": {
+            "mentor": "AI Mentor",
+            "behaviorAnalysis": "Behavioral Analysis",
+            "noAiLinked": "No AI linked to your Psychology layer. Activate your key to unlock the interpretive analyzer from the mathematical base.",
+            "integrations": "Integrations",
+            "crossReference": "We cross-reference the mathematical findings with the Artificial Intelligence engine to generate instant tactical tips.",
+            "mapping": "Mapping...",
+            "analyze": "Analyze",
+            "updating": "Updating...",
+            "rediagnose": "Re-diagnose"
+        },
+        "hierarchical": {
+            "sessionsStructure": "Sessions and Hierarchical Structure"
+        }
     },
     "settings": {
         "fiscal": {
@@ -852,7 +895,9 @@
                     "rateHint": "Percentage of tax due",
                     "exemption": "Exemption",
                     "exemptionHint": "Tax-exempt amount",
-                    "modality": "Modality"
+                    "modality": "Modality",
+                    "errorSave": "Error saving fiscal rule.",
+                    "nameRequired": "Rule name is required."
                 },
                 "new": "New Rule",
                 "title": "Tax Rules"
@@ -1726,12 +1771,15 @@
                 "progression": "Progression Criteria",
                 "regression": "Regression Criteria",
                 "requirements": {
+                    "consistency": "Consistency (Days)",
+                    "dailyLoss": "Daily Loss",
                     "days": "Positive Sessions",
                     "demote": "Regression Criteria",
                     "drawdown": "Maximum Drawdown",
                     "lossStreak": "Loss Streak",
                     "profit": "Profit Target",
-                    "promote": "Requirements to Advance"
+                    "promote": "Requirements to Advance",
+                    "winRate": "Win Rate (%)"
                 },
                 "status": {
                     "approved": "Approved for Next Phase",
@@ -1781,7 +1829,9 @@
                 "growthOverride": "Growth Plan Override",
                 "growthOverrideDesc": "Set exclusive growth rules for this asset, ignoring the global plan.",
                 "enableGrowthOverride": "Enable Override",
-                "overridePhases": "Specific Phases"
+                "overridePhases": "Specific Phases",
+                "description": "Assign unique risk profiles to different asset classes.",
+                "noOverridePhases": "No growth phases overlapped."
             },
             "management": {
                 "linkedAssetProfiles": "Linked Asset Profiles",
@@ -1803,7 +1853,8 @@
                 "noProfileLinked": "No compatible profile.",
                 "noProfileLinkedDesc": "The selected asset does not have an Asset Profile linked to this Risk Profile. Growth rules do not apply.",
                 "sourceGlobal": "Global Plan",
-                "sourceAsset": "Asset Specific"
+                "sourceAsset": "Asset Specific",
+                "consecutiveLossDays": "Consecutive Loss Days"
             }
         },
         "strategies": {
@@ -2112,7 +2163,10 @@
                 "subtitle": "Verify fundamentals before the first click.",
                 "success": "Excellent! You are prepared. Good trades!",
                 "title": "Pre-Market Check-in (Oliver Velez)",
-                "verified": "verified"
+                "verified": "verified",
+                "newsUpdateError": "Error updating economic events feed.",
+                "newsUpdateSuccess": "Economic feed updated successfully.",
+                "resetSuccess": "Checklist statistics reset."
             },
             "heatmap": {
                 "days": {
@@ -2282,10 +2336,14 @@
             "delete_success": "Operation deleted successfully.",
             "trade_created": "Trade created!",
             "trade_updated": "Trade updated!",
-            "trades_count": "trades"
+            "trades_count": "trades",
+            "delete_error": "Could not delete trade.",
+            "importing": "Importing operational history...",
+            "no_accounts": "Please register an account in the Finance tab."
         },
         "placeholders": {
-            "search": "Search for asset or strategy..."
+            "search": "Search for asset or strategy...",
+            "all_types": "All Types"
         },
         "quickStats": {
             "openTrades": "Open",
@@ -2442,7 +2500,11 @@
                 "update_error": "Error updating operation.",
                 "update_success": "Operation updated!",
                 "valid_asset_type": "Please select a valid Asset Type.",
-                "complementary_darf_warning": "Attention: Result increase detected!"
+                "complementary_darf_warning": "Attention: Result increase detected!",
+                "invalid_asset_symbol": "Invalid or unregistered asset symbol.",
+                "invalid_entry_price": "Entry price must be greater than zero.",
+                "invalid_exit_price": "Exit price is invalid.",
+                "invalid_quantity": "Lot quantity must be positive."
             },
             "partials": {
                 "add_partial": "Add Partial",
@@ -2571,7 +2633,13 @@
                 "high": "High",
                 "low": "Low",
                 "normal": "Normal"
+            },
+            "errors": {
+                "required": "Missing required field in trade wizard."
             }
+        },
+        "quickEdit": {
+            "title": "Quick Edit"
         }
     },
     "nav": {
@@ -2602,6 +2670,26 @@
         "reasons": "Block Reason:"
     },
     "risk": {
+        "desk": {
+            "auditTitle": "Historical Desk Audit",
+            "status": {
+                "passed": "Passed",
+                "failed": "Failed",
+                "pending": "Pending"
+            },
+            "metrics": {
+                "operatedDays": "Operated Days",
+                "positiveDays": "Positive Days",
+                "bestDayShare": "Best Day Share",
+                "totalProfit": "Total Profit"
+            },
+            "stages": {
+                "currentStage": "Operational Desk Stage",
+                "margin_building": "Margin Building",
+                "real_phase_1": "Real Account - Phase 1",
+                "real_final": "Real Account - Final"
+            }
+        },
         "deskValidation": {
             "title": "Prop Firm Validation",
             "allowed": "Trade Allowed",
@@ -2645,26 +2733,6 @@
             "assetProfileSelector": "Select an Asset Profile...",
             "noLinkedAssetProfiles": "No asset profile linked.",
             "removeAssetProfile": "Remove"
-        },
-        "desk": {
-            "auditTitle": "Historical Desk Audit",
-            "status": {
-                "passed": "Passed",
-                "failed": "Failed",
-                "pending": "Pending"
-            },
-            "metrics": {
-                "operatedDays": "Operated Days",
-                "positiveDays": "Positive Days",
-                "bestDayShare": "Best Day Share",
-                "totalProfit": "Total Profit"
-            },
-            "stages": {
-                "currentStage": "Operational Desk Stage",
-                "margin_building": "Margin Building",
-                "real_phase_1": "Real Account - Phase 1",
-                "real_final": "Real Account - Final"
-            }
         },
         "cockpit": {
             "title": "Operational Cockpit",
@@ -2724,7 +2792,11 @@
                 "pending_days": "Pending trading days to advance.",
                 "pending_audit": "Historical audit waiting for cut-off criteria.",
                 "max_stage_reached": "Plan ceiling reached (Final Phase)."
-            }
+            },
+            "can_advance": "Eligible for Next Level",
+            "current": "Current Operational Level",
+            "should_remain": "Phase Maintenance Required",
+            "title": "Strategic Progression Roadmap"
         },
         "feedback": {
             "missing_days": "Not enough trading days to validate consistency.",
@@ -2745,6 +2817,80 @@
             "day_trade_only": "Day Trade Only rule enabled, but current operation timeframe not provided.",
             "time_constraint": "Temporary close rule configured, but current time context unavailable.",
             "table_disabled": "Prop Firm disabled. Audit skipped."
+        }
+    },
+    "cockpit": {
+        "ctaBtn": "Analytical Cockpit",
+        "health": {
+            "title": "Algorithmic Health",
+            "status": "Status",
+            "currentRisk": "Current Risk",
+            "stability": "Stability (Drawdown / Volatility)"
+        },
+        "xray": {
+            "title": "Operational Context (X-Ray)",
+            "bestAsset": "Best Asset",
+            "worstAsset": "Worst Asset",
+            "bestTime": "Best Time",
+            "worstTime": "Worst Time",
+            "bestSide": "Dominant Direction"
+        },
+        "ai": {
+            "title": "Tactical Recommendation",
+            "insufficientVolume": "Insufficient volume to point out edges. Follow your initial plan.",
+            "healthy": "System in perfect mechanical functioning. Zero failures.",
+            "desc": "Risk diagnostics, operational factors, and psychological calibration."
+        },
+        "psychology": {
+            "title": "Strategy vs Psychology",
+            "dominantState": "Dominant State",
+            "netProfit": "Net Profit",
+            "loss": "Loss",
+            "history": "Your algorithmic history of desk behavior."
+        }
+    },
+    "reports": {
+        "operationalTitle": "Operational Performance Report",
+        "imminentRisks": "Imminent Risks",
+        "scoreUnavailable": "Score unavailable without trade volume.",
+        "pdf": {
+            "title": "Operational Performance Report",
+            "auditedPeriod": "Audited Period",
+            "financialStats": "Official Financial Statistics",
+            "noTrades": "No trades recorded in the selected window.",
+            "netPnl": "Net (PnL)",
+            "winRate": "Win Rate",
+            "profitFactor": "Profit Factor",
+            "tradeVolume": "Trade Volume",
+            "inDays": "in",
+            "qualitativeScore": "Qualitative Evaluation (Score)",
+            "scoreUnavailable": "Score unavailable without trade volume.",
+            "masterScore": "Master Score",
+            "executionCut": "Execution Cut (Economic)",
+            "riskManagement": "Risk Management (Limits)",
+            "aiAudit": "AI Audit (Mechanics)",
+            "psychologicalDaily": "Psychological (Daily)",
+            "preservedStreaks": "Preserved Streaks (Window)",
+            "unbreakableDiscipline": "Unbreakable Discipline",
+            "emotionalControl": "Emotional Control",
+            "tiltPrevention": "Tilt Prevention",
+            "offendersEdges": "Offenders & Edges",
+            "linearOperation": "Linear execution with no relevant deviations.",
+            "infractions": "Infractions (High Severity)",
+            "functionalSystem": "Functional system, zero critical failures.",
+            "competitiveAdvantages": "Competitive Advantages",
+            "medianNoJumps": "Median, no mathematical leaps in favor.",
+            "postMarketSummary": "Post-Market Summary",
+            "noDailyReview": "Traded without daily review. Reduces audit capacity.",
+            "documentedSessions": "Documented Sessions",
+            "daysRead": "Days Read",
+            "lossesUnderNegative": "of losses occurred under negative emotional state",
+            "primaryObservations": "Primary Observations",
+            "unsupportedEvaluations": "Evaluations unsupported by descriptive texts.",
+            "finalDiagnosis": "Final Diagnosis",
+            "imminentRisks": "Imminent Risks",
+            "noGraveRisks": "No severe matrix risk identified.",
+            "executionPlan": "Execution Plan"
         }
     }
 }

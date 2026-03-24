@@ -1,0 +1,158 @@
+{
+    "fiscal": {
+        "darf": {
+            "accountError": "Erro na Conta",
+            "active": "Ativo",
+            "buttons": {
+                "cancel": "Cancelar",
+                "confirmPay": "Confirmar Pagamento",
+                "confirmUnpay": "Confirmar Estorno",
+                "delete": "Excluir",
+                "pay": "Pagar"
+            },
+            "description": "Gerencie e armazene seus comprovantes de arrecadação.",
+            "emptyHistory": "Nenhum DARF encontrado.",
+            "fineInterest": "Multa e Juros",
+            "history": "Histórico de DARFs",
+            "labels": {
+                "dueDate": "Vencimento",
+                "fine": "Multa (R$)",
+                "interest": "Juros (R$)",
+                "paymentDate": "Data do Pagamento",
+                "principal": "Principal",
+                "totalPaid": "Valor Total Pago",
+                "valueToPay": "Valor a Pagar"
+            },
+            "messages": {
+                "emptyHistory": "Nenhuma DARF paga em {year}.",
+                "loading": "Carregando..."
+            },
+            "modal": {
+                "delete": {
+                    "prompt": "Tem certeza que deseja excluir esta DARF?",
+                    "title": "Confirmar Exclusão"
+                },
+                "pay": {
+                    "description": "Insira os detalhes para registrar o pagamento desta DARF.",
+                    "noAccount": "Selecione uma conta para debitar.",
+                    "title": "Registrar Pagamento"
+                },
+                "unpay": {
+                    "descriptionLine1": "Isso irá reverter o status da DARF para Pendente e estornar o valor de",
+                    "descriptionLine2": "para a conta de origem.",
+                    "descriptionLine3": "A transação de saída será removida do Hub Financeiro.",
+                    "title": "Desfazer Pagamento"
+                }
+            },
+            "principalValue": "Valor Principal",
+            "registerPayment": "Registrar Pagamento",
+            "revenueCode": "Código de Receita",
+            "selectAccount": "Selecionar Conta",
+            "sourceAccount": "Conta de Origem",
+            "status": {
+                "late": "Atrasado",
+                "paid": "Pago",
+                "pending": "Pendente"
+            },
+            "table": {
+                "fineInterest": "Multas/Juros",
+                "period": "Período",
+                "principalValue": "Valor Principal",
+                "revenueCode": "Cód. Receita",
+                "status": "Status",
+                "totalPaid": "Total Pago"
+            },
+            "title": "Painel de DARFs",
+            "totalPaid": "Total Pago"
+        },
+        "irpf": {
+            "complementary": "Complementar",
+            "calculate": "Calcular",
+            "calculating": "Calculando...",
+            "description": "Acompanhe e consolide suas notas e tributos mensais (Day Trade e Swing).",
+            "evolution": "Evolução Tributária",
+            "history": "Histórico de Apurações",
+            "kpis": {
+                "dueYearHint": "Acumulado a pagar neste exercício.",
+                "losses": "Prejuízos Acumulados",
+                "paidYearHint": "Soma das guias já quitadas.",
+                "pending": "Guias Pendentes",
+                "pendingHint": "Você possui {count} DARF(s) pendente(s).",
+                "totalDue": "Imposto Devido",
+                "totalPaid": "Total Pago"
+            },
+            "manageDarfs": "Gerenciar DARFs",
+            "modal": {
+                "description": "Calcule os resultados líquidos isolados de um mês específico.",
+                "month": "Mês Base",
+                "title": "Nova Apuração",
+                "year": "Ano-calendário"
+            },
+            "newAppraisal": "Nova Apuração",
+            "periodFilter": "Filtrar por Ano",
+            "saveBeforeDarf": "Salve a apuração antes de gerar uma DARF.",
+            "table": {
+                "actions": "Ações",
+                "alreadyGenerated": "DARF gerada",
+                "cannotDelete": "Não é possível excluir",
+                "compensated": "Compensado",
+                "generateDarf": "Gerar DARF",
+                "minTaxAlert": "IRPF mínimo",
+                "minTaxHint": "Valor inferior ou igual à R$ 10",
+                "netProfit": "Lucro Líq.",
+                "ok": "Sem Imposto",
+                "paid": "Quitado",
+                "pending": "Pendente",
+                "period": "Mês/Ano",
+                "status": "Situação",
+                "toPay": "IR Devido",
+                "type": "Modalidade"
+            },
+            "title": "Central de IRPF"
+        }
+    },
+    "reports": {
+        "operationalTitle": "Relatório de Performance Operacional",
+        "imminentRisks": "Riscos Iminentes",
+        "scoreUnavailable": "Score indisponível sem volume de trades.",
+        "pdf": {
+            "title": "Relatório de Performance Operacional",
+            "auditedPeriod": "Período Auditado",
+            "financialStats": "Estatística Financeira Oficial",
+            "noTrades": "Nenhuma operação registrada na janela selecionada.",
+            "netPnl": "Líquido (PnL)",
+            "winRate": "Win Rate",
+            "profitFactor": "Profit Factor",
+            "tradeVolume": "Volume de Negócios",
+            "inDays": "em",
+            "qualitativeScore": "Avaliação Qualitativa (Score)",
+            "scoreUnavailable": "Score indisponível sem volume operacional.",
+            "masterScore": "Master Score",
+            "executionCut": "Corte Execução (Econômico)",
+            "riskManagement": "Gestão Risco (Limites)",
+            "aiAudit": "Auditoria IA (Mecânica)",
+            "psychologicalDaily": "Psicológico (Diário)",
+            "preservedStreaks": "Streaks Preservadas (Janela)",
+            "unbreakableDiscipline": "Disciplina Inquebrável",
+            "emotionalControl": "Controle Emocional",
+            "tiltPrevention": "Prevenção a Tilt",
+            "offendersEdges": "Ofensores & Edges",
+            "linearOperation": "Operação linear sem desvios relevantes do Setup.",
+            "infractions": "Infrações (Alta Severidade)",
+            "functionalSystem": "Sistema funcional, zero falhas críticas.",
+            "competitiveAdvantages": "Vantagens Competitivas",
+            "medianNoJumps": "Mediano, sem saltos matemáticos a favor.",
+            "postMarketSummary": "Resumo Pós-Mercado",
+            "noDailyReview": "Você operou sem registrar revisão diária. Isso reduz a capacidade de auditoria e aprendizado do período.",
+            "documentedSessions": "Sessões Documentadas",
+            "daysRead": "Dias Lidos",
+            "lossesUnderNegative": "dos prejuízos ocorreram sob estado emocional negativo",
+            "primaryObservations": "Observações Primárias (Extracts)",
+            "unsupportedEvaluations": "Avaliações não suportadas por textos discritivos o suficiente.",
+            "finalDiagnosis": "Diagnóstico Final",
+            "imminentRisks": "Riscos Iminentes",
+            "noGraveRisks": "Nenhum risco matricial grave identificado.",
+            "executionPlan": "Plano de Execução"
+        }
+    }
+}

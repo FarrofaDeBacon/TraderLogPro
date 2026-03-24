@@ -1,0 +1,167 @@
+{
+    "riskContext": {
+        "title": "Composición Activa",
+        "asset": "Activo Operativo",
+        "unlinked": "Sin Perfil Vinculado",
+        "riskProfile": "Perfil de Riesgo",
+        "growthSource": "Fuente de Growth",
+        "globalPlan": "Plan Global",
+        "overridePlan": "Específico (Override)",
+        "currentPhase": "Fase Actual",
+        "noPhase": "Ninguna / Manual",
+        "sizing": "Sizing Permitido",
+        "contracts": "Contratos Mensurables",
+        "blocked": "Bloqueado / Inválido",
+        "reasons": "Motivo del Bloqueo:"
+    },
+    "risk": {
+        "desk": {
+            "auditTitle": "Auditoría Histórica de la Mesa",
+            "status": {
+                "passed": "Aprobado",
+                "failed": "Reprobado",
+                "pending": "Pendiente"
+            },
+            "metrics": {
+                "operatedDays": "Días Operados",
+                "positiveDays": "Días Positivos",
+                "bestDayShare": "% Mejor Día",
+                "totalProfit": "Beneficio Total"
+            },
+            "stages": {
+                "currentStage": "Etapa Operativa de la Mesa",
+                "margin_building": "Construcción de Margen",
+                "real_phase_1": "Cuenta Real - Fase 1",
+                "real_final": "Cuenta Real - Definitiva"
+            }
+        },
+        "deskValidation": {
+            "title": "Validação da Mesa",
+            "allowed": "Trade Permitida",
+            "blocked": "Trade Bloqueada",
+            "allowedAsset": "Ativo Permitido",
+            "combinedExposure": "Exposição Média",
+            "dayTradeOnly": "Modo Day Trade",
+            "closeBeforeMarketClose": "Tempo Finalizado",
+            "missingContext": "Aviso: Sem contexto"
+        },
+        "management": {
+            "deskConfig": "Configuração da Mesa",
+            "enableDeskConfig": "Ativar Configuração da Mesa",
+            "planName": "Nome do plano",
+            "allowedAssets": "Ativos permitidos",
+            "maxCombinedExposure": "Exposição máxima combinada",
+            "maxTotalLoss": "Perda máxima total",
+            "profitTarget": "Meta / lucro alvo",
+            "dayTradeOnly": "Somente Day Trade",
+            "closeBeforeMarketCloseMinutes": "Encerrar mins. antes do fechamento",
+            "consistencyMode": "Modo de Consistência",
+            "consistencyMode_none": "Nenhum",
+            "consistencyMode_5days_3positive": "5 Dias (min. 3 Positivos)",
+            "consistencyMode_10days_5positive": "10 Dias (min. 5 Positivos)",
+            "maxSingleDayProfitShare": "% máx. de lucro em único dia",
+            "mdrMode": "Modo de MDR",
+            "mdrMode_none": "Nenhum (Construção de Margem)",
+            "mdrMode_fixed": "Fixo (Relativo aos Limites de Conta Real)",
+            "mdrMode_percent_of_margin": "% da Margem",
+            "combinedRules": "Regras Combinadas",
+            "addCombinedRule": "Adicionar Regra",
+            "ruleName": "Nome da Regra",
+            "ruleType": "Tipo de Regra",
+            "sumContracts": "Soma de Contratos",
+            "limitValue": "Valor Limite",
+            "linkedAssetProfilesForRule": "Perfis de Ativo Envolvidos",
+            "noCombinedRules": "Nenhuma regra combinada criada. Use regras combinadas para cruzar limites entre ativos.",
+            "removeCombinedRule": "Remover Regra",
+            "linkedAssetProfiles": "Perfis de Ativo Vinculados",
+            "linkedAssetProfilesDesc": "Aplica as regras globais de risco a perfis de negociação específicos de um ativo.",
+            "assetProfileSelector": "Selecione um Perfil de Ativo...",
+            "noLinkedAssetProfiles": "Nenhum perfil de ativo vinculado.",
+            "removeAssetProfile": "Remover"
+        },
+        "cockpit": {
+            "title": "Cabina Operativa",
+            "subtitle": "Estado de lectura rápida para decisiones diarias del trader.",
+            "profile": "Perfil:",
+            "plan": "Plan:",
+            "asset": "Activo:",
+            "selectAsset": "!! Seleccione un Activo en la Boleta !!",
+            "noProfile": "No hay perfil de riesgo activo.",
+            "noProfileDesc": "Debe habilitar una gestión en Configuración para alimentar la cabina operativa.",
+            "statusBlocked": "Bloqueado",
+            "statusBlockedDesc1": "¡No operar hoy!",
+            "statusBlockedDesc2": "Se alcanzó un límite de supervivencia diaria.",
+            "statusCaution": "Atención",
+            "statusCautionDesc1": "Precaución extrema.",
+            "statusCautionDesc2": "Problemas inminentes o regla del 50% afectada.",
+            "statusAllowed": "Permitido",
+            "statusAllowedDesc1": "Puede operar normalmente.",
+            "statusAllowedDesc2": "Sistemas normales, exposición y drawdown en límites.",
+            "dailyDrawdown": "Drawdown Diario Actual",
+            "sizing": "Lotes (Activo Actual)",
+            "contracts": "CTRs",
+            "blockedZero": "Bloqueado (0)",
+            "violations": "VIOLACIONES ACTIVAS",
+            "warnings": "ADVERTENCIAS OPERATIVAS",
+            "evolutionStatus": "Estado de Evolución",
+            "dailyProfit": "Beneficio Diario Actual",
+            "profitDays": "Días Rentables",
+            "targetHit": "¿Meta Alcanzada?",
+            "yes": "Sí",
+            "no": "No",
+            "riskTriggers": "Disparadores de Riesgo",
+            "overtrading": "Límite de Operaciones",
+            "imminentRisk": "Riesgo Inminente",
+            "controlled": "Controlado",
+            "maxLot": "Lote Máximo Configurado",
+            "mdrStatus": "Techo de Drawdown (MDR)",
+            "watched": "Monitorizado",
+            "openBook": "Libro Abierto",
+            "missingReqs": "Lo que Falta (Meta)",
+            "allReqsMet": "¡Se han cumplido todos los requisitos para esta etapa!",
+            "auditedRules": "Reglas Auditadas",
+            "pending": "pendiente",
+            "noRules": "Ninguna regla activa auditada en la lista del plan actual.",
+            "engine": {
+                "min_trading_days": "Días Operados",
+                "min_positive_days": "Días de Consistencia",
+                "profit_target": "Objetivo de Beneficio",
+                "rule_50_percent": "Regla de 50%",
+                "consistency": "Consistencia Diaria"
+            }
+        }
+    },
+    "desk": {
+        "progression": {
+            "reasons": {
+                "pending_days": "Días de trading pendientes para avanzar.",
+                "pending_audit": "Auditoría histórica esperando criterios de corte.",
+                "max_stage_reached": "Techo del plan alcanzado (Fase Final)."
+            },
+            "can_advance": "Elegible para el Próximo Nivel",
+            "current": "Nivel Operativo Actual",
+            "should_remain": "Mantenimiento de Fase Requerido",
+            "title": "Hoja de Ruta de Progresión Estratégica"
+        },
+        "feedback": {
+            "missing_days": "Faltan días de operación para validar la consistencia.",
+            "missing_profit": "Objetivo de beneficios no alcanzado.",
+            "missing_consistency": "No se han superado los criterios mínimos de días rentables consistentes.",
+            "failed_50_percent": "Regla del 50% rota (su mejor día superó el límite de seguridad)."
+        },
+        "reasons": {
+            "invalid_asset": "El activo seleccionado no está permitido por las reglas de la Firma.",
+            "max_exposure": "La suma de contratos excede el límite permitido.",
+            "day_trade_only": "El plan de la Firma solo permite el modo Day Trade.",
+            "min_operated_days": "Días mínimos operados no alcanzados.",
+            "max_share_50": "La ganancia del mejor día excede el límite (Regla del 50%).",
+            "consistency_failed": "La regla de consistencia falló.",
+            "consistency_pending": "Regla de consistencia pendiente."
+        },
+        "warnings": {
+            "day_trade_only": "Regla Day Trade Only habilitada, pero no se proporcionó el marco temporal de la operación actual.",
+            "time_constraint": "Regla de cierre temporal configurada, pero el contexto horario actual no está disponible.",
+            "table_disabled": "Firma deshabilitada. Auditoría omitida."
+        }
+    }
+}

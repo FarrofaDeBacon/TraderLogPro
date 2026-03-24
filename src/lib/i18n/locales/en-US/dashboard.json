@@ -1,0 +1,126 @@
+{
+    "dashboard": {
+        "mindset": {
+            "title": "Psychological State",
+            "impact_detected": "{impact} impact detected",
+            "empty": "No recent records",
+            "placeholder": "Start your day by recording your mindset in the journal for a full analysis.",
+            "followed_plan": "Followed Plan",
+            "deviated_plan": "Deviated Plan"
+        },
+        "market_context": {
+            "win": "Index (WIN)",
+            "wdo": "Dollar (WDO)",
+            "selic": "SELIC EA.",
+            "selic_desc": "Central Bank Target",
+            "di": "DI Rate (CDI)",
+            "di_desc": "Interest Benchmark",
+            "ptax": "PTAX (Official)",
+            "ptax_desc": "BCB Average Dollar"
+        },
+        "account": {
+            "balance": "Balance"
+        },
+        "charts": {
+            "consistency": "CONSISTENCY",
+            "equity": "Equity Evolution",
+            "equitySubtitle": "Graphical evolution",
+            "losses": "LOSSES",
+            "wins": "WINS"
+        },
+        "dailyDetail": {
+            "asset": "Asset",
+            "buy": "Buy",
+            "buyShort": "B",
+            "direction": "Direction",
+            "efficiency": "Efficiency",
+            "noTrades": "No trades",
+            "operationsList": "Operations List",
+            "result": "Result",
+            "sell": "Sell",
+            "sellShort": "S",
+            "subtitle": "Detailed day view",
+            "summary": "Summary",
+            "title": "Daily Detail",
+            "tradeQty": "Total Operations"
+        },
+        "kpis": {
+            "discipline": "Discipline",
+            "maxDrawdown": "Max Drawdown",
+            "netResult": "Net Result",
+            "payoff": "Payoff",
+            "profitFactor": "Profit Factor",
+            "winRate": "Win Rate",
+            "avgInterval": "Average Interval"
+        },
+        "newTrade": "New Trade",
+        "quant": {
+            "dollar": "Dollar",
+            "index": "Index",
+            "intention": "Intention",
+            "ranking": "Ranking",
+            "subtitle": "Subtitle",
+            "title": "Title",
+            "waitingData": "Waiting Data"
+        },
+        "schedule": {
+            "afternoon": "Afternoon",
+            "basedOn": "Based on last {count} business days",
+            "morning": "Morning",
+            "title": "Trading Hours"
+        },
+        "subtitle": "Trading account summary.",
+        "survivor": {
+            "activePlan": "Active Plan:",
+            "avgRFactor": "Avg R Factor",
+            "consistency": "Consist.",
+            "currentPhase": "Current Phase",
+            "dailyEvolution": "Daily Evolution",
+            "eligibility": "Eligibility",
+            "greenZone": "Green Zone",
+            "limit": "Limit",
+            "operateTrade": "OPERATE 2% TRADE",
+            "operationalStatus": "Operational Status",
+            "pnl": "PnL",
+            "riskMonth": "Survivor Risk (Month)",
+            "roadmapProgress": "Roadmap Progress",
+            "select": "Select",
+            "statusAlpha": "Operational Alpha",
+            "statusBlocked": "Blocked (Max Loss)",
+            "statusRisk": "Risk Alert",
+            "target": "Target: ",
+            "title": "Survivor Hub & Monitoring",
+            "tradesUsage": "Trades Usage"
+        },
+        "terminalHub": "Terminal Hub",
+        "title": "Dashboard",
+        "gann": {
+            "title": "Gann Vibrations",
+            "subtitle": "Mathematical Confluence and Cycles",
+            "kpis": {
+                "nextCot": "Next Reversal (Window)",
+                "cycleDay": "Cycle Day",
+                "vibration": "Current Vibration",
+                "masterCycle": "Master Cycle",
+                "avgInterval": "Avg Interval Between Trades",
+                "days": "Days",
+                "hot_window": "Hot Window (Imminent Reversal)",
+                "neutral": "Neutral Zone",
+                "outOfDays": "Out of Cycle"
+            },
+            "sq9": {
+                "expansion": "Expansion Targets",
+                "retracement": "Retracement Targets",
+                "degrees": "{deg}°",
+                "reference": "Ref"
+            }
+        },
+        "syncingTerminal": "Syncing Terminal...",
+        "waitingSurvivorData": "Waiting for Survivor Hub data matrix"
+    },
+    "home": {
+        "newTrade": "New Trade",
+        "subtitle": "The evolution of your trading journal.",
+        "viewDashboard": "View Dashboard"
+    }
+}

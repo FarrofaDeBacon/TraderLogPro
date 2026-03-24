@@ -202,7 +202,11 @@
                 "cycleDay": "Jour du Cycle",
                 "vibration": "Vibration Actuelle",
                 "masterCycle": "Cycle Maître (Annuel)",
-                "avgInterval": "Intervalo Entre Trades"
+                "avgInterval": "Intervalo Entre Trades",
+                "days": "Jours",
+                "hot_window": "Fenêtre Chaude (Inversion Imminente)",
+                "neutral": "Zone Neutre",
+                "outOfDays": "Hors Cycle"
             },
             "sq9": {
                 "expansion": "Objectifs d'Expansion",
@@ -210,7 +214,9 @@
                 "degrees": "{deg}° Degrés",
                 "reference": "Ref"
             }
-        }
+        },
+        "syncingTerminal": "Synchronisation du Terminal...",
+        "waitingSurvivorData": "En attente de la matrice de données Survivor Hub"
     },
     "filters": {
         "date": {
@@ -296,7 +302,8 @@
             "unpayAction": "Annuler le Paiement",
             "unpayCancel": "Annuler",
             "unpayConfirm": "Confirmer",
-            "unpayTitle": "Annuler"
+            "unpayTitle": "Annuler",
+            "operations": "Transactions Liées"
         },
         "description": "Gestion centralisée de la trésorerie, relevés et clôtures.",
         "details": {
@@ -543,6 +550,8 @@
     },
     "general": {
         "actions": "Actions",
+        "operator": "Operador",
+        "save": "Enregistrer",
         "all": "Tous",
         "asset": "Actif",
         "back": "Retour",
@@ -580,7 +589,6 @@
         "quantity": "Qté",
         "reload": "Reload",
         "result": "Résultat",
-        "save": "Enregistrer",
         "saving": "Enregistrement...",
         "show": "Afficher",
         "status": "Statut",
@@ -608,7 +616,17 @@
         "weight": "poids",
         "yes": "Yes",
         "progress": "Progrès",
-        "add": "Ajouter"
+        "add": "Ajouter",
+        "confirmDelete": "Voulez-vous vraiment supprimer ?",
+        "form": {
+            "assetRequired": "L'actif est requis.",
+            "invaildContracts": "Nombre de contrats invalide.",
+            "invalidPoints": "Points invalides.",
+            "nameRequired": "Le nom est requis."
+        },
+        "none": "Aucun",
+        "saveSuccess": "Enregistré avec succès !",
+        "unknown": "Inconnu"
     },
     "help": {
         "title": "Centre d'Aide",
@@ -676,7 +694,11 @@
             "pnlByEmotion": "Pnl By Emotion",
             "resultTitle": "Résultat Financier par Émotion",
             "winRate": "Win Rate",
-            "winRateTitle": "Taux de Réussite par Émotion (%)"
+            "winRateTitle": "Taux de Réussite par Émotion (%)",
+            "theMap": "La Carte",
+            "top5": "Top 5 Segmentés",
+            "equityCurve": "Courbe de Capital Tactique pour la Période",
+            "filterPeriod": "Filtrer une période avec des données"
         },
         "checkin": {
             "button": "Nouvelle Entrée",
@@ -691,7 +713,8 @@
             "success": "Enregistrement réussi !",
             "stateLabel": "Comment vous sentez-vous ?",
             "statePlaceholder": "Sélectionnez...",
-            "title": "Entrée Émotionnelle Quotidienne"
+            "title": "Entrée Émotionnelle Quotidienne",
+            "intensityLabel": "Niveau d'Intensité"
         },
         "deleteDialog": {
             "cancel": "Annuler",
@@ -747,7 +770,28 @@
             "unknownBadge": "Inconnu"
         },
         "syncWeights": "Synchroniser les Poids",
-        "title": "Analyse Psychologique"
+        "title": "Analyse Psychologique",
+        "kpis": {
+            "psychoScore": "Psycho Score",
+            "bestPerformance": "Meilleure Performance",
+            "offender": "Le Délinquant",
+            "negativeLosses": "Pertes Négatives",
+            "score": "SCORE"
+        },
+        "ai": {
+            "mentor": "Mentor IA",
+            "behaviorAnalysis": "Analyse Comportementale",
+            "noAiLinked": "Aucune IA liée à votre couche Psychologie. Activez votre clé pour débloquer l'analyseur interprétatif à partir de la base mathématique.",
+            "integrations": "Intégrations",
+            "crossReference": "Nous recoupons les résultats mathématiques avec le moteur d'Intelligence Artificielle pour générer des conseils tactiques instantanés.",
+            "mapping": "Cartographie en cours...",
+            "analyze": "Analyser",
+            "updating": "Mise à jour...",
+            "rediagnose": "Rediagnostiquer"
+        },
+        "hierarchical": {
+            "sessionsStructure": "Sessions et Structure Hiérarchique"
+        }
     },
     "settings": {
         "fiscal": {
@@ -851,7 +895,9 @@
                     "rateHint": "Pourcentage d'impôt dû",
                     "exemption": "Exonération",
                     "exemptionHint": "Montant exonéré d'impôt",
-                    "modality": "Modalité"
+                    "modality": "Modalité",
+                    "errorSave": "Erreur lors de l'enregistrement de la règle fiscale.",
+                    "nameRequired": "Le nom de la règle est requis."
                 },
                 "new": "Nouvelle Règle",
                 "title": "Title"
@@ -1629,9 +1675,76 @@
                     "title": "Préréglages de Profil"
                 },
                 "tabs": {
-                    "engine": "Moteur de Risque",
-                    "general": "Général",
-                    "growth": "Roadmap"
+                    "base": "Base",
+                    "assetProfiles": "Perfis de Ativo",
+                    "rules": "Regras",
+                    "motors": "Motores"
+                },
+                "ruleBuilder": {
+                    "title": "Regras do Plano",
+                    "addRule": "Nova Regra",
+                    "editRule": "Editar Regra",
+                    "deleteRule": "Excluir Regra",
+                    "noRules": "Nenhuma regra configurada",
+                    "ruleName": "Nome da Regra",
+                    "scope": {
+                        "label": "Escopo",
+                        "global": "Global",
+                        "asset": "Ativo",
+                        "combined": "Combinada"
+                    },
+                    "targetType": {
+                        "label": "Tipo de Regra",
+                        "sum_contracts": "Soma de Contratos",
+                        "max_daily_loss": "Perda Máxima Diária",
+                        "profit_target": "Meta de Lucro",
+                        "day_trade_only": "Day Trade Apenas",
+                        "close_before_close": "Fechar Antes do Fechamento",
+                        "consistency": "Consistência",
+                        "rule_50_percent": "Regra dos 50%",
+                        "max_trades_per_day": "Máx. Trades por Dia"
+                    },
+                    "operator": {
+                        "label": "Operador",
+                        "lte": "Menor ou igual (≤)",
+                        "gte": "Maior ou igual (≥)",
+                        "eq": "Igual a (=)",
+                        "lt": "Menor que (<)",
+                        "gt": "Maior que (>)",
+                        "between": "Entre"
+                    },
+                    "value": "Valor",
+                    "valueSecondary": "Valor Máximo",
+                    "linkedProfiles": "Perfis de Ativo",
+                    "enabled": "Ativa",
+                    "save": "Salvar Regra",
+                    "cancel": "Cancelar",
+                    "confirmDelete": "Tem certeza que deseja excluir esta regra?",
+                    "presets": {
+                        "maxDailyLoss": "Perda Máxima Diária",
+                        "profitTarget": "Meta Financeira",
+                        "maxTrades": "Limite de Trades",
+                        "dayTradeOnly": "Apenas Day Trade",
+                        "closeBeforeClose": "Horário Limite",
+                        "consistency": "Consistência",
+                        "rule50": "Regra dos 50%",
+                        "sumContracts": "Limite de Contratos"
+                    },
+                    "groups": {
+                        "global": "Regras Globais",
+                        "asset": "Regras de Ativos Específicos",
+                        "combined": "Combinações de Ativos"
+                    },
+                    "helpers": {
+                        "max_daily_loss": "Bloqueia novas entradas se o limite for atingido.",
+                        "profit_target": "Protege a meta financeira bloqueando novas entradas.",
+                        "sum_contracts": "Máximo de contratos abertos simultaneamente.",
+                        "day_trade_only": "Impede que posições fiquem abertas pro dia seguinte.",
+                        "close_before_close": "Força encerramento antes de tocar o sinal.",
+                        "consistency": "Impede aumento abrupto de lotes após o stop.",
+                        "rule_50_percent": "Protege 50% do lucro máximo flutuante.",
+                        "max_trades_per_day": "Limita a quantidade total de trades no dia."
+                    }
                 }
             },
             "growthPlan": {
@@ -1658,12 +1771,15 @@
                 "progression": "Critères de Progression",
                 "regression": "Critères de Régression",
                 "requirements": {
+                    "consistency": "Cohérence (Jours)",
+                    "dailyLoss": "Perte Quotidienne",
                     "days": "Sessions Positives",
                     "demote": "Critères de Régression",
                     "drawdown": "Drawdown Maximum",
                     "lossStreak": "Série de Pertes",
                     "profit": "Objectif de Profit",
-                    "promote": "Conditions de Progression"
+                    "promote": "Conditions de Progression",
+                    "winRate": "Taux de Réussite (%)"
                 },
                 "status": {
                     "approved": "Approuvé pour la Phase Suivante",
@@ -1713,7 +1829,9 @@
                 "growthOverride": "Remplacement de Croissance",
                 "growthOverrideDesc": "Définit des règles de croissance exclusives à cet actif, ignorant le plan global.",
                 "enableGrowthOverride": "Activer le Remplacement",
-                "overridePhases": "Phases Spécifiques"
+                "overridePhases": "Phases Spécifiques",
+                "description": "Attribuez des profils de risque uniques à différentes classes d'actifs.",
+                "noOverridePhases": "Aucune phase de croissance superposée."
             },
             "management": {
                 "linkedAssetProfiles": "Profils d'Actifs Liés",
@@ -1735,7 +1853,8 @@
                 "noProfileLinked": "Aucun profil compatible.",
                 "noProfileLinkedDesc": "L'actif sélectionné n'a pas de Profil d'Actif lié à ce Profil de Risque. Les règles de Croissance ne s'appliquent pas.",
                 "sourceGlobal": "Plan Global",
-                "sourceAsset": "Spécifique à l'Actif"
+                "sourceAsset": "Spécifique à l'Actif",
+                "consecutiveLossDays": "Jours de Perte Consécutifs"
             }
         },
         "strategies": {
@@ -2044,7 +2163,10 @@
                 "subtitle": "Vérifiez les fondamentaux avant le premier clic.",
                 "success": "Excellent ! Vous êtes prêt. Bon trading !",
                 "title": "Check-in Pré-Marché (Oliver Velez)",
-                "verified": "vérifiés"
+                "verified": "vérifiés",
+                "newsUpdateError": "Erreur lors de la mise à jour du flux d'événements économiques.",
+                "newsUpdateSuccess": "Flux économique mis à jour avec succès.",
+                "resetSuccess": "Statistiques de la liste de contrôle réinitialisées."
             },
             "heatmap": {
                 "days": {
@@ -2214,10 +2336,14 @@
             "delete_success": "Opération supprimée avec succès.",
             "trade_created": "Transaction créée!",
             "trade_updated": "Transaction mise à jour!",
-            "trades_count": "transactions"
+            "trades_count": "transactions",
+            "delete_error": "Impossible de supprimer la transaction.",
+            "importing": "Importation de l'historique opérationnel...",
+            "no_accounts": "Veuillez enregistrer un compte dans l'onglet Finance."
         },
         "placeholders": {
-            "search": "Chercher par actif ou stratégie..."
+            "search": "Chercher par actif ou stratégie...",
+            "all_types": "Tous les Types"
         },
         "quickStats": {
             "openTrades": "Ouverts",
@@ -2374,7 +2500,11 @@
                 "update_error": "Erreur lors de la mise à jour de l'opération.",
                 "update_success": "Opération mise à jour !",
                 "valid_asset_type": "Veuillez sélectionner un type d'actif valide.",
-                "complementary_darf_warning": "Atenção: Aumento de resultado detectado!"
+                "complementary_darf_warning": "Atenção: Aumento de resultado detectado!",
+                "invalid_asset_symbol": "Symbole d'actif invalide ou non enregistré.",
+                "invalid_entry_price": "Le prix d'entrée doit être supérieur à zéro.",
+                "invalid_exit_price": "Le prix de sortie est invalide.",
+                "invalid_quantity": "La quantité de lots doit être positive."
             },
             "partials": {
                 "add_partial": "Ajouter Partielle",
@@ -2503,7 +2633,13 @@
                 "high": "Élevée",
                 "low": "Faible",
                 "normal": "Normale"
+            },
+            "errors": {
+                "required": "Champ obligatoire manquant dans l'assistant de transaction."
             }
+        },
+        "quickEdit": {
+            "title": "Édition Rapide"
         }
     },
     "nav": {
@@ -2533,7 +2669,141 @@
         "blocked": "Bloqué / Invalide",
         "reasons": "Motif du Blocage :"
     },
+    "risk": {
+        "desk": {
+            "auditTitle": "Auditoria Histórica da Mesa",
+            "status": {
+                "passed": "Aprovado",
+                "failed": "Reprovado",
+                "pending": "Pendente"
+            },
+            "metrics": {
+                "operatedDays": "Dias Operados",
+                "positiveDays": "Dias Positivos",
+                "bestDayShare": "Share do Melhor Dia",
+                "totalProfit": "Lucro Total"
+            },
+            "stages": {
+                "currentStage": "Estágio Operacional da Mesa",
+                "margin_building": "Construção de Margem",
+                "real_phase_1": "Conta Real - Fase 1",
+                "real_final": "Conta Real - Definitiva"
+            }
+        },
+        "deskValidation": {
+            "title": "Validação da Mesa",
+            "allowed": "Trade Permitida",
+            "blocked": "Trade Bloqueada",
+            "allowedAsset": "Ativo Permitido",
+            "combinedExposure": "Exposição Média",
+            "dayTradeOnly": "Modo Day Trade",
+            "closeBeforeMarketClose": "Tempo Finalizado",
+            "missingContext": "Aviso: Sem contexto"
+        },
+        "management": {
+            "deskConfig": "Configuração da Mesa",
+            "enableDeskConfig": "Ativar Configuração da Mesa",
+            "planName": "Nome do plano",
+            "allowedAssets": "Ativos permitidos",
+            "maxCombinedExposure": "Exposição máxima combinada",
+            "maxTotalLoss": "Perda máxima total",
+            "profitTarget": "Meta / lucro alvo",
+            "dayTradeOnly": "Somente Day Trade",
+            "closeBeforeMarketCloseMinutes": "Encerrar mins. antes do fechamento",
+            "consistencyMode": "Modo de Consistência",
+            "consistencyMode_none": "Nenhum",
+            "consistencyMode_5days_3positive": "5 Dias (min. 3 Positivos)",
+            "consistencyMode_10days_5positive": "10 Dias (min. 5 Positivos)",
+            "maxSingleDayProfitShare": "% máx. de lucro em único dia",
+            "mdrMode": "Modo de MDR",
+            "mdrMode_none": "Nenhum (Construção de Margem)",
+            "mdrMode_fixed": "Fixo (Relativo aos Limites de Conta Real)",
+            "mdrMode_percent_of_margin": "% da Margem",
+            "combinedRules": "Regras Combinadas",
+            "addCombinedRule": "Adicionar Regra",
+            "ruleName": "Nome da Regra",
+            "ruleType": "Tipo de Regra",
+            "sumContracts": "Soma de Contratos",
+            "limitValue": "Valor Limite",
+            "linkedAssetProfilesForRule": "Perfis de Ativo Envolvidos",
+            "noCombinedRules": "Nenhuma regra combinada criada. Use regras combinadas para cruzar limites entre ativos.",
+            "removeCombinedRule": "Remover Regra",
+            "linkedAssetProfiles": "Perfis de Ativo Vinculados",
+            "linkedAssetProfilesDesc": "Aplica as regras globais de risco a perfis de negociação específicos de um ativo.",
+            "assetProfileSelector": "Selecione um Perfil de Ativo...",
+            "noLinkedAssetProfiles": "Nenhum perfil de ativo vinculado.",
+            "removeAssetProfile": "Remover"
+        },
+        "cockpit": {
+            "title": "Cockpit Operacional",
+            "subtitle": "Status de leitura rápida para decisão diária do trader.",
+            "profile": "Perfil:",
+            "plan": "Plano:",
+            "asset": "Ativo:",
+            "selectAsset": "!! Selecione um Ativo na Boleta !!",
+            "noProfile": "Nenhum perfil de risco ativo.",
+            "noProfileDesc": "Você precisa habilitar um gerenciamento em Configurações para alimentar o cockpit operacional.",
+            "statusBlocked": "Bloqueado",
+            "statusBlockedDesc1": "Não operar hoje!",
+            "statusBlockedDesc2": "Um limite de sobrevivência diária foi atingido.",
+            "statusCaution": "Atenção",
+            "statusCautionDesc1": "Cautela redobrada.",
+            "statusCautionDesc2": "Problemas iminentes ou regra dos 50% afetada.",
+            "statusAllowed": "Liberado",
+            "statusAllowedDesc1": "Pode operar normalmente.",
+            "statusAllowedDesc2": "Sistemas normais, exposição e drawdown nos limites.",
+            "dailyDrawdown": "Drawdown Diário Atual",
+            "sizing": "Lotes (Ativo Atual)",
+            "contracts": "CTRs",
+            "blockedZero": "Bloqueado (0)",
+            "violations": "VIOLAÇÕES ATIVAS",
+            "warnings": "AVISOS OPERACIONAIS",
+            "evolutionStatus": "Status de Evolução",
+            "dailyProfit": "Lucro Diário Atual",
+            "profitDays": "Dias de Lucro",
+            "targetHit": "Meta Bateu?",
+            "yes": "Sim",
+            "no": "Não",
+            "riskTriggers": "Gatilhos de Risco",
+            "overtrading": "Limite de Trades",
+            "imminentRisk": "Risco Iminente",
+            "controlled": "Controlado",
+            "maxLot": "Mão Máxima Configurada",
+            "mdrStatus": "Teto de Rebaixamento (MDR)",
+            "watched": "Vigiado",
+            "openBook": "Livro Aberto",
+            "missingReqs": "O Que Falta (Meta)",
+            "allReqsMet": "Todos os requisitos para este estágio foram cumpridos!",
+            "auditedRules": "Regras Auditadas",
+            "pending": "pendente",
+            "noRules": "Nenhuma regra ativa auditada na checklist no plano atual.",
+            "engine": {
+                "min_trading_days": "Dias Operados",
+                "min_positive_days": "Dias de Consistência",
+                "profit_target": "Bater a Meta de Capital",
+                "rule_50_percent": "Segurança de 50%",
+                "consistency": "Consistência Diária"
+            }
+        }
+    },
     "desk": {
+        "progression": {
+            "reasons": {
+                "pending_days": "Jours de trading en attente pour avancer.",
+                "pending_audit": "Audit historique en attente de critères.",
+                "max_stage_reached": "Plafond du plan atteint (Phase Finale)."
+            },
+            "can_advance": "Éligible au Niveau Suivant",
+            "current": "Niveau Opérationnel Actuel",
+            "should_remain": "Maintien de Phase Requis",
+            "title": "Feuille de Route de Progression Stratégique"
+        },
+        "feedback": {
+            "missing_days": "Faltam dias operados para validar a consistência.",
+            "missing_profit": "Meta financeira da conta ainda não foi atingida.",
+            "missing_consistency": "Os critérios mínimos de dias consistentes (lucrativos) não foram batidos.",
+            "failed_50_percent": "Houve quebra na proteção dos 50% (seu melhor dia de lucro ultrapassou a métrica de segurança)."
+        },
         "reasons": {
             "invalid_asset": "L'actif sélectionné n'est pas autorisé par les règles.",
             "max_exposure": "La somme des contrats dépasse la limite autorisée.",
@@ -2547,13 +2817,80 @@
             "day_trade_only": "Règle Day Trade Only activée, mais délai d'opération actuel non fourni.",
             "time_constraint": "Règle de clôture temporaire configurée, mais contexte horaire actuel indisponible.",
             "table_disabled": "Firme désactivée. Audit ignoré."
+        }
+    },
+    "cockpit": {
+        "ctaBtn": "Cockpit Analytique",
+        "health": {
+            "title": "Santé Algorithmique",
+            "status": "Statut",
+            "currentRisk": "Risque Actuel",
+            "stability": "Stabilité (Drawdown / Volatilité)"
         },
-        "progression": {
-            "reasons": {
-                "pending_days": "Jours de trading en attente pour avancer.",
-                "pending_audit": "Audit historique en attente de critères.",
-                "max_stage_reached": "Plafond du plan atteint (Phase Finale)."
-            }
+        "xray": {
+            "title": "Contexte Opérationnel (Rayon X)",
+            "bestAsset": "Meilleur Actif",
+            "worstAsset": "Pire Actif",
+            "bestTime": "Meilleure Heure",
+            "worstTime": "Pire Heure",
+            "bestSide": "Direction Dominante"
+        },
+        "ai": {
+            "title": "Recommandation Tactique",
+            "insufficientVolume": "Volume insuffisant pour dégager des avantages. Suivez votre plan initial.",
+            "healthy": "Système en parfait fonctionnement mécanique. Zéro défaillance.",
+            "desc": "Diagnostic des risques, facteurs opérationnels et calibration psychologique."
+        },
+        "psychology": {
+            "title": "Stratégie vs Psychologie",
+            "dominantState": "État Dominant",
+            "netProfit": "Bénéfice Net",
+            "loss": "Perte",
+            "history": "Votre historique algorithmique de comportement à la table."
+        }
+    },
+    "reports": {
+        "operationalTitle": "Rapport de Performance Opérationnelle",
+        "imminentRisks": "Risques Imminents",
+        "scoreUnavailable": "Score indisponible sans volume de transactions.",
+        "pdf": {
+            "title": "Rapport de Performance",
+            "auditedPeriod": "Période Auditée",
+            "financialStats": "Statistiques Financières",
+            "noTrades": "Aucun trade enregistré dans la fenêtre.",
+            "netPnl": "Net (PnL)",
+            "winRate": "Win Rate",
+            "profitFactor": "Profit Factor",
+            "tradeVolume": "Volume de Trading",
+            "inDays": "en",
+            "qualitativeScore": "Évaluation Qualitative",
+            "scoreUnavailable": "Score non disponible sans volume.",
+            "masterScore": "Master Score",
+            "executionCut": "Coupe d'Exécution",
+            "riskManagement": "Gestion des Risques",
+            "aiAudit": "Audit IA (Mécanique)",
+            "psychologicalDaily": "Psychologique (Quotidien)",
+            "preservedStreaks": "Séquences Préservées",
+            "unbreakableDiscipline": "Discipline Inébranlable",
+            "emotionalControl": "Contrôle Émotionnel",
+            "tiltPrevention": "Prévention du Tilt",
+            "offendersEdges": "Infractions et Avantages",
+            "linearOperation": "Opération linéaire sans déviations.",
+            "infractions": "Infractions (Haute Gravité)",
+            "functionalSystem": "Système fonctionnel, zéro défaillance.",
+            "competitiveAdvantages": "Avantages Compétitifs",
+            "medianNoJumps": "Médian, sans sauts en faveur.",
+            "postMarketSummary": "Résumé Post-Marché",
+            "noDailyReview": "Tradé sans revue. Réduit la capacité d'audit.",
+            "documentedSessions": "Sessions Documentées",
+            "daysRead": "Jours Lus",
+            "lossesUnderNegative": "des pertes sont survenues sous état négatif",
+            "primaryObservations": "Observations Primaires",
+            "unsupportedEvaluations": "Évaluations non étayées par des textes.",
+            "finalDiagnosis": "Diagnostic Final",
+            "imminentRisks": "Risques Imminents",
+            "noGraveRisks": "Aucun risque grave identifié.",
+            "executionPlan": "Plan d'Exécution"
         }
     }
 }

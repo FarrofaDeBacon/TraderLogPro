@@ -1,0 +1,32 @@
+{
+    "cockpit": {
+        "ctaBtn": "Cockpit Analítico",
+        "health": {
+            "title": "Saúde Algorítmica",
+            "status": "Status",
+            "currentRisk": "Risco Atual",
+            "stability": "Estabilidade"
+        },
+        "xray": {
+            "title": "Contexto Operacional (X-Ray)",
+            "bestAsset": "Melhor Ativo",
+            "worstAsset": "Pior Ativo",
+            "bestTime": "Melhor Horário",
+            "worstTime": "Pior Horário",
+            "bestSide": "Direção Dominante"
+        },
+        "ai": {
+            "title": "Recomendação Tática (IA)",
+            "insufficientVolume": "Volume insuficiente para apontar vantagens. Siga seu plano inicial.",
+            "healthy": "Sistema em perfeito funcionamento mecânico. Zero falhas.",
+            "desc": "Cruzamos as descobertas matemáticas da esquerda com o motor da Inteligência Artificial para gerar dicas táticas instantâneas."
+        },
+        "psychology": {
+            "title": "Estratégia vs Psicologia",
+            "dominantState": "Estado Dominante",
+            "netProfit": "Lucro Líquido",
+            "loss": "Prejuízo",
+            "history": "Seu histórico algorítmico de comportamento na mesa."
+        }
+    }
+}

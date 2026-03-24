@@ -1,0 +1,40 @@
+{
+    "header": {
+        "searchPlaceholder": "Search...",
+        "toggleUserMenu": "Toggle User Menu",
+        "userMenu": {
+            "logout": "Logout",
+            "myAccount": "My Account",
+            "settings": "Settings",
+            "support": "Support"
+        }
+    },
+    "sidebar": {
+        "categories": {
+            "analysis": "Analysis",
+            "fiscal": "Fiscal",
+            "support": "Support",
+            "workspace": "Home"
+        },
+        "dashboard": "Dashboard",
+        "finance": "Finance Hub",
+        "help": "Help Center",
+        "irpf": "Fiscal",
+        "psychology": "Psychology",
+        "settings": "Settings",
+        "strategies": "Strategies",
+        "trades": "Trades"
+    },
+    "nav": {
+        "dashboard": "Dashboard",
+        "trades": "Trades",
+        "finance": "Finance",
+        "psychology": "Psychology",
+        "help": "Help",
+        "settings": "Settings",
+        "fiscal": {
+            "irpf": "Income Tax"
+        },
+        "risk": "Risk Control"
+    }
+}

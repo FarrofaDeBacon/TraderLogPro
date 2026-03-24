@@ -1,0 +1,121 @@
+{
+    "journal": {
+        "empty": {
+            "description": "Start recording your mindset today.",
+            "title": "No notes yet"
+        },
+        "newNote": "New Note",
+        "title": "Trading Journal"
+    },
+    "psychology": {
+        "analysis": {
+            "emotionalCalc": "Emotional Calculation",
+            "hierarchy": "Hierarchy",
+            "title": "Behavioral Mapping",
+            "totalWeight": "Total Weight"
+        },
+        "charts": {
+            "correlation": "Correlation: Emotion x Result (Daily)",
+            "pnlByEmotion": "Financial Result by Emotion",
+            "resultTitle": "Result vs Emotional",
+            "winRate": "Efficiency %",
+            "winRateTitle": "Win Rate vs Emotional",
+            "theMap": "The Map",
+            "top5": "Top 5 Segments",
+            "equityCurve": "Tactical Equity Curve for the Period",
+            "filterPeriod": "Filter a period with data"
+        },
+        "checkin": {
+            "button": "New Record",
+            "date": "Trade Date",
+            "description": "Record how you were feeling at the time of this trade.",
+            "intensity": "Intensity",
+            "intensity_label": "Intensity",
+            "intensity_placeholder": "How intense (1-10)?",
+            "notesLabel": "Additional Observations",
+            "notesPlaceholder": "What triggered this? (Optional)",
+            "save": "Save Check-in",
+            "success": "Record saved successfully!",
+            "stateLabel": "Emotional State",
+            "statePlaceholder": "Select predominant emotion",
+            "title": "Emotional Check-in",
+            "intensityLabel": "Intensity Level"
+        },
+        "deleteDialog": {
+            "cancel": "Cancel",
+            "confirm": "Delete",
+            "description": "Are you sure you want to delete this emotional record? This action cannot be undone.",
+            "title": "Confirm Deletion"
+        },
+        "description": "Understand how your emotions impact your financial result.",
+        "filters": {
+            "groupBy": "Group by"
+        },
+        "insight": {
+            "formulaTitle": "How did we get this score?",
+            "opScore": "Score",
+            "title": "Calculation Detail and Impact"
+        },
+        "journal": {
+            "entryStateShort": "INT. STATE (SHORT)",
+            "exitStateShort": "EXT. STATE (SHORT)",
+            "intensityShort": "INTENSITY",
+            "score": "Score (0-10)",
+            "title": "Records and Direct Entries"
+        },
+        "journalList": {
+            "date": "Date",
+            "emotion": "Emotion",
+            "intensity": "Intensity",
+            "noEntries": "No records found.",
+            "notes": "Notes",
+            "title": "Emotional Journal"
+        },
+        "kpi": {
+            "accumulatedLoss": "Accumulated Loss",
+            "bestMindset": "Best Mindset",
+            "consolidated": "Consolidated",
+            "records": "Journal Records",
+            "recordsDescription": "Assessments filled in the platform",
+            "tiltCost": "The Cost of Tilt",
+            "tiltDescription": "The total sum of losses trading outside the control zone is {value}",
+            "unregistered": "Unregistered",
+            "unregisteredDescription": "Trades without check-in",
+            "worstMindset": "Worst Mindset"
+        },
+        "list": {
+            "asset": "Asset",
+            "date": "Date",
+            "entryState": "State (Entry)",
+            "exitState": "State (Exit)",
+            "noTrades": "No trades recorded.",
+            "result": "Result",
+            "title": "Last Recorded Trades",
+            "unknown": "Unregistered",
+            "unknownBadge": "Unknown"
+        },
+        "syncWeights": "Sync Weights",
+        "title": "Psychological Analysis",
+        "kpis": {
+            "psychoScore": "Psycho Score",
+            "bestPerformance": "Best Performance",
+            "offender": "The Offender",
+            "negativeLosses": "Negative Losses",
+            "score": "SCORE"
+        },
+        "ai": {
+            "mentor": "AI Mentor",
+            "behaviorAnalysis": "Behavioral Analysis",
+            "noAiLinked": "No AI linked to your Psychology layer. Activate your key to unlock the interpretive analyzer from the mathematical base.",
+            "integrations": "Integrations",
+            "crossReference": "We cross-reference the mathematical findings with the Artificial Intelligence engine to generate instant tactical tips.",
+            "mapping": "Mapping...",
+            "analyze": "Analyze",
+            "updating": "Updating...",
+            "rediagnose": "Re-diagnose"
+        },
+        "hierarchical": {
+            "sessionsStructure": "Sessions and Hierarchical Structure"
+        }
+    }
+}

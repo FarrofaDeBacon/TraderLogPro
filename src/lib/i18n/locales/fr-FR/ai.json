@@ -1,0 +1,32 @@
+{
+    "cockpit": {
+        "ctaBtn": "Cockpit Analytique",
+        "health": {
+            "title": "Santé Algorithmique",
+            "status": "Statut",
+            "currentRisk": "Risque Actuel",
+            "stability": "Stabilité (Drawdown / Volatilité)"
+        },
+        "xray": {
+            "title": "Contexte Opérationnel (Rayon X)",
+            "bestAsset": "Meilleur Actif",
+            "worstAsset": "Pire Actif",
+            "bestTime": "Meilleure Heure",
+            "worstTime": "Pire Heure",
+            "bestSide": "Direction Dominante"
+        },
+        "ai": {
+            "title": "Recommandation Tactique",
+            "insufficientVolume": "Volume insuffisant pour dégager des avantages. Suivez votre plan initial.",
+            "healthy": "Système en parfait fonctionnement mécanique. Zéro défaillance.",
+            "desc": "Diagnostic des risques, facteurs opérationnels et calibration psychologique."
+        },
+        "psychology": {
+            "title": "Stratégie vs Psychologie",
+            "dominantState": "État Dominant",
+            "netProfit": "Bénéfice Net",
+            "loss": "Perte",
+            "history": "Votre historique algorithmique de comportement à la table."
+        }
+    }
+}

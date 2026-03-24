@@ -1,0 +1,121 @@
+{
+    "journal": {
+        "empty": {
+            "description": "Comece a registrar seu mindset hoje.",
+            "title": "Sem notas ainda"
+        },
+        "newNote": "Nova Nota",
+        "title": "Diário de Trading"
+    },
+    "psychology": {
+        "analysis": {
+            "emotionalCalc": "Cálculo Emocional",
+            "hierarchy": "Hierarquia",
+            "title": "Mapeamento Comportamental",
+            "totalWeight": "Peso Total"
+        },
+        "charts": {
+            "correlation": "Correlação: Emoção x Resultado (Diário)",
+            "pnlByEmotion": "Resultado Financeiro por Emoção",
+            "resultTitle": "Resultado vs Emocional",
+            "winRate": "Eficiência %",
+            "winRateTitle": "Taxa de Acerto vs Emocional",
+            "theMap": "O Mapa",
+            "top5": "Top 5 Segmentados",
+            "equityCurve": "Curva de Capital Tática no Período",
+            "filterPeriod": "Filtre um período com dados"
+        },
+        "checkin": {
+            "button": "Novo Registro",
+            "date": "Data do Trade",
+            "description": "Registre como você estava se sentindo no momento deste trade.",
+            "intensity": "Intensidade",
+            "intensity_label": "Intensidade",
+            "intensity_placeholder": "Qual a intensidade (1-10)?",
+            "notesLabel": "Observações Adicionais",
+            "notesPlaceholder": "O que desencadeou isso? (Opcional)",
+            "save": "Salvar Check-in",
+            "success": "Registro salvo com sucesso!",
+            "stateLabel": "Estado Emocional",
+            "statePlaceholder": "Selecione a emoção predominante",
+            "title": "Check-in Emocional",
+            "intensityLabel": "Nível de Intensidade"
+        },
+        "deleteDialog": {
+            "cancel": "Cancelar",
+            "confirm": "Excluir",
+            "description": "Tem certeza que deseja excluir este registro emocional? Esta ação não pode ser desfeita.",
+            "title": "Confirmar Exclusão"
+        },
+        "description": "Entenda como suas emoções impactam seu resultado financeiro.",
+        "filters": {
+            "groupBy": "Agrupar por"
+        },
+        "insight": {
+            "formulaTitle": "Como chegamos nessa nota?",
+            "opScore": "Nota",
+            "title": "Detalhe do Cálculo e Impacto"
+        },
+        "journal": {
+            "entryStateShort": "ESTADO INT. (CURTO)",
+            "exitStateShort": "ESTADO EXT. (CURTO)",
+            "intensityShort": "INTENSIDADE",
+            "score": "Nota (0-10)",
+            "title": "Registros e Entradas Diretas"
+        },
+        "journalList": {
+            "date": "Data",
+            "emotion": "Emoção",
+            "intensity": "Intensidade",
+            "noEntries": "Nenhum registro encontrado.",
+            "notes": "Notas",
+            "title": "Diário Emocional"
+        },
+        "kpi": {
+            "accumulatedLoss": "Perda Acumulada",
+            "bestMindset": "Melhor Estado Mental",
+            "consolidated": "Consolidado",
+            "records": "Registros de Diário",
+            "recordsDescription": "Avaliações preenchidas na plataforma",
+            "tiltCost": "O Custo do Tilt",
+            "tiltDescription": "A soma total dos prejuízos operando fora da zona de controle é de {value}",
+            "unregistered": "Não Registrado",
+            "unregisteredDescription": "Trades sem check-in",
+            "worstMindset": "Pior Estado Mental"
+        },
+        "list": {
+            "asset": "Ativo",
+            "date": "Data",
+            "entryState": "Estado (Entrada)",
+            "exitState": "Estado (Saída)",
+            "noTrades": "Nenhum trade registrado.",
+            "result": "Resultado",
+            "title": "Últimos Trades Registrados",
+            "unknown": "Não Registrado",
+            "unknownBadge": "Desconhecido"
+        },
+        "syncWeights": "Sincronizar Pesos",
+        "title": "Análise Psicológica",
+        "kpis": {
+            "psychoScore": "Psycho Score",
+            "bestPerformance": "Melhor Performance",
+            "offender": "O Ofensor",
+            "negativeLosses": "Losses Negativos",
+            "score": "SCORE"
+        },
+        "ai": {
+            "mentor": "Mentor IA",
+            "behaviorAnalysis": "Análise Comportamental",
+            "noAiLinked": "Nenhuma IA vinculada à sua camada de Psicologia. Ative sua chave para desbloquear o analisador interpretativo da base matemática.",
+            "integrations": "Integrações",
+            "crossReference": "Cruzamos as descobertas matemáticas da esqueda com o motor da Inteligência Artificial para gerar dicas táticas instantâneas.",
+            "mapping": "Mapeando...",
+            "analyze": "Analisar",
+            "updating": "Atualizando...",
+            "rediagnose": "Rediagnosticar"
+        },
+        "hierarchical": {
+            "sessionsStructure": "Sessões e Estrutura Hierárquica"
+        }
+    }
+}

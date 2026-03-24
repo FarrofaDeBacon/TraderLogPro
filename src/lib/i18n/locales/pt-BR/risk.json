@@ -1,0 +1,167 @@
+{
+    "riskContext": {
+        "title": "Composição Ativa",
+        "asset": "Ativo Operacional",
+        "unlinked": "Sem Perfil Vinculado",
+        "riskProfile": "Perfil de Risco",
+        "growthSource": "Fonte do Growth",
+        "globalPlan": "Plano Global",
+        "overridePlan": "Específico (Override)",
+        "currentPhase": "Fase Atual",
+        "noPhase": "Nenhuma / Manual",
+        "sizing": "Sizing Permitido",
+        "contracts": "Contratos Mensurados",
+        "blocked": "Bloqueado / Inválido",
+        "reasons": "Motivo do Bloqueio:"
+    },
+    "risk": {
+        "desk": {
+            "auditTitle": "Auditoria Histórica da Mesa",
+            "status": {
+                "passed": "Aprovado",
+                "failed": "Reprovado",
+                "pending": "Pendente"
+            },
+            "metrics": {
+                "operatedDays": "Dias Operados",
+                "positiveDays": "Dias Positivos",
+                "bestDayShare": "Share do Melhor Dia",
+                "totalProfit": "Lucro Total"
+            },
+            "stages": {
+                "currentStage": "Estágio Operacional da Mesa",
+                "margin_building": "Construção de Margem",
+                "real_phase_1": "Conta Real - Fase 1",
+                "real_final": "Conta Real - Definitiva"
+            }
+        },
+        "deskValidation": {
+            "title": "Validação da Mesa",
+            "allowed": "Trade Permitida",
+            "blocked": "Trade Bloqueada",
+            "allowedAsset": "Ativo Permitido",
+            "combinedExposure": "Exposição Média",
+            "dayTradeOnly": "Modo Day Trade",
+            "closeBeforeMarketClose": "Tempo Finalizado",
+            "missingContext": "Aviso: Sem contexto"
+        },
+        "management": {
+            "deskConfig": "Configuração da Mesa",
+            "enableDeskConfig": "Ativar Configuração da Mesa",
+            "planName": "Nome do plano",
+            "allowedAssets": "Ativos permitidos",
+            "maxCombinedExposure": "Exposição máxima combinada",
+            "maxTotalLoss": "Perda máxima total",
+            "profitTarget": "Meta / lucro alvo",
+            "dayTradeOnly": "Somente Day Trade",
+            "closeBeforeMarketCloseMinutes": "Encerrar mins. antes do fechamento",
+            "consistencyMode": "Modo de Consistência",
+            "consistencyMode_none": "Nenhum",
+            "consistencyMode_5days_3positive": "5 Dias (min. 3 Positivos)",
+            "consistencyMode_10days_5positive": "10 Dias (min. 5 Positivos)",
+            "maxSingleDayProfitShare": "% máx. de lucro em único dia",
+            "mdrMode": "Modo de MDR",
+            "mdrMode_none": "Nenhum (Construção de Margem)",
+            "mdrMode_fixed": "Fixo (Relativo aos Limites de Conta Real)",
+            "mdrMode_percent_of_margin": "% da Margem",
+            "combinedRules": "Regras Combinadas",
+            "addCombinedRule": "Adicionar Regra",
+            "ruleName": "Nome da Regra",
+            "ruleType": "Tipo de Regra",
+            "sumContracts": "Soma de Contratos",
+            "limitValue": "Valor Limite",
+            "linkedAssetProfilesForRule": "Perfis de Ativo Envolvidos",
+            "noCombinedRules": "Nenhuma regra combinada criada. Use regras combinadas para cruzar limites entre ativos.",
+            "removeCombinedRule": "Remover Regra",
+            "linkedAssetProfiles": "Perfis de Ativo Vinculados",
+            "linkedAssetProfilesDesc": "Aplica as regras globais de risco a perfis de negociação específicos de um ativo.",
+            "assetProfileSelector": "Selecione um Perfil de Ativo...",
+            "noLinkedAssetProfiles": "Nenhum perfil de ativo vinculado.",
+            "removeAssetProfile": "Remover"
+        },
+        "cockpit": {
+            "title": "Cockpit Operacional",
+            "subtitle": "Status de leitura rápida para decisão diária do trader.",
+            "profile": "Perfil:",
+            "plan": "Plano:",
+            "asset": "Ativo:",
+            "selectAsset": "!! Selecione um Ativo na Boleta !!",
+            "noProfile": "Nenhum perfil de risco ativo.",
+            "noProfileDesc": "Você precisa habilitar um gerenciamento em Configurações para alimentar o cockpit operacional.",
+            "statusBlocked": "Bloqueado",
+            "statusBlockedDesc1": "Não operar hoje!",
+            "statusBlockedDesc2": "Um limite de sobrevivência diária foi atingido.",
+            "statusCaution": "Atenção",
+            "statusCautionDesc1": "Cautela redobrada.",
+            "statusCautionDesc2": "Problemas iminentes ou regra dos 50% afetada.",
+            "statusAllowed": "Liberado",
+            "statusAllowedDesc1": "Pode operar normalmente.",
+            "statusAllowedDesc2": "Sistemas normais, exposição e drawdown nos limites.",
+            "dailyDrawdown": "Drawdown Diário Atual",
+            "sizing": "Lotes (Ativo Atual)",
+            "contracts": "CTRs",
+            "blockedZero": "Bloqueado (0)",
+            "violations": "VIOLAÇÕES ATIVAS",
+            "warnings": "AVISOS OPERACIONAIS",
+            "evolutionStatus": "Status de Evolução",
+            "dailyProfit": "Lucro Diário Atual",
+            "profitDays": "Dias de Lucro",
+            "targetHit": "Meta Bateu?",
+            "yes": "Sim",
+            "no": "Não",
+            "riskTriggers": "Gatilhos de Risco",
+            "overtrading": "Limite de Trades",
+            "imminentRisk": "Risco Iminente",
+            "controlled": "Controlado",
+            "maxLot": "Mão Máxima Configurada",
+            "mdrStatus": "Teto de Rebaixamento (MDR)",
+            "watched": "Vigiado",
+            "openBook": "Livro Aberto",
+            "missingReqs": "O Que Falta (Meta)",
+            "allReqsMet": "Todos os requisitos para este estágio foram cumpridos!",
+            "auditedRules": "Regras Auditadas",
+            "pending": "pendente",
+            "noRules": "Nenhuma regra ativa auditada na checklist no plano atual.",
+            "engine": {
+                "min_trading_days": "Dias Operados",
+                "min_positive_days": "Dias de Consistência",
+                "profit_target": "Bater a Meta de Capital",
+                "rule_50_percent": "Segurança de 50%",
+                "consistency": "Consistência Diária"
+            }
+        }
+    },
+    "desk": {
+        "progression": {
+            "reasons": {
+                "pending_days": "Dias de trade pendentes para avanço.",
+                "pending_audit": "Auditoria histórica aguardando critérios de corte.",
+                "max_stage_reached": "Teto do plano atingido (Última Fase)."
+            },
+            "can_advance": "Elegível ao Próximo Nível",
+            "current": "Nível Operacional Atual",
+            "should_remain": "Manutenção de Fase Exigida",
+            "title": "Roadmap de Progressão Estratégica"
+        },
+        "feedback": {
+            "missing_days": "Faltam dias operados para validar a consistência.",
+            "missing_profit": "Meta financeira da conta ainda não foi atingida.",
+            "missing_consistency": "Os critérios mínimos de dias consistentes (lucrativos) não foram batidos.",
+            "failed_50_percent": "Houve quebra na proteção dos 50% (seu melhor dia de lucro ultrapassou a métrica de segurança)."
+        },
+        "reasons": {
+            "invalid_asset": "Ativo selecionado não é permitido pela regra da Mesa.",
+            "max_exposure": "Soma de contratos excede o limite estipulado.",
+            "day_trade_only": "Plano da Mesa permite apenas modo Day Trade.",
+            "min_operated_days": "Mínimo de dias operados não atingido.",
+            "max_share_50": "Lucro do melhor dia excede o limite permitido (Regra dos 50%).",
+            "consistency_failed": "Regra de consistência falhou.",
+            "consistency_pending": "Regra de consistência pendente."
+        },
+        "warnings": {
+            "day_trade_only": "Regra Day Trade Only habilitada, mas o prazo da trade atual não foi informado.",
+            "time_constraint": "Regra de encerramento temporário configurada, mas contexto de horário atual indisponível.",
+            "table_disabled": "Mesa desativada. Auditoria pulada."
+        }
+    }
+}

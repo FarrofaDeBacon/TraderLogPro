@@ -1,0 +1,70 @@
+{
+    "auth": {
+        "login": {
+            "createAccount": "Create account",
+            "description": "Enter your credentials to access TraderLog Pro.",
+            "email": "Email",
+            "error": {
+                "fillAll": "Fill in all fields.",
+                "invalidCredentials": "Invalid credentials."
+            },
+            "forgotPassword": "Forgot password?",
+            "loading": "Logging in...",
+            "noAccount": "Don't have an account yet?",
+            "orContinueWith": "Or continue with",
+            "password": "Password",
+            "recovery": {
+                "back": "Back to Login",
+                "confirm": "Confirm Password",
+                "description": "Enter your recovery key and set a new password.",
+                "error": {
+                    "fillAll": "Fill in all fields.",
+                    "generic": "Error resetting password.",
+                    "invalidKey": "Invalid recovery key.",
+                    "mismatch": "Passwords do not match."
+                },
+                "keyLabel": "Recovery Key",
+                "loading": "Resetting...",
+                "newPassword": "New Password",
+                "submit": "Reset Password",
+                "success": "Password reset successfully!",
+                "title": "Recover Access"
+            },
+            "signup": "Sign Up",
+            "social": "Social Networks",
+            "submit": "Enter Platform",
+            "success": "Login successful!",
+            "title": "Welcome back"
+        },
+        "register": {
+            "alreadyHaveAccount": "Already have an account?",
+            "birthDate": "Date of Birth",
+            "confirmPassword": "Confirm Password",
+            "cpf": "Tax ID / CPF",
+            "description": "Create your TraderLog Pro account.",
+            "email": "Email",
+            "error": {
+                "fillAll": "Fill in all fields.",
+                "passwordsMismatch": "Passwords do not match."
+            },
+            "loading": "Creating account...",
+            "login": "Login",
+            "name": "Full Name",
+            "password": "Password",
+            "recoveryKey": {
+                "confirm": "I understand, I've saved my key!",
+                "copyPrompt": "Copy Key",
+                "description": "This is your recovery key. Keep it in a safe place — without it, you will not be able to recover access.",
+                "keepSecure": "Keep it safe!",
+                "label": "Your Recovery Key",
+                "successCopy": "Key copied!",
+                "title": "Recovery Key Generated",
+                "warning": "Do not share this key with anyone."
+            },
+            "submit": "Create Account",
+            "success": "Account created successfully!",
+            "terms": "Terms of Use",
+            "title": "Create Account"
+        }
+    }
+}

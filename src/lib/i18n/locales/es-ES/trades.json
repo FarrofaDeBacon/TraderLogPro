@@ -1,0 +1,379 @@
+{
+    "trades": {
+        "actions": {
+            "clear_filters": "Limpiar Filtros",
+            "delete": "Eliminar",
+            "delete_day": "Excluir Dia",
+            "edit": "Editar",
+            "import": "Importar Operaciones",
+            "import_profit": "Importar Profit",
+            "new_trade": "Registrar Operación",
+            "view": "Ver Detalles"
+        },
+        "status": {
+            "open": "Abierto",
+            "closed": "Cerrado"
+        },
+        "dashboard": {
+            "weekOf": "Semana del {date}"
+        },
+        "delete": {
+            "confirmation": "¿Está seguro de que desea eliminar esta operación? Esta acción no se puede deshacer.",
+            "confirmation_with_closure": "Esta operación es parte de un Cierre Diario. El extracto se recalculará automáticamente después de la eliminación. ¿Está seguro de que desea eliminar?",
+            "day_confirmation": "¿Está seguro de que desea eliminar las {count} operaciones del día {date}? Esta acción no se puede deshacer.",
+            "title": "Eliminar Operación"
+        },
+        "details": {
+            "basic_info": "Información Básica",
+            "emotional_entry": "Emoción en la Entrada",
+            "emotional_exit": "Emoción en la Salida",
+            "entry_price": "Precio de Entrada",
+            "execution": "Ejecución",
+            "exit_price": "Precio de Salida",
+            "fees": "Tasas",
+            "gross_result": "Resultado Bruto",
+            "media": "Multimedia y Notas",
+            "net_result": "Resultado Líquido",
+            "no_media": "Ninguna imagen adjunta.",
+            "no_notes": "Ninguna nota registrada.",
+            "no_records": "Sin registros",
+            "notes": "Notas de la Operación",
+            "partial_exits": "Salidas Parciales",
+            "partial_date": "Fecha/Hora",
+            "partial_price": "Precio",
+            "partial_qty": "Cant",
+            "partial_notes": "Notas",
+            "psychology": "Psicología",
+            "stop_loss": "Stop Loss",
+            "take_profit": "Take Profit",
+            "title": "Detalles de la Operación"
+        },
+        "empty": {
+            "description": "Conecta tu plataforma o añade operaciones manualmente.",
+            "title": "Historial Vacío"
+        },
+        "filters": {
+            "account": "Cuenta",
+            "asset": "Activo",
+            "assetType": "Tipo de Activo",
+            "currency": "Currency",
+            "market": "Mercado",
+            "modality": "Modalidad",
+            "period": "Período",
+            "status": "Estado",
+            "strategy": "Estrategia",
+            "title": "Filtros"
+        },
+        "import": "Importar Operaciones",
+        "messages": {
+            "all_period": "Todo el Período",
+            "delete_success": "Operación eliminada con éxito.",
+            "trade_created": "¡Operación creada!",
+            "trade_updated": "¡Operación actualizada!",
+            "trades_count": "operaciones",
+            "delete_error": "No se pudo eliminar el trade.",
+            "importing": "Importando historial operativo...",
+            "no_accounts": "Por favor, registre una cuenta en la pestaña de Finanzas."
+        },
+        "placeholders": {
+            "search": "Buscar por activo o estrategia...",
+            "all_types": "Todos los Tipos"
+        },
+        "quickStats": {
+            "openTrades": "Abiertos",
+            "openTradesDesc": "Posiciones Actuales",
+            "avgInterval": "Intervalo Entre Trades",
+            "avgIntervalDesc": "Tiempo promedio entre operaciones ejecutadas",
+            "profitFactor": "Factor de Beneficio",
+            "profitFactorDesc": "Factor de Rentabilidad",
+            "totalBalance": "Saldo Total",
+            "winRate": "Tasa de Acierto",
+            "winRateDesc": "{winners} de {total} Trades"
+        },
+        "sidebar": {
+            "distribution": "Distribución",
+            "equityCurve": "Curva de Capital - Drawdown",
+            "gain": "Gain",
+            "performance": "Rendimiento",
+            "summary": "Resumen Lateral"
+        },
+        "stats": {
+            "avg_rr": "R:R Medio",
+            "closed_trades": "Operaciones Cerradas",
+            "daily_pnl": "P&L Diario",
+            "open_trades": "abiertas",
+            "profit_factor": "Factor de Beneficio",
+            "total_pl": "Resultado Acumulado",
+            "total_pnl": "P&L Total",
+            "total_trades": "Total de Operaciones",
+            "trades": "operaciones",
+            "win_rate": "Tasa de Acierto",
+            "winners": "ganadores"
+        },
+        "subtitle": "Visualiza y gestiona tu historial de operaciones.",
+        "table": {
+            "actions": "Acciones",
+            "asset": "Activo",
+            "asset_type": "Tipo de Activo",
+            "buy": "Compra",
+            "date": "Fecha",
+            "direction": "Dirección",
+            "entry": "Entrada",
+            "exit": "Salida",
+            "notes": "Notas del Día",
+            "pl": "Resultado",
+            "quantity": "Cant.",
+            "sell": "Venta",
+            "status": "Estado",
+            "status_closed": "Cerrado",
+            "status_open": "Abierto",
+            "strategy": "Estrategia"
+        },
+        "title": "Mis Operaciones",
+        "wizard": {
+            "adherence": {
+                "no_msg": "Hubo desviación en las reglas del setup.",
+                "title": "Adherencia al Plan",
+                "yes_msg": "Operación ejecutada según la estrategia."
+            },
+            "auto_detection": {
+                "ignore": "Ignorar",
+                "register": "Registrar Ahora",
+                "source": "Vía Profit RTD",
+                "title": "¡Nueva Ejecución Detectada!"
+            },
+            "charts": {
+                "equity": {
+                    "capital": "Capital",
+                    "drawdown": "Drawdown",
+                    "empty": "Sin operaciones en el período"
+                },
+                "outcome": {
+                    "be": "BE",
+                    "empty": "Sin operaciones",
+                    "gain": "Ganancia",
+                    "loss": "Pérdida",
+                    "trades_label": "TRADES",
+                    "vazio": "V vacío"
+                }
+            },
+            "checklist": {
+                "calm": "¿Estado emocional equilibrado?",
+                "distraction": "¿Foco total / Sin distracciones?",
+                "ideal_condition": "Condición Ideal",
+                "plan": "¿Escenarios de trade definidos?",
+                "ready": "¡LISTO PARA EL MERCADO!",
+                "risk": "¿Acepto el stop del día?",
+                "sleep": "¿Dormí al menos 7h?"
+            },
+            "emotions": {
+                "extreme": "Extrema",
+                "intense": "Intenso",
+                "intensity_hint": "Cuánto estabas sintiendo esa emoción (0-10)",
+                "intensity_label": "Intensidad Emocional",
+                "light": "Leve",
+                "moderate": "Moderada"
+            },
+            "exit_reasons": {
+                "manual": "Cierre Manual",
+                "sl": "Stop Loss Alcanzado",
+                "stop_loss": "Stop Loss",
+                "strategy": "Cambio de Setup",
+                "take_profit": "Take Profit",
+                "time": "Tiempo Operativo",
+                "tp": "Take Profit Alcanzado"
+            },
+            "fields": {
+                "account": "Cuenta",
+                "asset": "Activo / Contrato",
+                "asset_direction": "Activo / Dirección",
+                "asset_type": "Tipo de Activo",
+                "buy": "Compra",
+                "confirmation_signals": "Señales de Confirmación",
+                "date_time": "Fecha y Hora",
+                "direction": "Dirección",
+                "emotional_state": "Estado Emocional",
+                "entry": "Entrada",
+                "entry_price": "Precio de Entrada",
+                "entry_rationale": "Razonamiento de Entrada",
+                "exit": "Salida",
+                "exit_date": "Fecha Salida",
+                "exit_price": "P. Salida",
+                "exit_reason": "Motivo",
+                "followed_plan": "¿Siguió el Plan?",
+                "improvements": "Qué funcionó / Mejoras",
+                "market_context": "Contexto de Mercado / Noticias",
+                "notes": "Notas",
+                "quantity": "Cant.",
+                "sell": "Venta",
+                "stop_loss": "Stop Loss",
+                "strategy": "Estrategia",
+                "take_profit": "Take Profit",
+                "timeframe": "Temporalidad",
+                "volatility": "Volatilidad"
+            },
+            "media": {
+                "attachment": "Anexo #",
+                "description": "Agregue capturas de Profit, TradingView o fotos del setup.",
+                "drag_drop": "Arrastra o Haz Clic",
+                "images": "Imágenes",
+                "select_files": "Seleccionar Archivos"
+            },
+            "messages": {
+                "asset_type_required": "El Tipo de Activo es obligatorio. Por favor, seleccione uno.",
+                "closure_exists_warning": "Ya existe un cierre diario para este día. El trade se agregará y el cierre se actualizará automáticamente si es posible.",
+                "entry_price_required": "Se requiere precio de entrada",
+                "no_status": "Sin estado",
+                "required_fields": "Complete los campos obligatorios.",
+                "rtd_not_available": "Precio no disponible en el RTD - Verifique el Profit",
+                "rtd_sync_success": "Precio y Horario actualizados ({symbol}): {price}",
+                "save_error": "Error al guardar el trade",
+                "save_success": "¡Trade guardado!",
+                "save_success_with_sync": "¡Trade guardado y cierre diario actualizado!",
+                "select_asset": "Seleccione un activo",
+                "update_error": "Error al actualizar la operación.",
+                "update_success": "¡Operación actualizada!",
+                "valid_asset_type": "Por favor, seleccione un Tipo de Activo válido.",
+                "complementary_darf_warning": "Atenção: Aumento de resultado detectado!",
+                "invalid_asset_symbol": "Símbolo de activo inválido o no registrado.",
+                "invalid_entry_price": "El precio de entrada debe ser mayor que cero.",
+                "invalid_exit_price": "El precio de salida es inválido.",
+                "invalid_quantity": "La cantidad de lotes debe ser positiva."
+            },
+            "partials": {
+                "add_partial": "Añadir Parcial",
+                "date_time": "Fecha/Hora",
+                "entry": "ADICIÓN",
+                "executed_volume": "Volumen Ejecutado",
+                "exit": "SALIDA",
+                "no_partials": "Ninguna parcial registrada",
+                "observation": "Obs",
+                "price": "Precio",
+                "quantity": "Cant.",
+                "remaining": "Restantes",
+                "result": "Resultado",
+                "type": "Tipo"
+            },
+            "placeholders": {
+                "all_types": "Todos los Tipos",
+                "context": "Tendencia, soportes/resistencias, noticias relevantes...",
+                "improvements": "¿Qué podría haber sido mejor?",
+                "no_states": "Sin estados",
+                "rationale": "¿Por qué entró en este trade?",
+                "select": "Seleccionar...",
+                "select_asset": "Seleccione un activo",
+                "signals": "¿Qué señales confirmó el setup?",
+                "visual_desc": "Capturas de pantalla del gráfico (máx 5MB)."
+            },
+            "risk": {
+                "alerts_title": "Alertas de Riesgo",
+                "emotional_warning": "Desviación Emocional: Su peso actual ({weight}) está por debajo del umbral ({threshold}). Sugerimos reducir el lote en un {percent}%.",
+                "outlier_warning": "Detección de Outlier: Identificamos pérdidas recientes fuera de la curva estadística normal.",
+                "sniper_warning": "Límite Sniper: Ya ha realizado {current} de las {limit} operaciones permitidas para hoy.",
+                "reduce_lot_button": "REDUCIR LOTE EN {percent}%",
+                "toast_lot_adjusted": "¡Lote ajustado con éxito!"
+            },
+            "sections": {
+                "asset_direction": "Activo y Dirección",
+                "calc_memory": "Memoria de Cálculo",
+                "closing_data": "Datos de Cierre",
+                "context": "Contexto de la Operación",
+                "execution_details": "Detalles de la Ejecución",
+                "final_summary": "Resumen Final",
+                "partial_management": {
+                    "add_partial": "Agregar Parcial",
+                    "addition": "ADICIÓN",
+                    "date_time": "Fecha/Hora",
+                    "exit": "SALIDA",
+                    "no_partials": "Ninguna parcial registrada",
+                    "observation": "Observación",
+                    "price": "Precio",
+                    "quantity": "Cant.",
+                    "remaining": "Restantes",
+                    "result": "Resultado",
+                    "title": "Gestión de Parciales",
+                    "type": "Tipo",
+                    "volume_executed": "Volumen Ejecutado"
+                },
+                "psychology_analysis": "Análisis Psicológico",
+                "visual_evidence": {
+                    "attachment": "Anexo",
+                    "description": "Agregue capturas de Profit, TradingView o fotos del setup.",
+                    "drag_drop": "Arrastra o Haz Clic",
+                    "images_added": "imagen(es) agregada(s)",
+                    "invalid_image": "no es una imagen válida",
+                    "process_error": "Error al procesar",
+                    "select_files": "Seleccionar Archivos",
+                    "title": "Evidencia Visual"
+                }
+            },
+            "steps": {
+                "basic": "BÁSICO",
+                "conduction": "CONDUCCIÓN",
+                "media": "MULTIMEDIA",
+                "psychology": "PSICOLOGÍA",
+                "review": "REVISIÓN"
+            },
+            "subtitle": "Complete los detalles de su jornada operativa.",
+            "summary": {
+                "addition": "Adición",
+                "calc_desc": "Descripción",
+                "calc_value": "Valor",
+                "cancel": "Cancelar",
+                "entry": "Entrada",
+                "exit": "Salida",
+                "final_exit": "Salida Final",
+                "finish": "Finalizar Registro",
+                "fixed_fee": "Comisión Fija",
+                "gross_result": "Resultado Bruto",
+                "exchange_fees": "Tasas de Bolsa",
+                "irrf_estimated": "IRRF Estimado",
+                "images": "Imágenes",
+                "n": "N",
+                "na": "N/A",
+                "net_result": "Resultado Líquido",
+                "next": "Continuar",
+                "no": "No",
+                "partial_exit": "Salida Parcial",
+                "plan": "Plan",
+                "prev": "Anterior",
+                "recording": "Guardando Operación...",
+                "s": "S",
+                "save_btn": "GUARDAR OPERACIÓN",
+                "save_trade": "Guardar Trade",
+                "saving": "Guardando...",
+                "total_fees": "Total de Tasas",
+                "variable_fee": "Tasa Variable",
+                "yes": "Sí"
+            },
+            "timeframe_options": {
+                "15m": "15 Minutos",
+                "1m": "1 Minuto",
+                "5m": "5 Minutos",
+                "60m": "60 Minutos",
+                "d": "Diario"
+            },
+            "title_edit": "Editar Operación",
+            "title_new": "Nueva Operación",
+            "tooltips": {
+                "risk": "Riesgo",
+                "target": "Objetivo"
+            },
+            "unit_labels": {
+                "contracts": "CTR"
+            },
+            "volatility_options": {
+                "extreme": "Extrema",
+                "high": "Alta",
+                "low": "Baja",
+                "normal": "Normal"
+            },
+            "errors": {
+                "required": "Falta campo obligatorio en el asistente de trades."
+            }
+        },
+        "quickEdit": {
+            "title": "Edición Rápida"
+        }
+    }
+}

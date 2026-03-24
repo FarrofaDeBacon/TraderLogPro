@@ -1,0 +1,328 @@
+{
+    "setup": {
+        "splash": {
+            "tagline": "The evolution of your trading journal"
+        },
+        "wizard": {
+            "accounts": {
+                "add_more_prompt": "Do you want to add more accounts now?",
+                "description_intro": "Set up your bank or brokerage accounts to get started.",
+                "market_title": "Market",
+                "personalize": "Personalize",
+                "skip": "Skip",
+                "standard_title": "Standard Setup",
+                "title": "My Accounts"
+            },
+            "data": {
+                "custom": {
+                    "desc": "Manually select what you want to import.",
+                    "title": "Custom"
+                },
+                "description": "Choose how you want your initial data to be configured.",
+                "standard": {
+                    "desc": "Recommended configuration with standard B3 assets.",
+                    "title": "Standard"
+                },
+                "title": "Data Setup"
+            },
+            "finish": {
+                "configuringDb": "Configuring Database...",
+                "description": "Click the button below to complete initialization.",
+                "syncingTerminal": "Syncing Terminal",
+                "waitingSurvivorData": "Waiting for Survivor Hub data...",
+                "gann": {
+                    "title": "Gann Vibrations",
+                    "subtitle": "Mathematical Confluence and Cycles",
+                    "kpis": {
+                        "nextCot": "Next Reversal (Window)",
+                        "cycleDay": "Cycle Day",
+                        "vibration": "Current Vibration",
+                        "masterCycle": "Master Cycle",
+                        "days": "days",
+                        "hot_window": "HOT WINDOW",
+                        "neutral": "Neutral"
+                    },
+                    "sq9": {
+                        "expansion": "Expansion Targets",
+                        "retracement": "Retracement Targets",
+                        "degrees": "{deg}°",
+                        "reference": "Ref"
+                    }
+                },
+                "ready": "All ready",
+                "savingProfile": "Saving Profile...",
+                "startNow": "Start Now",
+                "startingPlatform": "Starting Platform..."
+            },
+            "license": {
+                "activated": "License Activated!",
+                "description": "If you have a TraderLog Pro License, select the .lic file now.",
+                "import": "Import License",
+                "optional": "Optional: You can skip this step to use the free Trial version.",
+                "planDetected": "Plan detected",
+                "selectFile": "Select .lic File",
+                "title": "License Activation",
+                "verifying": "Verifying..."
+            },
+            "nav": {
+                "back": "Back",
+                "next": "Next",
+                "skipTrial": "Skip (Trial)"
+            },
+            "profile": {
+                "confirmPasswordLabel": "Confirm Password",
+                "confirmPasswordPlaceholder": "Repeat the password",
+                "description": "Enter your basic profile information.",
+                "emailHint": "Used for recovery or special license linking.",
+                "emailLabel": "Email or Access Key",
+                "nameLabel": "What should we call you?",
+                "namePlaceholder": "Your full name",
+                "passwordLabel": "App Access Password",
+                "passwordPlaceholder": "Create a strong password",
+                "testAccount": "Test Account recognized. Demo data will be injected.",
+                "title": "We'd like to get to know you"
+            },
+            "recovery": {
+                "clickToCopy": "Click to copy",
+                "copied": "Key copied to clipboard!",
+                "description": "This is the only way to recover your account if you forget the password. Since the app is offline, we cannot recover via email.",
+                "keyLabel": "Security Key",
+                "title": "Your Recovery Key",
+                "warning": "Keep this key in a safe place. If you lose your password and this key, your data will be permanently inaccessible."
+            },
+            "step": "Step",
+            "style": {
+                "currency": "Primary Currency",
+                "description": "Adjust the appearance and language of your dashboard.",
+                "language": "Language",
+                "theme": "Visual Theme",
+                "title": "Style and Preferences"
+            },
+            "welcome": {
+                "description": "We are setting up your workspace.",
+                "title": "Welcome to TraderLog Pro",
+                "select_language": "SELECT YOUR LANGUAGE",
+                "select_theme": "SELECT VISUAL THEME",
+                "dark": "Dark (Night)",
+                "light": "Light (Day)"
+            },
+            "common": {
+                "name": "Full Name",
+                "name_placeholder": "Your name",
+                "email": "Email",
+                "password": "Access Password",
+                "confirm_password": "Confirm Password",
+                "recovery_key_title": "Recovery Key",
+                "recovery_key_desc": "This key is the only way to recover your access if you forget the password.",
+                "master_key": "MASTER KEY",
+                "copy_to_clipboard": "Tap to copy",
+                "never_share": "⚠️ NEVER share this key. Keep it in a safe physical place.",
+                "activation_title": "License Activation",
+                "activation_desc": "If you already have a license, import the .lic file below.",
+                "active_license": "License Active!",
+                "plan": "Plan",
+                "import_lic": "IMPORT .LIC FILE",
+                "no_license_title": "DON'T HAVE A LICENSE?",
+                "no_license_desc": "By skipping, you will start in limited TRIAL mode.",
+                "currency_title": "Base Currency",
+                "currency_desc": "Choose the official currency for the consolidation of all your profits and taxes.",
+                "markets_title": "Where do you trade?",
+                "markets_desc": "Select the markets to enable the correct tools.",
+                "asset_types_title": "Asset Types",
+                "asset_types_desc": "Which financial instruments are part of your daily life?",
+                "rtd_title": "Real-Time Connection (RTD)",
+                "rtd_desc": "Connect TraderLog Pro to your trading terminal via Excel.",
+                "rtd_active_now": "Activate RTD now",
+                "rtd_active_desc": "Detect trades from Profit/Tryd instantly.",
+                "rtd_select_sheet": "SELECT SPREADSHEET",
+                "rtd_later_title": "Set Up Later",
+                "rtd_later_desc": "You can activate RTD in the settings menu at any time.",
+                "rtd_skip": "SKIP THIS STEP",
+                "mission_ready": "Mission Ready!",
+                "mission_ready_desc": "Your mission base has been successfully configured. Good trades!",
+                "start_journey": "START JOURNEY",
+                "configuring": "CONFIGURING...",
+                "markets": {
+                    "M1": "B3 (Brazil)",
+                    "M2": "NYSE (USA)",
+                    "M3": "NASDAQ (USA)",
+                    "M4": "CME Group",
+                    "M5": "Forex",
+                    "M6": "Crypto"
+                },
+                "assets": {
+                    "T1": "Brazil Stocks",
+                    "T2": "Brazil Options",
+                    "T3": "Brazil Futures",
+                    "T4": "REITs (FIIs)",
+                    "T5": "US Stocks (NYSE)",
+                    "T5B": "US Stocks (NASDAQ)",
+                    "T6": "Forex Pairs",
+                    "T7": "Cryptocurrencies"
+                }
+            }
+        }
+    },
+    "strategies": {
+        "currency_modes": {
+            "main": "Main",
+            "original": "Original"
+        }
+    },
+    "strategy": {
+        "card": {
+            "totalResult": "Total Result",
+            "tradesSuffix": "trades",
+            "viewAnalysis": "View Full Analysis"
+        },
+        "gann": {
+            "adherence": "Adherence",
+            "accuracy": "Accuracy",
+            "alignment": "Alignment",
+            "alignmentDesc": "Entries on SQ9 Levels",
+            "angleScore": "Angle Score",
+            "analyticalConfluence": "Analytical Confluence",
+            "confluenceDesc": "How this strategy reacts to Gann's Mathematical Laws",
+            "cycleWatch": "Cycle Watch",
+            "cycleWatchDesc": "Hit Rate on Natural Dates",
+            "geometricPrecision": "Geometric Precision",
+            "geometryLaw": "Law of Geometry",
+            "geometryLawDesc": "Angle Adherence represents the balance between Price and Time. Strategies that respect geometric angles (like 45°) are considered stable and sustainable throughout the Master Cycle.",
+            "mastery": "Gann Mastery",
+            "mathematicalConfluence": "Mathematical Confluence",
+            "success": "Success",
+            "timeLaw": "Law of Time",
+            "timeLawDesc": "The Cycle Success Rate reveals if this strategy is \"seasonal\". Gann believed that time is the most important factor; this score indicates if the strategy's edge is amplified during Season Changes.",
+            "vibrationLaw": "Law of Vibration",
+            "vibrationLawDesc": "The alignment of the strategy with the vibrations of the Square of Nine measures the quality of its entries. A high score suggests that the strategy naturally finds liquidity at Gann's mathematical expansion points."
+        },
+        "dashboard": {
+            "charts": {
+                "drawdown": "Drawdown",
+                "drawdownStrategy": "Drawdown (Strategy)",
+                "equity": "Net Equity",
+                "equityStrategy": "Equity (Strategy)"
+            },
+            "checklist": {
+                "economicCalendar": "Economic Calendar",
+                "items": {
+                    "gap_analysis": "Opening Gap: Did I identify if it's a Novice or Professional Gap?",
+                    "mindset": "Mental: Am I calm and focused to trade?",
+                    "news": "News: Did I check the Economic Calendar for the day?",
+                    "newsDetected": "⚠️ High Impact News Detected:",
+                    "newsNone": "No relevant news on the calendar today.",
+                    "prior_levels": "Key Levels: Did I mark yesterday's High and Low?",
+                    "riskInput": "Loss Limit Today ({currency}):",
+                    "risk_limit": "Risk: Did I define my maximum Stop Loss for today?",
+                    "trend_200ma": "Territory (200MA): Above (Bull) or Below (Bear)?",
+                    "trend_20ma": "Trend (20MA): Is price respecting the 20-period moving average?"
+                },
+                "ready": "READY TO OPERATE",
+                "reset": "Reset",
+                "start": "Start Trading Session",
+                "subtitle": "Verify fundamentals before the first click.",
+                "success": "Excellent! You are prepared. Good trades!",
+                "title": "Pre-Market Check-in (Oliver Velez)",
+                "verified": "verified",
+                "newsUpdateError": "Error updating economic events feed.",
+                "newsUpdateSuccess": "Economic feed updated successfully.",
+                "resetSuccess": "Checklist statistics reset."
+            },
+            "heatmap": {
+                "days": {
+                    "fri": "Fri",
+                    "mon": "Mon",
+                    "sat": "Sat",
+                    "sun": "Sun",
+                    "thu": "Thu",
+                    "tue": "Tue",
+                    "wed": "Wed"
+                },
+                "legend": {
+                    "breakeven": "Breakeven",
+                    "loss": "Loss",
+                    "profit": "Profit",
+                    "strongLoss": "Strong Loss",
+                    "strongProfit": "Strong Profit"
+                },
+                "noMarket": "No market linked",
+                "subtitle": "Accumulated performance by Day of the Week and Hour",
+                "title": "Heatmap (P&L)",
+                "tooltip": {
+                    "loss": "Loss",
+                    "neutral": "Neutral",
+                    "profit": "Profit",
+                    "status": "Status"
+                }
+            },
+            "messages": {
+                "noTrades": "No trades in the selected period."
+            },
+            "stats": {
+                "averageLoss": "Average Loss",
+                "averageWin": "Average Win",
+                "avgDurationLoss": "Average Duration (Loss)",
+                "avgDurationWin": "Average Duration (Win)",
+                "avgInterval": "Interval Between Trades",
+                "avgTimeBetweenTrades": "Average Time Between Trades",
+                "bestTrade": "Best Trade",
+                "consecutiveLosses": "Consecutive Losses",
+                "consecutiveWins": "Consecutive Wins",
+                "mathExpectation": "Mathematical Expectation",
+                "maxDrawdown": "Max Drawdown",
+                "netResult": "Net Result",
+                "operations": "Operations",
+                "payoff": "Payoff",
+                "planAdherence": "Plan Adherence",
+                "profitFactor": "Profit Factor",
+                "recoveryFactor": "Recovery Factor",
+                "totalTrades": "Total Trades",
+                "winRate": "Win Rate",
+                "winningTrades": "Winning Trades",
+                "worstTrade": "Worst Trade"
+            },
+            "subtitle": "Welcome to your command center.",
+            "summary": {
+                "chartPlaceholder": "Performance Chart (Coming soon)",
+                "noTrades": "No trades performed today.",
+                "title": "Day Summary"
+            },
+            "tabs": {
+                "dashboard": "Dashboard",
+                "dossier": "Strategy Dossier"
+            },
+            "title": "Dashboard"
+        },
+        "dossier": {
+            "all": "All",
+            "assetTypes": "Asset Types",
+            "context": "Operational Context",
+            "daysSuffix": "days",
+            "entryTriggers": "Entry Triggers",
+            "exit": "Stop / Exit",
+            "indicators": "Indicators",
+            "linkedMarkets": "Linked Markets",
+            "management": "Conduction / Management",
+            "multi": "MULTI",
+            "noCriteria": "No criteria defined.",
+            "noImages": "No images attached.",
+            "noLinkedMarket": "No specific linked market (Free Schedule).",
+            "partials": "Partial Exits",
+            "specificAssets": "Specific Assets",
+            "timeframes": "Timeframes",
+            "visualExamples": "Visual Examples"
+        },
+        "list": {
+            "description": "Track the statistical performance of your setups.",
+            "new": "New",
+            "notFound": {
+                "action": "Go to Settings",
+                "description": "We didn't find setups with current filters. How about creating a new one in Settings?",
+                "title": "No strategy found"
+            },
+            "searchPlaceholder": "Search strategy...",
+            "title": "Strategies"
+        },
+        "notFound": "Strategy not found"
+    }
+}

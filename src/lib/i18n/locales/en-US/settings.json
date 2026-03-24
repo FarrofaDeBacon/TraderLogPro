@@ -1,0 +1,1344 @@
+{
+    "finance": {
+        "charts": {
+            "evolution": "Evolution",
+            "evolutionSubtitle": "Patrimony and Contributions Evolution"
+        },
+        "closureWizard": {
+            "description": "Consolidate your trades' results into account balances.",
+            "error": "Error",
+            "step1": {
+                "hint": "Usually done for the previous day (yesterday) or past days.",
+                "label": "Select Date",
+                "noTradesWarning": "No trades found for the selected day. Select another date or record trades."
+            },
+            "step2": {
+                "columns": {
+                    "account": "Account",
+                    "result": "Result",
+                    "select": "Sel.",
+                    "trades": "Trades"
+                },
+                "confirm": "Confirm Entries",
+                "noTrades": "No trades found on this date.",
+                "processing": "Processing..."
+            },
+            "step3": {
+                "finish": "Finish",
+                "successDescription": "The values have been posted to the selected accounts' statements.",
+                "successTitle": "Closure Completed!"
+            },
+            "stepEmotion": {
+                "description": "Evaluate how your psychological control was today.",
+                "intensityIntense": "Extreme",
+                "intensityLabel": "Intensity ({value})",
+                "intensityLight": "Light",
+                "notesLabel": "Day Notes",
+                "notesPlaceholder": "Briefly describe how your day was, discipline, focus...",
+                "stateLabel": "How did you feel today?",
+                "statePlaceholder": "Select an emotion...",
+                "title": "Emotional Check-in"
+            },
+            "success": "Success",
+            "title": "Daily Closure"
+        },
+        "dailyClosure": "Daily Closure",
+        "darfDetails": {
+            "calculationBasis": "Calculation Basis",
+            "calculationInfo": "Calculation Info",
+            "compensatedLosses": "Compensated Losses",
+            "complementaryBadge": "Complementary Guide",
+            "dateNotAvailable": "Date not available",
+            "description": "Full assessment and payment information.",
+            "dueDate": "Due Date",
+            "errorMessage": "There was a problem loading this DARF.",
+            "fine": "Fine",
+            "grossResult": "Gross Result",
+            "interest": "Interest",
+            "loading": "Loading DARF and Assessment...",
+            "paidAt": "Paid At",
+            "period": "Period",
+            "principalValue": "Principal Value",
+            "revenueCode": "Revenue Code",
+            "statusPaid": "Paid Status",
+            "statusPending": "Pending Status",
+            "taxRate": "Tax Rate",
+            "title": "DARF Details",
+            "totalPaid": "Total Paid",
+            "unpayAction": "Undo Payment",
+            "unpayCancel": "Cancel",
+            "unpayConfirm": "Confirm",
+            "unpayTitle": "Undo",
+            "operations": "Linked Trades"
+        },
+        "description": "Centralized cash management, statements, and closures.",
+        "details": {
+            "account": "Account",
+            "columns": {
+                "asset": "Asset",
+                "result": "Result",
+                "side": "Side"
+            },
+            "date": "Date",
+            "noTrades": "No trades linked to this transaction.",
+            "title": "Transaction Details",
+            "totalAmount": "Total Amount"
+        },
+        "newTransaction": "New Deposit/Withdrawal",
+        "quickStats": {
+            "activeAccounts": "Active Accounts",
+            "balanceIn": "Balance in {currency}",
+            "breakdownDesc": "Summary of accounts linked to this currency.",
+            "breakdownTitle": "Breakdown of {currency}",
+            "consolidated": "Consolidated",
+            "monthlyResult": "Monthly Result",
+            "monthlyResultDesc": "Monthly performance summary",
+            "totalBalance": "Total Balance (Est.)",
+            "totalEquity": "Total Equity",
+            "viewBreakdown": "View Details"
+        },
+        "statement": {
+            "account": "Account",
+            "allAccounts": "All Accounts",
+            "allCurrencies": "All Currencies",
+            "monthlyResult": "Monthly Result",
+            "result": "Result",
+            "columns": {
+                "account": "ACCOUNT",
+                "amount": "AMOUNT",
+                "date": "Date",
+                "description": "DESCRIPTION",
+                "type": "TYPE"
+            },
+            "entries": "Entries",
+            "messages": {
+                "deleteError": "Delete Error",
+                "systemLinked": "This transaction was system-generated and can only be changed in the source module (e.g., IRPF)."
+            },
+            "noNumber": "No Number",
+            "noTransactions": "No transactions found in this period.",
+            "searchPlaceholder": "Search in description or value...",
+            "summary": {
+                "netResult": "Net Result",
+                "periodEntries": "Period Entries",
+                "title": "Summary",
+                "totalDeposits": "Total Deposits",
+                "totalWithdrawals": "Total Withdrawals"
+            },
+            "title": "Transaction Statement",
+            "types": {
+                "adjustment": "Adjustment",
+                "deposit": "Deposit",
+                "result": "RESULT",
+                "transfer": "Transfer",
+                "withdraw": "Withdrawal"
+            },
+            "categories": {
+                "tax_payment": "TAX",
+                "trading": "CLOSURE",
+                "transfer": "TRANSF.",
+                "tax_refund": "REFUND",
+                "adjustment": "ADJUSTMENT"
+            }
+        },
+        "title": "Financial Hub",
+        "transactionDialog": {
+            "account": "Destination Account",
+            "amount": "Amount",
+            "cancel": "Cancel",
+            "confirm": "Confirm",
+            "date": "Date",
+            "defaults": {
+                "adjustment": "Adjustment",
+                "deposit": "Manual Deposit",
+                "transfer": "Transfer",
+                "withdraw": "Manual Withdrawal"
+            },
+            "description": "Description",
+            "descriptionPlaceholder": "Ex: Monthly Deposit",
+            "errors": {
+                "differentAccounts": "Accounts must be different.",
+                "requiredFields": "Fill in required fields.",
+                "saveError": "Error saving transaction.",
+                "transferError": "Error performing transfer."
+            },
+            "fxRate": "Fx Rate",
+            "labels": {
+                "amountWithCurrency": "Amount ({currency})",
+                "entryWithCurrency": "Entry ({currency})",
+                "feePercent": "Fee (%)"
+            },
+            "newOperation": "New Operation",
+            "operationShortDesc": "Record deposits, withdrawals, or transfers between accounts.",
+            "subtitle": "Record deposits or withdrawals manually.",
+            "tabs": {
+                "transaction": "Transaction",
+                "transfer": "Transfer"
+            },
+            "title": "New Entry",
+            "type": "Transaction Type",
+            "types": {
+                "adjustment": "Balance Adjustment",
+                "deposit": "Deposit / Input",
+                "withdraw": "Withdrawal / Output"
+            }
+        },
+        "transferDialog": {
+            "amount": "Exit Amount",
+            "autoRate": "Auto Exchange",
+            "confirm": "Confirm Transfer",
+            "date": "Transfer Date",
+            "description": "Move balance between accounts, with exchange support.",
+            "errorDifferentAccounts": "Origin and destination accounts must be different.",
+            "errorPositiveValue": "The value must be greater than zero.",
+            "errorSave": "Error saving transfer.",
+            "fee": "Transfer Fees",
+            "finalAmount": "Entry Amount",
+            "finalAmountHint": "Amount after fees and exchange conversion",
+            "fromAccount": "Origin Account",
+            "rate": "Exchange Rate",
+            "success": "Transfer performed successfully!",
+            "title": "New Transfer",
+            "toAccount": "Destination Account"
+        }
+    },
+    "license": {
+        "banner": {
+            "activateNow": "Activate Now",
+            "expired": "Your trial period has expired. Renew your license.",
+            "getLicenseNow": "Get License",
+            "getLicensePrompt": "Secure your access.",
+            "trialActive": "You have {days} days remaining in your trial period."
+        }
+    },
+    "settings": {
+        "fiscal": {
+            "assignments": {
+                "description": "Assign tax rules to asset types.",
+                "goToAssetTypes": "Go To Asset Types",
+                "table": {
+                    "assetType": "Asset Type",
+                    "empty": "No assignments found.",
+                    "market": "Market",
+                    "fiscalProfile": "Tax Profile",
+                    "unknownProfile": "Unknown Profile",
+                    "defaultExempt": "Default / Exempt"
+                },
+                "tip": {
+                    "text": "Tax assignments help in automatic calculation.",
+                    "title": "Tax Assignment"
+                },
+                "title": "Tax Assignments"
+            },
+            "description": "Configure tax rates (IRPF) for each asset type and modality.",
+            "mappings": {
+                "assetType": "Asset Type",
+                "description": "Associate each Asset Type and Modality with a Tax Rule.",
+                "modality": "Modality",
+                "noRule": "No Rule (Exempt/Ignored)",
+                "rule": "Applicable Rule"
+            },
+            "profiles": {
+                "create": "Create Profile",
+                "description": "Tax profiles consolidate multiple rules.",
+                "empty": "No tax profiles found.",
+                "error": {
+                    "duplicateModality": "This modality is already configured.",
+                    "errorAddEntry": "Error adding entry",
+                    "nameRequired": "Name is required",
+                    "saveError": "Error saving profile",
+                    "selectRequired": "Selection required"
+                },
+                "form": {
+                    "addModalityHint": "Click + to add a rule to a modality.",
+                    "description": "Profile description",
+                    "descriptionLabel": "Description",
+                    "descriptionPlaceholder": "Profile description...",
+                    "emptyRules": "No rules added.",
+                    "modality": "Modality",
+                    "name": "Name",
+                    "namePlaceholder": "Ex: Stocks Profile",
+                    "rule": "Tax Rule",
+                    "rulesByModality": "Rules by Modality",
+                    "save": "Save",
+                    "saving": "Saving...",
+                    "select": "Select...",
+                    "titleEdit": "Edit Profile",
+                    "titleNew": "New Profile",
+                    "update": "Update"
+                },
+                "linkedRules": "Linked Rules",
+                "new": "New Profile",
+                "noLinkedRules": "No linked rules.",
+                "success": {
+                    "create": "Profile created successfully.",
+                    "ruleAdded": "Rule added successfully.",
+                    "ruleAddedDraft": "Rule added as draft.",
+                    "ruleRemoved": "Rule removed successfully.",
+                    "ruleRemovedDraft": "Rule removed from draft.",
+                    "update": "Profile updated successfully."
+                },
+                "title": "Tax Profiles"
+            },
+            "rules": {
+                "description": "Individual tax rules.",
+                "empty": "No tax rules configured.",
+                "form": {
+                    "basis": "Calculation Basis",
+                    "basisHint": "What value tax is calculated on.",
+                    "basisOptions": {
+                        "netProfit": "Net Profit",
+                        "saleAmount": "Sale Amount"
+                    },
+                    "cumulative": "Compensate Losses",
+                    "cumulativeHint": "Allow losses to offset profits in future months.",
+                    "revenueCode": "Revenue Code",
+                    "revenueCodePlaceholder": "Ex: 6015",
+                    "revenueCodeHint": "DARF code for payment (Ex: 6015, 3317).",
+                    "save": "Save Rule",
+                    "successSave": "Tax rule saved successfully.",
+                    "titleEdit": "Edit Tax Rule",
+                    "titleNew": "New Tax Rule",
+                    "withholding": "IRRF (Withholding)",
+                    "withholdingHint": "Percentage withheld at source that can be deducted.",
+                    "withholdingBasis": "Withholding Basis",
+                    "withholdingBasisHint": "Defines if IRRF is calculated on profit or sale amount.",
+                    "withholdingBasisOptions": {
+                        "profit": "On Profit",
+                        "sales": "On Sale Amount"
+                    },
+                    "name": "Name",
+                    "namePlaceholder": "Ex: Day Trade Rule",
+                    "rate": "Rate",
+                    "rateHint": "Percentage of tax due",
+                    "exemption": "Exemption",
+                    "exemptionHint": "Tax-exempt amount",
+                    "modality": "Modality",
+                    "errorSave": "Error saving fiscal rule.",
+                    "nameRequired": "Rule name is required."
+                },
+                "new": "New Rule",
+                "title": "Tax Rules"
+            },
+            "tabs": {
+                "mappings": "Assignments",
+                "rules": "Tax Rules"
+            },
+            "title": "Tax Rules"
+        },
+        "accounts": {
+            "balance": "BALANCE",
+            "confirmDeduplicate": "Do you really want to remove duplicate configurations?",
+            "demoAccounts": "Simulators / Demo",
+            "description": "Manage your brokerage and proprietary firm accounts.",
+            "empty": "No account found.",
+            "errorDeduplicate": "Error removing duplicates.",
+            "form": {
+                "addIcon": "Add Icon",
+                "balance": "Initial Balance",
+                "balanceLabel": "Current Balance",
+                "broker": "Broker",
+                "brokerPlaceholder": "Ex: Binance, XP...",
+                "currency": "Currency",
+                "icon": "Icon",
+                "iconHint": "Click to select",
+                "nickname": "Nickname",
+                "nicknamePlaceholder": "Ex: Main Account",
+                "number": "Account Number",
+                "numberPlaceholder": "Ex: 12345-6",
+                "save": "Save Account",
+                "saving": "Saving...",
+                "titleEdit": "Edit Account",
+                "titleNew": "Create Account",
+                "type": "Type"
+            },
+            "groups": {
+                "others": "Simulators / Demo"
+            },
+            "new": "New Account",
+            "newAccount": "New Account",
+            "realAccounts": "Real Accounts",
+            "removeDuplicates": "Remove Duplicates",
+            "searchPlaceholder": "Search account...",
+            "successDeduplicate": "Duplicates removed successfully.",
+            "title": "Trading Accounts",
+            "types": {
+                "Demo": "Simulators / Demo",
+                "Prop": "Proprietary Firms",
+                "Real": "Real Accounts"
+            }
+        },
+        "api": {
+            "form": {
+                "apiKey": "API Key",
+                "apiKeyPlaceholder": "sk-...",
+                "cancel": "Cancel",
+                "dailyLimit": "Daily Limit (Alerts)",
+                "dailyLimitHint": "Notifies when usage reaches this limit.",
+                "description": "Configure a new API key to enable integrations in TraderLog Pro.",
+                "editTitle": "Edit API Configuration",
+                "enabled": "Enable this API",
+                "enabledHint": "Disabled APIs will not make requests.",
+                "enterKeyError": "Please insert an API key first.",
+                "errors": {
+                    "enterKeyFirst": "Inform key first.",
+                    "keyRequired": "API Key required",
+                    "testSuccess": "Connection established successfully!"
+                },
+                "getGeminiApiKey": "Get Gemini key",
+                "getOpenAIApiKey": "Get OpenAI key",
+                "getPolygonApiKey": "Get Polygon key",
+                "messages": {
+                    "connectionSuccess": "Connection successfully tested! (Mock)"
+                },
+                "newTitle": "New API Configuration",
+                "noteBody": "API keys are stored locally on your device. Never share them.",
+                "noteTitle": "Keep your keys secure.",
+                "provider": "Provider",
+                "providerCustom": "Custom",
+                "providers": {
+                    "alpha_vantage": "Alpha Vantage",
+                    "anthropic": "Anthropic Claude",
+                    "custom": "Custom",
+                    "exchangerate-api": "ExchangeRate-API (Exchange)",
+                    "google_gemini": "Google Gemini",
+                    "mock": "Mock Simulation",
+                    "openai": "OpenAI",
+                    "polygon": "Polygon.io",
+                    "profit": "Profit Chart (RTD)"
+                },
+                "save": "Save",
+                "test": "Test Key",
+                "testInfo": "Testing API key...",
+                "testSuccess": "API key successfully tested!",
+                "viewOpenAIPrices": "View OpenAI prices",
+                "viewPolygonPlans": "View Polygon plans"
+            },
+            "integrations": {
+                "currency": {
+                    "description": "Used to convert your balances and results to BRL in the Financial Hub. We use AwesomeAPI by default.",
+                    "endpointLabel": "API Address (Endpoint)",
+                    "error": "Error",
+                    "errorSync": "Error syncing currencies.",
+                    "hint": "If the address changes in the future, you can update it here without touching the code.",
+                    "saveUrl": "Save URL",
+                    "success": "Success",
+                    "successSave": "Exchange URL successfully saved!",
+                    "successSync": "Exchange updated! {count} currencies synced.",
+                    "syncNow": "Sync Now",
+                    "syncing": "Syncing...",
+                    "tag": "Public & Free",
+                    "title": "Exchange Service (Currencies)"
+                },
+                "keys": {
+                    "description": "Manage your credentials for external providers",
+                    "newItem": "New Item",
+                    "searchPlaceholder": "Search...",
+                    "table": {
+                        "actions": "Actions",
+                        "active": "Active",
+                        "empty": "No results found.",
+                        "inactive": "Inactive",
+                        "limit": "Daily Limit",
+                        "provider": "Provider",
+                        "status": "Status",
+                        "usage": "Usage Today"
+                    },
+                    "title": "API Keys"
+                },
+                "profit": {
+                    "allAssetsSupport": "Support for any B3 asset (PETR4, VALE3, etc)",
+                    "connect": "Connect Profit",
+                    "connected": "Connected",
+                    "connecting": "Connecting...",
+                    "description": "Receive real-time quotes directly from Profit Chart via Excel.",
+                    "disconnect": "Disconnect",
+                    "disconnected": "Disconnected",
+                    "error": "Connection Error",
+                    "excelFile": "Excel File",
+                    "fileSelected": "File selected",
+                    "noFileSelected": "No file selected",
+                    "requirementDesc": "The file must contain the tabs: DADOS, BOOK [ASSET], PLAYERS. Profit must be exporting to this file.",
+                    "requirementTitle": "Excel Configuration",
+                    "selectFile": "Select File",
+                    "setupGuide": "View Setup Guide",
+                    "status": "Connection Status",
+                    "title": "Profit RTD Connection"
+                },
+                "serviceMapping": {
+                    "calendarSave": "Save URL",
+                    "calendarSource": "Calendar Source (URL)",
+                    "calendarSourceHint": "Site to fetch news (Scraping + AI).",
+                    "description": "Choose which intelligence or data source will feed each module.",
+                    "marketData": "Market Data",
+                    "marketDataHint": "Source for price updates and charts.",
+                    "mockDataLabel": "Mock Data",
+                    "mockLabel": "Mock Simulation",
+                    "psychology": "Psychological Intelligence (AI Mentor)",
+                    "psychologyHint": "Who analyzes your journals and generates insights.",
+                    "save": "Save Mapping",
+                    "success": "Service mapping saved!",
+                    "title": "Service Mapping"
+                }
+            }
+        },
+        "appearance": {
+            "compactDescription": "Compact mode for higher data density.",
+            "compactLabel": "Compact UI",
+            "description": "Adjust the visual appearance of the platform.",
+            "themeDescription": "Choose between light and dark themes.",
+            "themeLabel": "Visual Theme",
+            "title": "Appearance"
+        },
+        "assetTypes": {
+            "description": "Asset categories (Stocks, Futures, Options, Forex...).",
+            "edit": "Edit Type",
+            "form": {
+                "code": "Code",
+                "codePlaceholder": "Select",
+                "defaultFee": "Default Fee",
+                "defaultFeePlaceholder": "Select (Optional)",
+                "market": "Market",
+                "marketPlaceholder": "Select",
+                "name": "Name",
+                "namePlaceholder": "Futures",
+                "none": "None",
+                "resultType": "Result Type",
+                "resultTypeOptions": {
+                    "currency": "Currency",
+                    "points": "Points"
+                },
+                "save": "Save",
+                "unitLabel": "Unit Label"
+            },
+            "labels": {
+                "brokerageProfile": "Brokerage Profile",
+                "fiscalProfile": "Tax Profile",
+                "noneDefault": "None / Default",
+                "noneExempt": "None / Exempt"
+            },
+            "new": "New Type",
+            "title": "Asset Types"
+        },
+        "assets": {
+            "description": "Register the assets you trade (Symbol, Point Value, etc).",
+            "edit": "Edit Asset",
+            "empty": "No asset found",
+            "form": {
+                "brokerageProfile": "Brokerage Profile",
+                "fiscalProfile": "Tax Profile",
+                "name": "Name",
+                "namePlaceholder": "Mini Index",
+                "pointValue": "Point Value",
+                "save": "Save",
+                "specificFee": "Specific Fee",
+                "specificFeePlaceholder": "Use from Asset Type",
+                "symbol": "Symbol",
+                "symbolPlaceholder": "WIN",
+                "type": "Type",
+                "typePlaceholder": "Select",
+                "useTypeDefault": "Use from Asset Type",
+                "isRoot": "Root Asset",
+                "rootAsset": "Link to Root",
+                "rootAssetPlaceholder": "Select a root asset"
+            },
+            "groups": {
+                "others": "Others"
+            },
+            "importDialog": {
+                "description": "Select the assets detected in your Profit file to add to the registry.",
+                "excelRequirement": "Excel must be open with DADOS and BOOK tabs configured.",
+                "fileSelected": "File selected: {path}",
+                "importSelected": "Import Selected ({count})",
+                "noAssets": "No new assets detected in RTD.",
+                "selectExcel": "Select Excel File",
+                "suggestedName": "Suggested Name",
+                "symbol": "Symbol",
+                "title": "Import Assets from Profit RTD",
+                "type": "Type",
+                "alreadyRegistered": "Already Registered",
+                "success": "{count} assets imported successfully!"
+            },
+            "importRTD": "Import from RTD",
+            "labels": {
+                "invalid": "Invalid",
+                "pointValue": "POINT VALUE",
+                "unknown": "Unknown"
+            },
+            "new": "New Asset",
+            "searchPlaceholder": "Search asset...",
+            "title": "Assets"
+        },
+        "backup": {
+            "clearButton": "Clear All Data",
+            "confirmReset": "Are you sure you want to reset the database? This cannot be undone.",
+            "dangerDescription": "Permanently delete all data and reset to factory settings.",
+            "dangerZone": "Danger Zone",
+            "description": "Manage your data backups and system state.",
+            "exportButton": "Export Backup",
+            "exportDescription": "Save your data to a JSON file.",
+            "exportTitle": "Export Data",
+            "title": "Backup & System"
+        },
+        "chartTypes": {
+            "description": "Define the types of charts you use (Candle, Renko, etc.).",
+            "edit": "Edit Type",
+            "empty": "No chart type found",
+            "methodology": "Methodology",
+            "name": "Chart Name",
+            "namePlaceholder": "Ex: Renko 10R, 5 Minutes...",
+            "new": "New Type",
+            "parameter": "Parameter (Optional)",
+            "parameterPlaceholder": "Ex: 10, 5, 21...",
+            "searchPlaceholder": "Search chart type...",
+            "title": "Chart Types",
+            "types": {
+                "Range": "Range Bar",
+                "Renko": "Renko",
+                "TimeBased": "Time-Based (Candle/Bar)"
+            }
+        },
+        "currencies": {
+            "description": "Register the currencies used in your accounts (BRL, USD, etc).",
+            "edit": "Edit Currency",
+            "empty": "No currency found",
+            "form": {
+                "code": "Code",
+                "codePlaceholder": "Ex: USD",
+                "name": "Name",
+                "namePlaceholder": "Ex: US Dollar",
+                "save": "Save Currency",
+                "symbol": "Symbol",
+                "symbolPlaceholder": "Ex: $"
+            },
+            "new": "New Currency",
+            "searchPlaceholder": "Search currency...",
+            "title": "Currencies"
+        },
+        "database": {
+            "backup": {
+                "description": "Export all your data to a JSON file and recover it when you need to reinstall the app.",
+                "errorExport": "Error exporting backup",
+                "errorImport": "Error restoring backup",
+                "export": "Export Backup",
+                "exporting": "Exporting...",
+                "hint": "Backup includes: Trades, Accounts, Settings, Journal, Tax, and all custom data.",
+                "import": "Restore Backup",
+                "importing": "Restoring...",
+                "openTitle": "Select Backup File",
+                "saveTitle": "Save Backup",
+                "successExport": "Backup successfully exported!",
+                "successImport": "{count} records successfully restored!",
+                "title": "Backup and Restore"
+            },
+            "danger": {
+                "button": "Reset Database (Complete)",
+                "confirm": "WARNING: This will erase ALL data (Trades, Accounts, Settings) and recreate the database with example data. Are you absolutely sure?",
+                "description": "Deletes all data and recreates the database from scratch with factory data.",
+                "resetting": "Resetting...",
+                "title": "Danger Zone: Total Reset",
+                "warning": "CAUTION: All your trades, accounts, and personalizations will be lost."
+            },
+            "defaults": {
+                "button": "Verify and Restore Defaults",
+                "confirm": "This will verify and correct missing default data (Currencies, Asset Types, etc.) without erasing your data. Continue?",
+                "description": "Use this option if you notice that options like \"Asset Types\" or \"Emotional States\" are missing.",
+                "restoring": "Restoring...",
+                "title": "Restore System Defaults",
+                "warning": "Safe to use: This action verifies essential system data integrity and recreates only what is missing or incorrect. Your trades and accounts will NOT be erased."
+            },
+            "demo": {
+                "cleanAll": "Clear All Demo Data",
+                "cleaning": "Cleaning...",
+                "confirmDeleteDescription": "Are you sure you want to delete demo data? This action cannot be undone.",
+                "confirmDeleteTitle": "Confirm Deletion",
+                "delete": "Delete Selected",
+                "deleteWarning": "Warning: This action will permanently remove trades from selected accounts.",
+                "deleting": "Deleting...",
+                "description": "Generate or remove example trades to test features.",
+                "generate": "Generate Example Data",
+                "generating": "Generating...",
+                "selectAccount": "Select at least one account",
+                "successClean": "All demo trades have been removed!",
+                "successGenerate": "Demo data successfully generated!",
+                "title": "Demonstration Data (Demo)"
+            },
+            "description": "Tools to diagnose and manage the database.",
+            "status": {
+                "button": "Check Status",
+                "checking": "Checking...",
+                "description": "See how many records exist in each main table.",
+                "error": "Error checking",
+                "success": "Status successfully checked!",
+                "title": "Check Database Status"
+            },
+            "title": "Manage Database"
+        },
+        "defaults": {
+            "autoCalcLabel": "Auto Calculate",
+            "description": "Default settings for new trades.",
+            "riskHint": "Default risk applied to new trades.",
+            "riskLabel": "Default Risk",
+            "strategyHint": "Default strategy pre-selected for new trades.",
+            "strategyLabel": "Default Strategy",
+            "strategyPlaceholder": "Select a strategy",
+            "title": "System Defaults"
+        },
+        "emotionalStates": {
+            "description": "Register the emotional states that affect your trading.",
+            "edit": "Edit State",
+            "empty": "No emotional state found",
+            "form": {
+                "description": "Description",
+                "descriptionPlaceholder": "Describe the feeling...",
+                "impact": "Impact",
+                "impactOptions": {
+                    "Negative": "Negative",
+                    "Neutral": "Neutral",
+                    "Positive": "Positive"
+                },
+                "name": "Name",
+                "namePlaceholder": "Ex: Frustration, Anxiety...",
+                "potentialImpact": "Potential Impact on Trade",
+                "potentialImpactPlaceholder": "Ex: Early entries, position sizing increase...",
+                "save": "Save State",
+                "weight": "Weight (0-10)"
+            },
+            "new": "New State",
+            "searchPlaceholder": "Search state...",
+            "title": "Emotional States"
+        },
+        "fees": {
+            "description": "Create cost profiles to apply to your strategies and trades.",
+            "empty": "No fee profile found",
+            "form": {
+                "addItem": "Add Item",
+                "broker": "Broker/Exchange",
+                "costs": "Operational Costs",
+                "currencySpread": "Exchange Spread (%)",
+                "currencySpreadHint": "International transfers",
+                "customCosts": "Custom Costs",
+                "customTaxes": "Custom Taxes",
+                "description": "Configure all costs involved in the operation.",
+                "exchangeFee": "Exchange Fee (%)",
+                "exchangeFeeHint": "Exchange/Bolsa tax",
+                "fixed": "Fixed ($)",
+                "fixedFee": "Fixed Fee (Value)",
+                "fixedFeeHint": "Per order/contract",
+                "incomeTaxRate": "Income Tax Rate (%)",
+                "incomeTaxRateHint": "DARF rate (15% normal, 20% Day Trade)",
+                "iss": "ISS (%)",
+                "issHint": "Service tax",
+                "itemNamePlaceholder": "Cost/tax name",
+                "linkTaxRule": "Link Tax Rule",
+                "linkTaxRuleHint": "Select a rule to apply taxes automatically.",
+                "manualConfiguration": "Manual Configuration",
+                "name": "Profile Name",
+                "namePlaceholder": "Ex: Stocks Swing Trade",
+                "noCustomItems": "No custom items.",
+                "noRule": "No Rule",
+                "notes": "Observations",
+                "notesPlaceholder": "Additional details...",
+                "operationalCosts": "Transaction Costs",
+                "percentage": "Percentage (%)",
+                "percentageFee": "Fee (%)",
+                "percentageFeeHint": "Variable brokerage",
+                "save": "Save Profile",
+                "select": "Select",
+                "simExchange": "Exchange:",
+                "simFixed": "Fixed:",
+                "simPercent": "% Brokerage:",
+                "simulation": "Simulation (Operation of {value})",
+                "taxConfiguration": "Tax Configuration (IR)",
+                "taxes": "Taxes",
+                "titleEdit": "Edit Fee Profile",
+                "titleNew": "New Fee Profile",
+                "totalCosts": "Total Costs:",
+                "withholdingTax": "Withholding Tax (%)",
+                "withholdingTaxHint": "Dedo-duro tax (0.005% normal, 1% Day Trade)"
+            },
+            "labels": {
+                "brokerage": "BROKERAGE",
+                "exchange": "EXCHANGE",
+                "fixed": "FIXED"
+            },
+            "new": "New Profile",
+            "title": "Fees and Operational Costs"
+        },
+        "general": {
+            "checkUpdates": "Check for Updates",
+            "description": "System info and global preferences.",
+            "no": "No",
+            "title": "General Settings",
+            "version": "Application Version",
+            "yes": "Yes"
+        },
+        "header": {
+            "description": "Header settings.",
+            "title": "Header"
+        },
+        "indicators": {
+            "add": "Add",
+            "addFirst": "Add first",
+            "categories": {
+                "Oscillator": "Oscillator",
+                "Other": "Other",
+                "Trend": "Trend",
+                "Volume": "Volume"
+            },
+            "category": "Category",
+            "defaultColor": "Default Color",
+            "description": "Register your favorite technical indicators and default settings.",
+            "edit": "Edit Indicator",
+            "empty": "No indicator found",
+            "modelHint": "Select a model to automatically fill the fields below.",
+            "name": "Indicator Name",
+            "namePlaceholder": "Ex: MMA 20, RSI...",
+            "new": "New Indicator",
+            "noParams": "No parameters defined.",
+            "paramName": "Name",
+            "paramNameLabel": "Name",
+            "paramNamePlaceholder": "Ex: Period",
+            "paramValue": "Value",
+            "parameters": "Parameters",
+            "params": {
+                "Anchorage": "Anchorage",
+                "Daily": "Daily",
+                "Deviation": "Deviation",
+                "Fast": "Fast",
+                "Signal": "Signal",
+                "Slow": "Slow"
+            },
+            "plotType": "Plot Type",
+            "plotTypes": {
+                "Overlay": "Overlay on Chart",
+                "SubWindow": "Sub-Window"
+            },
+            "presets": {
+                "bb": "Bollinger Bands",
+                "custom": "Custom",
+                "ema": "Exponential Moving Average (EMA)",
+                "macd": "MACD",
+                "rsi": "RSI (Relative Strength Index)",
+                "sma": "Simple Moving Average (SMA)",
+                "vol": "Financial Volume",
+                "vwap": "VWAP"
+            },
+            "previewColor": "Color Preview",
+            "quickModel": "Quick Model",
+            "searchPlaceholder": "Search indicator...",
+            "selectModel": "Select a model...",
+            "title": "Indicators",
+            "usage": "Usage Description",
+            "usagePlaceholder": "How do you use this indicator? (Ex: I buy when it crosses up...)"
+        },
+        "license": {
+            "copy": "Copy",
+            "formatAccepted": "Accepted format: .lic",
+            "incompleteData": "INCOMPLETE DATA",
+            "loadFile": "Load .lic File",
+            "management": "License Management",
+            "noFile": "No file selected",
+            "perk1": "Unlimited access to all journal and backtest tools.",
+            "perk2": "Automatic sync of quotes and assets.",
+            "perk3": "Detailed psychological and statistical reports.",
+            "perksTitle": "Lifetime License Benefits",
+            "pinDisclaimer": "* The PIN is generated based on your Tax ID and hardware identification (BIOS).",
+            "pinLabel": "YOUR UNIQUE PIN (LINKED TO THIS MACHINE)",
+            "sendPinInfo": "Send this PIN to support to receive your .lic license file.",
+            "step1": "1. Generate Solicitation PIN",
+            "step1Desc": "Ensure your profile data is correct.",
+            "step2": "2. Activate by File",
+            "step2Desc": "Load the received file to unlock the system.",
+            "subtitle": "Follow the steps below to activate your lifetime license.",
+            "trialBadge": "TRIAL VERSION"
+        },
+        "markets": {
+            "description": "Register exchanges and markets where you operate (B3, Nasdaq, Forex...).",
+            "edit": "Edit Market",
+            "empty": "No market found",
+            "form": {
+                "addSession": "Add Session",
+                "code": "Code",
+                "codePlaceholder": "B3",
+                "description": "Configure basic information and trading hours.",
+                "end": "End",
+                "fullName": "Full Name",
+                "fullNamePlaceholder": "Brazil Bolsa Balcao",
+                "name": "Name",
+                "namePlaceholder": "Name Placeholder",
+                "save": "Save Market",
+                "start": "Start",
+                "timezone": "Timezone",
+                "titleEdit": "Edit Market",
+                "titleNew": "New Market",
+                "tradingDays": "Trading Days",
+                "tradingSessions": "Trading Sessions",
+                "until": "Until"
+            },
+            "new": "New Market",
+            "searchPlaceholder": "Search market...",
+            "title": "Markets"
+        },
+        "modalities": {
+            "description": "Define the types of operations you perform (Day Trade, Swing Trade, etc.).",
+            "edit": "Edit Modality",
+            "empty": "No modality found",
+            "form": {
+                "description": "Description",
+                "descriptionPlaceholder": "Modality description...",
+                "name": "Name",
+                "namePlaceholder": "Ex: Day Trade",
+                "save": "Save"
+            },
+            "new": "New Modality",
+            "searchPlaceholder": "Search modality...",
+            "title": "Modalities"
+        },
+        "nav": {
+            "accounts": "Accounts",
+            "assetTypes": "Asset Types",
+            "assets": "Assets",
+            "chartTypes": "Chart Types",
+            "currencies": "Currencies",
+            "database": "Database",
+            "descriptions": {
+                "accounts": "Manage your brokerage accounts",
+                "assetTypes": "Manage asset categories",
+                "assets": "Manage investment assets",
+                "chartTypes": "Manage chart representations",
+                "currencies": "Manage trading currencies",
+                "database": "Manage database state",
+                "emotionalStates": "Manage emotional triggers",
+                "fees": "Manage fee profiles",
+                "fiscal": {
+                    "assignments": "Assign assets to profiles",
+                    "profiles": "Configure tax profiles",
+                    "rules": "Configure tax rules"
+                },
+                "general": "General settings",
+                "indicators": "Manage technical indicators",
+                "integrations": "Manage API integrations",
+                "license": "Manage application license",
+                "markets": "Manage base markets",
+                "modalities": "Manage trading styles (ex: Day Trade)",
+                "profile": "Manage your personal profile",
+                "risk": "Manage risk limits",
+                "strategies": "Manage your strategies",
+                "tags": "Manage custom tags",
+                "timeframes": "Manage chart intervals"
+            },
+            "emotionalStates": "Emotional States",
+            "fees": "Fees",
+            "fiscal": {
+                "assignments": "Assignments",
+                "profiles": "Profiles",
+                "rules": "Rules"
+            },
+            "general": "General",
+            "indicators": "Indicators",
+            "integrations": "Integrations",
+            "license": "License",
+            "markets": "Base Markets",
+            "modalities": "Modalities",
+            "profile": "My Profile",
+            "risk": "Risk",
+            "sections": {
+                "analysis": "Analysis",
+                "fiscal": "Tax",
+                "general": "General",
+                "integrations": "Integrations",
+                "operational": "Operational",
+                "registration": "Registration",
+                "system": "System"
+            },
+            "strategies": "Strategies",
+            "tags": "Tags",
+            "timeframes": "Timeframes",
+            "assetProfiles": "Asset Profiles",
+            "riskManagement": "Risk Management",
+            "growthPlans": "Growth Plans"
+        },
+        "profile": {
+            "description": "Manage your personal information and system preferences.",
+            "license": {
+                "active": "Active",
+                "copy": "Copy PIN",
+                "expired": "Expired",
+                "formatAccepted": "Accepted format: .lic",
+                "incompleteData": "INCOMPLETE DATA - FILL YOUR PROFILE",
+                "keyStatus": "Key Status",
+                "lifetime": "TraderLog Pro - Lifetime",
+                "loadFile": "Load File",
+                "management": "License Management",
+                "noFile": "No license file selected",
+                "perk1": "Profit / RTD Sync",
+                "perk2": "Unlimited Journals and Lifetime Dashboard",
+                "perk3": "Constant Updates with AI Module",
+                "perksTitle": "Pro License Benefits",
+                "pinDisclaimer": "The PIN will change if you access from another computer or change Tax ID/Birth. License is non-transferable.",
+                "pinLabel": "YOUR PIN (DEVICE ID)",
+                "prompt": "Complete your profile with real data to enable and view your access PIN.",
+                "sendPinInfo": "Send this PIN to the commercial administrator along with proof of payment to receive original key.",
+                "status": "Status",
+                "step1": "Your Unique Identifier (PIN)",
+                "step1Desc": "This code is generated from your hardware and Profile. It's required to generate your license.",
+                "step2": "Activate License",
+                "step2Desc": "After receiving the .lic file generated by the admin, load it here.",
+                "subtitle": "Activate your product and manage your subscription.",
+                "title": "PRODUCT LICENSE",
+                "trial": "Trial License",
+                "trialBadge": "Trial Period",
+                "viewDetails": "View Details"
+            },
+            "personalInfo": {
+                "avatar": "Profile Photo",
+                "avatarHint": "Click to change your photo.",
+                "birthDate": "Birth Date",
+                "cpf": "Tax ID / CPF",
+                "cpfPlaceholder": "000.000.000-00",
+                "email": "Email",
+                "fullName": "Full Name",
+                "phone": "Phone",
+                "removePhoto": "Remove Photo",
+                "title": "PERSONAL INFORMATION"
+            },
+            "preferences": {
+                "convertAll": "Convert all balances to main currency",
+                "langEN": "English (EN-US)",
+                "langES": "Spanish (ES-ES)",
+                "langFR": "French (FR-FR)",
+                "langPT": "Portuguese (PT-BR)",
+                "language": "Language",
+                "mainCurrency": "Main Currency",
+                "region": "Region",
+                "theme": "Theme",
+                "themeDark": "Dark",
+                "themeLight": "Light",
+                "timezone": "Timezone",
+                "title": "SETTINGS",
+                "utcOffset": "Timezone Offset"
+            },
+            "save": "Save Changes",
+            "security": {
+                "changePassword": "Change Password",
+                "confirmLogout": "Are you sure you want to logout?",
+                "confirmPassword": "Confirm New Password",
+                "confirmPasswordPlaceholder": "Repeat new password",
+                "currentPassword": "Current Password",
+                "currentPasswordPlaceholder": "Insert current password",
+                "error": {
+                    "minChars": "Password must be at least 6 characters.",
+                    "mismatch": "Passwords do not match."
+                },
+                "loggingOut": "Logging out...",
+                "logout": "Logout Account",
+                "newPassword": "New Password",
+                "newPasswordPlaceholder": "Insert new password",
+                "success": "Password changed successfully.",
+                "title": "SECURITY AND ACCESS"
+            },
+            "success": "Profile updated successfully!",
+            "title": "My Profile"
+        },
+        "risk": {
+            "accountTypes": {
+                "All": "All Accounts",
+                "Demo": "Demo Account",
+                "Prop": "Proprietary Firm",
+                "Real": "Real Account",
+                "Specific": "Specific Accounts"
+            },
+            "applicability": "Applicability",
+            "dailyGoal": "Daily Profit Goal",
+            "dailyGoalShort": "Daily Goal",
+            "dailyLossLimit": "Daily Loss Limit",
+            "dailyLossLimitShort": "Loss Limit",
+            "description": "Define your loss limits and goals to protect your capital.",
+            "discipline": "Discipline Rules",
+            "downside": "Protection (Downside)",
+            "edit": "Edit Profile",
+            "engine": {
+                "outlier": {
+                    "description": "Automatic reduction upon detecting negative statistical deviations.",
+                    "lookback": "Analysis Window",
+                    "title": "Outlier Regression"
+                },
+                "psychological": {
+                    "description": "Detects 'tilt' or euphoria patterns based on the last {count} trades.",
+                    "lookback": "Activation Window",
+                    "multiplier": "Reduction Factor",
+                    "strategy": "Search Strategy",
+                    "strategySequence": "Sequential (Consecutive Loss)",
+                    "strategyStrict": "Strict (Moving Average)",
+                    "threshold": "Deviation Limit (Z-Score)",
+                    "title": "Psychological Coupling"
+                },
+                "sniper": {
+                    "description": "Increases entry rigor after loss streaks.",
+                    "selectivity": "Selectivity Degree",
+                    "selectivityTip": "Higher value means more entry filters.",
+                    "title": "Sniper Mode"
+                }
+            },
+            "form": {
+                "accounts": {
+                    "noneSelected": "No account selected. The profile will not be applied to any account.",
+                    "title": "Link Accounts"
+                },
+                "presets": {
+                    "aggressive": "Aggressive",
+                    "conservative": "Conservative",
+                    "moderate": "Moderate",
+                    "title": "Profile Presets"
+                },
+                "tabs": {
+                    "base": "Base",
+                    "assetProfiles": "Asset Profiles",
+                    "rules": "Rules",
+                    "motors": "Motors"
+                },
+                "ruleBuilder": {
+                    "title": "Plan Rules",
+                    "addRule": "New Rule",
+                    "editRule": "Edit Rule",
+                    "deleteRule": "Delete Rule",
+                    "noRules": "No rules configured",
+                    "ruleName": "Rule Name",
+                    "scope": {
+                        "label": "Scope",
+                        "global": "Global",
+                        "asset": "Asset",
+                        "combined": "Combined"
+                    },
+                    "targetType": {
+                        "label": "Rule Type",
+                        "sum_contracts": "Sum of Contracts",
+                        "max_daily_loss": "Max Daily Loss",
+                        "profit_target": "Profit Target",
+                        "day_trade_only": "Day Trade Only",
+                        "close_before_close": "Close Before Close",
+                        "consistency": "Consistency",
+                        "rule_50_percent": "50% Rule",
+                        "max_trades_per_day": "Max Trades per Day"
+                    },
+                    "operator": {
+                        "label": "Operator",
+                        "lte": "Less or equal (≤)",
+                        "gte": "Greater or equal (≥)",
+                        "eq": "Equal to (=)",
+                        "lt": "Less than (<)",
+                        "gt": "Greater than (>)",
+                        "between": "Between"
+                    },
+                    "value": "Value",
+                    "valueSecondary": "Max Value",
+                    "linkedProfiles": "Asset Profiles",
+                    "enabled": "Enabled",
+                    "save": "Save Rule",
+                    "cancel": "Cancel",
+                    "confirmDelete": "Are you sure you want to delete this rule?",
+                    "presets": {
+                        "maxDailyLoss": "Max Daily Loss",
+                        "profitTarget": "Profit Target",
+                        "maxTrades": "Max Trades",
+                        "dayTradeOnly": "Day Trade Only",
+                        "closeBeforeClose": "Close B/F Close",
+                        "consistency": "Consistency",
+                        "rule50": "50% Rule",
+                        "sumContracts": "Contract Limit"
+                    },
+                    "groups": {
+                        "global": "Global Rules",
+                        "asset": "Specific Asset Rules",
+                        "combined": "Combined Assets"
+                    },
+                    "helpers": {
+                        "max_daily_loss": "Blocks new entries if loss limit is hit.",
+                        "profit_target": "Blocks entries to protect profit target.",
+                        "sum_contracts": "Maximum concurrent open contracts.",
+                        "day_trade_only": "Prevents holding positions overnight.",
+                        "close_before_close": "Forces closing positions before market close.",
+                        "consistency": "Blocks increasing risk after losses.",
+                        "rule_50_percent": "Protects 50% of the maximum unrealized profit.",
+                        "max_trades_per_day": "Limits the total number of trades per day."
+                    }
+                }
+            },
+            "growthPlan": {
+                "actions": {
+                    "demote": "Demote Phase",
+                    "promote": "Promote Phase"
+                },
+                "activeStatus": "Active Growth Plan",
+                "addPhase": "Add New Phase",
+                "consistency": "Consistency of",
+                "dailyLoss": "Loss Limit",
+                "dailyLossLabel": "Daily Limit",
+                "drawdown": "Maximum Drawdown",
+                "enable": "Enable Growth Plan",
+                "enableDesc": "Automatic management of lots and limits based on performance.",
+                "lossLabel": "Loss Limit",
+                "maxLotLabel": "Max Lots",
+                "maxLots": "Maximum Lots",
+                "maxLotsLabel": "Maximum Lots",
+                "noPhases": "No phases configured",
+                "phases": "Plan Phases",
+                "phasesTitle": "Phase Structure",
+                "profitTarget": "Profit Target",
+                "progression": "Progression Criteria",
+                "regression": "Regression Criteria",
+                "requirements": {
+                    "consistency": "Consistency (Days)",
+                    "dailyLoss": "Daily Loss",
+                    "days": "Positive Sessions",
+                    "demote": "Regression Criteria",
+                    "drawdown": "Maximum Drawdown",
+                    "lossStreak": "Loss Streak",
+                    "profit": "Profit Target",
+                    "promote": "Requirements to Advance",
+                    "winRate": "Win Rate (%)"
+                },
+                "status": {
+                    "approved": "Approved for Next Phase",
+                    "inProgress": "In Progress",
+                    "regression": "Regression Alert",
+                    "title": "Phase Status"
+                },
+                "title": "Growth Plan",
+                "toasts": {
+                    "demote": "Attention: You returned to phase: {name}",
+                    "promote": "Congratulations! You advanced to phase: {name}"
+                },
+                "tradingSessions": "Sessions"
+            },
+            "lockOnLoss": "Lock Platform on Loss",
+            "lockOnLossShort": "Lock Platform (Loss)",
+            "lockWarning": "The user will not be able to open new orders until the next day.",
+            "maxRiskPerTrade": "Max Risk per Trade",
+            "maxRiskPerTradeShort": "Risk/Trade",
+            "maxTradesDay": "Max Trades/Day",
+            "minRiskReward": "Min Risk:Reward",
+            "name": "Profile Name",
+            "namePlaceholder": "Ex: Conservative",
+            "new": "New Profile",
+            "platformLock": "Platform Lock",
+            "profiles": {
+                "activate": "Activate Profile",
+                "active": "Active",
+                "dailyLoss": "Daily Loss",
+                "dailyTarget": "Daily Target"
+            },
+            "title": "Risk Management",
+            "upside": "Goals (Upside)",
+            "assetProfiles": {
+                "title": "Asset Risk Profiles",
+                "new": "New Asset Profile",
+                "edit": "Edit Profile",
+                "delete": "Delete Profile",
+                "name": "Name",
+                "asset": "Linked Asset",
+                "defaultStop": "Default Stop (Points/Ticks)",
+                "minContracts": "Min. Allowed Contracts",
+                "maxContracts": "Max. Allowed Contracts",
+                "notes": "Notes (Optional)",
+                "empty": "No Asset Risk Profile found",
+                "search": "Search profile...",
+                "growthOverride": "Growth Plan Override",
+                "growthOverrideDesc": "Set exclusive growth rules for this asset, ignoring the global plan.",
+                "enableGrowthOverride": "Enable Override",
+                "overridePhases": "Specific Phases",
+                "description": "Assign unique risk profiles to different asset classes.",
+                "noOverridePhases": "No growth phases overlapped."
+            },
+            "management": {
+                "linkedAssetProfiles": "Linked Asset Profiles",
+                "linkedAssetProfilesDesc": "Applies global risk rules to specific asset trading profiles.",
+                "addAssetProfile": "Add Link",
+                "removeAssetProfile": "Remove",
+                "noLinkedAssetProfiles": "No asset profile linked.",
+                "assetProfileSelector": "Select an Asset Profile...",
+                "noLinkedAssetProfileForThisAsset": "No Asset Profile linked for this asset.",
+                "linkedProfile": "Linked Profile",
+                "duplicate": "Duplicate Profile",
+                "createFromTemplate": "Create from Template",
+                "copyOf": "Copy of",
+                "startBlank": "Start Blank",
+                "baseTemplate": "Base Template"
+            },
+            "growth": {
+                "selectAssetToView": "Select an Asset at the top to view the Growth Plan rules.",
+                "noProfileLinked": "No compatible profile.",
+                "noProfileLinkedDesc": "The selected asset does not have an Asset Profile linked to this Risk Profile. Growth rules do not apply.",
+                "sourceGlobal": "Global Plan",
+                "sourceAsset": "Asset Specific",
+                "consecutiveLossDays": "Consecutive Loss Days"
+            }
+        },
+        "strategies": {
+            "description": "Register your trading strategies and their characteristics.",
+            "edit": "Edit Strategy",
+            "empty": "No strategy found",
+            "form": {
+                "addImage": "Add",
+                "assetTypes": "Asset Types",
+                "cancel": "Cancel",
+                "description": "Description",
+                "descriptionPlaceholder": "Describe the strategy...",
+                "entryPlaceholder": "What defines the entry?",
+                "entryTriggers": "1. Entry Triggers",
+                "indicators": "Indicators",
+                "linkedMarkets": "Linked Markets",
+                "management": "3. Management",
+                "managementPlaceholder": "Trailing stop? Breakeven?",
+                "name": "Name",
+                "namePlaceholder": "Ex: Price Action, Scalping...",
+                "noMarketSelected": "No market selected.",
+                "operationalContext": "Operational Context",
+                "partials": {
+                    "placeholder": "Describe the partial rule...",
+                    "switch": "Perform Partial Exits?"
+                },
+                "save": "Save",
+                "select": "Select",
+                "specificAssets": "Specific Assets",
+                "stopExit": "2. Stop / Exit",
+                "stopPlaceholder": "Where is the stop?",
+                "timeframes": "Timeframes",
+                "tips": {
+                    "noImages": "No images"
+                },
+                "visualExamples": "Visual Examples"
+            },
+            "new": "New Strategy",
+            "title": "Strategies"
+        },
+        "tags": {
+            "description": "Create custom tags to categorize your trades.",
+            "edit": "Edit Tag",
+            "empty": "No tag found",
+            "form": {
+                "color": "Color",
+                "name": "Name",
+                "namePlaceholder": "Ex: Breakout, Reversal...",
+                "preview": "Tag Preview",
+                "save": "Save"
+            },
+            "new": "New Tag",
+            "searchPlaceholder": "Search tag...",
+            "title": "Tags"
+        },
+        "timeframes": {
+            "description": "Define the timeframes you use for analysis (M1, M5, D1, etc.).",
+            "displayName": "Display Name",
+            "edit": "Edit Timeframe",
+            "empty": "No timeframe found",
+            "namePlaceholder": "Ex: 5 Minutes",
+            "new": "New Interval",
+            "searchPlaceholder": "Search timeframe...",
+            "title": "Timeframes",
+            "value": "Value / Code",
+            "valuePlaceholder": "Ex: 5m, 1H, 1D"
+        }
+    }
+}

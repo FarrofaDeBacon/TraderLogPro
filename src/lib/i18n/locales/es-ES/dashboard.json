@@ -1,0 +1,126 @@
+{
+    "dashboard": {
+        "mindset": {
+            "title": "Estado Psicológico",
+            "impact_detected": "Impacto {impact} detectado",
+            "empty": "Sem registros recentes",
+            "placeholder": "Comece seu dia registrando seu mindset no diário para uma análise completa.",
+            "followed_plan": "Seguiu o Plano",
+            "deviated_plan": "Desviou o Plano"
+        },
+        "market_context": {
+            "win": "Índice (WIN)",
+            "wdo": "Dólar (WDO)",
+            "selic": "SELIC EA.",
+            "selic_desc": "Meta Banco Central",
+            "di": "Taxa DI (CDI)",
+            "di_desc": "Referencial Juros",
+            "ptax": "PTAX (Oficial)",
+            "ptax_desc": "Média Dólar BCB"
+        },
+        "account": {
+            "balance": "Saldo"
+        },
+        "charts": {
+            "consistency": "Consistency",
+            "equity": "Equity",
+            "equitySubtitle": "Equity Subtitle",
+            "losses": "DERROTAS",
+            "wins": "VICTORIAS"
+        },
+        "dailyDetail": {
+            "asset": "Activo",
+            "buy": "Comprar",
+            "buyShort": "C",
+            "direction": "Dirección",
+            "efficiency": "Eficiencia",
+            "noTrades": "Sin operaciones",
+            "operationsList": "Lista de Operaciones",
+            "result": "Resultado",
+            "sell": "Vender",
+            "sellShort": "V",
+            "subtitle": "Vista detallada del día",
+            "summary": "Resumen",
+            "title": "Detalle Diario",
+            "tradeQty": "Total de Operaciones"
+        },
+        "kpis": {
+            "discipline": "Disciplina",
+            "maxDrawdown": "Drawdown Máximo",
+            "netResult": "Resultado Neto",
+            "payoff": "Payoff",
+            "profitFactor": "Factor de Beneficio",
+            "winRate": "Tasa de Acierto",
+            "avgInterval": "Intervalo Entre Trades"
+        },
+        "newTrade": "New Trade",
+        "quant": {
+            "dollar": "Dollar",
+            "index": "Index",
+            "intention": "Intention",
+            "ranking": "Ranking",
+            "subtitle": "Subtitle",
+            "title": "Title",
+            "waitingData": "Esperando Datos"
+        },
+        "schedule": {
+            "afternoon": "Tarde",
+            "basedOn": "Basado en los últimos {count} días hábiles",
+            "morning": "Mañana",
+            "title": "Horario de Trading"
+        },
+        "subtitle": "Resumen de la cuenta operativa.",
+        "survivor": {
+            "activePlan": "Plan Activo:",
+            "avgRFactor": "Factor R Promedio",
+            "consistency": "Consist.",
+            "currentPhase": "Fase Actual",
+            "dailyEvolution": "Evolución Diaria",
+            "eligibility": "Elegibilidad",
+            "greenZone": "Zona Verde",
+            "limit": "Límite",
+            "operateTrade": "OPERAR 2% TRADE",
+            "operationalStatus": "Estado Operativo",
+            "pnl": "PnL",
+            "riskMonth": "Riesgo Survivor (Mes)",
+            "roadmapProgress": "Progreso Roadmap",
+            "select": "Seleccionar",
+            "statusAlpha": "Operacional Alpha",
+            "statusBlocked": "Bloqueado (Pérdida Máx)",
+            "statusRisk": "Alerta de Riesgo",
+            "target": "Meta: ",
+            "title": "Survivor Hub & Monitoreo",
+            "tradesUsage": "Uso de Operaciones"
+        },
+        "terminalHub": "Terminal Hub",
+        "title": "Panel de Control",
+        "gann": {
+            "title": "Vibrações de Gann",
+            "subtitle": "Confluência Matemática e Ciclos",
+            "kpis": {
+                "nextCot": "Próxima Reversão (Janela)",
+                "cycleDay": "Dia do Ciclo",
+                "vibration": "Vibração Atual",
+                "masterCycle": "Ciclo Mestre",
+                "avgInterval": "Intervalo Entre Trades",
+                "days": "Días",
+                "hot_window": "Ventana Caliente (Reversión Inminente)",
+                "neutral": "Zona Neutral",
+                "outOfDays": "Fuera de Ciclo"
+            },
+            "sq9": {
+                "expansion": "Alvos de Expansão",
+                "retracement": "Alvos de Retração",
+                "degrees": "{deg}°",
+                "reference": "Ref"
+            }
+        },
+        "syncingTerminal": "Sincronizando Terminal...",
+        "waitingSurvivorData": "Esperando matriz de datos de Survivor Hub"
+    },
+    "home": {
+        "newTrade": "Nuevo Trade",
+        "subtitle": "La evolución de tu diario de trading.",
+        "viewDashboard": "Ver Dashboard"
+    }
+}

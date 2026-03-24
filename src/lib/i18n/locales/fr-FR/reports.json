@@ -1,0 +1,158 @@
+{
+    "fiscal": {
+        "darf": {
+            "accountError": "Account Error",
+            "active": "Active",
+            "buttons": {
+                "cancel": "Cancel",
+                "confirmPay": "Confirm Payment",
+                "confirmUnpay": "Confirm Refund",
+                "delete": "Delete",
+                "pay": "Pay"
+            },
+            "description": "Manage and store your tax collection vouchers.",
+            "emptyHistory": "Aucun DARF trouvé.",
+            "fineInterest": "Fine & Interest",
+            "history": "DARF History",
+            "labels": {
+                "dueDate": "Due Date",
+                "fine": "Fine (R$)",
+                "interest": "Interest (R$)",
+                "paymentDate": "Payment Date",
+                "principal": "Principal",
+                "totalPaid": "Total Value Paid",
+                "valueToPay": "Value to Pay"
+            },
+            "messages": {
+                "emptyHistory": "No DARFs paid in {year}.",
+                "loading": "Loading..."
+            },
+            "modal": {
+                "delete": {
+                    "prompt": "Are you sure you want to delete this DARF?",
+                    "title": "Confirm Deletion"
+                },
+                "pay": {
+                    "description": "Enter the details to register the payment for this DARF.",
+                    "noAccount": "Select an account to debit.",
+                    "title": "Register Payment"
+                },
+                "unpay": {
+                    "descriptionLine1": "This will revert the DARF status to Pending and refund the amount of",
+                    "descriptionLine2": "to the source account.",
+                    "descriptionLine3": "The outgoing transaction will be removed from the Finance Hub.",
+                    "title": "Undo Payment"
+                }
+            },
+            "principalValue": "Principal Value",
+            "registerPayment": "Register Payment",
+            "revenueCode": "Revenue Code",
+            "selectAccount": "Select Account",
+            "sourceAccount": "Source Account",
+            "status": {
+                "late": "Late",
+                "paid": "Paid",
+                "pending": "Pending"
+            },
+            "table": {
+                "fineInterest": "Fines/Interest",
+                "period": "Period",
+                "principalValue": "Principal",
+                "revenueCode": "Rev. Code",
+                "status": "Status",
+                "totalPaid": "Total Paid"
+            },
+            "title": "DARF Dashboard",
+            "totalPaid": "Total Paid"
+        },
+        "irpf": {
+            "complementary": "Complementar",
+            "calculate": "Calculate",
+            "calculating": "Calculating...",
+            "description": "Track and consolidate your monthly tax assessments (Day Trade and Swing).",
+            "evolution": "Tax Evolution",
+            "history": "Appraisal History",
+            "kpis": {
+                "dueYearHint": "Accumulated payable this year.",
+                "losses": "Accumulated Losses",
+                "paidYearHint": "Sum of paid vouchers.",
+                "pending": "Pending Vouchers",
+                "pendingHint": "You have {count} pending DARF(s).",
+                "totalDue": "Tax Due",
+                "totalPaid": "Total Paid"
+            },
+            "manageDarfs": "Manage DARFs",
+            "modal": {
+                "description": "Calculate the net isolated results for a specific month.",
+                "month": "Base Month",
+                "title": "New Appraisal",
+                "year": "Calendar Year"
+            },
+            "newAppraisal": "New Appraisal",
+            "periodFilter": "Year Filter",
+            "saveBeforeDarf": "Save the appraisal before generating a DARF.",
+            "table": {
+                "actions": "Actions",
+                "alreadyGenerated": "DARF Generated",
+                "cannotDelete": "Cannot delete",
+                "compensated": "Compensated",
+                "generateDarf": "Generate DARF",
+                "minTaxAlert": "Min. IRPF",
+                "minTaxHint": "Value lesser than or equal to R$ 10",
+                "netProfit": "Net Profit",
+                "ok": "No Tax",
+                "paid": "Paid",
+                "pending": "Pending",
+                "period": "Month/Year",
+                "status": "Status",
+                "toPay": "Tax Due",
+                "type": "Modality"
+            },
+            "title": "IRPF Hub"
+        }
+    },
+    "reports": {
+        "operationalTitle": "Rapport de Performance Opérationnelle",
+        "imminentRisks": "Risques Imminents",
+        "scoreUnavailable": "Score indisponible sans volume de transactions.",
+        "pdf": {
+            "title": "Rapport de Performance",
+            "auditedPeriod": "Période Auditée",
+            "financialStats": "Statistiques Financières",
+            "noTrades": "Aucun trade enregistré dans la fenêtre.",
+            "netPnl": "Net (PnL)",
+            "winRate": "Win Rate",
+            "profitFactor": "Profit Factor",
+            "tradeVolume": "Volume de Trading",
+            "inDays": "en",
+            "qualitativeScore": "Évaluation Qualitative",
+            "scoreUnavailable": "Score non disponible sans volume.",
+            "masterScore": "Master Score",
+            "executionCut": "Coupe d'Exécution",
+            "riskManagement": "Gestion des Risques",
+            "aiAudit": "Audit IA (Mécanique)",
+            "psychologicalDaily": "Psychologique (Quotidien)",
+            "preservedStreaks": "Séquences Préservées",
+            "unbreakableDiscipline": "Discipline Inébranlable",
+            "emotionalControl": "Contrôle Émotionnel",
+            "tiltPrevention": "Prévention du Tilt",
+            "offendersEdges": "Infractions et Avantages",
+            "linearOperation": "Opération linéaire sans déviations.",
+            "infractions": "Infractions (Haute Gravité)",
+            "functionalSystem": "Système fonctionnel, zéro défaillance.",
+            "competitiveAdvantages": "Avantages Compétitifs",
+            "medianNoJumps": "Médian, sans sauts en faveur.",
+            "postMarketSummary": "Résumé Post-Marché",
+            "noDailyReview": "Tradé sans revue. Réduit la capacité d'audit.",
+            "documentedSessions": "Sessions Documentées",
+            "daysRead": "Jours Lus",
+            "lossesUnderNegative": "des pertes sont survenues sous état négatif",
+            "primaryObservations": "Observations Primaires",
+            "unsupportedEvaluations": "Évaluations non étayées par des textes.",
+            "finalDiagnosis": "Diagnostic Final",
+            "imminentRisks": "Risques Imminents",
+            "noGraveRisks": "Aucun risque grave identifié.",
+            "executionPlan": "Plan d'Exécution"
+        }
+    }
+}

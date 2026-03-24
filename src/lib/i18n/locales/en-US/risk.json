@@ -1,0 +1,167 @@
+{
+    "riskContext": {
+        "title": "Active Composition",
+        "asset": "Operational Asset",
+        "unlinked": "No Linked Profile",
+        "riskProfile": "Risk Profile",
+        "growthSource": "Growth Source",
+        "globalPlan": "Global Plan",
+        "overridePlan": "Specific (Override)",
+        "currentPhase": "Current Phase",
+        "noPhase": "None / Manual",
+        "sizing": "Allowed Sizing",
+        "contracts": "Measured Contracts",
+        "blocked": "Blocked / Invalid",
+        "reasons": "Block Reason:"
+    },
+    "risk": {
+        "desk": {
+            "auditTitle": "Historical Desk Audit",
+            "status": {
+                "passed": "Passed",
+                "failed": "Failed",
+                "pending": "Pending"
+            },
+            "metrics": {
+                "operatedDays": "Operated Days",
+                "positiveDays": "Positive Days",
+                "bestDayShare": "Best Day Share",
+                "totalProfit": "Total Profit"
+            },
+            "stages": {
+                "currentStage": "Operational Desk Stage",
+                "margin_building": "Margin Building",
+                "real_phase_1": "Real Account - Phase 1",
+                "real_final": "Real Account - Final"
+            }
+        },
+        "deskValidation": {
+            "title": "Prop Firm Validation",
+            "allowed": "Trade Allowed",
+            "blocked": "Trade Blocked",
+            "allowedAsset": "Allowed Asset",
+            "combinedExposure": "Average Exposure",
+            "dayTradeOnly": "Day Trade Mode",
+            "closeBeforeMarketClose": "Time Expired",
+            "missingContext": "Warning: Missing context"
+        },
+        "management": {
+            "deskConfig": "Prop Firm Configuration",
+            "enableDeskConfig": "Enable Prop Firm Logic",
+            "planName": "Plan Name",
+            "allowedAssets": "Allowed Assets",
+            "maxCombinedExposure": "Max Combined Exposure",
+            "maxTotalLoss": "Max Total Loss",
+            "profitTarget": "Profit Target",
+            "dayTradeOnly": "Day Trade Only",
+            "closeBeforeMarketCloseMinutes": "Close mins. before market close",
+            "consistencyMode": "Consistency Mode",
+            "consistencyMode_none": "None",
+            "consistencyMode_5days_3positive": "5 Days (min. 3 Positive)",
+            "consistencyMode_10days_5positive": "10 Days (min. 5 Positive)",
+            "maxSingleDayProfitShare": "Max % Profit per Day",
+            "mdrMode": "MDR Mode",
+            "mdrMode_none": "None (Margin Builder Phase)",
+            "mdrMode_fixed": "Fixed (Real Account Limits)",
+            "mdrMode_percent_of_margin": "% of Margin",
+            "combinedRules": "Combined Rules",
+            "addCombinedRule": "Add Rule",
+            "ruleName": "Rule Name",
+            "ruleType": "Rule Type",
+            "sumContracts": "Sum Contracts",
+            "limitValue": "Limit Value",
+            "linkedAssetProfilesForRule": "Involved Asset Profiles",
+            "noCombinedRules": "No combined rules created yet. Use them to cross boundaries between assets.",
+            "removeCombinedRule": "Remove Rule",
+            "linkedAssetProfiles": "Linked Asset Profiles",
+            "linkedAssetProfilesDesc": "Applies the global risk rules to specific asset trade profiles.",
+            "assetProfileSelector": "Select an Asset Profile...",
+            "noLinkedAssetProfiles": "No asset profile linked.",
+            "removeAssetProfile": "Remove"
+        },
+        "cockpit": {
+            "title": "Operational Cockpit",
+            "subtitle": "Quick read status for daily trader decisions.",
+            "profile": "Profile:",
+            "plan": "Plan:",
+            "asset": "Asset:",
+            "selectAsset": "!! Select an Asset in the Ticket !!",
+            "noProfile": "No active risk profile.",
+            "noProfileDesc": "You need to enable risk management in Settings to feed the operational cockpit.",
+            "statusBlocked": "Blocked",
+            "statusBlockedDesc1": "Do not trade today!",
+            "statusBlockedDesc2": "A daily survival limit has been reached.",
+            "statusCaution": "Caution",
+            "statusCautionDesc1": "Exercise extreme caution.",
+            "statusCautionDesc2": "Imminent issues or 50% rule affected.",
+            "statusAllowed": "Allowed",
+            "statusAllowedDesc1": "You can trade normally.",
+            "statusAllowedDesc2": "Systems normal, exposure and drawdown within limits.",
+            "dailyDrawdown": "Current Daily Drawdown",
+            "sizing": "Sizing (Current Asset)",
+            "contracts": "CTRs",
+            "blockedZero": "Blocked (0)",
+            "violations": "ACTIVE VIOLATIONS",
+            "warnings": "OPERATIONAL WARNINGS",
+            "evolutionStatus": "Evolution Status",
+            "dailyProfit": "Current Daily Profit",
+            "profitDays": "Profitable Days",
+            "targetHit": "Target Hit?",
+            "yes": "Yes",
+            "no": "No",
+            "riskTriggers": "Risk Triggers",
+            "overtrading": "Overtrading Limit",
+            "imminentRisk": "Imminent Risk",
+            "controlled": "Controlled",
+            "maxLot": "Configured Max Lot",
+            "mdrStatus": "Max Drawdown Ceiling (MDR)",
+            "watched": "Monitored",
+            "openBook": "Open Book",
+            "missingReqs": "Missing to Advance",
+            "allReqsMet": "All requirements for this stage have been met!",
+            "auditedRules": "Audited Rules",
+            "pending": "pending",
+            "noRules": "No active rules audited in the checklist for the current plan.",
+            "engine": {
+                "min_trading_days": "Trading Days",
+                "min_positive_days": "Consistent Days",
+                "profit_target": "Profit Target",
+                "rule_50_percent": "50% Safety Rule",
+                "consistency": "Daily Consistency"
+            }
+        }
+    },
+    "desk": {
+        "progression": {
+            "reasons": {
+                "pending_days": "Pending trading days to advance.",
+                "pending_audit": "Historical audit waiting for cut-off criteria.",
+                "max_stage_reached": "Plan ceiling reached (Final Phase)."
+            },
+            "can_advance": "Eligible for Next Level",
+            "current": "Current Operational Level",
+            "should_remain": "Phase Maintenance Required",
+            "title": "Strategic Progression Roadmap"
+        },
+        "feedback": {
+            "missing_days": "Not enough trading days to validate consistency.",
+            "missing_profit": "Financial profit target has not been met yet.",
+            "missing_consistency": "Minimum consistent (profitable) days criteria not met.",
+            "failed_50_percent": "Breach of the 50% protection rule (best profit day exceeded safety metrics)."
+        },
+        "reasons": {
+            "invalid_asset": "Selected asset is not allowed by Prop Firm rules.",
+            "max_exposure": "Contract sum exceeds the allowed limit.",
+            "day_trade_only": "Prop Firm plan allows only Day Trade mode.",
+            "min_operated_days": "Minimum operated days not reached.",
+            "max_share_50": "Best day profit exceeds the limit (50% Rule).",
+            "consistency_failed": "Consistency rule failed.",
+            "consistency_pending": "Consistency rule pending."
+        },
+        "warnings": {
+            "day_trade_only": "Day Trade Only rule enabled, but current operation timeframe not provided.",
+            "time_constraint": "Temporary close rule configured, but current time context unavailable.",
+            "table_disabled": "Prop Firm disabled. Audit skipped."
+        }
+    }
+}
