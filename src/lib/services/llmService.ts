@@ -252,6 +252,115 @@ O JSON deve obedecer estritamente esta estrutura:
             throw new Error("A IA falhou em retornar um formato JSON rigoroso: " + e.message);
         }
     },
+
+    async generateStrategyInsight(strategyId: string, periodStr: string, metricsPayload: any): Promise<any> {
+        const PROMPT_VERSION = "v1.0";
+        const FEATURE_NAME = "strat_dive";
+        
+        const payloadStr = JSON.stringify(metricsPayload);
+        const metricsHash = simpleHash(payloadStr);
+        // Add strategyId to strictly isolate cache bins
+        const cacheKey = `${FEATURE_NAME}_${strategyId}_${periodStr}_${metricsHash}_${PROMPT_VERSION}`;
+        
+        const startTime = performance.now();
+        
+        if (aiCache.has(cacheKey)) {
+            const cached = aiCache.get(cacheKey)!;
+            console.log("[AI CACHE HIT]", cacheKey);
+            return { 
+                ...cached.payload, 
+                _meta: { hash: cacheKey, origin: "cache", responseTimeMs: Math.round(performance.now() - startTime), cachedAt: cached.timestamp } 
+            };
+        }
+        
+        const configId = integrationsStore.psychologyApiId;
+        const config = integrationsStore.apiConfigs.find(c => c.id === configId && c.enabled) 
+                    || integrationsStore.apiConfigs.find(c => (c.provider === 'openai' || c.provider === 'google_gemini') && c.enabled);
+                    
+        if (!config || !config.api_key) {
+            throw new Error("No enabled AI provider found.");
+        }
+        
+        const prompt = `Você é um Cientista Quantitativo e Mentor de Trading focado em validar sistemas de negociação.
+Abaixo está o Raio-X matemático/comportamental estruturado desta estratégia de trading (Período: ${periodStr}):
+${payloadStr}
+
+SUA TAREFA:
+Sintetizar a robustez e identificar a maior fraqueza operacional desta estratégia, baseando-se APENAS nas métricas cruzadas fornecidas.
+
+REGRA ABSOLUTA DE SAÍDA:
+Você DEVE retornar APENAS um objeto JSON válido.
+O JSON deve obedecer estritamente esta estrutura:
+{
+  "performanceInterpretation": "Avaliação crítica e sintética do Win Rate, Payoff e Drawdown cruzados (1 a 2 frases).",
+  "idealContext": "Descreva o contexto operacional ótimo detectado com base nas proporções e métricas (ex: qual direção ou ativo se sobressai - referencie ativos/horas citados).",
+  "criticalWeakness": "Aponte o calcanhar de Aquiles do setup revelado pela leitura cruzada das emoções vs losses, drawdowns, ou piores configurações (MÁX 1 frase)."
+}`;
+
+        let rawResponse = "";
+        
+        if (config.provider === 'google_gemini') {
+            const API_KEY = config.api_key.trim();
+            const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+            
+            const reqBody = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.1, responseMimeType: "application/json" }
+            };
+            
+            const response = await fetch(ENDPOINT, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(reqBody)
+            });
+            
+            if (!response.ok) {
+                const err = await response.json().catch(()=>({}));
+                throw new Error(err.error?.message || "Erro na API Gemini");
+            }
+            const data = await response.json();
+            rawResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+            
+        } else if (config.provider === 'openai') {
+            const API_KEY = config.api_key.trim();
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    response_format: { type: "json_object" },
+                    messages: [{ role: "user", content: prompt }],
+                    temperature: 0.1
+                })
+            });
+            
+            if (!response.ok) throw new Error("Erro na API OpenAI");
+            const data = await response.json();
+            rawResponse = data.choices?.[0]?.message?.content || "{}";
+        } else {
+            throw new Error("Provider não suportado para análise estruturada.");
+        }
+        
+        try {
+            const parsed = JSON.parse(rawResponse.replace(/```json/g, '').replace(/```/g, '').trim());
+            
+            if (!parsed.performanceInterpretation || !parsed.idealContext || !parsed.criticalWeakness) {
+                throw new Error("Payload inválido (Campos ausentes)");
+            }
+            
+            const responseTime = Math.round(performance.now() - startTime);
+            aiCache.set(cacheKey, { timestamp: Date.now(), payload: parsed, responseTime });
+            
+            return {
+                ...parsed,
+                _meta: { hash: cacheKey, origin: "network", responseTimeMs: responseTime, cachedAt: Date.now() }
+            };
+            
+        } catch (e: any) {
+            console.error("Erro no Parse JSON da IA:", rawResponse, e);
+            throw new Error("A IA falhou em retornar um JSON estrito para o Deep Dive estratégico: " + e.message);
+        }
+    },
     async analyzePsychologyDashboard(payloadJson: string): Promise<string> {
         const configId = integrationsStore.psychologyApiId;
         const config = integrationsStore.apiConfigs.find(c => c.id === configId && c.enabled);

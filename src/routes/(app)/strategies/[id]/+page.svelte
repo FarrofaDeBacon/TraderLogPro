@@ -34,6 +34,8 @@
         Zap,
     } from "lucide-svelte";
     import GannStrategyAnalyst from "$lib/components/strategies/GannStrategyAnalyst.svelte";
+    import StrategyAICard from "$lib/components/strategy/StrategyAICard.svelte";
+    import { integrationsStore } from "$lib/stores/integrations.svelte";
     import * as Dialog from "$lib/components/ui/dialog";
     import { onMount, onDestroy } from "svelte";
     import EChart from "$lib/components/ui/echart.svelte";
@@ -146,6 +148,31 @@
             worst_asset: null,
             best_direction: null,
         },
+    });
+
+    const hasActiveAiProvider = $derived(
+        integrationsStore.apiConfigs.some(
+            (c) => c.enabled && (c.id === integrationsStore.psychologyApiId || c.provider === "openai" || c.provider === "google_gemini")
+        )
+    );
+
+    const aiMetricsPayload = $derived({
+        status: stats.diagnostic.status,
+        current_risk: stats.diagnostic.current_risk,
+        stability: stats.diagnostic.stability,
+        recent_trend: stats.diagnostic.recent_trend,
+        best_asset: stats.operational.best_asset,
+        worst_asset: stats.operational.worst_asset,
+        best_time_of_day: stats.operational.best_time_of_day,
+        worst_time_of_day: stats.operational.worst_time_of_day,
+        best_direction: stats.operational.best_direction,
+        negative_state_loss_ratio: stats.psychology.negative_state_loss_ratio,
+        top_positive_emotion: [...stats.psychology.emotion_breakdown].sort((a: any, b: any) => b.net_result - a.net_result)[0]?.emotion_name || null,
+        top_negative_emotion: [...stats.psychology.emotion_breakdown].sort((a: any, b: any) => a.net_result - b.net_result)[0]?.emotion_name || null,
+        win_rate: stats.winRate,
+        profit_factor: stats.profitFactor,
+        max_drawdown: stats.maxDrawdown,
+        recovery_factor: stats.recoveryFactor
     });
 
     // Reference Price for Gann Analysis
@@ -547,6 +574,13 @@
                             {/if}
                         </p>
                     </div>
+
+                    <StrategyAICard 
+                        strategyId={strategyId || ""}
+                        periodStr="All Time"
+                        metricsPayload={aiMetricsPayload}
+                        {hasActiveAiProvider}
+                    />
 
                 </Sheet.Content>
             </Sheet.Root>
