@@ -10,8 +10,9 @@
   import { Card, CardContent } from "$lib/components/ui/card";
   import { Separator } from "$lib/components/ui/separator";
   import * as Tabs from "$lib/components/ui/tabs";
-    import * as Tooltip from "$lib/components/ui/tooltip";
-    import { Label } from "$lib/components/ui/label";
+  import * as Sheet from "$lib/components/ui/sheet";
+  import * as Tooltip from "$lib/components/ui/tooltip";
+  import { Label } from "$lib/components/ui/label";
     import { Input } from "$lib/components/ui/input";
     import { Textarea } from "$lib/components/ui/textarea";
     import {
@@ -27,6 +28,10 @@
         FileText,
         ImageIcon,
         Compass,
+        Radar,
+        AlertTriangle,
+        Brain,
+        Zap,
     } from "lucide-svelte";
     import GannStrategyAnalyst from "$lib/components/strategies/GannStrategyAnalyst.svelte";
     import * as Dialog from "$lib/components/ui/dialog";
@@ -387,6 +392,7 @@
 
     // Image viewer logic
     let selectedImageIndex = $state<number | null>(null);
+    let isCockpitOpen = $state(false);
 
 </script>
 
@@ -415,6 +421,135 @@
             <Badge variant="outline" class="font-mono text-xs">
                 {strategy.specific_assets[0] || $t("strategy.dossier.multi")}
             </Badge>
+
+            <div class="flex-1"></div>
+
+            <!-- Phase 21: Strategy Cockpit Drawer -->
+            <Button variant="outline" size="sm" onclick={() => isCockpitOpen = true} class="gap-2 bg-background/50 backdrop-blur-sm border-dashed border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-500 transition-colors">
+                <Radar class="w-4 h-4" />
+                {$t("strategy.cockpit.btn") ?? "Cockpit Analítico"}
+            </Button>
+            
+            <Sheet.Root bind:open={isCockpitOpen}>
+                <Sheet.Content side="right" class="w-full sm:max-w-md overflow-y-auto bg-background/95 backdrop-blur-xl border-l-border/50 p-6">
+                    <Sheet.Header class="mb-6">
+                        <Sheet.Title class="flex items-center gap-2">
+                            <Radar class="w-5 h-5 text-emerald-500" />
+                            Cockpit da Estratégia
+                        </Sheet.Title>
+                        <Sheet.Description>Diagnóstico de risco, fatores operacionais e calibração psicológica.</Sheet.Description>
+                    </Sheet.Header>
+
+                    <!-- Bloco 1: Saúde da Estratégia -->
+                    <div class="space-y-4 mb-8">
+                        <h3 class="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                            <Activity class="w-4 h-4" /> Saúde Algorítmica
+                        </h3>
+                        {#if stats.diagnostic.status === "INSUFFICIENT_DATA"}
+                            <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">Aguardando mais operações para formar um diagnóstico claro.</div>
+                        {:else}
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="p-3 rounded-lg border bg-background/50 flex flex-col gap-1">
+                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">Status</span>
+                                    <span class="text-sm font-black {stats.diagnostic.status === 'HOT' ? 'text-emerald-500' : stats.diagnostic.status === 'COLD' ? 'text-rose-500' : 'text-amber-500'}">
+                                        {stats.diagnostic.status}
+                                    </span>
+                                </div>
+                                <div class="p-3 rounded-lg border bg-background/50 flex flex-col gap-1">
+                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">Risco Atual</span>
+                                    <span class="text-sm font-black {stats.diagnostic.current_risk === 'LOW' ? 'text-emerald-500' : stats.diagnostic.current_risk === 'CRITICAL' ? 'text-rose-500' : 'text-amber-500'}">
+                                        {stats.diagnostic.current_risk}
+                                    </span>
+                                </div>
+                                <div class="p-3 rounded-lg border bg-background/50 flex flex-col gap-1 col-span-2">
+                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">Estabilidade (Drawdown / Volatilidade)</span>
+                                    <span class="text-sm font-black {stats.diagnostic.stability === 'STABLE' ? 'text-blue-500' : 'text-amber-500'}">
+                                        {stats.diagnostic.stability}
+                                    </span>
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
+
+                    <!-- Bloco 2: Estratégia x Psicologia -->
+                    <div class="space-y-4 mb-8">
+                        <h3 class="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                            <Brain class="w-4 h-4" /> Cruzamento Psicológico
+                        </h3>
+                        {#if stats.psychology.emotion_breakdown.length === 0}
+                             <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">Nenhum estado emocional mapeado.</div>
+                        {:else}
+                            <div class="p-3 rounded-lg border bg-rose-500/10 border-rose-500/20 mb-3 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-rose-400">Taxa de Perda por Indisciplina:</span>
+                                <span class="text-sm font-black text-rose-500">{stats.psychology.negative_state_loss_ratio.toFixed(1)}%</span>
+                            </div>
+                            <div class="space-y-2">
+                                {#each [...stats.psychology.emotion_breakdown].sort((a: any, b: any) => b.trade_count - a.trade_count).slice(0, 3) as emo}
+                                    <div class="flex items-center justify-between p-2 rounded-md bg-muted/20 text-xs">
+                                        <span class="font-semibold uppercase tracking-wider">{emo.emotion_name || "N/A"}</span>
+                                        <div class="flex gap-3 text-muted-foreground">
+                                            <span title="Win Rate" class="{emo.win_rate > 50 ? 'text-emerald-500' : 'text-rose-500'} font-bold">{(emo.win_rate).toFixed(0)}% WR</span>
+                                            <span title="Net Result" class="{emo.net_result >= 0 ? 'text-emerald-500' : 'text-rose-500'}">{formatCurrency(emo.net_result)}</span>
+                                        </div>
+                                    </div>
+                                {/each}
+                            </div>
+                        {/if}
+                    </div>
+
+                    <!-- Bloco 3: Raio-X Operacional -->
+                    <div class="space-y-4 mb-8">
+                        <h3 class="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                            <Target class="w-4 h-4" /> Contexto Operacional
+                        </h3>
+                        {#if !stats.operational.best_asset && !stats.operational.best_time_of_day}
+                            <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">Volume insuficiente para apontar vantagens.</div>
+                        {:else}
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="p-2 border rounded-md">
+                                    <div class="text-[9px] text-muted-foreground mb-1">MELHOR ATIVO</div>
+                                    <div class="font-bold text-emerald-500">{stats.operational.best_asset || "N/A"}</div>
+                                </div>
+                                <div class="p-2 border rounded-md">
+                                    <div class="text-[9px] text-muted-foreground mb-1">PIOR ATIVO</div>
+                                    <div class="font-bold text-rose-500">{stats.operational.worst_asset || "N/A"}</div>
+                                </div>
+                                <div class="p-2 border rounded-md">
+                                    <div class="text-[9px] text-muted-foreground mb-1">MELHOR HORÁRIO</div>
+                                    <div class="font-bold text-emerald-500">{stats.operational.best_time_of_day ? `${stats.operational.best_time_of_day}h` : "N/A"}</div>
+                                </div>
+                                <div class="p-2 border rounded-md">
+                                    <div class="text-[9px] text-muted-foreground mb-1">PIOR HORÁRIO</div>
+                                    <div class="font-bold text-rose-500">{stats.operational.worst_time_of_day ? `${stats.operational.worst_time_of_day}h` : "N/A"}</div>
+                                </div>
+                                <div class="p-2 border rounded-md col-span-2 text-center bg-muted/10">
+                                    <div class="text-[9px] text-muted-foreground mb-1">DIREÇÃO MAIS LUCRATIVA</div>
+                                    <div class="font-bold uppercase tracking-widest text-blue-500">{stats.operational.best_direction || "N/A"}</div>
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
+
+                    <!-- Bloco 4: Leitura Resumida -->
+                    <div class="p-4 rounded-xl border-l-4 {stats.diagnostic.current_risk === 'CRITICAL' ? 'border-rose-500 bg-rose-500/5' : stats.diagnostic.status === 'HOT' ? 'border-emerald-500 bg-emerald-500/5' : 'border-blue-500 bg-blue-500/5'}">
+                        <div class="font-bold text-sm mb-2 flex items-center gap-2">
+                            <Zap class="w-4 h-4" /> Recomendação Tática
+                        </div>
+                        <p class="text-xs text-muted-foreground leading-relaxed">
+                            {#if stats.diagnostic.status === "INSUFFICIENT_DATA"}
+                                Continue executando a estratégia dentro dos parâmetros para permitir que o algoritmo calibre a leitura de eficácia.
+                            {:else if stats.diagnostic.current_risk === "CRITICAL"}
+                                O capital desta estratégia está exposto a um Drawdown incompatível com o Payoff. <span class="font-bold text-rose-500 block mt-2">Ação: Reduza agressivamente o fracionamento de lotes ou congele operações temporariamente.</span>
+                            {:else if stats.diagnostic.status === "HOT" && stats.diagnostic.current_risk === "LOW"}
+                                O sistema vibra em harmonia máxima. O fluxo operacional e emocional provam consistência direcional. <span class="font-bold text-emerald-500 block mt-2">Ação: Mantenha volume cheio. Deixe os lucros transbordarem na lei geométrica dos alvos originais.</span>
+                            {:else}
+                                Consistência em maturação. Resultados sofrem atrito cruzado (Hot/Cold) entre classes de ativos ou sessões horárias. <span class="font-bold text-blue-500 block mt-2">Ação: Adote a direção predominante ({stats.operational.best_direction || "N/A"}) como viés primário para estabilizar os drawdowns curtos.</span>
+                            {/if}
+                        </p>
+                    </div>
+
+                </Sheet.Content>
+            </Sheet.Root>
         </div>
 
         <Tabs.Root value="dashboard" class="w-full">
