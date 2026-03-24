@@ -418,7 +418,7 @@
         </div>
 
         <Tabs.Root value="dashboard" class="w-full">
-            <Tabs.List class="grid w-full grid-cols-2 mb-4">
+            <Tabs.List class="grid w-full grid-cols-3 mb-4">
                 <Tabs.Trigger value="dashboard"
                     >{$t("strategy.dashboard.tabs.dashboard")}</Tabs.Trigger
                 >
