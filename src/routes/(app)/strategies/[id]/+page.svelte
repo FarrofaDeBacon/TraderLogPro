@@ -576,13 +576,7 @@
                         </p>
                     </div>
 
-                    <StrategyAICard 
-                        strategyId={strategyId || ""}
-                        periodStr="All Time"
-                        metricsPayload={aiMetricsPayload}
-                        {hasActiveAiProvider}
-                    />
-
+                    <!-- Bloco AI Executive Removido do Drawer para evitar duplicidade, mantendo apenas raw stats aqui -->
                 </Sheet.Content>
             </Sheet.Root>
         </div>
@@ -1093,6 +1087,16 @@
                             </div>
                         </CardContent>
                     </Card>
+                </div>
+
+                <!-- AI Executive Summary (12/12 pattern) -->
+                <div class="mt-2">
+                    <StrategyAICard 
+                        strategyId={strategyId || ""}
+                        periodStr="All Time"
+                        metricsPayload={aiMetricsPayload}
+                        {hasActiveAiProvider}
+                    />
                 </div>
             </Tabs.Content>
 

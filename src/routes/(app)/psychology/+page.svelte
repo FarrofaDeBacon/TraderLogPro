@@ -879,7 +879,8 @@
 
 
             <!-- Camada de Decisão: O Mapa, O Overview e Os Protocolos -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 pt-4 mb-4 lg:items-start">
+            <!-- Camada de Decisão: O Mapa, O Overview e Os Protocolos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 pt-4 mb-4 lg:items-start">
                 <!-- Radar Chart (Comportamento) - 4/12 -->
                 <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
                     <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">{$t('psychology.charts.theMap')}</h3>
@@ -904,8 +905,37 @@
                     </div>
                 </div>
 
-                <!-- Camada Interpretativa de IA (Substituindo Diagnóstico e Protocolo) - 4/12 -->
-                <div class="lg:col-span-4 h-fit">
+                <!-- Ranking de Emoções - 4/12 (Preenchendo o grid) -->
+                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
+                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">{$t('psychology.charts.impactRanking')}</h3>
+                    <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                        <table class="w-full text-left">
+                           <thead class="sticky top-0 bg-background/80 backdrop-blur-sm z-10 border-b border-border/10">
+                              <tr class="h-6">
+                                 <th class="text-[8px] font-black text-muted-foreground uppercase">{$t('psychology.charts.emotion')}</th>
+                                 <th class="text-[8px] font-black text-muted-foreground uppercase text-right">{$t('psychology.charts.trades')}</th>
+                                 <th class="text-[8px] font-black text-muted-foreground uppercase text-right">PnL</th>
+                              </tr>
+                           </thead>
+                           <tbody class="divide-y divide-border/5">
+                              {#each (emotionRanking || []).reverse() as r}
+                                 <tr class="h-8 group hover:bg-white/5 transition-colors">
+                                    <td class="text-[10px] font-bold uppercase {r.impact === 'Positive' ? 'text-emerald-500' : r.impact === 'Negative' ? 'text-rose-500' : 'text-slate-400'}">
+                                       {r.emotionName}
+                                    </td>
+                                    <td class="text-[10px] font-bold text-muted-foreground/60 text-right">{r.tradeCount}</td>
+                                    <td class="text-[10px] font-black text-right {r.totalPnL >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
+                                       {r.totalPnL.toFixed(2)}
+                                    </td>
+                                 </tr>
+                              {/each}
+                           </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Camada Interpretativa de IA (Agora em Largura Total ocupando 12/12) -->
+                <div class="lg:col-span-12 mt-2">
                     <PsychologyAICard 
                         periodStr={currentPeriodStr}
                         metricsPayload={metricsPayloadObj}
