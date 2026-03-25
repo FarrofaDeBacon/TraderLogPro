@@ -879,9 +879,9 @@
 
 
             <!-- Camada de Decisão: O Mapa, O Overview e Os Protocolos -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 pt-4 mb-4 lg:items-stretch">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 pt-4 mb-4 lg:items-start">
                 <!-- Radar Chart (Comportamento) - 4/12 -->
-                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px] lg:h-auto lg:min-h-[400px]">
+                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
                     <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">{$t('psychology.charts.theMap')}</h3>
                     <div class="flex-1 w-full relative">
                         {#if radarChartOptions}
@@ -893,7 +893,7 @@
                 </div>
 
                 <!-- Pie Chart (Donut) - 4/12 -->
-                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px] lg:h-auto lg:min-h-[400px]">
+                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
                     <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">{$t('psychology.charts.top5')}</h3>
                     <div class="flex-1 w-full relative">
                         {#if donutChartOptions && donutChartOptions.series[0].data.length > 0}
@@ -905,7 +905,7 @@
                 </div>
 
                 <!-- Camada Interpretativa de IA (Substituindo Diagnóstico e Protocolo) - 4/12 -->
-                <div class="lg:col-span-4">
+                <div class="lg:col-span-4 h-fit">
                     <PsychologyAICard 
                         periodStr={currentPeriodStr}
                         metricsPayload={metricsPayloadObj}

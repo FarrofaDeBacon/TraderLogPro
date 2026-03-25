@@ -3,7 +3,7 @@
     import { integrationsStore } from '$lib/stores/integrations.svelte';
     import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "$lib/components/ui/card";
     import { Button } from "$lib/components/ui/button";
-    import { BrainCircuit, Sparkles, AlertCircle, Target, TrendingUp, ShieldAlert, Cpu, Loader2 } from 'lucide-svelte';
+    import { BrainCircuit, Sparkles, AlertCircle, Target, TrendingUp, ShieldAlert, Loader2 } from 'lucide-svelte';
     import { fade, slide } from 'svelte/transition';
 
     export let periodStr: string = "Período Personalizado";
@@ -50,18 +50,17 @@
 </script>
 
 {#if !isPrintMode || insightData}
-<Card class="border-2 border-primary/20 shadow-sm bg-card/60 backdrop-blur-xl mt-4 relative overflow-hidden">
-    <!-- Decoração de Fundo (Contexto: Executivo) -->
-    <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<Card class="border border-border/40 shadow-none bg-card/40 mt-4 relative overflow-hidden">
+    <div class="absolute -top-10 -right-10 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none"></div>
 
-    <CardHeader class="pb-3 flex flex-row items-center justify-between">
+    <CardHeader class="p-4 pb-2 flex flex-row items-center justify-between">
         <div>
-            <CardTitle class="flex items-center gap-2 text-primary">
-                <BrainCircuit class="w-5 h-5" /> 
+            <CardTitle class="flex items-center gap-1.5 text-primary/80 text-sm font-bold tracking-tight">
+                <BrainCircuit class="w-4 h-4" /> 
                 Visão Executiva (IA)
             </CardTitle>
-            <CardDescription class="text-xs mt-1 max-w-xl">
-                Análise macro do portfólio baseada nos KPIs cruzados (Win Rate, Payoff e Comportamento).
+            <CardDescription class="text-[10px] mt-0.5 max-w-[200px] leading-tight opacity-70">
+                Súmula macro do portfólio baseada nos KPIs cruzados.
             </CardDescription>
         </div>
         
@@ -71,91 +70,93 @@
                 size="sm" 
                 onclick={generateInsight}
                 disabled={!hasAIConfig || !hasEnoughData}
-                class="border-primary/30 hover:bg-primary/10 text-primary"
+                class="h-7 text-xs px-2 border-primary/20 hover:bg-primary/5 text-primary/80"
             >
-                <Sparkles class="w-4 h-4 mr-2" />
+                <Sparkles class="w-3 h-3 mr-1" />
                 Gerar análise
             </Button>
         {/if}
     </CardHeader>
 
-    <CardContent>
+    <CardContent class="p-4 pt-2">
         <!-- Avisos e Erros (Idle States) -->
         {#if !hasAIConfig && !insightData && !isLoading}
-            <div class="py-6 text-center text-xs text-muted-foreground/60 border-2 border-dashed border-border/20 rounded-lg bg-background/20 font-medium uppercase tracking-widest">
-                Configure um provedor de IA para habilitar as análises.
+            <div class="py-4 text-center text-[10px] text-muted-foreground/40 border border-dashed border-border/20 rounded-md bg-background/10 font-medium uppercase tracking-widest">
+                IA Desativada
             </div>
         {:else if !hasEnoughData && !insightData && !isLoading}
-            <div class="py-6 text-center text-xs text-muted-foreground/60 border-2 border-dashed border-border/20 rounded-lg bg-background/20 font-medium uppercase tracking-widest">
-                Dados estatísticos insuficientes para inferência. (Mínimo de 3 trades)
+            <div class="py-4 text-center text-[10px] text-muted-foreground/40 border border-dashed border-border/20 rounded-md bg-background/10 font-medium uppercase tracking-widest">
+                Requer 3 trades mínimos
             </div>
         {:else if error}
-            <div class="p-4 bg-rose-500/10 border border-rose-500/20 rounded-md flex items-start gap-3 text-rose-500 mb-2">
-                <AlertCircle class="w-5 h-5 shrink-0 mt-0.5" />
-                <div class="text-sm">
+            <div class="p-3 bg-rose-500/5 border border-rose-500/10 rounded-md flex items-start gap-2 text-rose-500 mb-2">
+                <AlertCircle class="w-4 h-4 shrink-0 mt-0.5" />
+                <div class="text-[11px]">
                     <p class="font-bold">Falha na análise</p>
                     <p class="opacity-80">{error}</p>
                 </div>
             </div>
-            <Button size="sm" variant="outline" class="border-rose-500/30 text-rose-500 hover:bg-rose-500/10" onclick={generateInsight}>Tentar Novamente</Button>
+            <Button size="sm" variant="outline" class="h-7 text-xs border-rose-500/20 text-rose-500 hover:bg-rose-500/5" onclick={generateInsight}>Tentar Novamente</Button>
         {/if}
 
         <!-- Loading State -->
         {#if isLoading}
-            <div class="py-12 flex flex-col items-center justify-center gap-4 border-2 border-dashed border-border/20 rounded-lg bg-background/20" transition:fade>
-                <Loader2 class="w-6 h-6 animate-spin text-primary/70" />
-                <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest text-primary/70">Processando dados do período...</span>
+            <div class="py-8 flex flex-col items-center justify-center gap-2 border border-dashed border-border/20 rounded-md bg-background/20" transition:fade>
+                <Loader2 class="w-5 h-5 animate-spin text-primary/50" />
+                <span class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-primary/50">Gerando análise...</span>
             </div>
         {/if}
 
         <!-- AI Output -->
         {#if insightData && !isLoading}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2" transition:slide>
+            <div class="flex flex-col gap-2 mt-2" transition:slide>
                 <!-- Resumo Executivo -->
-                <div class="md:col-span-2 p-4 rounded-lg border border-primary/20 bg-background/50 shadow-sm">
-                    <div class="flex items-center gap-2 mb-2">
-                        <Target class="w-4 h-4 text-primary" />
-                        <h4 class="font-bold text-[10px] text-muted-foreground uppercase tracking-widest">Resumo Institucional</h4>
+                <div class="p-3 rounded-md border border-primary/10 bg-background/30">
+                    <div class="flex items-center gap-1.5 mb-1.5 text-primary/70">
+                        <Target class="w-3 h-3" />
+                        <h4 class="font-black text-[9px] uppercase tracking-widest">Resumo Institucional</h4>
                     </div>
-                    <p class="text-[13px] leading-relaxed text-foreground/90 font-medium">{insightData.executiveSummary}</p>
+                    <p class="text-[11px] leading-relaxed text-foreground/80 font-medium">{insightData.executiveSummary}</p>
                 </div>
 
-                <!-- Edge -->
-                <div class="p-4 rounded-lg border bg-emerald-500/5 border-emerald-500/20">
-                    <div class="flex items-center gap-2 mb-2 text-emerald-500">
-                        <TrendingUp class="w-4 h-4" />
-                        <h4 class="font-bold text-[10px] uppercase tracking-widest text-emerald-500/80">Maior Vantagem (Edge)</h4>
+                <div class="grid grid-cols-2 gap-2">
+                    <!-- Edge -->
+                    <div class="p-3 rounded-md border border-emerald-500/10 bg-emerald-500/[0.02]">
+                        <div class="flex items-center gap-1.5 mb-1.5 text-emerald-500/70">
+                            <TrendingUp class="w-3 h-3" />
+                            <h4 class="font-black text-[9px] uppercase tracking-widest">A Vantagem (Edge)</h4>
+                        </div>
+                        <p class="text-[10px] text-foreground/80 font-medium leading-relaxed">{insightData.majorEdge}</p>
                     </div>
-                    <p class="text-[12px] text-foreground/90 font-medium leading-relaxed">{insightData.majorEdge}</p>
-                </div>
 
-                <!-- Fraqueza -->
-                <div class="p-4 rounded-lg border bg-rose-500/5 border-rose-500/20">
-                    <div class="flex items-center gap-2 mb-2 text-rose-500">
-                        <ShieldAlert class="w-4 h-4" />
-                        <h4 class="font-bold text-[10px] uppercase tracking-widest text-rose-500/80">Maior Fragilidade</h4>
+                    <!-- Fraqueza -->
+                    <div class="p-3 rounded-md border border-rose-500/10 bg-rose-500/[0.02]">
+                        <div class="flex items-center gap-1.5 mb-1.5 text-rose-500/70">
+                            <ShieldAlert class="w-3 h-3" />
+                            <h4 class="font-black text-[9px] uppercase tracking-widest">Maior Fragilidade</h4>
+                        </div>
+                        <p class="text-[10px] text-foreground/80 font-medium leading-relaxed">{insightData.majorFragility}</p>
                     </div>
-                    <p class="text-[12px] text-foreground/90 font-medium leading-relaxed">{insightData.majorFragility}</p>
                 </div>
 
                 <!-- Próximo Foco -->
-                <div class="md:col-span-2 mt-2 p-4 border-l-2 border-l-primary bg-primary/5 border border-y-primary/10 border-r-primary/10 rounded-r-lg">
-                    <h4 class="font-bold text-[10px] text-primary/80 mb-2 uppercase tracking-widest flex items-center gap-2">
-                        <BrainCircuit class="w-3.5 h-3.5" /> Foco na Próxima Janela
+                <div class="mt-1 p-2 border-l-2 border-l-primary/50 bg-primary/5 border border-y-primary/5 border-r-primary/5 rounded-r-md">
+                    <h4 class="font-black text-[8px] text-primary/60 mb-1 uppercase tracking-widest flex items-center gap-1.5">
+                        <BrainCircuit class="w-3 h-3" /> Foco Requerido
                     </h4>
-                    <p class="text-[13px] text-foreground/90 font-bold italic leading-relaxed">"{insightData.nextWindowFocus}"</p>
+                    <p class="text-[10px] text-foreground/80 font-bold italic leading-relaxed">"{insightData.nextWindowFocus}"</p>
                 </div>
             </div>
 
             <!-- Meta / Disclaimer info -->
-            <div class="mt-6 pt-3 border-t border-border/40 flex flex-col md:flex-row items-center justify-between text-[11px] text-muted-foreground/60 gap-3 font-mono tracking-wider">
-                <span class="text-[10px]">As análises de IA não substituem os KPIs matemáticos auditados.</span>
+            <div class="mt-3 pt-2 border-t border-border/20 flex flex-row items-center justify-between text-[9px] text-muted-foreground/40 font-mono tracking-wider">
+                <span>IA ≠ KPIs auditados</span>
                 {#if insightData._meta}
-                    <div class="flex items-center gap-3">
-                        <span class={insightData._meta.origin === 'cache' ? 'text-emerald-500/80' : 'text-primary/70'}>
-                            {insightData._meta.origin === 'cache' ? '⚡ Cache local' : '☁️ Análise gerada agora'}
+                    <div class="flex items-center gap-2">
+                        <span class={insightData._meta.origin === 'cache' ? 'text-emerald-500/50' : 'text-primary/50'}>
+                            {insightData._meta.origin === 'cache' ? '⚡ Cache' : '☁️ Network'}
                         </span>
-                        <span>Tempo: {insightData._meta.responseTimeMs}ms</span>
+                        <span>{insightData._meta.responseTimeMs}ms</span>
                     </div>
                 {/if}
             </div>
