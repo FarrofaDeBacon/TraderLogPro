@@ -16,7 +16,7 @@
         onCancel: () => void;
     }>();
 
-    const data = $state.snapshot(initialData);
+    const data = initialData ? $state.snapshot(initialData) : undefined;
     let formData = $state<Omit<ApiConfig, "id">>({
         provider: data?.provider ?? "custom",
         api_key: data?.api_key ?? "",

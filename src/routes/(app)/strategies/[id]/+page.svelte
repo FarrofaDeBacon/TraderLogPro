@@ -90,7 +90,7 @@
     // Filtered trades based on strategy and selected market
     const strategyTrades = $derived.by(() => {
         let trades = tradesStore.trades.filter(
-            (t) => t.strategy_id === strategyId || t.strategy_id === `strategy:${strategyId}` || t.strategy_id === strategyId.replace("strategy:", "")
+            (t) => t.strategy_id === strategyId || t.strategy_id === `strategy:${strategyId}` || t.strategy_id === (strategyId || "").replace("strategy:", "")
         );
 
         if (selectedMarketId) {

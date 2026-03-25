@@ -171,7 +171,7 @@ pub async fn get_strategy_comprehensive_stats(
     
     // Fetch assets to resolve markets if filter is passed
     let clean_str_id = strategy_id.replace("strategy:", "").replace("⟨", "").replace("⟩", "");
-    let mut trades_query = "SELECT *, type::string(id) as id, type::string(account_id) as account_id, type::string(strategy_id) as strategy_id, type::string(entry_emotional_state_id) as entry_emotional_state_id FROM trade WHERE string::contains(type::string(strategy_id), $clean_id) ORDER BY date ASC".to_string();
+    let mut trades_query = "SELECT * FROM trade WHERE string::contains(type::string(strategy_id), $clean_id) ORDER BY date ASC".to_string();
     
     let mut response = db.0.query(&trades_query)
         .bind(("clean_id", clean_str_id.clone()))
