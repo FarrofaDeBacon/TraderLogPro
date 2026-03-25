@@ -23,6 +23,7 @@
   } from "lucide-svelte";
   import { mount, unmount } from "svelte";
   import PdfExportTemplate from "$lib/components/reports/PdfExportTemplate.svelte";
+  import ReportAICard from "$lib/components/reports/ReportAICard.svelte";
   import { accountsStore } from "$lib/stores/accounts.svelte";
   import { currenciesStore } from "$lib/stores/currencies.svelte";
   import { tradesStore } from "$lib/stores/trades.svelte";
@@ -116,6 +117,23 @@
         getEmotionalState: (id) => workspaceStore.emotionalStates.find(e => e.id === id)
       }
     );
+  });
+
+  // Derived limit AI payload to shrink prompt size
+  const aiMetricsPayload = $derived({
+      periodName: timeFilter,
+      totalPnL: report.summary.totalPnL,
+      tradeCount: report.summary.tradeCount,
+      winRate: report.summary.winRate,
+      profitFactor: report.summary.profitFactor,
+      windowScore: report.scoreAndDiscipline.windowScore,
+      executionScore: report.scoreAndDiscipline.executionScore,
+      behaviorScore: report.scoreAndDiscipline.behaviorScore,
+      streaks: report.scoreAndDiscipline.streaks,
+      majorNegativeImpact: report.behavior.topNegativeImpacts[0]?.title || "Nenhum",
+      majorPositiveImpact: report.behavior.topPositiveImpacts[0]?.title || "Nenhum",
+      reviewsDistribution: report.reflection.distribution,
+      worstEmotion: report.psychologyStats.dominantNegativeEmotion
   });
 
   // UI Helpers
@@ -595,6 +613,15 @@
                 </Card>
 
             </div>
+        </section>
+
+        <!-- BLOCO 6: HELICOPTER VIEW (IA) -->
+        <section class="pt-4 border-t border-border/40 mt-4">
+            <ReportAICard 
+                periodStr={timeFilter === 'custom' ? `Custom (${formatReportDate(dateRanges.start)} a ${formatReportDate(dateRanges.end)})` : timeFilter} 
+                metricsPayload={aiMetricsPayload} 
+                isPrintMode={isExporting} 
+            />
         </section>
     </div>
 </div>

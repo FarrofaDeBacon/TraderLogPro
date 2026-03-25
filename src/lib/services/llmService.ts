@@ -395,6 +395,134 @@ O JSON deve obedecer estritamente esta estrutura:
             throw new Error("A IA falhou em retornar um JSON estrito para o Deep Dive estratégico: " + e.message);
         }
     },
+
+    async generateReportInsight(periodStr: string, metricsPayload: any): Promise<any> {
+        const PROMPT_VERSION = "v1.0";
+        const FEATURE_NAME = "repo_heli";
+        
+        const payloadStr = JSON.stringify(metricsPayload);
+        const metricsHash = simpleHash(payloadStr);
+        const cacheKey = `${FEATURE_NAME}_${periodStr}_${metricsHash}_${PROMPT_VERSION}`;
+        
+        const startTime = performance.now();
+        
+        if (aiCache.has(cacheKey)) {
+            const cached = aiCache.get(cacheKey)!;
+            console.log("[AI CACHE HIT]", cacheKey);
+            return { 
+                ...cached.payload, 
+                _meta: { hash: cacheKey, origin: "cache", responseTimeMs: Math.round(performance.now() - startTime), cachedAt: cached.timestamp } 
+            };
+        }
+        
+        const configId = integrationsStore.psychologyApiId;
+        const config = integrationsStore.apiConfigs.find(c => c.id === configId && c.enabled) 
+                    || integrationsStore.apiConfigs.find(c => (c.provider === 'openai' || c.provider === 'google_gemini') && c.enabled);
+                    
+        if (!config || !config.api_key) {
+            throw new Error("No enabled AI provider found.");
+        }
+        
+        const prompt = `Você é um Sócio-Diretor e Analista-Chefe Institucional avaliando um portfólio de trading.
+Abaixo está o Extrato Executivo Consolidado das operações de uma janela (${periodStr}):
+${payloadStr}
+
+SUA TAREFA:
+Realizar a "Visão de Helicóptero" (Helicopter View). 
+Descarte os ruídos diários e foque no retrato macro (Win Rate vs Payoff vs Comportamento vs Streaks).
+
+REGRA ABSOLUTA DE SAÍDA:
+Você DEVE retornar APENAS um objeto JSON válido.
+O JSON deve obedecer estritamente esta estrutura:
+{
+  "executiveSummary": "Resumo executivo do período (máx 2 frases).",
+  "majorEdge": "Qual foi a vantagem competitiva principal percebida nos números (máx 1 frase).",
+  "majorFragility": "Qual foi a maior fraqueza ou ralo de dinheiro percebido (máx 1 frase).",
+  "nextWindowFocus": "Diretriz tática principal para o próximo período (máx 1 frase)."
+}`;
+
+        let rawResponse = "";
+        
+        if (config.provider === 'google_gemini') {
+            const API_KEY = config.api_key.trim();
+            const modelsToTry = ['gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-2.5-flash', 'gemini-1.5-pro'];
+            let lastGeminiError = "Falha desconhecida";
+
+            for (const model of modelsToTry) {
+                try {
+                    const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
+                    
+                    const reqBody = {
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { temperature: 0.1, responseMimeType: "application/json" }
+                    };
+                    
+                    const response = await fetch(ENDPOINT, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(reqBody)
+                    });
+                    
+                    if (!response.ok) {
+                        const errData = await response.json().catch(()=>({}));
+                        lastGeminiError = errData.error?.message || `HTTP ${response.status}`;
+                        if (response.status === 403 || response.status === 401) {
+                            throw new Error("Chave de API do Gemini inválida ou sem permissão.");
+                        }
+                    } else {
+                        const data = await response.json();
+                        rawResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+                        break;
+                    }
+                } catch (e: any) {
+                    console.warn(`[AI WARN] Report Insight skipped model ${model}:`, e.message);
+                    lastGeminiError = e.message;
+                    if (e.message.includes("inválida")) break;
+                }
+            }
+            if (!rawResponse || rawResponse === "{}") throw new Error(`Google API: ${lastGeminiError}`);
+            
+        } else if (config.provider === 'openai') {
+            const API_KEY = config.api_key.trim();
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    response_format: { type: "json_object" },
+                    messages: [{ role: "user", content: prompt }],
+                    temperature: 0.1
+                })
+            });
+            
+            if (!response.ok) throw new Error("Erro na API OpenAI");
+            const data = await response.json();
+            rawResponse = data.choices?.[0]?.message?.content || "{}";
+        } else {
+            throw new Error("Provider não suportado para análise estruturada.");
+        }
+        
+        try {
+            const parsed = JSON.parse(rawResponse.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim());
+            
+            if (!parsed.executiveSummary || !parsed.majorEdge || !parsed.majorFragility || !parsed.nextWindowFocus) {
+                throw new Error("Payload inválido (Campos ausentes)");
+            }
+            
+            const responseTime = Math.round(performance.now() - startTime);
+            aiCache.set(cacheKey, { timestamp: Date.now(), payload: parsed, responseTime });
+            
+            return {
+                ...parsed,
+                _meta: { hash: cacheKey, origin: "network", responseTimeMs: responseTime, cachedAt: Date.now() }
+            };
+            
+        } catch (e: any) {
+            console.error("Erro no Parse JSON da IA:", rawResponse, e);
+            throw new Error("A IA falhou em retornar um JSON estrito para a Visão Executiva: " + e.message);
+        }
+    },
+
     async analyzePsychologyDashboard(payloadJson: string): Promise<string> {
         const configId = integrationsStore.psychologyApiId;
         const config = integrationsStore.apiConfigs.find(c => c.id === configId && c.enabled);
