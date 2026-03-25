@@ -713,9 +713,9 @@ impl ToDto for JournalEntry {
 pub struct Trade {
     #[serde(deserialize_with = "deserialize_id")]
     pub id: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub date: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub asset_symbol: String,
     #[serde(default, deserialize_with = "deserialize_id_opt")]
     pub asset_type_id: Option<String>,
@@ -727,7 +727,7 @@ pub struct Trade {
     pub result: f64,
     #[serde(default)]
     pub quantity: f64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub direction: String, // "Buy" | "Sell"
     #[serde(default)]
     pub entry_price: f64,
@@ -737,11 +737,11 @@ pub struct Trade {
     pub exit_date: Option<String>,
     #[serde(default)]
     pub fee_total: f64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub notes: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub timeframe: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub volatility: String,
     #[serde(default, deserialize_with = "deserialize_id_opt")]
     pub entry_emotional_state_id: Option<String>,
@@ -753,21 +753,21 @@ pub struct Trade {
     pub exit_emotional_state_id: Option<String>,
     #[serde(default)]
     pub exit_emotional_state_name: Option<String>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub entry_rationale: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub confirmation_signals: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub market_context: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub relevant_news: String,
     #[serde(default)]
     pub followed_plan: bool,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub what_worked: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub mistakes_improvements: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub lessons_learned: String,
     #[serde(default)]
     pub images: Vec<String>,
