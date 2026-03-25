@@ -45,9 +45,12 @@
 
 <div class="mt-4 pt-4 border-t border-border/50">
     <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-            <BrainCircuit class="w-4 h-4 text-emerald-500" />
-            <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Leitura Avançada (IA)</span>
+        <div class="flex flex-col">
+            <div class="flex items-center gap-2">
+                <BrainCircuit class="w-4 h-4 text-emerald-500" />
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Leitura Avançada (IA)</span>
+            </div>
+            <span class="text-[9px] text-muted-foreground/60 mt-1 max-w-sm">Análise 100% interpretativa. Esta visão não anula ou substitui os diagnósticos matemáticos e de risco listados acima.</span>
         </div>
         
         {#if !insight && !loading}

@@ -157,6 +157,7 @@
     );
 
     const aiMetricsPayload = $derived({
+        strategy_name: strategy?.name || "Desconhecida",
         status: stats.diagnostic.status,
         current_risk: stats.diagnostic.current_risk,
         stability: stats.diagnostic.stability,
