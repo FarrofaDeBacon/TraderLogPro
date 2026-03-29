@@ -180,40 +180,45 @@ function getMetricLabelKey(metric: string): string {
     return keys[canonical] || `risk.cockpit.engine.${canonical}`;
 }
 
-function evaluateCondition(condition: RiskCondition, metrics: GrowthMetrics): GrowthConditionStatus {
-    const canonical = getCanonicalMetric(condition.metric);
-    const operator = condition.operator;
-    const target = condition.value;
+function evaluateCondition(condition: any, metrics: GrowthMetrics): GrowthConditionStatus {
+    if (!condition) return { metric: 'unknown', operator: '?', target: 0, current: 0, isMet: false, label_key: 'risk.cockpit.unknown' };
+
+    const metricKey = condition.metric || 'unknown';
+    const canonical = getCanonicalMetric(metricKey);
+    const operator = condition.operator || '>=';
+    const target = Number(condition.value) || 0;
     
+    // Mapeamento Invencível de métricas (cruzando canonical snake_case -> metrics camelCase)
     let current = 0;
-    switch (canonical) {
-        case 'net_pnl': current = metrics.netPnL; break;
-        case 'trade_count': current = metrics.tradeCount; break;
-        case 'win_rate': current = metrics.winRate; break;
-        case 'positive_sessions': current = metrics.positiveSessions; break;
-        case 'consistency_days': current = metrics.consistencyDays; break;
-        case 'max_drawdown': current = metrics.drawdownAmount; break;
-        case 'max_daily_loss': current = metrics.maxDailyLoss; break;
-        case 'loss_streak': current = metrics.consecutiveLossDays; break;
-        default: current = (metrics as any)[canonical] || 0;
+    if (canonical === 'trade_count') current = metrics.tradeCount ?? 0;
+    else if (canonical === 'win_rate') current = metrics.winRate ?? 0;
+    else if (canonical === 'profit_factor') current = metrics.profitFactor ?? 0;
+    else if (canonical === 'net_pnl') current = metrics.netPnL ?? 0;
+    else if (canonical === 'max_drawdown') current = metrics.drawdownAmount ?? 0;
+    else if (canonical === 'consistency_days') current = metrics.consistencyDays ?? 0;
+    else if (canonical === 'loss_streak') current = metrics.consecutiveLossDays ?? 0;
+    else if (canonical === 'positive_sessions') current = metrics.positiveSessions ?? 0;
+    else if (canonical === 'max_daily_loss') current = metrics.maxDailyLoss ?? 0;
+    else {
+        // Fallback: Tenta acessar diretamente pela chave
+        current = (metrics as any)[metricKey] ?? (metrics as any)[canonical] ?? 0;
     }
 
     let isMet = false;
-    const op = operator.trim();
-    
-    if (target === 0 && (canonical === 'loss_streak' || canonical === 'max_daily_loss')) {
-        isMet = false;
-    } else {
-        if (op === '>=') isMet = current >= target;
-        else if (op === '<=') isMet = current <= target;
-        else if (op === '>') isMet = current > target;
-        else if (op === '<') isMet = current < target;
-        else if (op === '==' || op === '=') isMet = current === target;
+    try {
+        if (operator === '>=' || operator === '>') isMet = current >= target;
+        else if (operator === '<=' || operator === '<') isMet = current <= target;
+        else if (operator === '==' || operator === '=') isMet = Math.abs(current - target) < 0.01;
+    } catch(e) {
+        console.error("[GrowthEngine] Error evaluating condition:", e);
     }
 
     return {
-        metric: condition.metric,
-        operator, target, current, isMet,
+        metric: metricKey,
+        operator, 
+        target, 
+        current, 
+        isMet,
         label_key: getMetricLabelKey(canonical)
     };
 }
@@ -227,7 +232,14 @@ export function evaluateGrowthPhase(
 ): GrowthEvaluationResult {
     const metrics = calculateGrowthMetrics(trades, startingCapital);
 
-    const advanceConditions = (currentPhase.conditionsToAdvance || []).map(c => evaluateCondition(c, metrics));
+    const conditions = currentPhase.conditionsToAdvance || [];
+    console.log(`[GrowthEngine] Evaluating phase "${currentPhase.name}" with ${conditions.length} conditions.`);
+    
+    const advanceConditions = conditions.map(c => {
+        const res = evaluateCondition(c, metrics);
+        console.log(`  - Condition "${c.metric}": isMet=${res.isMet}, current=${res.current}, target=${res.target}`);
+        return res;
+    });
     const regressionConditions = (currentPhase.conditionsToDemote || []).map(c => evaluateCondition(c, metrics));
 
     const isLastPhase = phaseIndex >= totalPhases - 1;
@@ -251,7 +263,12 @@ export function evaluateGrowthPhase(
         currentPhaseId: currentPhase.id,
         phaseIndex,
         totalPhases,
-        phaseStatus, canPromote, shouldRegress, regressionReasonKey,
-        advanceConditions, regressionConditions, metrics
+        phaseStatus,
+        canPromote,
+        shouldRegress,
+        regressionReasonKey,
+        advanceConditions,
+        regressionConditions,
+        metrics
     };
 }

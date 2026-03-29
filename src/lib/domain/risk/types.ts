@@ -65,6 +65,8 @@ export interface RiskRuleDefinition {
 export interface GrowthPhase {
     id: string;
     name: string;
+    index?: number; // Índice 0-based
+    level?: number; // Nível para UI (geralmente index + 1)
     
     // Limites da Fase
     maxContracts: number;

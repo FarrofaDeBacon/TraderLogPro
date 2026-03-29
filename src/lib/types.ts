@@ -526,8 +526,8 @@ export type RiskContextResolution = {
     currentPhaseDrawdown: number;
     currentPhaseLotLimit: number;
     assetIds: string[];
-    advanceConditions?: RiskCondition[];
-    demoteConditions?: RiskCondition[];
+    conditionsToAdvance?: RiskCondition[];
+    conditionsToDemote?: RiskCondition[];
     phaseStartedAt?: string;
     resolvedAt: string;
 };
@@ -538,7 +538,7 @@ export type ResolvedGrowthContext = {
     riskProfile: RiskProfile;
     growthPlan?: GrowthPlan;
     growthSourceType: "global" | "assetProfile";
-    growthPhase: GrowthPhase;
+    growthPhase: any;
     resolution: RiskContextResolution;
 };
 

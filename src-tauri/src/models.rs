@@ -562,17 +562,24 @@ impl ToDto for Asset {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AssetRiskProfile {
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        deserialize_with = "crate::models::deserialize_id_opt",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub id: Option<String>,
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub name: String,
-    pub asset_id: Thing,
+    // Note que asset_id era um Thing, mas para ser robusto na leitura bruta da engine precisamos garantir q ele n quebre o serde na conversão de SurrealValue
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
+    pub asset_id: String,
     #[serde(default)]
     pub default_stop_points: f64,
     #[serde(default)]
     pub min_contracts: i32,
     #[serde(default)]
     pub max_contracts: i32,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
 }
 
@@ -582,7 +589,7 @@ impl ToDto for AssetRiskProfile {
         dto::AssetRiskProfileDto {
             id: self.id.clone(),
             name: self.name.clone(),
-            asset_id: Some(self.asset_id.to_string()),
+            asset_id: Some(self.asset_id.clone()),
             default_stop_points: self.default_stop_points,
             min_contracts: self.min_contracts,
             max_contracts: self.max_contracts,

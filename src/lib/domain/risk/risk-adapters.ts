@@ -84,7 +84,7 @@ export function adaptTradeToDomain(trade: Trade): TradeRiskSnapshot {
     return {
         tradeId: trade.id,
         date: trade.exit_date || trade.date,
-        pnl: Number(trade.result) || 0,
+        pnl: trade.processed_result_brl !== undefined ? trade.processed_result_brl : (Number(trade.result) || 0),
         pnlPoints: isNaN(pnlPoints) ? 0 : pnlPoints,
         resultR: isNaN(resultR) || !isFinite(resultR) ? (isWin ? 1 : isLoss ? -1 : 0) : resultR,
         isWin,
@@ -102,24 +102,33 @@ export function adaptTradeToDomain(trade: Trade): TradeRiskSnapshot {
 export function adaptGrowthPhaseToDomain(phase: AppGrowthPhase): DomainGrowthPhase | undefined {
     if (!phase) return undefined;
 
+    const extractMetric = (conditions: any[], metric: string) => 
+        conditions?.find(c => c.metric === metric || (metric === 'profit_target' && c.metric === 'target_financial'))?.value;
+
+    const conditionsToAdvance = phase.conditions_to_advance || [];
+    const conditionsToDemote = phase.conditions_to_demote || [];
+
     return {
         id: phase.id || phase.name,
         name: phase.name,
+        index: (phase as any).index,
+        level: phase.level,
         maxContracts: phase.lot_size,
-        minTrades: 0, // Campos legados, mantidos como 0
+        minTrades: 0,
         minWinRate: 0,
         minProfitFactor: 0,
         minExpectancyR: 0,
-        minNetPnL: 0,
+        minNetPnL: Number(extractMetric(conditionsToAdvance, 'profit_target')) || 0,
         maxDrawdownPercent: 100,
-        allowPromotion: (phase.conditions_to_advance || []).length > 0,
-        allowRegression: (phase.conditions_to_demote || []).length > 0,
-        conditionsToAdvance: (phase.conditions_to_advance || []).map(c => ({
+        maxDrawdownAmount: Number(extractMetric(conditionsToDemote, 'max_drawdown')) || undefined,
+        allowPromotion: conditionsToAdvance.length > 0,
+        allowRegression: conditionsToDemote.length > 0,
+        conditionsToAdvance: conditionsToAdvance.map(c => ({
             metric: c.metric,
             operator: c.operator,
             value: Number(c.value)
         })),
-        conditionsToDemote: (phase.conditions_to_demote || []).map(c => ({
+        conditionsToDemote: conditionsToDemote.map(c => ({
             metric: c.metric,
             operator: c.operator,
             value: Number(c.value)

@@ -1,10 +1,12 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { assetsStore } from "$lib/stores/assets.svelte";
   import { accountsStore } from "$lib/stores/accounts.svelte";
   import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
   import { userProfileStore } from "$lib/stores/user-profile.svelte";
   import { riskStore } from "$lib/stores/riskStore.svelte";
   import { tradesStore } from "$lib/stores/trades.svelte";
+  import { appStore } from "$lib/stores/app.svelte";
   import {
     SystemCard,
     SystemMetric,
@@ -30,12 +32,17 @@
       Info,
       Globe,
       TrendingDown,
-      Timer
+      Timer,
+      ArrowUpCircle,
+      ArrowDownCircle
   } from "lucide-svelte";
+  import { adaptGrowthPhaseToDomain } from "$lib/domain/risk/risk-adapters";
   import * as Select from "$lib/components/ui/select";
   import { Button } from "$lib/components/ui/button";
   import { Badge } from "$lib/components/ui/badge";
   import { cn } from "$lib/utils";
+  import type { GrowthPhase as AppGrowthPhase } from "$lib/types";
+  import type { GrowthPhase as DomainGrowthPhase } from "$lib/domain/risk/types";
   
   // Derived states
   let activeProfile = $derived(riskSettingsStore.activeProfile);
@@ -46,6 +53,7 @@
   let growthContext = $derived(riskStore.resolvedGrowthContext);
 
   let dailyDrawdown = $derived(cockpit?.dailyRiskStatus.currentDailyDrawdown || 0);
+  let netPnL = $derived(growthEval?.metrics?.netPnL || 0);
   let isBlocked = $derived(!validation?.allowed || cockpit?.dailyRiskStatus.isLocked || cockpit?.dailyRiskStatus.dailyLossHit);
   let hasWarnings = $derived(validation?.warnings && validation.warnings.length > 0);
   
@@ -61,6 +69,15 @@
        // Tenta encontrar o WIN ou o primeiro da lista
        const defaultAsset = assetsStore.assets.find(a => a.symbol.includes('WIN')) || assetsStore.assets[0];
        riskStore.activeAssetId = defaultAsset.id;
+     }
+  });
+
+  // Defesa de Integração HMR e Landing: Garantir dados no modulo isolado
+  onMount(() => {
+     if (tradesStore.trades.length === 0) {
+         console.warn("[Cockpit] Trades vazios na montagem local, disparando reload defensivo!");
+         tradesStore.loadTrades();
+         if (!appStore.hasLoadedData) appStore.loadData();
      }
   });
 
@@ -80,12 +97,13 @@
       console.log("Meta Fase:", res.currentPhaseTarget);
       console.log("Drawdown:", res.currentPhaseDrawdown);
       console.log("Lotes:", res.currentPhaseLotLimit);
+      console.log("Condições Avanço:", res.conditionsToAdvance);
       console.log("Total Fases:", res.totalPhases);
       console.groupEnd();
     }
   });
 
-  let activePhase = $derived.by(() => {
+  let activePhase = $derived.by((): DomainGrowthPhase | null => {
     if (growthContext?.growthPhase) return growthContext.growthPhase;
     
     // Fallback defensivo para o plano global do perfil
@@ -96,13 +114,29 @@
     if (!plan || !plan.phases || plan.phases.length === 0) return null;
     
     const phaseIndex = plan.current_phase_index ?? 0;
-    return plan.phases[phaseIndex] || plan.phases[0] || null;
+    const dbPhase = (plan.phases[phaseIndex] || plan.phases[0]) as any;
+    
+    if (!dbPhase && nextPhase && growthContext?.resolution) {
+        const resolution = growthContext.resolution;
+        return {
+            id: "next-phase-fallback",
+            name: (nextPhase as any).name || "Next Phase",
+            level: (nextPhase as any).level || ((resolution.currentPhaseIndex || 0) + 2),
+            lot_size: (nextPhase as any).lot_size || 0,
+            conditions_to_advance: (nextPhase as any).conditions_to_advance || [],
+            conditions_to_demote: (nextPhase as any).conditions_to_demote || []
+        } as any;
+    }
+    return dbPhase ? adaptGrowthPhaseToDomain(dbPhase) || null : null;
   });
-  let nextPhase = $derived(riskStore.nextGrowthPhase);
+  
+  let nextPhase = $derived.by((): DomainGrowthPhase | null => {
+     return riskStore.nextGrowthPhase || null;
+  });
   let growthEval = $derived(riskStore.riskCockpitState?.growthEvaluation || riskStore.globalGrowthEvaluation);
   
   let profitGoal = $derived(
-      activePhase?.conditions_to_advance?.find(c => c.metric === 'profit_target' || c.metric === 'target_financial')?.value || 0
+      activePhase?.conditionsToAdvance?.find((c: any) => c.metric === 'profit_target' || c.metric === 'target_financial')?.value || 0
   );
   
   let currentLimit = $derived(cockpit?.dailyRiskStatus.effectiveMaxDailyLoss || activeProfile?.max_daily_loss || 0);
@@ -395,7 +429,7 @@
                     <Layers class={cn("w-4 h-4", growthEval?.phaseStatus === 'maintenance' ? "text-indigo-400" : "text-emerald-400")} />
                     <span class={cn("text-[10px] font-black uppercase tracking-[0.2em]", growthEval?.phaseStatus === 'maintenance' ? "text-indigo-400/80" : "text-emerald-400/80")}>
                       {$t('risk.cockpit.stats.current_phase')}
-                      <span class="opacity-30 ml-2">[{growthEval?.phaseIndex ?? '?'}/{growthEval?.totalPhases ?? '?'}]</span>
+                      <span class="opacity-30 ml-2">[{activePhase?.level || 1} / {(riskStore.resolvedGrowthContext?.resolution.totalPhases || 1)}]</span>
                     </span>
                   </div>
                   <h3 class="text-2xl font-black text-white tracking-tighter uppercase leading-none">
@@ -431,7 +465,7 @@
               <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-1">
                     <p class="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest">Lotes Permitidos</p>
-                    <p class="text-lg font-black font-mono text-white">{activePhase?.lot_size || '0'} <span class="text-[10px] opacity-40">CONTRATOS</span></p>
+                    <p class="text-lg font-black font-mono text-white">{activePhase?.maxContracts || '0'} <span class="text-[10px] opacity-40">CONTRATOS</span></p>
                 </div>
                 <div class="space-y-1 text-right">
                     <p class="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest">
@@ -458,9 +492,17 @@
                   {/snippet}
               </SystemHeader>
 
+              <div class="p-2 mb-2 bg-rose-500/20 text-rose-300 font-mono text-[8px] rounded border border-rose-500/30">
+                [SYSTEM METRICS] 
+                total_trades={tradesStore.trades.length} | 
+                cockpit_cnt={growthEval?.metrics?.tradeCount ?? 'N/A'} | 
+                net={growthEval?.metrics?.netPnL ?? 'N/A'} |
+                dateFilter={(riskStore.resolvedGrowthContext?.resolution?.phaseStartedAt) || 'NONE'}
+              </div>
+
               <div class="grid gap-2">
-                {#if growthEval}
-                    {#each growthEval.advanceConditions as cond}
+                {#if growthEval?.advanceConditions}
+                    {#each growthEval.advanceConditions as cond, i (i)}
                         <div class="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5 transition-all hover:bg-white/10 group">
                             <div class="flex items-center gap-3">
                                 <div class={cn(
@@ -488,14 +530,14 @@
                                         "text-[10px] font-mono font-bold",
                                         cond.isMet ? "text-emerald-400" : "text-foreground/60"
                                     )}>
-                                        {cond.metric.includes('win_rate') ? cond.current.toFixed(1) + '%' : 
-                                         cond.metric.includes('profit') || cond.metric.includes('target') ? formatValue(cond.current) : 
-                                         cond.current}
+                                        {cond.metric.includes('win_rate') ? (cond.current || 0).toFixed(1) + '%' : 
+                                         cond.metric.includes('profit') || cond.metric.includes('target') ? formatValue(cond.current || 0) : 
+                                         (cond.current || 0)}
                                     </span>
                                     <span class="text-[8px] font-black text-muted-foreground/30 uppercase tracking-tighter">
-                                        META: {cond.metric.includes('win_rate') ? cond.target.toFixed(1) + '%' : 
-                                               cond.metric.includes('profit') || cond.metric.includes('target') ? formatValue(cond.target) : 
-                                               cond.target}
+                                        META: {cond.metric.includes('win_rate') ? (cond.target || 0).toFixed(1) + '%' : 
+                                               cond.metric.includes('profit') || cond.metric.includes('target') ? formatValue(cond.target || 0) : 
+                                               (cond.target || 0)}
                                     </span>
                                 </div>
                                 <div class={cn("w-1 h-8 rounded-full", cond.isMet ? "bg-emerald-500/50" : "bg-white/10")}></div>
@@ -546,12 +588,12 @@
                           <div class="flex gap-4">
                               <div class="text-right">
                                   <span class="text-[8px] font-bold text-muted-foreground/30 uppercase block">Lotes</span>
-                                  <span class="text-xs font-black font-mono text-indigo-200">{nextPhase.lot_size}</span>
+                                  <span class="text-xs font-black font-mono text-indigo-200">{nextPhase.maxContracts}</span>
                               </div>
                               <div class="text-right">
                                   <span class="text-[8px] font-bold text-muted-foreground/30 uppercase block">Meta</span>
                                   <span class="text-xs font-black font-mono text-indigo-200">
-                                      {formatValue(nextPhase.conditions_to_advance?.find(c => c.metric === 'profit_target' || c.metric === 'target_financial')?.value || 0)}
+                                      {formatValue(nextPhase.conditionsToAdvance?.find((c: any) => c.metric === 'profit_target' || c.metric === 'target_financial')?.value || 0)}
                                   </span>
                               </div>
                           </div>

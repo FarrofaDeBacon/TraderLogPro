@@ -10,6 +10,7 @@ import type {
 import { calculateDailyRiskStatus } from './risk-engine';
 import { evaluateGrowthPhase } from './growth-engine';
 import { evaluateDiscipline } from './discipline-engine';
+import { parseSafeDate } from '../../utils';
 
 /**
  * Representa o estado agregado de todo o Cockpit de Risco.
@@ -21,6 +22,7 @@ export interface RiskCockpitState {
     dailyRiskStatus: DailyRiskStatus;
     disciplineEvaluation: DisciplineEvaluationResult;
     growthEvaluation?: GrowthEvaluationResult;
+    resolution?: any; // Contexto de resolução original
 }
 
 /**
@@ -41,7 +43,8 @@ export function buildRiskCockpitState(
     startingCapital?: number,
     phaseIndex: number = 0,
     totalPhases: number = 1,
-    phaseStartedAt?: string
+    phaseStartedAt?: string,
+    resolution?: any
 ): RiskCockpitState {
     // 1. Motor Financeiro Diário (Usa TODOS os trades pra filtrar por HOJE)
     const dailyRiskStatus = calculateDailyRiskStatus(
@@ -59,17 +62,29 @@ export function buildRiskCockpitState(
     // 3. Motor de Plano de Crescimento (Usa apenas trades da Fase)
     let growthEvaluation: GrowthEvaluationResult | undefined;
     
-    if (growthPhase && startingCapital !== undefined) {
+    if (growthPhase) {
         let phaseTrades = allTrades;
         if (phaseStartedAt) {
-            const phaseStartTime = new Date(phaseStartedAt).getTime();
-            phaseTrades = allTrades.filter(t => new Date(t.date).getTime() >= phaseStartTime);
+            // Normaliza a data de início da fase para meia-noite (início do dia) para evitar ocultar trades do mesmo dia
+            const phaseDateObj = parseSafeDate(phaseStartedAt);
+            const phaseStartDateStr = phaseDateObj.toISOString().split('T')[0];
+            const phaseStartTime = new Date(`${phaseStartDateStr}T00:00:00Z`).getTime();
+            
+            phaseTrades = allTrades.filter(t => {
+                const tradeDateObj = parseSafeDate(t.date);
+                const tradeDateStr = tradeDateObj.toISOString().split('T')[0];
+                return new Date(`${tradeDateStr}T00:00:00Z`).getTime() >= phaseStartTime;
+            });
+            console.log(`[Cockpit Engine] Filter PhaseStartedAt (${phaseStartedAt}): Retained ${phaseTrades.length} of ${allTrades.length} trades.`);
+        } else {
+            console.log(`[Cockpit Engine] Sem phaseStartedAt. Usando os ${phaseTrades.length} trades.`);
         }
 
+        console.log(`[Cockpit Engine] Avaliando GrowthPhase com capital base: ${startingCapital ?? "undefined (fallback 0)"} e trades: ${phaseTrades.length}`);
         growthEvaluation = evaluateGrowthPhase(
             growthPhase, 
             phaseTrades, 
-            startingCapital,
+            startingCapital ?? 0,
             phaseIndex,
             totalPhases
         );
@@ -82,6 +97,7 @@ export function buildRiskCockpitState(
         growthPhase,
         dailyRiskStatus,
         disciplineEvaluation,
-        growthEvaluation
+        growthEvaluation,
+        resolution
     };
 }

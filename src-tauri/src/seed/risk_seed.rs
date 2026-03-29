@@ -18,7 +18,7 @@ pub async fn seed_risk_profiles(
     let arp_win = crate::models::AssetRiskProfile {
         id: Some("asset_risk_profile:win_book4k".to_string()),
         name: "WIN (Book 4k)".to_string(),
-        asset_id: surrealdb::sql::Thing::from(("asset".to_string(), "win".to_string())),
+        asset_id: surrealdb::sql::Thing::from(("asset".to_string(), "win".to_string())).to_string(),
         default_stop_points: 150.0,
         min_contracts: 1,
         max_contracts: 30,
@@ -32,7 +32,7 @@ pub async fn seed_risk_profiles(
     let arp_wdo = crate::models::AssetRiskProfile {
         id: Some("asset_risk_profile:wdo_book4k".to_string()),
         name: "WDO (Book 4k)".to_string(),
-        asset_id: surrealdb::sql::Thing::from(("asset".to_string(), "wdo".to_string())),
+        asset_id: surrealdb::sql::Thing::from(("asset".to_string(), "wdo".to_string())).to_string(),
         default_stop_points: 10.0,
         min_contracts: 1,
         max_contracts: 30,

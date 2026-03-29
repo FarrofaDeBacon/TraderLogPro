@@ -13,7 +13,10 @@ import type {
  */
 function extractMetricValue(conditions: RiskCondition[] | undefined, metric: string): number {
     if (!conditions) return 0;
-    const cond = conditions.find(c => c.metric === metric);
+    const cond = conditions.find(c => 
+        c.metric === metric || 
+        (metric === 'profit_target' && c.metric === 'target_financial')
+    );
     return cond ? cond.value : 0;
 }
 
@@ -82,8 +85,8 @@ export function resolveEffectiveRiskContext(
                 currentPhaseDrawdown: phaseDrawdown,
                 currentPhaseLotLimit: phaseLotLimit,
                 assetIds: activeScope.asset_ids,
-                advanceConditions: phase?.conditions_to_advance,
-                demoteConditions: phase?.conditions_to_demote,
+                conditionsToAdvance: phase?.conditions_to_advance,
+                conditionsToDemote: phase?.conditions_to_demote,
                 phaseStartedAt: activeScope.currentPhaseStartedAt,
                 resolvedAt: now
             };
@@ -111,8 +114,8 @@ export function resolveEffectiveRiskContext(
             currentPhaseDrawdown: extractMetricValue(phase.conditions_to_advance, "max_drawdown") || extractMetricValue(phase.conditions_to_demote, "max_drawdown"),
             currentPhaseLotLimit: phase.lot_size,
             assetIds: [], 
-            advanceConditions: phase.conditions_to_advance,
-            demoteConditions: phase.conditions_to_demote,
+            conditionsToAdvance: phase.conditions_to_advance,
+            conditionsToDemote: phase.conditions_to_demote,
             phaseStartedAt: globalGrowthPlan.currentPhaseStartedAt,
             resolvedAt: now
         };
