@@ -1,4 +1,9 @@
 {
+    "Settings": {
+        "Nav": {
+            "Growth-Plans": "Planos de Crescimento"
+        }
+    },
     "finance": {
         "charts": {
             "evolution": "Evolução",
@@ -509,11 +514,13 @@
                     "points": "Pontos"
                 },
                 "save": "Salvar",
-                "unitLabel": "Rótulo da Unidade"
+                "unitLabel": "Rótulo da Unidade",
+                "unitLabelPlaceholder": "Ex: Pts, Contratos, etc."
             },
             "labels": {
                 "brokerageProfile": "Perfil de Corretagem",
                 "fiscalProfile": "Perfil Fiscal",
+                "none": "Nenhum",
                 "noneDefault": "Nenhum / Padrão",
                 "noneExempt": "Nenhum / Isento"
             },
@@ -926,7 +933,10 @@
                 "risk": "Gerencie limites de risco",
                 "strategies": "Gerencie suas estratégias",
                 "tags": "Gerencie tags customizadas",
-                "timeframes": "Gerencie tempos gráficos"
+                "timeframes": "Gerencie tempos gráficos",
+                "asset-profiles": "Configure limites e regras específicas para cada ativo.",
+                "risk-management": "Configure seu plano de risco global e limites de perda.",
+                "growth-plans": "Crie planos com progressão e regressão automática de fases."
             },
             "emotionalStates": "Estados Emocionais",
             "fees": "Taxas",
@@ -942,7 +952,7 @@
             "markets": "Mercados Base",
             "modalities": "Modalidades",
             "profile": "Meu Perfil",
-            "risk": "Risco",
+            "risk": "Gestão de Risco",
             "sections": {
                 "analysis": "Análise",
                 "fiscal": "Fiscal",
@@ -955,8 +965,11 @@
             "strategies": "Estratégias",
             "tags": "Tags",
             "timeframes": "Timeframes",
-            "assetProfiles": "Perfis de Ativo",
-            "riskManagement": "Gerenciamentos de Risco",
+            "asset-profiles": "Limites por Ativo",
+            "assetProfiles": "Limites por Ativo",
+            "risk-management": "Gestão de Risco",
+            "riskManagement": "Gestão de Risco",
+            "growth-plans": "Planos de Crescimento",
             "growthPlans": "Planos de Crescimento"
         },
         "profile": {
@@ -990,6 +1003,11 @@
                 "trial": "Licença Trial",
                 "trialBadge": "Período de Testes",
                 "viewDetails": "Ver Detalhes"
+            },
+            "nav": {
+                "descriptions": {
+                    "growth-plans": "Crie planos com progressão e regressão automática de fases."
+                }
             },
             "personalInfo": {
                 "avatar": "Foto de Perfil",
@@ -1042,6 +1060,14 @@
             "title": "Meu Perfil"
         },
         "risk": {
+            "hierarchy": {
+                "title": "Hierarquia de Execução (O que manda?)",
+                "subtitle": "Entenda como os limites são priorizados no sistema",
+                "global": "1. Plano Global (Base): Limites gerais da conta",
+                "asset": "2. Limites por Ativo: Sobrescrevem o global para o ativo específico",
+                "growth": "3. Plano de Crescimento: Gerencia a mão (lotes) automaticamente",
+                "rules": "4. Regras do Plano: Prioridade máxima (Ex: Trava Prop Firm)"
+            },
             "accountTypes": {
                 "All": "Todas as Contas",
                 "Demo": "Conta Demo",
@@ -1154,14 +1180,14 @@
                         "combined": "Combinações de Ativos"
                     },
                     "helpers": {
-                        "max_daily_loss": "Bloqueia novas entradas se o limite for atingido.",
-                        "profit_target": "Protege a meta financeira bloqueando novas entradas.",
-                        "sum_contracts": "Máximo de contratos abertos simultaneamente.",
-                        "day_trade_only": "Impede que posições fiquem abertas pro dia seguinte.",
-                        "close_before_close": "Força encerramento antes de tocar o sinal.",
-                        "consistency": "Impede aumento abrupto de lotes após o stop.",
-                        "rule_50_percent": "Protege 50% do lucro máximo flutuante.",
-                        "max_trades_per_day": "Limita a quantidade total de trades no dia."
+                        "max_daily_loss": "Bloqueia novas entradas se o limite for atingido. Prioritário sobre o limite global.",
+                        "profit_target": "Protege sua meta financeira. Ao atingir, o sistema bloqueia novas ordens para preservar o ganho.",
+                        "sum_contracts": "Limite máximo de contratos abertos (posição total) somando os ativos selecionados.",
+                        "day_trade_only": "Garante que nenhuma posição fique aberta para o dia seguinte (Swing).",
+                        "close_before_close": "Encerra todas as ordens minutos antes do fechamento do mercado.",
+                        "consistency": "Regra típica de Mesas: o lucro de um único dia não pode exceder 30-50% do lucro total do teste.",
+                        "rule_50_percent": "Trava de proteção que impede devolver 50% do lucro máximo atingido no dia (Trailing Stop Diário).",
+                        "max_trades_per_day": "Evita o overtrading limitando a quantidade de execuções durante o pregão."
                     }
                 }
             },

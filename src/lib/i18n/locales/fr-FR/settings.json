@@ -509,7 +509,8 @@
                     "points": "Points"
                 },
                 "save": "Enregistrer",
-                "unitLabel": "Étiquette d'Unité"
+                "unitLabel": "Étiquette d'Unité",
+                "unitLabelPlaceholder": "Ex : Pts, Contrats, etc."
             },
             "labels": {
                 "brokerageProfile": "Profil de Courtier",
@@ -926,7 +927,10 @@
                 "risk": "Gérez les limites de risque",
                 "strategies": "Gérez vos stratégies",
                 "tags": "Gérez les étiquettes",
-                "timeframes": "Gérez les unités de temps"
+                "timeframes": "Gérez les unités de temps",
+                "asset-profiles": "Configurez des limites et des règles spécifiques pour chaque actif.",
+                "risk-management": "Configurez votre plan de risque global et vos limites de perte.",
+                "growth-plans": "Créez des plans avec progression et régression automatique des phases."
             },
             "emotionalStates": "États Émotionnels",
             "fees": "Frais",
@@ -955,8 +959,11 @@
             "strategies": "Stratégies",
             "tags": "Tags",
             "timeframes": "Unités de Temps",
+            "asset-profiles": "Profils d'Actifs",
             "assetProfiles": "Profils d'Actifs",
+            "risk-management": "Gestion des Risques",
             "riskManagement": "Gestion des Risques",
+            "growth-plans": "Plans de Croissance",
             "growthPlans": "Plans de Croissance"
         },
         "profile": {

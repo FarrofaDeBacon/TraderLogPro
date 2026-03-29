@@ -40,6 +40,22 @@ export interface RiskProfileConfig {
     emotionalPenaltyThreshold?: number;
     
     growthPlanEnabled?: boolean;
+    useAdvancedRules?: boolean;
+    riskRules?: RiskRuleDefinition[];
+}
+
+/**
+ * Definição de uma Regra de Risco no domínio.
+ */
+export interface RiskRuleDefinition {
+    id: string;
+    name: string;
+    enabled: boolean;
+    scope: 'global' | 'asset' | 'combined';
+    targetType: string;
+    operator: string;
+    value: number | boolean;
+    valueSecondary?: number;
 }
 
 /**
@@ -59,13 +75,28 @@ export interface GrowthPhase {
     minProfitFactor: number;
     minExpectancyR: number;
     minNetPnL: number;
+    minPositiveSessions?: number;
+    minConsistencyDays?: number; // "Dias O.K" ou Consistência
     
     // Critérios de Regressão
     maxDrawdownPercent: number;
+    maxDrawdownAmount?: number;
+    maxDailyLoss?: number;
+    maxConsecutiveLossDays?: number;
     
     // Permissões
     allowPromotion: boolean;
     allowRegression: boolean;
+    
+    // Condições Genéricas (Sincronizado com Models.rs)
+    conditionsToAdvance: RiskCondition[];
+    conditionsToDemote: RiskCondition[];
+}
+
+export interface RiskCondition {
+    metric: string;
+    operator: string;
+    value: number;
 }
 
 /**
@@ -106,9 +137,18 @@ export interface DailyRiskStatus {
     dailyTargetHit: boolean;
     dailyLossHit: boolean;
     
+    // Limites Efetivos (Resolvidos das Regras ou Base)
+    effectiveMaxDailyLoss: number;
+    effectiveDailyTarget: number;
+    
     // Distâncias para os Limites
     remainingLossAllowance: number;
     remainingTargetToHit: number;
+    
+    // Métricas persistentes de prejuízo (não recuperam com lucro)
+    dailyGrossLoss: number;
+    maxDailyDrawdown: number;
+    currentDailyDrawdown: number;
     
     // Travamentos de Segurança
     isLocked: boolean;
@@ -124,19 +164,44 @@ export interface GrowthMetrics {
     profitFactor: number;
     expectancyR: number;
     drawdownPercent: number;
+    drawdownAmount: number;
+    currentDrawdownAmount: number;
+    currentDrawdownPercent: number;
+    maxDailyLoss: number;
     netPnL: number;
+    positiveSessions: number;
+    consistencyDays: number;
+    consecutiveLossDays: number;
 }
 
 /**
- * Resultado da avaliação de uma Fase de Crescimento.
+ * Resultado da avaliação de uma condição de crescimento.
  */
+export interface GrowthConditionStatus {
+    metric: string;
+    operator: string;
+    target: number;
+    current: number;
+    isMet: boolean;
+    label_key: string;
+    description_key?: string;
+}
+
+export type GrowthPhaseStatus = 'active' | 'maintenance' | 'max_reached' | 'protected';
+
 export interface GrowthEvaluationResult {
     currentPhaseId: string;
+    phaseIndex: number;
+    totalPhases: number;
+    phaseStatus: GrowthPhaseStatus;
     canPromote: boolean;
     shouldRegress: boolean;
-    reasons: string[];
+    regressionReasonKey?: string;
+    advanceConditions: GrowthConditionStatus[];
+    regressionConditions: GrowthConditionStatus[];
     metrics: GrowthMetrics;
 }
+
 
 /**
  * Resultado da avaliação de Disciplina e Controle Emocional.

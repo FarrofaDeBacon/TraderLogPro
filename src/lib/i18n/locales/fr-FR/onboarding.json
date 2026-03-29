@@ -1,70 +1,82 @@
 {
-    "auth": {
-        "login": {
-            "createAccount": "Créer un compte",
-            "description": "Entrez vos identifiants pour accéder à TraderLog Pro.",
-            "email": "Email",
-            "error": {
-                "fillAll": "Veuillez remplir tous les champs.",
-                "invalidCredentials": "Identifiants invalides."
-            },
-            "forgotPassword": "Mot de passe oublié ?",
-            "loading": "Connexion...",
-            "noAccount": "Pas encore de compte ?",
-            "orContinueWith": "Ou continuer avec",
-            "password": "Mot de passe",
-            "recovery": {
-                "back": "Retour à la connexion",
-                "confirm": "Confirmer le mot de passe",
-                "description": "Entrez votre clé de récupération et définissez un nouveau mot de passe.",
+    "onboarding": {
+        "auth": {
+            "login": {
+                "createAccount": "Créer un compte",
+                "description": "Entrez vos identifiants pour accéder à TraderLog Pro.",
+                "email": "Email",
                 "error": {
                     "fillAll": "Veuillez remplir tous les champs.",
-                    "generic": "Échec de la réinitialisation du mot de passe.",
-                    "invalidKey": "Clé de récupération invalide.",
-                    "mismatch": "Les mots de passe ne correspondent pas."
+                    "invalidCredentials": "Identifiants invalides."
                 },
-                "keyLabel": "Clé de Récupération",
-                "loading": "Réinitialisation...",
-                "newPassword": "Nouveau Mot de Passe",
-                "submit": "Réinitialiser le Mot de Passe",
-                "success": "Mot de passe réinitialisé avec succès!",
-                "title": "Récupérer l'Accès"
+                "forgotPassword": "Mot de passe oublié ?",
+                "loading": "Connexion...",
+                "noAccount": "Pas encore de compte ?",
+                "orContinueWith": "Ou continuer avec",
+                "password": "Mot de passe",
+                "recovery": {
+                    "back": "Retour à la connexion",
+                    "confirm": "Confirmer le mot de passe",
+                    "description": "Entrez votre clé de récupération et définissez un nouveau mot de passe.",
+                    "error": {
+                        "fillAll": "Veuillez remplir tous les champs.",
+                        "generic": "Échec de la réinitialisation du mot de passe.",
+                        "invalidKey": "Clé de récupération invalide.",
+                        "mismatch": "Les mots de passe ne correspondent pas."
+                    },
+                    "keyLabel": "Clé de Récupération",
+                    "loading": "Réinitialisation...",
+                    "newPassword": "Nouveau Mot de Passe",
+                    "submit": "Réinitialiser le Mot de Passe",
+                    "success": "Mot de passe réinitialisé avec succès!",
+                    "title": "Récupérer l'Accès"
+                },
+                "signup": "S'inscrire",
+                "social": "Réseaux Sociaux",
+                "submit": "Entrer dans la Plateforme",
+                "success": "Connexion réussie !",
+                "title": "Bon retour"
             },
-            "signup": "S'inscrire",
-            "social": "Réseaux Sociaux",
-            "submit": "Entrer dans la Plateforme",
-            "success": "Connexion réussie !",
-            "title": "Bon retour"
+            "register": {
+                "alreadyHaveAccount": "Vous avez déjà un compte?",
+                "birthDate": "Date de Naissance",
+                "confirmPassword": "Confirmer le Mot de Passe",
+                "cpf": "CPF",
+                "description": "Créez votre compte TraderLog Pro.",
+                "email": "E-mail",
+                "error": {
+                    "fillAll": "Veuillez remplir tous les champs.",
+                    "passwordsMismatch": "Les mots de passe ne correspondent pas."
+                },
+                "loading": "Création du compte...",
+                "login": "Se connecter",
+                "name": "Nom complet",
+                "password": "Mot de passe",
+                "recoveryKey": {
+                    "confirm": "J'ai compris, j'ai sauvegardé ma clé!",
+                    "copyPrompt": "Copier la Clé",
+                    "description": "Voici votre clé de récupération. Gardez-la dans un endroit sûr — sans elle, vous ne pourrez pas récupérer l'accès.",
+                    "keepSecure": "Gardez-la en lieu sûr!",
+                    "label": "Votre Clé de Récupération",
+                    "successCopy": "Clé copiée!",
+                    "title": "Clé de Récupération Générée",
+                    "warning": "Ne partagez cette clé avec personne."
+                },
+                "submit": "Créer un Compte",
+                "success": "Compte créé avec succès!",
+                "terms": "Conditions d'utilisation",
+                "title": "Créer un Compte"
+            }
         },
-        "register": {
-            "alreadyHaveAccount": "Vous avez déjà un compte?",
-            "birthDate": "Date de Naissance",
-            "confirmPassword": "Confirmer le Mot de Passe",
-            "cpf": "CPF",
-            "description": "Créez votre compte TraderLog Pro.",
+        "wizard_extra": {
+            "setup_engine": "Setup Engine v1.0",
+            "select_theme": "SÉLECTIONNER LE THÈME VISUAL",
             "email": "E-mail",
-            "error": {
-                "fillAll": "Veuillez remplir tous les champs.",
-                "passwordsMismatch": "Les mots de passe ne correspondent pas."
-            },
-            "loading": "Création du compte...",
-            "login": "Se connecter",
-            "name": "Nom complet",
-            "password": "Mot de passe",
-            "recoveryKey": {
-                "confirm": "J'ai compris, j'ai sauvegardé ma clé!",
-                "copyPrompt": "Copier la Clé",
-                "description": "Voici votre clé de récupération. Gardez-la dans un endroit sûr — sans elle, vous ne pourrez pas récupérer l'accès.",
-                "keepSecure": "Gardez-la en lieu sûr!",
-                "label": "Votre Clé de Récupération",
-                "successCopy": "Clé copiée!",
-                "title": "Clé de Récupération Générée",
-                "warning": "Ne partagez cette clé avec personne."
-            },
-            "submit": "Créer un Compte",
-            "success": "Compte créé avec succès!",
-            "terms": "Conditions d'utilisation",
-            "title": "Créer un Compte"
+            "email_placeholder": "votre@email.com",
+            "confirm_password": "Confirmer le Mot de Passe",
+            "copied": "Copié!",
+            "logo_alt": "Logo",
+            "copyright": "© 2026 TRADERLOG PRO · JOURNAL ENGINE"
         }
     }
 }

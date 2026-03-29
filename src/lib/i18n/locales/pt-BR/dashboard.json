@@ -25,8 +25,8 @@
             "consistency": "CONSISTÊNCIA",
             "equity": "Evolução do Patrimônio",
             "equitySubtitle": "Evolução gráfica",
-            "losses": "LOSSES",
-            "wins": "GAINS"
+            "losses": "PERDAS",
+            "wins": "GANHOS"
         },
         "dailyDetail": {
             "asset": "Ativo",
@@ -116,7 +116,39 @@
             }
         },
         "syncingTerminal": "Sincronizando Terminal...",
-        "waitingSurvivorData": "Aguardando matriz de dados do Survivor Hub"
+        "waitingSurvivorData": "Aguardando matriz de dados do Survivor Hub",
+        "actions": {
+            "detailedRegister": "REGISTRO DETALHADO",
+            "evolutionJournal": "DIÁRIO DE EVOLUÇÃO",
+            "riskControlShort": "C.R",
+            "newTrade": "NOVA ORDEM",
+            "reviewDone": "Revisão Concluída",
+            "finishTrading": "Finalizar Pregão"
+        },
+        "sections": {
+            "traderAssistant": "Assistente do Trader",
+            "behavioralRadar": "Radar Comportamental (IA Heurística)",
+            "behavioralRadarLabel": "RADAR COMPORTAMENTAL",
+            "evolutionStreaks": "Evolução e Sequências",
+            "assistantLabel": "ASSISTENTE",
+            "systemStatus": "STATUS DO SISTEMA",
+            "allClear": "Tudo Limpo (Lotes Normais)",
+            "noAnomalies": "Sem anomalias detectadas"
+        },
+        "stats": {
+            "todayPnL": "P&L de Hoje",
+            "todayPnLShort": "P&L HOJE",
+            "tradeFrequency": "Frequência (Trades)",
+            "weekPnL": "P&L da Semana",
+            "weekPnLShort": "SEMANAL",
+            "gainLabel": "GANHO",
+            "lossLabel": "PERDA",
+            "rollingScore": "Pontuação (30T)",
+            "emotionalControl": "Controle Emocional",
+            "unbreakableDiscipline": "Disciplina Inquebrável",
+            "greenDays": "Dias de Lucro",
+            "streaks": "SEQUÊNCIAS"
+        }
     },
     "home": {
         "newTrade": "Novo Trade",

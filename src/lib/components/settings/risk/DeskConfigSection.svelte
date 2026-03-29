@@ -54,9 +54,9 @@
         if (!config.mdr_mode) config.mdr_mode = "none";
         if (!config.stages || config.stages.length === 0) {
             config.stages = [
-                { id: 'margin_building', name: $t("risk.desk.stages.margin_building") || 'Construção de Margem', enabled: true, mdr_mode: 'none', rule_50_percent_enabled: false, consistency_enabled: false },
-                { id: 'real_phase_1', name: $t("risk.desk.stages.real_phase_1") || 'Conta Real - Fase 1', enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: true, consistency_enabled: true },
-                { id: 'real_final', name: $t("risk.desk.stages.real_final") || 'Conta Real - Definitiva', enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: false, consistency_enabled: true }
+                { id: 'margin_building', name: $t("risk.desk.stages.margin_building"), enabled: true, mdr_mode: 'none', rule_50_percent_enabled: false, consistency_enabled: false },
+                { id: 'real_phase_1', name: $t("risk.desk.stages.real_phase_1"), enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: true, consistency_enabled: true },
+                { id: 'real_final', name: $t("risk.desk.stages.real_final"), enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: false, consistency_enabled: true }
             ];
         }
         if (config.current_stage_index === undefined) config.current_stage_index = 0;
@@ -100,12 +100,22 @@
     </div>
 
     {#if config?.enabled}
+        <div class="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 mb-6 flex gap-3 items-start">
+            <Info class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+            <div class="space-y-1">
+                <p class="text-xs font-bold text-amber-600 dark:text-amber-400">{$t("risk.desk.title")}</p>
+                <p class="text-[10px] text-muted-foreground leading-relaxed">
+                    {$t("risk.desk.desc")}
+                </p>
+            </div>
+        </div>
+
         <div class="p-6 rounded-lg border bg-background/30 space-y-6">
             
                 <!-- Nome do Plano -->
                 <div class="space-y-2">
-                    <Label>{$t("risk.management.planName") || "Nome do plano"}</Label>
-                    <Input bind:value={config.plan_name} placeholder="Ex: 5PI Book 4k" />
+                    <Label>{$t("risk.finance.planName")}</Label>
+                    <Input bind:value={config.plan_name} placeholder={$t("risk.finance.planNamePlaceholder") || "Ex: 5PI Book 4k"} />
                 </div>
 
                 <!-- MDR Mode -->
@@ -117,17 +127,17 @@
                     >
                         <Select.Trigger>
                             {#if config.mdr_mode === "fixed"}
-                                {$t("risk.management.mdrMode_fixed") || "Fixo (Relativo aos Limites de Conta Real)"}
+                                {$t("risk.finance.mdrMode_fixed")}
                             {:else if config.mdr_mode === "percent_of_margin"}
-                                {$t("risk.management.mdrMode_percent_of_margin") || "% da Margem"}
+                                {$t("risk.finance.mdrMode_percent_of_margin")}
                             {:else}
-                                {$t("risk.management.mdrMode_none") || "Nenhum"}
+                                {$t("risk.finance.mdrMode_none")}
                             {/if}
                         </Select.Trigger>
                         <Select.Content>
-                            <Select.Item value="none">{$t("risk.management.mdrMode_none") || "Nenhum"}</Select.Item>
-                            <Select.Item value="fixed">{$t("risk.management.mdrMode_fixed") || "Fixo"}</Select.Item>
-                            <Select.Item value="percent_of_margin">{$t("risk.management.mdrMode_percent_of_margin") || "% da Margem"}</Select.Item>
+                            <Select.Item value="none">{$t("risk.finance.mdrMode_none")}</Select.Item>
+                            <Select.Item value="fixed">{$t("risk.finance.mdrMode_fixed")}</Select.Item>
+                            <Select.Item value="percent_of_margin">{$t("risk.finance.mdrMode_percent_of_margin")}</Select.Item>
                         </Select.Content>
                     </Select.Root>
                 </div>
@@ -143,7 +153,7 @@
                                 onValueChange={(v: string) => { if(config) config.current_stage_index = parseInt(v); }}
                             >
                                 <Select.Trigger class="w-full md:w-[300px]">
-                                    {config.stages[config.current_stage_index ?? 0]?.name || "Selecione..."}
+                                    {config.stages[config.current_stage_index ?? 0]?.name || $t("risk.finance.selectAccount")}
                                 </Select.Trigger>
                                 <Select.Content>
                                     {#each config.stages as stage, i}
@@ -216,18 +226,18 @@
                 <div class="mt-4 p-4 rounded-lg border bg-background/50 space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div class="space-y-0.5">
-                            <h4 class="font-semibold text-sm">{$t("desk.progression.title") || "Progressão de Estágio"}</h4>
+                            <h4 class="font-semibold text-sm">{$t("risk.desk.progression.title")}</h4>
                             <p class="text-xs text-muted-foreground uppercase tracking-widest">
-                                {$t("desk.progression.current") || "Estágio Atual"}: <span class="font-mono font-bold text-primary">{$t(`risk.desk.stages.${progression.current_stage_id.toLowerCase()}`) || config.stages.find((s: any) => s.id.toLowerCase() === progression.current_stage_id.toLowerCase())?.name || progression.current_stage_id}</span>
+                                {$t("risk.desk.progression.current")}: <span class="font-mono font-bold text-primary">{$t(`risk.desk.stages.${progression.current_stage_id.toLowerCase()}`) || config.stages.find((s: any) => s.id.toLowerCase() === progression.current_stage_id.toLowerCase())?.name || progression.current_stage_id}</span>
                             </p>
                         </div>
                         {#if progression.can_advance}
                             <Badge variant="default" class="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">
-                                {$t("desk.progression.can_advance") || "Apto para Avançar"}
+                                {$t("risk.desk.progression.can_advance")}
                             </Badge>
                         {:else if progression.should_remain}
                             <Badge variant="secondary" class="text-muted-foreground">
-                                {$t("desk.progression.should_remain") || "Estágio Retido"}
+                                {$t("risk.desk.progression.should_remain")}
                             </Badge>
                         {/if}
                     </div>

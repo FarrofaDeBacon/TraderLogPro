@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { safeInvoke, isTauri } from "$lib/services/tauri";
 import { type UserProfile } from "$lib/types";
 import { validateLicenseKey, computeCustomerId, type LicenseData } from "$lib/utils/license";
 
@@ -15,7 +15,7 @@ export class UserProfileStore {
         main_currency: "BRL",
         avatar: null,
         convert_all_to_main: false,
-        onboarding_completed: false,
+        onboarding_completed: typeof window !== "undefined" && !isTauri(),
         currency_api_url: "https://economia.awesomeapi.com.br/last/",
         birth_date: null,
         trial_start_date: null,
@@ -108,7 +108,7 @@ export class UserProfileStore {
 
     async saveUserProfile() {
         try {
-            await invoke("save_user_profile", { profile: $state.snapshot(this.userProfile) });
+            await safeInvoke("save_user_profile", { profile: $state.snapshot(this.userProfile) });
             return { success: true };
         } catch (e: any) {
             console.error("[UserProfileStore] Error saving user profile:", e);
@@ -129,12 +129,12 @@ export class UserProfileStore {
 
     async login(_email: string, pass: string): Promise<boolean> {
         try {
-            const isValid = await invoke<boolean>("verify_password", { password: pass });
+            const isValid = await safeInvoke<boolean>("verify_password", { password: pass });
             if (isValid) {
                 this.isLoggedIn = true;
                 localStorage.setItem("isLoggedIn", "true");
             }
-            return isValid;
+            return !!isValid;
         } catch (e) {
             console.error("[UserProfileStore] Login failed:", e);
             throw e;
@@ -150,8 +150,8 @@ export class UserProfileStore {
 
     async loadData() {
         try {
-            const profile = await invoke<UserProfile>("get_user_profile").catch(() => null);
-            const hwid = await invoke<string>("get_machine_id_cmd").catch(() => null);
+            const profile = await safeInvoke<UserProfile>("get_user_profile");
+            const hwid = await safeInvoke<string>("get_machine_id_cmd");
 
             if (hwid) this.hardwareId = hwid;
             if (profile) {

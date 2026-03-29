@@ -6,6 +6,7 @@
   import { isLoading } from "svelte-i18n";
   import { Toaster } from "$lib/components/ui/sonner";
   import { appStore } from "$lib/stores/app.svelte";
+  import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
   import { userProfileStore } from "$lib/stores/user-profile.svelte";
   import { tradesStore } from "$lib/stores/trades.svelte";
   import { page } from "$app/stores";

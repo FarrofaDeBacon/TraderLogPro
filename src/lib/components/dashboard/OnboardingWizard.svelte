@@ -3,137 +3,157 @@
   import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
   import { tradesStore } from "$lib/stores/trades.svelte";
   import { Button } from "$lib/components/ui/button";
-  import * as Card from "$lib/components/ui/card";
+  import { SystemCard, SystemHeader } from "$lib/components/ui/system";
   import QuickLog from "$lib/components/trades/QuickLog.svelte";
   import { CheckCircle2, Circle, ArrowRight, Zap, Lightbulb, Wallet, ShieldAlert, Rocket } from "lucide-svelte";
   import { cn } from "$lib/utils";
+  import { t } from "svelte-i18n";
 
   // State derivation
   let hasAccount = $derived(accountsStore.accounts.length > 0);
   let hasProfile = $derived(riskSettingsStore.riskProfiles.length > 0);
   let hasPlan = $derived(riskSettingsStore.growthPlans.length > 0);
 
-  // If the user has configured the 3 core pillars, they move to Step 4 (trade)
-  // The system unlocks step continuously.
+  // Derivação do passo atual
   let currentStep = $derived.by(() => {
      if (!hasAccount) return 1;
      if (!hasProfile) return 2;
      if (!hasPlan) return 3;
-     return 4; // First trade
+     return 4; // Primeiro trade
   });
-
-  let completedStepsCount = $derived(
-     (hasAccount ? 1 : 0) + (hasProfile ? 1 : 0) + (hasPlan ? 1 : 0)
-  );
 </script>
 
 <div class="w-full max-w-2xl mx-auto mt-4 md:mt-12 mb-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
-   <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center p-3 bg-emerald-500/10 rounded-full mb-4 ring-1 ring-emerald-500/20">
-         <Lightbulb class="w-6 h-6 text-emerald-500" />
-      </div>
-      <h2 class="text-2xl md:text-3xl font-black tracking-tight text-foreground">Prepare seu Cockpit</h2>
-      <p class="text-sm md:text-base text-muted-foreground mt-2 max-w-lg mx-auto leading-relaxed">
-         Siga os 4 passos absolutos para blindar seu capital e destrancar os Radares Analíticos da sua Home.
-      </p>
-   </div>
+   <SystemCard status="primary" class="p-4 mb-10 bg-primary/5">
+      <SystemHeader 
+         title="Prepare seu Cockpit"
+         subtitle="Siga os 4 passos absolutos para blindar seu capital e destrancar os Radares Analíticos da sua Home."
+         icon={Lightbulb}
+         variant="page"
+         class="mb-0"
+      />
+   </SystemCard>
 
    <div class="space-y-4">
       <!-- Step 1: Conta -->
-      <Card.Root class={cn("relative overflow-hidden transition-all duration-300", currentStep === 1 ? "ring-2 ring-primary shadow-xl scale-[1.02]" : "opacity-60 grayscale-[50%]")}>
-         <Card.Content class="p-6">
-            <div class="flex items-center gap-4">
-               {#if hasAccount}
-                  <CheckCircle2 class="w-8 h-8 text-emerald-500 shrink-0" />
-               {:else}
-                  <Circle class="w-8 h-8 text-muted-foreground shrink-0" />
-               {/if}
+      <SystemCard 
+         status={hasAccount ? "success" : currentStep === 1 ? "primary" : "info"}
+         class={cn("transition-all duration-300", currentStep === 1 ? "ring-2 ring-primary scale-[1.02]" : "opacity-60")}
+      >
+         <div class="p-5">
+            <div class="flex items-center gap-5">
+               <div class="shrink-0 bg-background/40 p-2 rounded-xl border border-border/20 shadow-inner">
+                  {#if hasAccount}
+                     <CheckCircle2 class="w-6 h-6 text-emerald-500" />
+                  {:else}
+                     <div class="w-6 h-6 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center text-[10px] font-black text-muted-foreground/40">1</div>
+                  {/if}
+               </div>
                <div class="flex-1">
-                  <h3 class="font-bold flex items-center gap-2">
-                     <Wallet class="w-4 h-4 text-primary" />
-                     1. Crie sua Conta de Trading
-                  </h3>
-                  <p class="text-xs text-muted-foreground mt-1">Conecte o capital base (BRL ou USD) para rastrearmos o lucro.</p>
+                  <SystemHeader 
+                     title="1. Crie sua Conta de Trading"
+                     subtitle="Conecte o capital base (BRL ou USD) para rastrearmos o lucro."
+                     variant="compact"
+                     class="mb-0"
+                  />
                </div>
                {#if currentStep === 1}
-                  <Button href="/settings" class="shrink-0 group">
-                     Avançar <ArrowRight class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <Button href="/settings" size="sm" class="shrink-0 group bg-primary font-black uppercase tracking-widest text-[10px] h-8 px-4">
+                     Avançar <ArrowRight class="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                {/if}
             </div>
-         </Card.Content>
-      </Card.Root>
+         </div>
+      </SystemCard>
 
       <!-- Step 2: Risk Profile -->
-      <Card.Root class={cn("relative overflow-hidden transition-all duration-300", currentStep === 2 ? "ring-2 ring-primary shadow-xl scale-[1.02]" : "opacity-60 grayscale-[50%]")}>
-         <Card.Content class="p-6">
-            <div class="flex items-center gap-4">
-               {#if hasProfile}
-                  <CheckCircle2 class="w-8 h-8 text-emerald-500 shrink-0" />
-               {:else}
-                  <Circle class="w-8 h-8 text-muted-foreground shrink-0" />
-               {/if}
+      <SystemCard 
+         status={hasProfile ? "success" : currentStep === 2 ? "danger" : "info"}
+         class={cn("transition-all duration-300", currentStep === 2 ? "ring-2 ring-rose-500 scale-[1.02]" : "opacity-60")}
+      >
+         <div class="p-5">
+            <div class="flex items-center gap-5">
+               <div class="shrink-0 bg-background/40 p-2 rounded-xl border border-border/20 shadow-inner">
+                  {#if hasProfile}
+                     <CheckCircle2 class="w-6 h-6 text-emerald-500" />
+                  {:else}
+                     <div class="w-6 h-6 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center text-[10px] font-black text-muted-foreground/40">2</div>
+                  {/if}
+               </div>
                <div class="flex-1">
-                  <h3 class="font-bold flex items-center gap-2">
-                     <ShieldAlert class="w-4 h-4 text-rose-500" />
-                     2. Determine seu Risco Máximo
-                  </h3>
-                  <p class="text-xs text-muted-foreground mt-1">Configure Limites Diários de Perda para ligar a Trava Comportamental.</p>
+                  <SystemHeader 
+                     title="2. Determine seu Risco Máximo"
+                     subtitle="Configure Limites Diários de Perda para ligar a Trava Comportamental."
+                     variant="compact"
+                     class="mb-0"
+                  />
                </div>
                {#if currentStep === 2}
-                  <Button href="/settings/risk" class="shrink-0 bg-rose-600 hover:bg-rose-700 group">
-                     Defender Capital <ArrowRight class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <Button href="/settings/risk" size="sm" class="shrink-0 bg-rose-600 hover:bg-rose-700 font-black uppercase tracking-widest text-[10px] h-8 px-4 group">
+                     Defender Capital <ArrowRight class="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                {/if}
             </div>
-         </Card.Content>
-      </Card.Root>
+         </div>
+      </SystemCard>
 
       <!-- Step 3: Growth Plan -->
-      <Card.Root class={cn("relative overflow-hidden transition-all duration-300", currentStep === 3 ? "ring-2 ring-primary shadow-xl scale-[1.02]" : "opacity-60 grayscale-[50%]")}>
-         <Card.Content class="p-6">
-            <div class="flex items-center gap-4">
-               {#if hasPlan}
-                  <CheckCircle2 class="w-8 h-8 text-emerald-500 shrink-0" />
-               {:else}
-                  <Circle class="w-8 h-8 text-muted-foreground shrink-0" />
-               {/if}
+      <SystemCard 
+         status={hasPlan ? "success" : currentStep === 3 ? "warning" : "info"}
+         class={cn("transition-all duration-300", currentStep === 3 ? "ring-2 ring-indigo-500 scale-[1.02]" : "opacity-60")}
+      >
+         <div class="p-5">
+            <div class="flex items-center gap-5">
+               <div class="shrink-0 bg-background/40 p-2 rounded-xl border border-border/20 shadow-inner">
+                  {#if hasPlan}
+                     <CheckCircle2 class="w-6 h-6 text-emerald-500" />
+                  {:else}
+                     <div class="w-6 h-6 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center text-[10px] font-black text-muted-foreground/40">3</div>
+                  {/if}
+               </div>
                <div class="flex-1">
-                  <h3 class="font-bold flex items-center gap-2">
-                     <Rocket class="w-4 h-4 text-indigo-500" />
-                     3. Estruture seu Plano de Alavancagem
-                  </h3>
-                  <p class="text-xs text-muted-foreground mt-1">Crie as Fases de Crescimento para aumentar os Lotes matematicamente.</p>
+                  <SystemHeader 
+                     title="3. Estruture seu Plano de Alavancagem"
+                     subtitle="Crie as Fases de Crescimento para aumentar os Lotes matematicamente."
+                     variant="compact"
+                     class="mb-0"
+                  />
                </div>
                {#if currentStep === 3}
-                  <Button href="/settings/risk/growth-plans" class="shrink-0 bg-indigo-600 hover:bg-indigo-700 group">
-                     Montar Plano <ArrowRight class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <Button href="/settings/risk/growth-plans" size="sm" class="shrink-0 bg-indigo-600 hover:bg-indigo-700 font-black uppercase tracking-widest text-[10px] h-8 px-4 group">
+                     Montar Plano <ArrowRight class="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                {/if}
             </div>
-         </Card.Content>
-      </Card.Root>
+         </div>
+      </SystemCard>
 
-      <!-- Step 4: First Trade (Integrated QuickLog) -->
-      <Card.Root class={cn("relative overflow-hidden transition-all duration-500", currentStep === 4 ? "ring-2 ring-emerald-500 shadow-2xl scale-[1.02] bg-emerald-950/20" : "opacity-60 grayscale-[80%]")}>
-         <Card.Content class="p-6">
-            <div class="flex items-center gap-4 mb-4">
-               <Circle class="w-8 h-8 text-muted-foreground shrink-0" />
+      <!-- Step 4: First Trade -->
+      <SystemCard 
+         status={currentStep === 4 ? "success" : "info"}
+         class={cn("transition-all duration-500", currentStep === 4 ? "ring-2 ring-emerald-500 scale-[1.02] bg-emerald-500/5" : "opacity-60")}
+      >
+         <div class="p-5">
+            <div class="flex items-center gap-5 mb-5">
+               <div class="shrink-0 bg-background/40 p-2 rounded-xl border border-border/20 shadow-inner text-emerald-500">
+                  <Zap class="w-6 h-6" />
+               </div>
                <div class="flex-1">
-                  <h3 class="font-bold flex items-center gap-2 text-emerald-500">
-                     <Zap class="w-4 h-4" />
-                     4. Registre seu Primeiro Trade
-                  </h3>
-                  <p class="text-xs text-muted-foreground mt-1">Você está 100% blindado. Utilize o QuickLog abaixo para dar vida às estatísticas da Home.</p>
+                  <SystemHeader 
+                     title="4. Registre seu Primeiro Trade"
+                     subtitle="Você está 100% blindado. Utilize o QuickLog para dar vida às estatísticas."
+                     variant="compact"
+                     class="mb-0"
+                  />
                </div>
             </div>
             
             {#if currentStep === 4}
-               <div class="mt-4 animate-in slide-in-from-bottom-4">
+               <div class="mt-4 animate-in slide-in-from-bottom-4 bg-background/40 p-4 rounded-xl border border-border/40 backdrop-blur-sm shadow-inner">
                   <QuickLog />
                </div>
             {/if}
-         </Card.Content>
-      </Card.Root>
+         </div>
+      </SystemCard>
    </div>
 </div>

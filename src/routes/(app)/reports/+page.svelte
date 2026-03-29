@@ -30,7 +30,9 @@
   import { dailyReviewsStore } from "$lib/stores/daily-reviews.svelte";
   import { workspaceStore } from "$lib/stores/workspace.svelte";
   import { generateReport } from "$lib/domain/reports/report-engine";
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import SystemCard from "$lib/components/ui/system/SystemCard.svelte";
+  import SystemMetric from "$lib/components/ui/system/SystemMetric.svelte";
+  import SystemHeader from "$lib/components/ui/system/SystemHeader.svelte";
   import { Badge } from "$lib/components/ui/badge";
   import {
       Select,
@@ -274,7 +276,10 @@
     <!-- EXPORTAÇÃO -->
     <div class="mb-6 p-4 bg-primary/10 border border-primary/20 text-primary-foreground rounded-lg flex items-center justify-between gap-6">
         <div>
-            <h3 class="font-bold text-sm mb-1 flex items-center gap-2">Exportação Direta em PDF</h3>
+            <SystemHeader 
+                title="Exportação Direta em PDF" 
+                class="mb-1"
+            />
             <p class="text-xs opacity-90 leading-relaxed text-foreground/80">
                 O arquivo será gerado de maneira oculta garantindo o formato Institucional em 2 páginas. O visual na tela permanecerá limpo (Dark Mode).
             </p>
@@ -291,28 +296,33 @@
     </div>
 
     <!-- CABEÇALHO DA ROTA ON-SCREEN -->
-    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 pb-4 border-b border-border/40 gap-4">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <h2 class="text-3xl font-bold tracking-tight">Performance Report</h2>
-                <p class="text-muted-foreground flex items-center gap-2 mt-1">
-                    <FileText class="w-4 h-4" /> Auditoria Profissional Consolidada ({formatReportDate(dateRanges.start)} a {formatReportDate(dateRanges.end)})
-                </p>
-            </div>
-            <div class="flex items-center gap-3">
-                <DateFilter bind:value={timeFilter} bind:startDate={customStartDate} bind:endDate={customEndDate} />
-            </div>
+    {#snippet reportActions()}
+        <div class="flex items-center gap-3">
+            <DateFilter bind:value={timeFilter} bind:startDate={customStartDate} bind:endDate={customEndDate} />
         </div>
-    </div>
+    {/snippet}
+
+    <SystemCard status="info" class="p-3 mb-6">
+        <SystemHeader 
+            title="Performance Report"
+            subtitle={`Auditoria Profissional Consolidada (${formatReportDate(dateRanges.start)} a ${formatReportDate(dateRanges.end)})`}
+            icon={FileText}
+            variant="page"
+            class="mb-0"
+            actions={reportActions}
+        />
+    </SystemCard>
 
     <!-- CORPO DO RELATÓRIO PELA JANELA DO WEB APP -->
     <div class="space-y-6">
         
         <!-- BLOCO 1: RESUMO FINANCEIRO -->
         <section>
-            <h2 class="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-                <BarChart3 class="w-4 h-4" /> 1. Resumo do Período
-            </h2>
+            <SystemHeader 
+                title="1. Resumo do Período"
+                icon={BarChart3}
+                class="mb-3"
+            />
             
             {#if report.summary.tradeCount === 0}
                 <div class="p-8 text-center border border-dashed rounded-xl border-border/50 text-muted-foreground bg-muted/20">
@@ -320,47 +330,49 @@
                 </div>
             {:else}
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <Card class="bg-background/60 shadow-sm border-border/50">
-                        <CardContent class="p-4">
-                            <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Líquido (PnL)</p>
-                            <p class="text-2xl font-black tracking-tighter {report.summary.totalPnL >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
-                                {formatCurrency(report.summary.totalPnL)}
-                            </p>
-                        </CardContent>
-                    </Card>
-                    <Card class="bg-background/60 shadow-sm border-border/50">
-                        <CardContent class="p-4">
-                            <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Win Rate</p>
-                            <p class="text-2xl font-black tracking-tighter font-mono">
-                                {(report.summary.winRate * 100).toFixed(0)}%
-                            </p>
-                        </CardContent>
-                    </Card>
-                    <Card class="bg-background/60 shadow-sm border-border/50">
-                        <CardContent class="p-4">
-                            <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Profit Factor</p>
-                            <p class="text-2xl font-black tracking-tighter font-mono">
-                                {report.summary.profitFactor.toFixed(2)}
-                            </p>
-                        </CardContent>
-                    </Card>
-                    <Card class="bg-background/60 shadow-sm border-border/50">
-                        <CardContent class="p-4">
-                            <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Volume (Trades / Dias)</p>
-                            <p class="text-lg font-black tracking-tighter font-mono mt-1">
-                                {report.summary.tradeCount} <span class="text-sm font-medium text-muted-foreground">in</span> {report.period.daysActive}d
-                            </p>
-                        </CardContent>
-                    </Card>
+                    <SystemCard class="p-4">
+                        <SystemMetric 
+                            label="Líquido (PnL)"
+                            value={formatCurrency(report.summary.totalPnL)}
+                            status={report.summary.totalPnL >= 0 ? 'success' : 'danger'}
+                            weight="black"
+                        />
+                    </SystemCard>
+                    <SystemCard class="p-4">
+                        <SystemMetric 
+                            label="Win Rate"
+                            value={(report.summary.winRate * 100).toFixed(0) + "%"}
+                            status={report.summary.winRate >= 0.5 ? 'success' : 'danger'}
+                            weight="black"
+                        />
+                    </SystemCard>
+                    <SystemCard class="p-4">
+                        <SystemMetric 
+                            label="Profit Factor"
+                            value={report.summary.profitFactor.toFixed(2)}
+                            status={report.summary.profitFactor >= 1.2 ? 'success' : report.summary.profitFactor >= 1 ? 'warning' : 'danger'}
+                            weight="black"
+                        />
+                    </SystemCard>
+                    <SystemCard class="p-4">
+                        <SystemMetric 
+                            label="Volume (Trades / Dias)"
+                            value={String(report.summary.tradeCount)}
+                            subvalue={report.period.daysActive + "d ativos"}
+                            weight="black"
+                        />
+                    </SystemCard>
                 </div>
             {/if}
         </section>
 
         <!-- BLOCO 2: SCORE E DISCIPLINA DA JANELA -->
         <section class="pt-2">
-            <h2 class="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-                <Trophy class="w-4 h-4" /> 2. Score Oficial da Janela (Avaliação Qualitativa)
-            </h2>
+            <SystemHeader 
+                title="2. Score Oficial da Janela (Avaliação Qualitativa)"
+                icon={Trophy}
+                class="mb-3"
+            />
             
             {#if report.summary.tradeCount === 0}
                 <div class="p-8 text-center border border-dashed rounded-xl border-border/50 text-muted-foreground bg-muted/20">
@@ -369,73 +381,72 @@
             {:else}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     <!-- Grade do Score -->
-                    <Card class="lg:col-span-2 bg-background/60 shadow-sm border-border/50">
-                        <CardContent class="p-5 flex flex-col md:flex-row items-center gap-6">
-                            <div class="text-center shrink-0">
-                                <div class="w-24 h-24 rounded-full border-4 flex items-center justify-center {report.scoreAndDiscipline.windowScore >= 80 ? 'border-emerald-500 text-emerald-500' : report.scoreAndDiscipline.windowScore >= 50 ? 'border-amber-500 text-amber-500' : 'border-rose-500 text-rose-500'}">
-                                    <span class="text-4xl font-black tracking-tighter">{report.scoreAndDiscipline.windowScore.toFixed(0)}</span>
-                                </div>
-                                <p class="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-3">Master Score</p>
+                    <SystemCard class="lg:col-span-2 p-5 flex flex-col md:flex-row items-center gap-6">
+                        <div class="text-center shrink-0">
+                            <div class="w-24 h-24 rounded-full border-4 flex items-center justify-center {report.scoreAndDiscipline.windowScore >= 80 ? 'border-emerald-500 text-emerald-500' : report.scoreAndDiscipline.windowScore >= 50 ? 'border-amber-500 text-amber-500' : 'border-rose-500 text-rose-500'}">
+                                <span class="text-4xl font-black tracking-tighter">{report.scoreAndDiscipline.windowScore.toFixed(0)}</span>
                             </div>
-                            
-                            <div class="flex-1 grid grid-cols-2 gap-3 w-full">
-                                <div>
-                                    <div class="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Corte Execução</div>
-                                    <div class="font-mono font-bold text-sm border w-max px-2 py-0.5 rounded {getPillarColor(report.scoreAndDiscipline.executionScore)}">
-                                        {report.scoreAndDiscipline.executionScore.toFixed(0)} / 100
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Corte Risco</div>
-                                    <div class="font-mono font-bold text-sm border w-max px-2 py-0.5 rounded {getPillarColor(report.scoreAndDiscipline.riskScore)}">
-                                        {report.scoreAndDiscipline.riskScore.toFixed(0)} / 100
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Comportamento</div>
-                                    <div class="font-mono font-bold text-sm border w-max px-2 py-0.5 rounded {getPillarColor(report.scoreAndDiscipline.behaviorScore)}">
-                                        {report.scoreAndDiscipline.behaviorScore.toFixed(0)} / 100
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Psicológico</div>
-                                    <div class="font-mono font-bold text-sm border w-max px-2 py-0.5 rounded {getPillarColor(report.scoreAndDiscipline.psychoScore)}">
-                                        {report.scoreAndDiscipline.psychoScore.toFixed(0)} / 100
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                            <p class="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-3">Master Score</p>
+                        </div>
+                        
+                        <div class="flex-1 grid grid-cols-2 gap-4 w-full">
+                            <SystemMetric 
+                                label="Corte Execução"
+                                value={report.scoreAndDiscipline.executionScore.toFixed(0) + " / 100"}
+                                status={report.scoreAndDiscipline.executionScore >= 80 ? 'success' : report.scoreAndDiscipline.executionScore >= 50 ? 'warning' : 'danger'}
+                            />
+                            <SystemMetric 
+                                label="Corte Risco"
+                                value={report.scoreAndDiscipline.riskScore.toFixed(0) + " / 100"}
+                                status={report.scoreAndDiscipline.riskScore >= 80 ? 'success' : report.scoreAndDiscipline.riskScore >= 50 ? 'warning' : 'danger'}
+                            />
+                            <SystemMetric 
+                                label="Comportamento"
+                                value={report.scoreAndDiscipline.behaviorScore.toFixed(0) + " / 100"}
+                                status={report.scoreAndDiscipline.behaviorScore >= 80 ? 'success' : report.scoreAndDiscipline.behaviorScore >= 50 ? 'warning' : 'danger'}
+                            />
+                            <SystemMetric 
+                                label="Psicológico"
+                                value={report.scoreAndDiscipline.psychoScore.toFixed(0) + " / 100"}
+                                status={report.scoreAndDiscipline.psychoScore >= 80 ? 'success' : report.scoreAndDiscipline.psychoScore >= 50 ? 'warning' : 'danger'}
+                            />
+                        </div>
+                    </SystemCard>
 
                     <!-- Fechamento das Streaks na Janela -->
-                    <Card class="bg-background/60 shadow-sm border-border/50 flex flex-col justify-center">
-                        <CardHeader class="pb-2">
-                            <CardTitle class="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Streaks da Janela</CardTitle>
-                        </CardHeader>
-                        <CardContent class="space-y-3 p-3 pt-0">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-foreground">Disciplina Inquebrável</span>
-                                <span class="font-mono font-bold text-xs bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.discipline}d</span>
+                    <SystemCard status="info" class="flex flex-col justify-center">
+                        <div class="p-3">
+                            <SystemHeader 
+                                title="Streaks da Janela"
+                                class="mb-3"
+                            />
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold text-foreground">Disciplina Inquebrável</span>
+                                    <span class="font-mono font-bold text-xs bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.discipline}d</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold text-foreground">Controle Emocional</span>
+                                    <span class="font-mono font-bold text-xs bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.emotionalControl}d</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold text-foreground">No-Tilt (Blindagem)</span>
+                                    <span class="font-mono font-bold text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.noTilt}d</span>
+                                </div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-foreground">Controle Emocional</span>
-                                <span class="font-mono font-bold text-xs bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.emotionalControl}d</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-foreground">No-Tilt (Blindagem)</span>
-                                <span class="font-mono font-bold text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.noTilt}d</span>
-                            </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </SystemCard>
                 </div>
             {/if}
         </section>
 
         <!-- BLOCO 3: COMPORTAMENTO (AUDITORIA IA) -->
         <section class="pt-2">
-            <h2 class="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-                <Brain class="w-4 h-4" /> 3. Auditoria Comportamental
-            </h2>
+            <SystemHeader 
+                title="3. Auditoria Comportamental"
+                icon={Brain}
+                class="mb-3"
+            />
             
             {#if report.behavior.topNegativeImpacts.length === 0 && report.behavior.topPositiveImpacts.length === 0}
                 <div class="p-8 text-center border border-dashed rounded-xl border-border/50 text-muted-foreground bg-muted/20">
@@ -443,57 +454,63 @@
                 </div>
             {:else}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                    <Card class="bg-rose-500/5 border-rose-500/20 shadow-none">
-                        <CardHeader class="pb-2">
-                            <CardTitle class="text-[10px] uppercase font-black tracking-widest text-rose-500 flex items-center gap-2">
-                                <ShieldAlert class="w-3.5 h-3.5" /> Ofensores de Sistema (Top Punições)
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent class="space-y-3">
-                            {#each report.behavior.topNegativeImpacts as neg}
-                                <div class="flex items-start justify-between border-b border-rose-500/10 pb-2 last:border-0 last:pb-0">
-                                    <div class="pr-4">
-                                        <p class="text-xs font-bold text-foreground leading-tight">{neg.title}</p>
-                                        <p class="text-[10px] text-muted-foreground leading-tight mt-0.5">{neg.description}</p>
+                    <SystemCard status="danger" class="bg-rose-500/5 border-rose-500/20 shadow-none">
+                        <div class="p-4">
+                            <SystemHeader 
+                                title="Ofensores de Sistema (Top Punições)"
+                                icon={ShieldAlert}
+                                class="mb-3 text-rose-500"
+                            />
+                            <div class="space-y-3">
+                                {#each report.behavior.topNegativeImpacts as neg}
+                                    <div class="flex items-start justify-between border-b border-rose-500/10 pb-2 last:border-0 last:pb-0">
+                                        <div class="pr-4">
+                                            <p class="text-xs font-bold text-foreground leading-tight">{neg.title}</p>
+                                            <p class="text-[10px] text-muted-foreground leading-tight mt-0.5">{neg.description}</p>
+                                        </div>
+                                        <Badge variant="outline" class="text-rose-500 border-rose-500/30 rounded-sm font-mono shrink-0">{neg.points}</Badge>
                                     </div>
-                                    <Badge variant="outline" class="text-rose-500 border-rose-500/30 rounded-sm font-mono shrink-0">{neg.points}</Badge>
-                                </div>
-                            {/each}
-                            {#if report.behavior.topNegativeImpacts.length === 0}
-                                <p class="text-xs text-muted-foreground">Sistema em perfeito funcionamento mecânico. Zero falhas.</p>
-                            {/if}
-                        </CardContent>
-                    </Card>
-                    <Card class="bg-emerald-500/5 border-emerald-500/20 shadow-none">
-                        <CardHeader class="pb-2">
-                            <CardTitle class="text-[10px] uppercase font-black tracking-widest text-emerald-500 flex items-center gap-2">
-                                <Zap class="w-3.5 h-3.5" /> Edges Encontrados (Top Bônus)
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent class="space-y-3">
-                            {#each report.behavior.topPositiveImpacts as pos}
-                                <div class="flex items-start justify-between border-b border-emerald-500/10 pb-2 last:border-0 last:pb-0">
-                                    <div class="pr-4">
-                                        <p class="text-xs font-bold text-foreground leading-tight">{pos.title}</p>
-                                        <p class="text-[10px] text-muted-foreground leading-tight mt-0.5">{pos.description}</p>
+                                {/each}
+                                {#if report.behavior.topNegativeImpacts.length === 0}
+                                    <p class="text-xs text-muted-foreground">Sistema em perfeito funcionamento mecânico. Zero falhas.</p>
+                                {/if}
+                            </div>
+                        </div>
+                    </SystemCard>
+                    <SystemCard status="success" class="bg-emerald-500/5 border-emerald-500/20 shadow-none">
+                        <div class="p-4">
+                            <SystemHeader 
+                                title="Edges Encontrados (Top Bônus)"
+                                icon={Zap}
+                                class="mb-3 text-emerald-500"
+                            />
+                            <div class="space-y-3">
+                                {#each report.behavior.topPositiveImpacts as pos}
+                                    <div class="flex items-start justify-between border-b border-emerald-500/10 pb-2 last:border-0 last:pb-0">
+                                        <div class="pr-4">
+                                            <p class="text-xs font-bold text-foreground leading-tight">{pos.title}</p>
+                                            <p class="text-[10px] text-muted-foreground leading-tight mt-0.5">{pos.description}</p>
+                                        </div>
+                                        <Badge variant="outline" class="text-emerald-500 border-emerald-500/30 rounded-sm font-mono shrink-0">+{pos.points}</Badge>
                                     </div>
-                                    <Badge variant="outline" class="text-emerald-500 border-emerald-500/30 rounded-sm font-mono shrink-0">+{pos.points}</Badge>
-                                </div>
-                            {/each}
-                            {#if report.behavior.topPositiveImpacts.length === 0}
-                                <p class="text-xs text-muted-foreground">Sem vantagens excepcionais contabilizadas.</p>
-                            {/if}
-                        </CardContent>
-                    </Card>
+                                {/each}
+                                {#if report.behavior.topPositiveImpacts.length === 0}
+                                    <p class="text-xs text-muted-foreground">Sem vantagens excepcionais contabilizadas.</p>
+                                {/if}
+                            </div>
+                        </div>
+                    </SystemCard>
                 </div>
             {/if}
         </section>
 
         <!-- BLOCO 4: REFLEXÃO DO PÓS-MERCADO (DAILY REVIEWS) -->
         <section class="pt-2">
-            <h2 class="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-                <BookOpen class="w-4 h-4" /> 4. Diário & Reflexão Subjetiva
-            </h2>
+            <SystemHeader 
+                title="4. Diário & Reflexão Subjetiva"
+                icon={BookOpen}
+                class="mb-3"
+            />
 
             {#if report.reflection.reviewCount === 0}
                 <div class="p-8 text-center border border-dashed rounded-xl border-rose-500/30 text-rose-500/80 bg-rose-500/5 font-medium">
@@ -501,40 +518,39 @@
                 </div>
             {:else}
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <Card class="bg-background/60 shadow-sm border-border/50 md:col-span-1 flex flex-col justify-center">
-                        <CardContent class="p-4 flex flex-col justify-center h-full">
-                            <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Ritmo de Registro</p>
-                            <div class="text-3xl font-black mb-1 text-foreground">{report.reflection.reviewCount} <span class="text-sm font-medium text-muted-foreground tracking-normal">Reviews</span></div>
-                            <div class="flex flex-col gap-1 mt-3">
-                                <div class="flex items-center justify-between text-xs">
-                                   <span class="text-emerald-500 font-bold">Good</span>
-                                   <span class="font-mono text-muted-foreground">{report.reflection.distribution.good}</span>
-                                </div>
-                                <div class="flex items-center justify-between text-xs">
-                                   <span class="text-amber-500 font-bold">Neutral</span>
-                                   <span class="font-mono text-muted-foreground">{report.reflection.distribution.neutral}</span>
-                                </div>
-                                <div class="flex items-center justify-between text-xs">
-                                   <span class="text-rose-500 font-bold">Bad</span>
-                                   <span class="font-mono text-muted-foreground">{report.reflection.distribution.bad}</span>
-                                </div>
+                    <SystemCard class="md:col-span-1 p-4 flex flex-col justify-center">
+                        <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Ritmo de Registro</p>
+                        <div class="text-3xl font-black mb-1 text-foreground">{report.reflection.reviewCount} <span class="text-sm font-medium text-muted-foreground tracking-normal">Reviews</span></div>
+                        <div class="flex flex-col gap-1 mt-3">
+                            <div class="flex items-center justify-between text-xs">
+                               <span class="text-emerald-500 font-bold">Good</span>
+                               <span class="font-mono text-muted-foreground">{report.reflection.distribution.good}</span>
                             </div>
-                            <!-- Cross-Psychology Stats -->
-                            {#if report.psychologyStats.lossPercentageInNegativeState !== null}
-                                <div class="mt-4 pt-3 border-t border-border/50">
-                                    <p class="text-[10px] text-muted-foreground leading-tight">
-                                        <span class="font-bold text-rose-500">{(report.psychologyStats.lossPercentageInNegativeState * 100).toFixed(0)}% dos prejuízos</span> ocorreram sob estado emocional negativo <span class="uppercase font-bold">({report.psychologyStats.dominantNegativeEmotion})</span>. 
-                                    </p>
-                                </div>
-                            {/if}
-                        </CardContent>
-                    </Card>
+                            <div class="flex items-center justify-between text-xs">
+                               <span class="text-amber-500 font-bold">Neutral</span>
+                               <span class="font-mono text-muted-foreground">{report.reflection.distribution.neutral}</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                               <span class="text-rose-500 font-bold">Bad</span>
+                               <span class="font-mono text-muted-foreground">{report.reflection.distribution.bad}</span>
+                            </div>
+                        </div>
+                        <!-- Cross-Psychology Stats -->
+                        {#if report.psychologyStats.lossPercentageInNegativeState !== null}
+                            <div class="mt-4 pt-3 border-t border-border/50">
+                                <p class="text-[10px] text-muted-foreground leading-tight">
+                                    <span class="font-bold text-rose-500">{(report.psychologyStats.lossPercentageInNegativeState * 100).toFixed(0)}% dos prejuízos</span> ocorreram sob estado emocional negativo <span class="uppercase font-bold">({report.psychologyStats.dominantNegativeEmotion})</span>. 
+                                </p>
+                            </div>
+                        {/if}
+                    </SystemCard>
 
-                    <Card class="bg-background/60 shadow-sm border-border/50 md:col-span-3">
-                        <CardHeader class="pb-2">
-                            <CardTitle class="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Extratos Relevantes do Diário</CardTitle>
-                        </CardHeader>
-                        <CardContent>
+                    <SystemCard class="md:col-span-3">
+                        <div class="p-4">
+                            <SystemHeader 
+                                title="Extratos Relevantes do Diário"
+                                class="mb-3 text-muted-foreground"
+                            />
                             {#if report.reflection.relevantNotes.length === 0}
                                 <p class="text-sm italic text-muted-foreground">As avaliações registradas não contêm textos extensos para análise qualitativa.</p>
                             {:else}
@@ -546,42 +562,44 @@
                                     {/each}
                                 </div>
                             {/if}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </SystemCard>
                 </div>
             {/if}
         </section>
 
         <!-- BLOCO 5: DECISION LAYER (PLANO TÁTICO) -->
         <section class="pt-4 border-t border-border/40 mt-4">
-            <h2 class="text-xs font-black uppercase tracking-widest text-primary mb-3 flex items-center gap-2">
-                <Target class="w-4 h-4" /> 5. Decision Layer (Direção Tática)
-            </h2>
+            <SystemHeader 
+                title="5. Decision Layer (Direção Tática)"
+                icon={Target}
+                class="mb-3 text-primary"
+            />
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 
                 <!-- Diagnóstico -->
-                <Card class="bg-primary/5 shadow-none border-primary/20">
-                    <CardHeader class="pb-2">
-                        <CardTitle class="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
-                            <Activity class="w-3.5 h-3.5" /> Diagnóstico Final
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                <SystemCard status="info" class="bg-primary/5 shadow-none border-primary/20">
+                    <div class="p-4">
+                        <SystemHeader 
+                            title="Diagnóstico Final"
+                            icon={Activity}
+                            class="mb-3 text-primary"
+                        />
                         <p class="text-sm font-bold text-foreground leading-tight">{report.tactical.diagnosis.main}</p>
                         {#if report.tactical.diagnosis.sub}
                             <p class="text-xs text-muted-foreground mt-1 leading-tight">{report.tactical.diagnosis.sub}</p>
                         {/if}
-                    </CardContent>
-                </Card>
+                    </div>
+                </SystemCard>
 
                 <!-- Riscos Atuais -->
-                <Card class="bg-background/60 shadow-sm border-border/50">
-                    <CardHeader class="pb-2">
-                        <CardTitle class="text-[10px] uppercase font-black tracking-widest text-rose-500 flex items-center gap-2">
-                            <AlertTriangle class="w-3.5 h-3.5" /> Riscos Iminentes
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                <SystemCard status="danger" class="bg-background/60 shadow-sm border-border/50">
+                    <div class="p-4">
+                        <SystemHeader 
+                            title="Riscos Iminentes"
+                            icon={AlertTriangle}
+                            class="mb-3 text-rose-500"
+                        />
                         <ul class="space-y-1.5 list-disc pl-4 text-xs text-muted-foreground">
                             {#each report.tactical.risks as risk}
                                 <li class="leading-tight">{risk}</li>
@@ -590,17 +608,17 @@
                                 <li class="leading-tight text-emerald-500/80">Nenhum risco matricial grave identificado.</li>
                             {/if}
                         </ul>
-                    </CardContent>
-                </Card>
+                    </div>
+                </SystemCard>
 
                 <!-- Plano de Execução -->
-                <Card class="bg-background/80 shadow-sm border-border">
-                    <CardHeader class="pb-2">
-                        <CardTitle class="text-[10px] uppercase font-black tracking-widest text-foreground flex items-center gap-2">
-                            <CheckCircle2 class="w-3.5 h-3.5" /> Plano de Execução
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                <SystemCard status="none" class="bg-background/80 shadow-sm border-border">
+                    <div class="p-4">
+                        <SystemHeader 
+                            title="Plano de Execução"
+                            icon={CheckCircle2}
+                            class="mb-3"
+                        />
                         <ul class="space-y-2">
                             {#each report.tactical.actionPlan as action}
                                 <li class="text-xs font-semibold text-foreground/90 leading-tight flex items-start gap-2">
@@ -609,8 +627,8 @@
                                 </li>
                             {/each}
                         </ul>
-                    </CardContent>
-                </Card>
+                    </div>
+                </SystemCard>
 
             </div>
         </section>

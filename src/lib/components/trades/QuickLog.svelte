@@ -175,16 +175,16 @@
     {/if}
 
     <div class="flex flex-col md:flex-row items-center gap-3 p-3 bg-zinc-950/40 border-y md:border border-border/10 md:rounded-xl shadow-inner w-full">
-    <div class="flex items-center gap-2 pr-4 border-r border-border/10 justify-center min-w-max hidden md:flex">
-        <Zap class="w-4 h-4 text-emerald-500 fill-emerald-500/20" />
-        <span class="text-xs font-black uppercase tracking-widest text-muted-foreground">Quick Log</span>
+    <div class="flex items-center gap-1.5 pr-3 border-r border-border/10 justify-center min-w-max hidden md:flex">
+        <Zap class="w-3.5 h-3.5 text-emerald-500 fill-emerald-500/20" />
+        <span class="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">Log</span>
     </div>
 
     <!-- Active Grid -->
     <div class="grid grid-cols-4 md:flex items-center gap-2 w-full flex-1">
         
         <!-- Asset -->
-        <div class="col-span-2 md:col-span-1 md:w-32 relative">
+        <div class="col-span-2 md:col-span-1 md:w-24 relative">
             <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Ativo</span>
             <Input 
                 bind:ref={assetInputRef}
@@ -214,7 +214,7 @@
         </div>
 
         <!-- Quantity -->
-        <div class="col-span-2 md:col-span-1 md:w-20 relative">
+        <div class="col-span-2 md:col-span-1 md:w-16 relative">
             <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Lotes</span>
             <Input 
                 type="number"
@@ -226,7 +226,7 @@
         </div>
 
         <!-- Result -->
-        <div class="col-span-2 md:w-32 relative flex-1 md:flex-none">
+        <div class="col-span-2 md:w-28 relative flex-1 md:flex-none">
             <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Resultado (R$)</span>
             <Input 
                 bind:ref={resultInputRef}
@@ -249,13 +249,13 @@
         <Button 
             disabled={isSubmitting || !asset || !resultInput}
             onclick={handleQuickSubmit}
-            class="w-full relative overflow-hidden h-10 px-6 font-bold bg-zinc-100 hover:bg-white text-zinc-900 shadow-xl shadow-white/5 group"
+            class="w-full relative overflow-hidden h-10 px-4 font-bold bg-zinc-100 hover:bg-white text-zinc-900 shadow-xl shadow-white/5 group"
         >
             {#if isSubmitting}
                 <Loader2 class="w-4 h-4 animate-spin" />
             {:else}
                 <div class="flex items-center gap-2">
-                    <span>Add</span>
+                    <span>{$t("common.add")}</span>
                     <div class="hidden md:flex items-center gap-1 opacity-40 ml-2">
                         <span class="text-[9px] px-1 py-0.5 border border-zinc-900/20 rounded font-mono">↵</span>
                     </div>

@@ -37,7 +37,14 @@
   --shadow-premium: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -5px rgba(0, 0, 0, 0.02);
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.4);
-  --glass-blur: blur(12px);
+  --glass-blur: 40px;
+  --glass-saturate: 180%;
+
+  /* Status Tokens (Canonical) */
+  --status-success: oklch(0.7 0.2 150); /* emerald-500 equivalent */
+  --status-warning: oklch(0.75 0.15 80); /* amber-500 equivalent */
+  --status-danger: oklch(0.6 0.2 25); /* rose-500 equivalent */
+  --status-info: oklch(0.6 0.18 250); /* blue-500 equivalent */
 
   --chart-1: oklch(0.6 0.18 250);
   --chart-2: oklch(0.5 0.2 150);
@@ -74,6 +81,13 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.551 0.027 264.364);
+
+  /* Dark Status Overrides (Optional, keeping same for now for consistency) */
+  --status-success: oklch(0.7 0.2 150);
+  --status-warning: oklch(0.75 0.15 80);
+  --status-danger: oklch(0.6 0.2 25);
+  --status-info: oklch(0.6 0.18 250);
+
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -129,8 +143,15 @@
   /* Premium Design Tokens */
   --shadow-premium: var(--shadow-premium);
   --glass-blur: var(--glass-blur);
+  --glass-saturate: var(--glass-saturate);
   --glass-bg: var(--glass-bg);
   --glass-border: var(--glass-border);
+
+  /* Status Colors */
+  --color-status-success: var(--status-success);
+  --color-status-warning: var(--status-warning);
+  --color-status-danger: var(--status-danger);
+  --color-status-info: var(--status-info);
 
   /* Dashboard Custom Tokens */
   --dashboard-surface: var(--card);
@@ -142,6 +163,10 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --font-heading: 'Outfit', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  /* Institutional Typography scale */
+  --font-weight-institutional: 900;
+  --letter-spacing-institutional: 0.25em;
 }
 
 @layer base {
@@ -160,23 +185,23 @@
 
   /* Global Glassmorphism for Cards */
   .card-glass {
-    @apply bg-card rounded-[var(--radius)] antialiased;
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid oklch(1 0 0 / 30%);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    @apply bg-card rounded-[var(--radius)] antialiased relative overflow-hidden;
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid oklch(1 0 0 / 20%);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   /* Light mode improvement for glass contrast */
   :root:not(.dark) .card-glass {
-    border-color: oklch(0.25 0.05 260 / 15%);
-    background: oklch(1 0 0 / 80%);
+    border-color: oklch(0.25 0.05 260 / 10%);
+    background: oklch(1 0 0 / 75%);
   }
 
   .card-glass:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
     border-color: var(--primary);
   }
 }

@@ -12,8 +12,7 @@ import type { RiskProfile } from "$lib/types";
     import { t } from "svelte-i18n";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";
-
-
+    import { accountsStore } from "$lib/stores/accounts.svelte";
 
     import RiskProfileDetails from "$lib/components/settings/RiskProfileDetails.svelte";
 
@@ -67,6 +66,45 @@ import type { RiskProfile } from "$lib/types";
             }
             deleteId = null;
         }
+    }
+
+    function getEffectiveLimits(profile: RiskProfile) {
+        let dailyLoss = profile.max_daily_loss;
+        let dailyTarget = profile.daily_target;
+
+        if (profile.use_advanced_rules && profile.risk_rules) {
+            const lossRule = profile.risk_rules.find(r => r.enabled && r.target_type === 'max_daily_loss');
+            if (lossRule) dailyLoss = Number(lossRule.value);
+            
+            const targetRule = profile.risk_rules.find(r => r.enabled && r.target_type === 'profit_target');
+            if (targetRule) dailyTarget = Number(targetRule.value);
+        }
+        
+        return { dailyLoss, dailyTarget };
+    }
+
+    function getRiskValue(p: RiskProfile) {
+        let capital = 0;
+        if (p.capital_source === "Fixed") {
+            capital = p.fixed_capital;
+        } else if (p.capital_source === "LinkedAccount" && p.linked_account_id) {
+            const acc = accountsStore.accounts.find((a) => a.id === p.linked_account_id);
+            if (acc) capital = acc.balance;
+        }
+
+        return (capital * p.max_risk_per_trade_percent) / 100;
+    }
+
+    function getPlanInfo(p: RiskProfile) {
+        if (!p.growth_plan_id) return null;
+        const plan = riskSettingsStore.growthPlans.find(gp => gp.id === p.growth_plan_id);
+        if (!plan || !plan.enabled) return null;
+        
+        return {
+            name: plan.name,
+            current: Math.min(plan.current_phase_index + 1, plan.phases.length),
+            total: plan.phases.length
+        };
     }
 </script>
 
@@ -133,36 +171,53 @@ import type { RiskProfile } from "$lib/types";
                     </div>
                 </Card.Header>
                 <Card.Content class="text-sm space-y-2 pb-2">
+                    {@const limits = getEffectiveLimits(profile)}
+                    {@const riskVal = getRiskValue(profile)}
+                    {@const planInfo = getPlanInfo(profile)}
+
                     <div class="flex justify-between items-center text-red-400">
                         <span>{$t("settings.risk.profiles.dailyLoss")}:</span>
-                        <span class="font-bold"
-                            >R$ {profile.max_daily_loss}</span
-                        >
+                        <span class="font-bold">R$ {limits.dailyLoss}</span>
                     </div>
-                    <div
-                        class="flex justify-between items-center text-green-400"
-                    >
+                    <div class="flex justify-between items-center text-green-400">
                         <span>{$t("settings.risk.profiles.dailyTarget")}:</span>
-                        <span class="font-bold">R$ {profile.daily_target}</span>
+                        <span class="font-bold">R$ {limits.dailyTarget}</span>
                     </div>
+                    
                     <Separator class="my-2" />
-                    <div
-                        class="flex justify-between items-center text-muted-foreground text-xs"
-                    >
-                        <span>Trades: {profile.max_trades_per_day}</span>
-                        <span
-                            >{$t("settings.risk.maxRiskPerTradeShort") ||
-                                "Risco/Trade"}: {profile.max_risk_per_trade_percent}%</span
-                        >
+                    
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center text-xs text-muted-foreground">
+                            <span>{$t("settings.risk.capitalSource") || "Fundo"}:</span>
+                            <span class="text-foreground">
+                                {profile.capital_source === 'Fixed' ? 'Fixo' : 'Conta'} (R$ {profile.capital_source === 'Fixed' ? profile.fixed_capital : (accountsStore.accounts.find(a => a.id === profile.linked_account_id)?.balance || 0)})
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs text-muted-foreground">
+                            <span>Risco/Trade:</span>
+                            <span class="font-medium text-foreground">
+                                {profile.max_risk_per_trade_percent}% <span class="text-[10px] opacity-70">(R$ {riskVal.toFixed(2)})</span>
+                            </span>
+                        </div>
                     </div>
-                    {#if profile.lock_on_loss}
-                        <div class="flex justify-center pt-1">
-                            <Badge variant="destructive" class="text-[10px] h-5"
-                                >{$t("settings.risk.lockOnLossShort") ||
-                                    "Bloqueia Plataforma"}</Badge
-                            >
+
+                    {#if planInfo}
+                        <div class="mt-3 p-2 rounded bg-primary/5 border border-primary/10">
+                            <div class="flex justify-between items-center text-[10px] mb-1">
+                                <span class="uppercase font-bold text-primary">Plano Ativo</span>
+                                <span class="text-muted-foreground">Fase {planInfo.current}/{planInfo.total}</span>
+                            </div>
+                            <div class="text-[11px] font-medium truncate">{planInfo.name}</div>
+                            <div class="mt-1.5 h-1 w-full bg-primary/10 rounded-full overflow-hidden">
+                                <div class="h-full bg-primary" style="width: {(planInfo.current / planInfo.total) * 100}%"></div>
+                            </div>
                         </div>
                     {/if}
+
+                    <div class="flex justify-between items-center text-muted-foreground text-[10px] pt-2">
+                        <span>Trades Máx: {profile.max_trades_per_day}</span>
+                        <span>Lock on Loss: {profile.lock_on_loss ? 'Sim' : 'Não'}</span>
+                    </div>
                 </Card.Content>
                 <Card.Footer class="justify-between items-center pt-2">
                     <div>

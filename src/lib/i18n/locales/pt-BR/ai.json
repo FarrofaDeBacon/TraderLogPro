@@ -1,5 +1,5 @@
 {
-    "cockpit": {
+    "aiCockpit": {
         "ctaBtn": "Cockpit Analítico",
         "health": {
             "title": "Saúde Algorítmica",
@@ -21,12 +21,32 @@
             "healthy": "Execução estável. Nenhuma falha detectada.",
             "desc": "Cruzamos as descobertas matemáticas da esquerda com o motor da Inteligência Artificial para gerar dicas táticas instantâneas."
         },
+        "aiPsychology": {
+            "title": "Estratégia vs Psicologia",
+            "dominantState": "Estado Dominante",
+            "netProfit": "Lucro Líquido",
+            "loss": "Prejuízo",
+            "history": "Seu histórico algorítmico de comportamento na mesa."
+        },
         "psychology": {
             "title": "Estratégia vs Psicologia",
             "dominantState": "Estado Dominante",
             "netProfit": "Lucro Líquido",
             "loss": "Prejuízo",
             "history": "Seu histórico algorítmico de comportamento na mesa."
+        },
+        "values": {
+            "HOT": "QUENTE",
+            "COLD": "FRIO",
+            "NEUTRAL": "NEUTRO",
+            "LOW": "BAIXO",
+            "CRITICAL": "CRÍTICO",
+            "STABLE": "ESTÁVEL",
+            "VOLATILE": "VOLÁTIL",
+            "BUY": "COMPRA",
+            "SELL": "VENDA",
+            "winRateShort": "Tx Vit",
+            "INSUFFICIENT_DATA": "DADOS INSUFICIENTES"
         }
     }
 }

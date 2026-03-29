@@ -509,7 +509,8 @@
                     "points": "Points"
                 },
                 "save": "Save",
-                "unitLabel": "Unit Label"
+                "unitLabel": "Unit Label",
+                "unitLabelPlaceholder": "Ex: Pts, Contracts, etc."
             },
             "labels": {
                 "brokerageProfile": "Brokerage Profile",
@@ -926,7 +927,10 @@
                 "risk": "Manage risk limits",
                 "strategies": "Manage your strategies",
                 "tags": "Manage custom tags",
-                "timeframes": "Manage chart intervals"
+                "timeframes": "Manage chart intervals",
+                "asset-profiles": "Configure limits and specific rules for each asset.",
+                "risk-management": "Configure your global risk plan and loss limits.",
+                "growth-plans": "Create plans with automatic phase progression and regression."
             },
             "emotionalStates": "Emotional States",
             "fees": "Fees",
@@ -955,8 +959,11 @@
             "strategies": "Strategies",
             "tags": "Tags",
             "timeframes": "Timeframes",
+            "asset-profiles": "Asset Profiles",
             "assetProfiles": "Asset Profiles",
+            "risk-management": "Risk Management",
             "riskManagement": "Risk Management",
+            "growth-plans": "Growth Plans",
             "growthPlans": "Growth Plans"
         },
         "profile": {

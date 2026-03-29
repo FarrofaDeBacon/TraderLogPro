@@ -4,9 +4,9 @@
   "version": "0.2.2",
   "identifier": "com.traderlog.pro",
   "build": {
-    "beforeDevCommand": "pnpm run dev",
+    "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:3005",
-    "beforeBuildCommand": "pnpm run build",
+    "beforeBuildCommand": "npm run build",
     "frontendDist": "../build"
   },
   "app": {

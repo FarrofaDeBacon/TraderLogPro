@@ -1,4 +1,5 @@
-import { invoke } from "@tauri-apps/api/core";
+import { safeInvoke } from "$lib/services/tauri";
+import { toast } from "svelte-sonner";
 import type { RiskProfile, AssetRiskProfile, GrowthPlan, RiskRule } from "$lib/types";
 
 export class RiskSettingsStore {
@@ -10,10 +11,40 @@ export class RiskSettingsStore {
         return this.riskProfiles.find(p => p.active) || this.riskProfiles[0];
     }
 
+    /**
+     * Resolução Única de Contexto: Encontra o escopo (perfil de grupo) que governa um ativo.
+     * Fonte de verdade única para Cockpit e Engines.
+     */
+    getScopeForAsset(assetId: string | null): AssetRiskProfile | undefined {
+        if (!assetId) return undefined;
+        return this.assetRiskProfiles.find(p => p.asset_ids?.includes(assetId));
+    }
+
+    async loadData() {
+        try {
+            console.log("[RiskSettingsStore] Loading all risk data...");
+            this.riskProfiles = await safeInvoke<RiskProfile[]>("get_risk_profiles") || [];
+            this.assetRiskProfiles = await safeInvoke<AssetRiskProfile[]>("get_asset_risk_profiles") || [];
+            this.growthPlans = await safeInvoke<GrowthPlan[]>("get_growth_plans") || [];
+            
+            console.log("[RiskSettingsStore] Data loaded: ", {
+                profiles: this.riskProfiles.length,
+                assets: this.assetRiskProfiles.length,
+                plans: this.growthPlans.length
+            });
+            
+            // Auto-migrações redundantes para garantir integridade
+            await this.migrateLegacyRiskRules();
+            await this.migrateAssetScopes();
+        } catch (e) {
+            console.error("[RiskSettingsStore] Error loading risk data:", e);
+        }
+    }
+
     async saveRiskProfiles() {
         for (const profile of this.riskProfiles) {
             try {
-                await invoke("save_risk_profile", { profile: $state.snapshot(profile) });
+                await safeInvoke("save_risk_profile", { profile: $state.snapshot(profile) });
             } catch (e) {
                 console.error("[RiskSettingsStore] Error saving risk profile:", e);
             }
@@ -23,7 +54,7 @@ export class RiskSettingsStore {
     async saveAssetRiskProfiles() {
         for (const profile of this.assetRiskProfiles) {
             try {
-                await invoke("save_asset_risk_profile", { profile: $state.snapshot(profile) });
+                await safeInvoke("save_asset_risk_profile", { profile: $state.snapshot(profile) });
             } catch (e) {
                 console.error("[RiskSettingsStore] Error saving asset risk profile:", e);
             }
@@ -33,7 +64,7 @@ export class RiskSettingsStore {
     async saveGrowthPlans() {
         for (const plan of this.growthPlans) {
             try {
-                await invoke("save_growth_plan", { plan: $state.snapshot(plan) });
+                await safeInvoke("save_growth_plan", { plan: $state.snapshot(plan) });
             } catch (e) {
                 console.error("[RiskSettingsStore] Error saving growth plan:", e);
             }
@@ -53,7 +84,7 @@ export class RiskSettingsStore {
     
     async deleteRiskProfile(id: string): Promise<{ success: boolean; error?: string }> {
         try {
-            await invoke("delete_risk_profile", { id });
+            await safeInvoke("delete_risk_profile", { id });
             this.riskProfiles = this.riskProfiles.filter(r => r.id !== id);
             return { success: true };
         } catch (e) {
@@ -107,18 +138,48 @@ export class RiskSettingsStore {
 
     // --- Asset Risk Profiles CRUD ---
     addAssetRiskProfile(item: Omit<AssetRiskProfile, "id">) {
-        this.assetRiskProfiles.push({ ...item, id: crypto.randomUUID() });
+        // Garantir que asset_ids existe
+        const newItem = { 
+            ...item, 
+            id: crypto.randomUUID(),
+            asset_ids: item.asset_ids || []
+        };
+        this.assetRiskProfiles.push(newItem);
         this.saveAssetRiskProfiles();
     }
     
     updateAssetRiskProfile(id: string, item: Partial<AssetRiskProfile>) {
-        this.assetRiskProfiles = this.assetRiskProfiles.map(r => r.id === id ? { ...r, ...item } : r);
+        this.assetRiskProfiles = this.assetRiskProfiles.map(r => {
+            if (r.id === id) {
+                // Se o índice da fase mudou, atualizamos o timestamp de início
+                const phaseChanged = item.current_phase_index !== undefined && item.current_phase_index !== r.current_phase_index;
+                
+                // Validação de Integridade: Um ativo não pode estar em dois escopos
+                if (item.asset_ids) {
+                    for (const aid of item.asset_ids) {
+                        const otherScope = this.assetRiskProfiles.find(p => p.id !== id && p.asset_ids?.includes(aid));
+                        if (otherScope) {
+                            console.warn(`[RiskSettingsStore] Asset ${aid} already belongs to scope ${otherScope.name}. Dual membership prevented.`);
+                            toast.error(`Ativo ${aid} já pertence ao grupo "${otherScope.name}".`);
+                            return r; // Cancela atualização
+                        }
+                    }
+                }
+
+                return { 
+                    ...r, 
+                    ...item,
+                    currentPhaseStartedAt: phaseChanged ? new Date().toISOString() : r.currentPhaseStartedAt 
+                };
+            }
+            return r;
+        });
         this.saveAssetRiskProfiles();
     }
     
     async deleteAssetRiskProfile(id: string): Promise<{ success: boolean; error?: string }> {
         try {
-            await invoke("delete_asset_risk_profile", { id });
+            await safeInvoke("delete_asset_risk_profile", { id });
             this.assetRiskProfiles = this.assetRiskProfiles.filter(r => r.id !== id);
             return { success: true };
         } catch (e) {
@@ -128,20 +189,55 @@ export class RiskSettingsStore {
 
     // --- Growth Plans CRUD ---
     addGrowthPlan(item: Omit<GrowthPlan, "id">) {
-        const plan: GrowthPlan = { ...item, id: crypto.randomUUID() };
+        const plan: GrowthPlan = { 
+            ...item, 
+            id: crypto.randomUUID(),
+            current_phase_index: 0,
+            enabled: true,
+            currentPhaseStartedAt: new Date().toISOString()
+        };
         this.growthPlans.push(plan);
         this.saveGrowthPlans();
         return plan.id;
     }
 
     updateGrowthPlan(id: string, item: Partial<GrowthPlan>) {
-        this.growthPlans = this.growthPlans.map(p => p.id === id ? { ...p, ...item } : p);
+        console.log(`[RiskSettings] Updating GrowthPlan ${id}`, item);
+        this.growthPlans = this.growthPlans.map(p => {
+            if (p.id === id) {
+                // Proteção de índice: garante que não ultrapasse o número de fases
+                let newIndex = item.current_phase_index;
+                const phasesCount = item.phases?.length ?? p.phases?.length ?? 0;
+
+                console.log(`[RiskSettings] Plan ${p.name}: current_index=${p.current_phase_index}, requested_index=${newIndex}, phasesCount=${phasesCount}`);
+
+                if (newIndex !== undefined && phasesCount > 0) {
+                    newIndex = Math.max(0, Math.min(newIndex, phasesCount - 1));
+                }
+
+                const phaseChanged = newIndex !== undefined && newIndex !== p.current_phase_index;
+                
+                const updated = { 
+                    ...p, 
+                    ...item,
+                    current_phase_index: newIndex ?? p.current_phase_index,
+                    currentPhaseStartedAt: phaseChanged ? new Date().toISOString() : p.currentPhaseStartedAt 
+                };
+
+                if (phaseChanged) {
+                    console.log(`[RiskSettings] Phase changed to ${updated.current_phase_index}. StartedAt: ${updated.currentPhaseStartedAt}`);
+                }
+
+                return updated;
+            }
+            return p;
+        });
         this.saveGrowthPlans();
     }
 
     async deleteGrowthPlan(id: string): Promise<{ success: boolean; error?: string }> {
         try {
-            await invoke("delete_growth_plan", { id });
+            await safeInvoke("delete_growth_plan", { id });
             this.growthPlans = this.growthPlans.filter(p => p.id !== id);
             return { success: true };
         } catch (e) {
@@ -349,6 +445,47 @@ export class RiskSettingsStore {
         if (migratedCount > 0) {
             await this.saveRiskProfiles();
             console.log(`[RiskSettingsStore] Legacy Operational Rules migration completed. Migrated ${migratedCount} profiles.`);
+        }
+    }
+
+    /**
+     * Automigração Idempotente: asset_id -> asset_ids[] + asset_type_id
+     * Garante que perfis individuais antigos funcionem na nova arquitetura de escopo e categorização.
+     */
+    async migrateAssetScopes() {
+        // We need the assetsStore to resolve the asset_type_id
+        const { assetsStore } = await import("./assets.svelte");
+        
+        let migratedCount = 0;
+        this.assetRiskProfiles = this.assetRiskProfiles.map(p => {
+            let updated = { ...p };
+            let profileUpdated = false;
+
+            // 1. Migrar asset_id -> asset_ids[]
+            if (p.asset_id && (!p.asset_ids || p.asset_ids.length === 0)) {
+                updated.asset_ids = [p.asset_id];
+                profileUpdated = true;
+            }
+
+            // 2. Preencher asset_type_id se estiver faltando (usando o primeiro ativo do grupo)
+            if (!updated.asset_type_id && updated.asset_ids && updated.asset_ids.length > 0) {
+                const firstAsset = assetsStore.assets.find(a => a.id === updated.asset_ids[0]);
+                if (firstAsset) {
+                    updated.asset_type_id = firstAsset.asset_type_id;
+                    profileUpdated = true;
+                }
+            }
+
+            if (profileUpdated) {
+                migratedCount++;
+                return updated;
+            }
+            return p;
+        });
+
+        if (migratedCount > 0) {
+            console.log(`[RiskSettingsStore] Asset Scope migration: Migrated ${migratedCount} profiles to hierarchical structure.`);
+            await this.saveAssetRiskProfiles();
         }
     }
 }

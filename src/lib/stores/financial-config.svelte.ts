@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { safeInvoke } from "$lib/services/tauri";
 import { getLocalDatePart } from "$lib/utils";
 import type {
     FeeProfile, TaxRule, TaxMapping, TaxProfile, TaxProfileEntry, CashTransaction
@@ -20,15 +20,6 @@ export class FinancialConfigStore {
         if (this.isLoading) return;
         this.isLoading = true;
         try {
-            const safeInvoke = async <T>(command: string, label: string): Promise<T | null> => {
-                try {
-                    return await invoke(command) as T;
-                } catch (e) {
-                    console.error(`[FinancialConfigStore] ERROR loading ${label}:`, e);
-                    return null;
-                }
-            };
-
             const [
                 feesRes,
                 taxRulesRes,
@@ -62,7 +53,7 @@ export class FinancialConfigStore {
     // --- Fees ---
     async saveFees() {
         try {
-            await invoke("save_fees", { fees: $state.snapshot(this.fees) });
+            await safeInvoke("save_fees", { fees: $state.snapshot(this.fees) });
             return { success: true };
         } catch (e) {
             return { success: false, error: String(e) };
@@ -81,7 +72,7 @@ export class FinancialConfigStore {
 
     async deleteFeeProfile(id: string): Promise<{ success: boolean; error?: string }> {
         if (assetsStore.assets.some(a => a.default_fee_id === id)) return { success: false, error: "This Fee Profile is used by Assets." };
-        await invoke("delete_fee", { id });
+        await safeInvoke("delete_fee", { id });
         this.fees = this.fees.filter(f => f.id !== id);
         return { success: true };
     }
@@ -90,7 +81,7 @@ export class FinancialConfigStore {
     async addTaxRule(item: Omit<TaxRule, "id">) {
         const id = crypto.randomUUID();
         const rule = { ...item, id };
-        await invoke("save_tax_rule", { rule: $state.snapshot(rule) });
+        await safeInvoke("save_tax_rule", { rule: $state.snapshot(rule) });
         this.taxRules.push(rule);
     }
 
@@ -98,7 +89,7 @@ export class FinancialConfigStore {
         const rule = this.taxRules.find(r => r.id === id);
         if (rule) {
             const updated = { ...rule, ...item };
-            await invoke("save_tax_rule", { rule: $state.snapshot(updated) });
+            await safeInvoke("save_tax_rule", { rule: $state.snapshot(updated) });
             this.taxRules = this.taxRules.map(r => r.id === id ? updated : r);
         }
     }
@@ -108,7 +99,7 @@ export class FinancialConfigStore {
         if (this.taxProfileEntries.some(e => e.tax_rule_id === id)) return { success: false, error: "This rule is used in Tax Profiles." };
 
         try {
-            await invoke("delete_tax_rule", { id });
+            await safeInvoke("delete_tax_rule", { id });
             this.taxRules = this.taxRules.filter(r => r.id !== id);
             return { success: true };
         } catch (e) {
@@ -120,7 +111,7 @@ export class FinancialConfigStore {
     async addTaxProfile(item: Omit<TaxProfile, "id">) {
         const id = crypto.randomUUID();
         const profile = { ...item, id };
-        await invoke("save_tax_profile", { profile: $state.snapshot(profile) });
+        await safeInvoke("save_tax_profile", { profile: $state.snapshot(profile) });
         this.taxProfiles.push(profile);
         return id;
     }
@@ -129,7 +120,7 @@ export class FinancialConfigStore {
         const profile = this.taxProfiles.find(p => p.id === id);
         if (profile) {
             const updated = { ...profile, ...item };
-            await invoke("save_tax_profile", { profile: $state.snapshot(updated) });
+            await safeInvoke("save_tax_profile", { profile: $state.snapshot(updated) });
             this.taxProfiles = this.taxProfiles.map(p => p.id === id ? updated : p);
         }
     }
@@ -141,7 +132,7 @@ export class FinancialConfigStore {
             return { success: false, error: "This Profile is used by Assets." };
         }
         try {
-            await invoke("delete_tax_profile", { id });
+            await safeInvoke("delete_tax_profile", { id });
             this.taxProfiles = this.taxProfiles.filter(p => p.id !== id);
             this.taxProfileEntries = this.taxProfileEntries.filter(e => e.tax_profile_id !== id);
             return { success: true };
@@ -153,13 +144,13 @@ export class FinancialConfigStore {
     async addTaxProfileEntry(item: Omit<TaxProfileEntry, "id">) {
         const id = crypto.randomUUID();
         const entry = { ...item, id };
-        await invoke("save_tax_profile_entry", { entry: $state.snapshot(entry) });
+        await safeInvoke("save_tax_profile_entry", { entry: $state.snapshot(entry) });
         this.taxProfileEntries.push(entry);
     }
 
     async deleteTaxProfileEntry(id: string) {
         try {
-            await invoke("delete_tax_profile_entry", { id });
+            await safeInvoke("delete_tax_profile_entry", { id });
             this.taxProfileEntries = this.taxProfileEntries.filter(e => e.id !== id);
         } catch (e) {
             console.error("Failed to delete profile entry", e);
@@ -174,7 +165,7 @@ export class FinancialConfigStore {
     async addTaxMapping(item: Omit<TaxMapping, "id">) {
         const id = crypto.randomUUID();
         const mapping = { ...item, id };
-        await invoke("save_tax_mapping", { mapping: $state.snapshot(mapping) });
+        await safeInvoke("save_tax_mapping", { mapping: $state.snapshot(mapping) });
         this.taxMappings.push(mapping);
     }
 
@@ -182,14 +173,14 @@ export class FinancialConfigStore {
         const mapping = this.taxMappings.find(m => m.id === id);
         if (mapping) {
             const updated = { ...mapping, ...item };
-            await invoke("save_tax_mapping", { mapping: $state.snapshot(updated) });
+            await safeInvoke("save_tax_mapping", { mapping: $state.snapshot(updated) });
             this.taxMappings = this.taxMappings.map(m => m.id === id ? updated : m);
         }
     }
 
     async deleteTaxMapping(id: string) {
         try {
-            await invoke("delete_tax_mapping", { id });
+            await safeInvoke("delete_tax_mapping", { id });
             this.taxMappings = this.taxMappings.filter(m => m.id !== id);
         } catch (e) {
             console.error("Error deleting tax mapping", e);
@@ -235,7 +226,7 @@ export class FinancialConfigStore {
                 this.cashTransactions.push(transaction);
             }
 
-            await invoke("save_cash_transaction", { transaction: $state.snapshot(transaction) });
+            await safeInvoke("save_cash_transaction", { transaction: $state.snapshot(transaction) });
 
             const account = accountsStore.accounts.find(a => a.id === item.account_id);
             if (account && amountDiff !== 0) {
@@ -253,7 +244,7 @@ export class FinancialConfigStore {
         try {
             const tx = this.cashTransactions.find(t => t.id === id);
             if (tx) {
-                await invoke("delete_cash_transaction", { id });
+                await safeInvoke("delete_cash_transaction", { id });
                 this.cashTransactions = this.cashTransactions.filter(t => t.id !== id);
                 const account = accountsStore.accounts.find(a => a.id === tx.account_id);
                 if (account) {
@@ -323,7 +314,7 @@ export class FinancialConfigStore {
 
     async loadCashTransactions() {
         try {
-            const result = await invoke("get_cash_transactions") as CashTransaction[];
+            const result = await safeInvoke<CashTransaction[]>("get_cash_transactions", "Cash Transactions Reload");
             if (result) {
                 this.cashTransactions = result;
             }

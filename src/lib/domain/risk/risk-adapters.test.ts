@@ -102,7 +102,7 @@ describe('Risk Adapters', () => {
         expect(snapshot.resultR).toBe(-0.5); 
     });
 
-    it('deve adaptar GrowthPhase', () => {
+    it('deve adaptar GrowthPhase para o formato genérico de condições', () => {
         const phase: AppGrowthPhase = {
             id: 'phase1',
             level: 1,
@@ -118,9 +118,19 @@ describe('Risk Adapters', () => {
         };
 
         const domainPhase = adaptGrowthPhaseToDomain(phase);
-        expect(domainPhase?.minWinRate).toBe(40);
-        expect(domainPhase?.minTrades).toBe(5);
-        expect(domainPhase?.maxDrawdownPercent).toBe(5);
-        expect(domainPhase?.allowPromotion).toBe(true); // Because length > 0
+        expect(domainPhase?.id).toBe('phase1');
+        expect(domainPhase?.maxContracts).toBe(1);
+        
+        // Validação das condições genéricas (nova arquitetura)
+        expect(domainPhase?.conditionsToAdvance).toHaveLength(2);
+        expect(domainPhase?.conditionsToAdvance?.[0].metric).toBe('WinRate');
+        expect(domainPhase?.conditionsToAdvance?.[0].value).toBe(40);
+        
+        expect(domainPhase?.conditionsToDemote).toHaveLength(1);
+        expect(domainPhase?.conditionsToDemote?.[0].metric).toBe('Drawdown');
+        expect(domainPhase?.conditionsToDemote?.[0].value).toBe(5);
+
+        expect(domainPhase?.allowPromotion).toBe(true);
+        expect(domainPhase?.allowRegression).toBe(true);
     });
 });

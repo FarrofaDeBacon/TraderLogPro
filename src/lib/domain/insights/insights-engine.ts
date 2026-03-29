@@ -37,16 +37,18 @@ export function generateTraderInsights(
         }];
     }
 
-    // 1. Filtrar trades de hoje
+    // Cache baseDate bounds for fast day checks
+    const baseTimeStart = new Date(baseDate).setHours(0,0,0,0);
+    const baseTimeEnd = new Date(baseDate).setHours(23,59,59,999);
+
+    // 1. Filtrar trades de hoje usando timestamp pré-processado ou date string
     const todaysTrades = trades.filter(t => {
-        try {
-            const tDate = parseISO(t.exit_date || t.date);
-            return isSameDay(tDate, baseDate);
-        } catch { return false; }
+        const tTime = t.processed_timestamp || (t.date ? new Date(t.date).getTime() : 0);
+        return tTime >= baseTimeStart && tTime <= baseTimeEnd;
     }).sort((a, b) => {
-        const da = parseSafeDate(a.exit_date || a.date).getTime();
-        const db = parseSafeDate(b.exit_date || b.date).getTime();
-        return da - db;
+        const timeA = a.processed_timestamp || (a.date ? new Date(a.date).getTime() : 0);
+        const timeB = b.processed_timestamp || (b.date ? new Date(b.date).getTime() : 0);
+        return timeA - timeB;
     });
 
     const todaysResults = todaysTrades.map(t => convertTradeResult(t));
@@ -56,7 +58,6 @@ export function generateTraderInsights(
     if (tradesToday >= 3) {
         let consecutiveLosses = 0;
         let maxConsecutiveLosses = 0;
-        // Looking at the sequence
         for (const res of todaysResults) {
             if (res < 0) {
                 consecutiveLosses++;
@@ -72,7 +73,7 @@ export function generateTraderInsights(
                 type: 'danger',
                 title: 'Tilt Iminente (Revenge Trading)',
                 description: `Você sofreu ${maxConsecutiveLosses} perdas seguidas hoje. O impulso de recuperar logo em seguida destrói contas. Limpe a mente.`,
-                weight: 100 // Maior prioridade
+                weight: 100
             });
         }
     }
@@ -86,7 +87,6 @@ export function generateTraderInsights(
             if (runningDayPnL > peakDay) peakDay = runningDayPnL;
         }
 
-        // Se devolveu mais de 40% do pico e o pico foi significante (ex: bateu R$100 e caiu pra R$50)
         if (peakDay > 0 && dayResult < peakDay * 0.6) {
             insights.push({
                 id: 'profit_giveback',
@@ -118,29 +118,27 @@ export function generateTraderInsights(
     }
 
     // --- ALGORITMO 4: TIME-OF-DAY EDGE (Positive) ---
-    // Analisaremos o histórico (não só de hoje) para achar onde ele ganha mais
     let morningWin = 0; let morningLoss = 0;
     let afternoonWin = 0; let afternoonLoss = 0;
 
+    // Otimizado: loop linear usando processed_timestamp e pré-convertendo apenas o necessário
     trades.forEach(t => {
-        try {
-            const d = parseSafeDate(t.exit_date || t.date);
-            const res = convertTradeResult(t);
-            const hour = d.getHours();
+        const tTime = t.processed_timestamp || 0;
+        const d = new Date(tTime);
+        const hour = d.getHours();
+        const res = convertTradeResult(t);
 
-            if (hour >= 9 && hour < 12) {
-                if (res > 0) morningWin += res; else morningLoss += Math.abs(res);
-            } else if (hour >= 12 && hour < 18) {
-                if (res > 0) afternoonWin += res; else afternoonLoss += Math.abs(res);
-            }
-        } catch {}
+        if (hour >= 9 && hour < 12) {
+            if (res > 0) morningWin += res; else morningLoss += Math.abs(res);
+        } else if (hour >= 12 && hour < 18) {
+            if (res > 0) afternoonWin += res; else afternoonLoss += Math.abs(res);
+        }
     });
 
     const morningNet = morningWin - morningLoss;
     const afternoonNet = afternoonWin - afternoonLoss;
     const totalNetHistorical = morningNet + afternoonNet;
 
-    // Se o trader ganha incrivelmente mais em uma janela de tempo
     if (morningNet > 0 && morningNet > afternoonNet * 2 && (morningNet / (totalNetHistorical || 1)) > 0.7) {
         insights.push({
             id: 'time_edge_morning',
@@ -178,10 +176,8 @@ export function generateTraderInsights(
         });
     }
 
-    // Ordenação final
     insights.sort((a, b) => b.weight - a.weight);
 
-    // Se não tiver nenhum, adicionar o default
     if (insights.length === 0) {
         if (tradesToday === 0) {
             insights.push({
@@ -213,20 +209,20 @@ export function getLiveIntervention(
     trades: any[],
     baseDate: Date,
     convertTradeResult: TradeConverter,
-    riskCockpitState?: any // To check daily loss limit
+    riskCockpitState?: any
 ): LiveIntervention | null {
     if (!trades || trades.length === 0) return null;
 
-    // Filter today's trades
+    const baseTimeStart = new Date(baseDate).setHours(0,0,0,0);
+    const baseTimeEnd = new Date(baseDate).setHours(23,59,59,999);
+
     const todaysTrades = trades.filter(t => {
-        try {
-            const tDate = parseISO(t.exit_date || t.date);
-            return isSameDay(tDate, baseDate);
-        } catch { return false; }
+        const tTime = t.processed_timestamp || (t.date ? new Date(t.date).getTime() : 0);
+        return tTime >= baseTimeStart && tTime <= baseTimeEnd;
     }).sort((a, b) => {
-        const da = parseSafeDate(a.exit_date || a.date).getTime();
-        const db = parseSafeDate(b.exit_date || b.date).getTime();
-        return da - db;
+        const timeA = a.processed_timestamp || (a.date ? new Date(a.date).getTime() : 0);
+        const timeB = b.processed_timestamp || (b.date ? new Date(b.date).getTime() : 0);
+        return timeA - timeB;
     });
 
     if (todaysTrades.length === 0) return null;
@@ -234,25 +230,25 @@ export function getLiveIntervention(
     const todaysResults = todaysTrades.map(t => convertTradeResult(t));
     const dayResult = todaysResults.reduce((acc, val) => acc + val, 0);
 
-    // 1. Check Daily Loss Limit (Danger)
-    if (riskCockpitState && riskCockpitState.dailyLossLimit > 0) {
-        if (dayResult < 0 && Math.abs(dayResult) >= riskCockpitState.dailyLossLimit * 0.8) {
+    const dailyLossLimit = riskCockpitState?.dailyRiskStatus?.effectiveMaxDailyLoss || riskCockpitState?.dailyLossLimit || 0;
+
+    if (dailyLossLimit > 0) {
+        if (dayResult < 0 && Math.abs(dayResult) >= dailyLossLimit * 0.8) {
             return {
                 id: 'daily_limit_danger',
                 type: 'danger',
-                message: `Loss Diário Crítico: Você atingiu ${(Math.abs(dayResult) / riskCockpitState.dailyLossLimit * 100).toFixed(0)}% do limite máximo.`,
+                message: `Loss Diário Crítico: Você atingiu ${(Math.abs(dayResult) / dailyLossLimit * 100).toFixed(0)}% do limite máximo.`,
                 action: 'PARE DE OPERAR'
             };
         }
     }
 
-    // 2. Check Consecutive Losses (Warning/Danger)
     let consecutiveLosses = 0;
     for (let i = todaysResults.length - 1; i >= 0; i--) {
         if (todaysResults[i] < 0) {
             consecutiveLosses++;
         } else if (todaysResults[i] > 0) {
-            break; // Stop counting backwards at the first win
+            break;
         }
     }
 

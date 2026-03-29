@@ -27,7 +27,8 @@
         Sparkles,
         ArrowRight,
         Loader2,
-        RefreshCw
+        RefreshCw,
+        Layers
     } from "lucide-svelte";
     import { llmService } from "$lib/services/llmService";
     import { integrationsStore } from "$lib/stores/integrations.svelte";
@@ -35,6 +36,9 @@
     import { Button } from "$lib/components/ui/button";
     import DailyCheckinDialog from "$lib/components/psychology/DailyCheckinDialog.svelte";
     import PsychologyAICard from "$lib/components/psychology/PsychologyAICard.svelte";
+    import PsychologyHeader from "$lib/components/psychology/PsychologyHeader.svelte";
+    import PsychologyStatsGrid from "$lib/components/psychology/PsychologyStatsGrid.svelte";
+    import { SystemCard, SystemHeader } from "$lib/components/ui/system";
     import DateFilter from "$lib/components/filters/DateFilter.svelte";
     import { toast } from "svelte-sonner";
     import * as Dialog from "$lib/components/ui/dialog";
@@ -813,33 +817,10 @@
 
 <div class="space-y-6 animate-in fade-in duration-500">
     <div class="flex-1 flex flex-col space-y-8 p-4 md:p-8">
-        <div
-            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-        >
-            <div class="space-y-1">
-                <h2 class="text-3xl font-bold text-foreground tracking-tight">
-                    {$t("psychology.title")}
-                </h2>
-                <p class="text-muted-foreground">
-                    {$t("psychology.description")}
-                </p>
-            </div>
-        </div>
-
-        <div
-            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-        >
-            <div class="flex items-center gap-2">
-                <Button variant="outline" size="sm" onclick={syncWeights}>
-                    <TrendingUp class="w-3 h-3 mr-1" />
-                    {$t("psychology.syncWeights")}
-                </Button>
-                <Button onclick={() => (showCheckinDialog = true)} size="sm">
-                    <Brain class="w-4 h-4 mr-2" />
-                    {$t("psychology.checkin.button")}
-                </Button>
-            </div>
-        </div>
+        <PsychologyHeader 
+            onSyncWeights={syncWeights}
+            onNewCheckin={() => (showCheckinDialog = true)}
+        />
 
         <Separator class="bg-border/20" />
 
@@ -851,30 +832,8 @@
                 {/each}
             </div>
         {:else}
-            <!-- Camada Tática: 4 KPIs -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 flex-wrap">
-                <!-- SCORE -->
-                <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-primary/50 relative overflow-hidden">
-                    <div class="absolute -right-4 -bottom-4 opacity-5"><Brain class="w-16 h-16"/></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{$t('psychology.kpis.psychoScore')}</span>
-                    <span class="text-3xl font-black mt-2 {psychoDiagnosis.psychoScore >= 70 ? 'text-emerald-500' : psychoDiagnosis.psychoScore >= 40 ? 'text-amber-500' : 'text-rose-500'}">{psychoDiagnosis.psychoScore}</span>
-                </div>
-                <!-- MELHOR EMOÇÃO -->
-                <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-emerald-500/50">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{$t('psychology.kpis.bestPerformance')}</span>
-                    <span class="text-xl font-black mt-2 text-emerald-500 uppercase truncate">{psychoDiagnosis.saviorEmotion?.emotionName || '-'}</span>
-                </div>
-                <!-- PIOR EMOÇÃO -->
-                <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-rose-500/50">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{$t('psychology.kpis.offender')}</span>
-                    <span class="text-xl font-black mt-2 text-rose-500 uppercase truncate">{psychoDiagnosis.killerEmotion?.emotionName || '-'}</span>
-                </div>
-                <!-- % LOSSES ESTADO NEGATIVO -->
-                <div class="card-glass p-4 rounded-xl flex flex-col justify-between border-l-4 border-l-amber-500/50">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{$t('psychology.kpis.negativeLosses')}</span>
-                    <span class="text-3xl font-black mt-2 text-amber-500">{psychoDiagnosis.killerEmotionLossPercent ? (psychoDiagnosis.killerEmotionLossPercent * 100).toFixed(0) : 0}%</span>
-                </div>
-            </div>
+        <!-- Camada Tática: 4 KPIs (Hydra V4 Stats Grid) -->
+        <PsychologyStatsGrid {psychoDiagnosis} />
 
 
 
@@ -882,8 +841,11 @@
             <!-- Camada de Decisão: O Mapa, O Overview e Os Protocolos -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 pt-4 mb-4 lg:items-start">
                 <!-- Radar Chart (Comportamento) - 4/12 -->
-                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
-                    <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">{$t('psychology.charts.theMap')}</h3>
+                <SystemCard class="lg:col-span-4 p-4 h-[320px] shadow-sm flex flex-col">
+                    <SystemHeader 
+                        title={$t('psychology.charts.theMap')}
+                        class="mb-4"
+                    />
                     <div class="flex-1 w-full relative">
                         {#if radarChartOptions}
                             <EChart options={radarChartOptions} />
@@ -891,11 +853,14 @@
                             <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Sem dados</div>
                         {/if}
                     </div>
-                </div>
+                </SystemCard>
 
                 <!-- Pie Chart (Donut) - 4/12 -->
-                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
-                    <h3 class="text-[10px] whitespace-nowrap overflow-hidden text-ellipsis font-black uppercase tracking-widest text-muted-foreground mb-4">{$t('psychology.charts.top5')}</h3>
+                <SystemCard class="lg:col-span-4 p-4 shadow-sm flex flex-col h-[320px]">
+                    <SystemHeader 
+                        title={$t('psychology.charts.top5')}
+                        class="mb-4"
+                    />
                     <div class="flex-1 w-full relative">
                         {#if donutChartOptions && donutChartOptions.series[0].data.length > 0}
                             <EChart options={donutChartOptions} />
@@ -903,11 +868,14 @@
                             <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">Sem dados</div>
                         {/if}
                     </div>
-                </div>
+                </SystemCard>
 
                 <!-- Ranking de Emoções - 4/12 (Preenchendo o grid) -->
-                <div class="lg:col-span-4 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[320px]">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">{$t('psychology.charts.impactRanking')}</h3>
+                <SystemCard class="lg:col-span-4 p-4 shadow-sm flex flex-col h-[320px]">
+                    <SystemHeader 
+                        title={$t('psychology.charts.impactRanking')}
+                        class="mb-4"
+                    />
                     <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                         <table class="w-full text-left">
                            <thead class="sticky top-0 bg-background/80 backdrop-blur-sm z-10 border-b border-border/10">
@@ -930,30 +898,35 @@
                                  </tr>
                               {/each}
                            </tbody>
-                        </table>
+                         </table>
                     </div>
-                </div>
+                </SystemCard>
                 
                 <!-- Camada Interpretativa de IA (Agora em Largura Total ocupando 12/12) -->
-                <div class="lg:col-span-12 mt-2">
+                <SystemCard class="lg:col-span-12 mt-2">
                     <PsychologyAICard 
                         periodStr={currentPeriodStr}
                         metricsPayload={metricsPayloadObj}
                         hasActiveAiProvider={hasActiveAiProvider}
                     />
-                </div>
+                </SystemCard>
             </div>
 
             <!-- Camada Retrospectiva: Curva de Capital -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-4">
                 <!-- Curva de Capital (Largura Total - 12/12) -->
-                <div class="lg:col-span-12 card-glass rounded-xl p-4 shadow-sm flex flex-col h-[340px]">
-                    <div class="flex justify-between items-center mb-4 border-b border-border/40 pb-3">
-                         <h3 class="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{$t('psychology.charts.equityCurve')}</h3>
-                         <div class="scale-90 origin-right">
-                             <!-- Make sure lines inside <script> defined variables are correct -->
-                            <DateFilter bind:value={timeFilter} bind:startDate bind:endDate />
-                         </div>
+                <SystemCard class="lg:col-span-12 p-4 shadow-sm flex flex-col h-[340px]">
+                    <div class="mb-4 border-b border-border/40 pb-3">
+                         <SystemHeader 
+                             title={$t('psychology.charts.equityCurve')}
+                             icon={TrendingUp}
+                         >
+                            {#snippet actions()}
+                                <div class="scale-90 origin-right">
+                                    <DateFilter bind:value={timeFilter} bind:startDate bind:endDate />
+                                </div>
+                            {/snippet}
+                         </SystemHeader>
                     </div>
                     <div class="flex-1 w-full relative">
                         <!-- Make sure the div is hidden/displayed correctly based on data -->
@@ -964,7 +937,7 @@
                             <div class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed border-border/40 rounded-lg">{$t('psychology.charts.filterPeriod')}</div>
                         {/if}
                     </div>
-                </div>
+                </SystemCard>
             </div>
         {/if}
 
@@ -972,22 +945,26 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-20">
             <!-- Left: Hierarchical Analysis -->
             <div class="lg:col-span-8 space-y-4">
-                <h3 class="text-sm font-black uppercase tracking-widest text-muted-foreground/60">
-                    Sessões e Estrutura Hierárquica
-                </h3>
+                <SystemHeader 
+                    title="Sessões e Estrutura Hierárquica"
+                    icon={Layers}
+                    class="mb-2"
+                />
+                
                 {#if hierarchicalPsychologyData.length === 0}
                     <div
-                        class="h-40 flex items-center justify-center text-muted-foreground border-2 border-dashed rounded-xl border-border/50 uppercase text-[10px] font-black"
+                        class="h-40 flex items-center justify-center text-muted-foreground bg-card/20 border-2 border-dashed rounded-xl border-border/30 backdrop-blur-sm uppercase text-[9px] font-black tracking-widest"
                     >
                         {$t("general.noData")}
                     </div>
                 {:else}
-                    <HierarchicalList 
-                        data={hierarchicalPsychologyData}
-                        bind:expandedMonths
-                        bind:expandedWeeks
-                        mutualExclusion={true}
-                    >
+                    <SystemCard class="p-1 shadow-sm overflow-hidden">
+                        <HierarchicalList 
+                            data={hierarchicalPsychologyData}
+                            bind:expandedMonths
+                            bind:expandedWeeks
+                            mutualExclusion={true}
+                        >
                         {#snippet monthRight(month)}
                             <div class="flex items-center gap-2">
                                 {#if month.equivalentState}
@@ -1244,19 +1221,17 @@
                             </div>
                         {/snippet}
                     </HierarchicalList>
-                {/if}
-            </div>
+                </SystemCard>
+            {/if}
+        </div>
 
             <!-- Right: Journal List -->
             <div class="lg:col-span-4 space-y-4">
-                <h3
-                    class="text-sm font-black uppercase tracking-widest text-muted-foreground/60"
-                >
-                    {$t("psychology.journal.title")}
-                </h3>
-                <div
-                    class="rounded-xl border border-border/40 bg-card/20 backdrop-blur-sm overflow-hidden"
-                >
+                <SystemHeader 
+                    title={$t("psychology.journal.title")}
+                    class="mb-2"
+                />
+                <SystemCard class="overflow-hidden">
                     <div class="max-h-[70vh] overflow-y-auto">
                         <table class="w-full text-left">
                             <thead
@@ -1399,7 +1374,7 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </SystemCard>
             </div>
         </div>
     </div>

@@ -1,6 +1,6 @@
-import { invoke } from "@tauri-apps/api/core";
 import { fetch } from "@tauri-apps/plugin-http";
 import { getLocalDatePart } from "$lib/utils";
+import { safeInvoke } from "$lib/services/tauri";
 import { validateLicenseKey, computeCustomerId, type LicenseData } from "$lib/utils/license";
 
 // Mock Global Store for Settings (Simulating Backend DB)
@@ -24,6 +24,8 @@ import { financialConfigStore } from "./financial-config.svelte";
 import { userProfileStore } from "./user-profile.svelte";
 import { workspaceStore } from "./workspace.svelte";
 import { integrationsStore } from "./integrations.svelte";
+import { tradesStore } from "./trades.svelte";
+import { invokeWithTimeout } from "../utils";
 
 
 
@@ -42,84 +44,104 @@ class AppFacadeStore {
             return;
         }
         if (!silent) this.isLoadingData = true;
-        console.log("[SettingsStore] Starting loadData...");
+        console.log("[SettingsStore] Starting prioritized loadData...");
+
+        const startTime = performance.now();
 
         try {
-            const safeInvoke = async <T>(command: string, label: string): Promise<T | null> => {
-                try {
-                    const result = await invoke(command) as T;
-                    return result;
-                } catch (e) {
-                    console.error(`[SettingsStore] ERROR loading ${label}:`, e);
-                    return null;
-                }
-            };
 
-            const [
-                _userProfileSignal,
-                accountsRes,
-                currenciesRes,
-                marketsRes,
-                assetTypesRes,
-                assetsRes,
-                riskProfilesRes,
-                modalitiesRes,
-                indicatorsRes,
-                timeframesRes,
-                chartTypesRes,
-                assetRiskProfilesRes,
-                growthPlansRes,
-                _financialSignal,
-                _workspaceSignal,
-                _integrationsSignal
-            ] = await Promise.all([
-                userProfileStore.loadData().then(() => null),
-                safeInvoke<Account[]>("get_accounts", "Accounts"),
-                safeInvoke<Currency[]>("get_currencies", "Currencies"),
-                safeInvoke<Market[]>("get_markets", "Markets"),
-                safeInvoke<AssetType[]>("get_asset_types", "Asset Types"),
-                assetsStore.loadAssets().then(() => null),
-                safeInvoke<RiskProfile[]>("get_risk_profiles", "Risk Profiles"),
-                safeInvoke<Modality[]>("get_modalities", "Modalities"),
-                safeInvoke<Indicator[]>("get_indicators", "Indicators"),
-                safeInvoke<Timeframe[]>("get_timeframes", "Timeframes"),
-                safeInvoke<ChartType[]>("get_chart_types", "Chart Types"),
-                safeInvoke<AssetRiskProfile[]>("get_asset_risk_profiles", "Asset Risk Profiles"),
-                safeInvoke<GrowthPlan[]>("get_growth_plans", "Growth Plans"),
-                financialConfigStore.loadData().then(() => null),
-                workspaceStore.loadData().then(() => null),
-                integrationsStore.loadData().then(() => null)
+            // BATCH 1: INSTANT SHELL DATA (Menu, Header & Profile context)
+            console.log("[SettingsStore] Loading Batch 1 (Instant Shell)...");
+            const [userProfileRes, accountsRes] = await Promise.all([
+                userProfileStore.loadData().catch(() => null),
+                safeInvoke<Account[]>("get_accounts", "Accounts")
             ]);
 
-            // Assign results
             if (accountsRes) accountsStore.accounts = accountsRes;
-            if (currenciesRes) currenciesStore.currencies = currenciesRes;
-            if (marketsRes) marketsStore.markets = marketsRes;
-            if (assetTypesRes) assetTypesStore.assetTypes = assetTypesRes;
-            
-            if (riskProfilesRes) {
-                riskSettingsStore.riskProfiles = riskProfilesRes.map(rp => ({
-                    ...rp,
-                    account_ids: rp.account_ids ?? []
-                }));
-            }
-            if (modalitiesRes) modalitiesStore.modalities = modalitiesRes;
-            if (indicatorsRes) indicatorsStore.indicators = indicatorsRes;
-            if (timeframesRes) timeframesStore.timeframes = timeframesRes;
-            if (chartTypesRes) chartTypesStore.chartTypes = chartTypesRes;
-            if (assetRiskProfilesRes) riskSettingsStore.assetRiskProfiles = assetRiskProfilesRes;
-            if (growthPlansRes) riskSettingsStore.growthPlans = growthPlansRes;
+            console.log("[SettingsStore] Batch 1 complete. Unblocking UI...");
 
-            // Integrations and UI state are now initialized inside integrationsStore.loadData()
+            // UNBLOCK UI IMMEDIATELY
+            this.isLoadingData = false;
+            const shellDuration = (performance.now() - startTime).toFixed(0);
+            console.log(`[SettingsStore] UI Shell unblocked in ${shellDuration}ms.`);
 
-            // Run legacy risk/growth migration if needed
-            await riskSettingsStore.migrateLegacyRiskRules();
+            // PIPELINE DE BACKGROUND: Load heavy data without blocking UI
+            const loadRemainingData = async () => {
+                const bgStartTime = performance.now();
+                
+                // BATCH 2: CORE DOMAIN & TRADES
+                console.log("[SettingsStore] Background: Loading Trades & Core Domain...");
+                const [
+                    _tradesSignal,
+                    currenciesRes,
+                    riskProfilesRes,
+                    assetsRes,
+                    assetRiskProfilesRes,
+                    growthPlansRes,
+                    _financialSignal
+                ] = await Promise.all([
+                    tradesStore.loadTrades().catch(() => null),
+                    safeInvoke<Currency[]>("get_currencies", "Currencies"),
+                    safeInvoke<RiskProfile[]>("get_risk_profiles", "Risk Profiles"),
+                    assetsStore.loadAssets().catch(() => null),
+                    safeInvoke<AssetRiskProfile[]>("get_asset_risk_profiles", "Asset Risk Profiles"),
+                    safeInvoke<GrowthPlan[]>("get_growth_plans", "Growth Plans"),
+                    financialConfigStore.loadData().catch(() => null)
+                ]);
 
-            console.log("[SettingsStore] loadData completed.");
+                if (currenciesRes) currenciesStore.currencies = currenciesRes;
+                if (riskProfilesRes) {
+                    riskSettingsStore.riskProfiles = riskProfilesRes.map(rp => ({
+                        ...rp,
+                        account_ids: rp.account_ids ?? []
+                    }));
+                }
+                if (assetRiskProfilesRes) riskSettingsStore.assetRiskProfiles = assetRiskProfilesRes;
+                if (growthPlansRes) riskSettingsStore.growthPlans = growthPlansRes;
+
+                // BATCH 3: SECONDARY / WORKSPACE DATA
+                console.log("[SettingsStore] Background: Loading Secondary modules...");
+                const [
+                    marketsRes,
+                    assetTypesRes,
+                    modalitiesRes,
+                    indicatorsRes,
+                    timeframesRes,
+                    chartTypesRes,
+                    _workspaceSignal,
+                    _integrationsSignal
+                ] = await Promise.all([
+                    safeInvoke<Market[]>("get_markets", "Markets"),
+                    safeInvoke<AssetType[]>("get_asset_types", "Asset Types"),
+                    safeInvoke<Modality[]>("get_modalities", "Modalities"),
+                    safeInvoke<Indicator[]>("get_indicators", "Indicators"),
+                    safeInvoke<Timeframe[]>("get_timeframes", "Timeframes"),
+                    safeInvoke<ChartType[]>("get_chart_types", "Chart Types"),
+                    workspaceStore.loadData().catch(() => null),
+                    integrationsStore.loadData().catch(() => null)
+                ]);
+
+                if (marketsRes) marketsStore.markets = marketsRes;
+                if (assetTypesRes) assetTypesStore.assetTypes = assetTypesRes;
+                if (modalitiesRes) modalitiesStore.modalities = modalitiesRes;
+                if (indicatorsRes) indicatorsStore.indicators = indicatorsRes;
+                if (timeframesRes) timeframesStore.timeframes = timeframesRes;
+                if (chartTypesRes) chartTypesStore.chartTypes = chartTypesRes;
+
+                // Final sync/migrations
+                await riskSettingsStore.migrateLegacyRiskRules();
+                await riskSettingsStore.migrateAssetScopes();
+                
+                const totalDuration = (performance.now() - startTime).toFixed(0);
+                console.log(`[SettingsStore] Hydra pipeline complete. Total load time: ${totalDuration}ms.`);
+            };
+
+            // Run Background Pipeline
+            loadRemainingData();
+
         } catch (e) {
             console.error("[SettingsStore] CRITICAL error in loadData:", e);
-        } finally {
-            this.isLoadingData = false;
+            this.isLoadingData = false; // Ensure UI is not stuck
         }
     }
 
@@ -140,7 +162,7 @@ class AppFacadeStore {
     // Debug / Seed
     async seedDatabase() {
         if (workspaceStore.strategies.length === 0) {
-            await invoke("save_strategy", { strategy: {
+            await safeInvoke("save_strategy", { strategy: {
                 id: crypto.randomUUID(),
                 name: "Default Setup (Seed)",
                 description: "Automatically generated strategy.",

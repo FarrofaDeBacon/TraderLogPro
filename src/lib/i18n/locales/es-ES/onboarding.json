@@ -1,70 +1,82 @@
 {
-    "auth": {
-        "login": {
-            "createAccount": "Crear cuenta",
-            "description": "Ingresa tus credenciales para acceder a TraderLog Pro.",
-            "email": "Email",
-            "error": {
-                "fillAll": "Por favor completa todos los campos.",
-                "invalidCredentials": "Credenciales inválidas."
+    "onboarding": {
+        "auth": {
+            "login": {
+                "createAccount": "Crear cuenta",
+                "description": "Ingresa tus credenciales para acceder a TraderLog Pro.",
+                "email": "Email",
+                "error": {
+                    "fillAll": "Por favor completa todos los campos.",
+                    "invalidCredentials": "Credenciales inválidas."
+                },
+                "forgotPassword": "¿Olvidaste tu contraseña?",
+                "loading": "Entrando...",
+                "noAccount": "¿Aún no tienes cuenta?",
+                "orContinueWith": "O continúa con",
+                "password": "Contraseña",
+                "recovery": {
+                    "back": "Volver al inicio de sesión",
+                    "confirm": "Confirmar contraseña",
+                    "description": "Ingrese su clave de recuperación y establezca una nueva contraseña.",
+                    "error": {
+                        "fillAll": "Por favor, complete todos los campos.",
+                        "generic": "Error al restablecer la contraseña.",
+                        "invalidKey": "Clave de recuperación inválida.",
+                        "mismatch": "Las contraseñas no coinciden."
+                    },
+                    "keyLabel": "Clave de Recuperación",
+                    "loading": "Restableciendo...",
+                    "newPassword": "Nueva Contraseña",
+                    "submit": "Restablecer Contraseña",
+                    "success": "¡Contraseña restablecida con éxito!",
+                    "title": "Recuperar Acceso"
+                },
+                "signup": "Registrarse",
+                "social": "Redes Sociales",
+                "submit": "Entrar en la Plataforma",
+                "success": "¡Login exitoso!",
+                "title": "Bienvenido de nuevo"
             },
-            "forgotPassword": "¿Olvidaste tu contraseña?",
-            "loading": "Entrando...",
-            "noAccount": "¿Aún no tienes cuenta?",
-            "orContinueWith": "O continúa con",
-            "password": "Contraseña",
-            "recovery": {
-                "back": "Volver al inicio de sesión",
-                "confirm": "Confirmar contraseña",
-                "description": "Ingrese su clave de recuperación y establezca una nueva contraseña.",
+            "register": {
+                "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+                "birthDate": "Fecha de Nacimiento",
+                "confirmPassword": "Confirmar Contraseña",
+                "cpf": "CPF",
+                "description": "Crea tu cuenta en TraderLog Pro.",
+                "email": "Correo electrónico",
                 "error": {
                     "fillAll": "Por favor, complete todos los campos.",
-                    "generic": "Error al restablecer la contraseña.",
-                    "invalidKey": "Clave de recuperación inválida.",
-                    "mismatch": "Las contraseñas no coinciden."
+                    "passwordsMismatch": "Las contraseñas no coinciden."
                 },
-                "keyLabel": "Clave de Recuperación",
-                "loading": "Restableciendo...",
-                "newPassword": "Nueva Contraseña",
-                "submit": "Restablecer Contraseña",
-                "success": "¡Contraseña restablecida con éxito!",
-                "title": "Recuperar Acceso"
-            },
-            "signup": "Registrarse",
-            "social": "Redes Sociales",
-            "submit": "Entrar en la Plataforma",
-            "success": "¡Login exitoso!",
-            "title": "Bienvenido de nuevo"
+                "loading": "Creando cuenta...",
+                "login": "Iniciar sesión",
+                "name": "Nombre completo",
+                "password": "Contraseña",
+                "recoveryKey": {
+                    "confirm": "¡Entendido, guardé mi clave!",
+                    "copyPrompt": "Copiar Clave",
+                    "description": "Esta es tu clave de recuperación. Guárdala en un lugar seguro — sin ella, no podrás recuperar el acceso.",
+                    "keepSecure": "¡Guárdala en un lugar seguro!",
+                    "label": "Tu Clave de Recuperación",
+                    "successCopy": "¡Clave copiada!",
+                    "title": "Clave de Recuperación Generada",
+                    "warning": "No compartas esta clave con nadie."
+                },
+                "submit": "Crear Cuenta",
+                "success": "¡Cuenta creada con éxito!",
+                "terms": "Términos de Uso",
+                "title": "Crear Cuenta"
+            }
         },
-        "register": {
-            "alreadyHaveAccount": "¿Ya tienes una cuenta?",
-            "birthDate": "Fecha de Nacimiento",
-            "confirmPassword": "Confirmar Contraseña",
-            "cpf": "CPF",
-            "description": "Crea tu cuenta en TraderLog Pro.",
-            "email": "Correo electrónico",
-            "error": {
-                "fillAll": "Por favor, complete todos los campos.",
-                "passwordsMismatch": "Las contraseñas no coinciden."
-            },
-            "loading": "Creando cuenta...",
-            "login": "Iniciar sesión",
-            "name": "Nombre completo",
-            "password": "Contraseña",
-            "recoveryKey": {
-                "confirm": "¡Entendido, guardé mi clave!",
-                "copyPrompt": "Copiar Clave",
-                "description": "Esta es tu clave de recuperación. Guárdala en un lugar seguro — sin ella, no podrás recuperar el acceso.",
-                "keepSecure": "¡Guárdala en un lugar seguro!",
-                "label": "Tu Clave de Recuperación",
-                "successCopy": "¡Clave copiada!",
-                "title": "Clave de Recuperación Generada",
-                "warning": "No compartas esta clave con nadie."
-            },
-            "submit": "Crear Cuenta",
-            "success": "¡Cuenta creada con éxito!",
-            "terms": "Términos de Uso",
-            "title": "Crear Cuenta"
+        "wizard_extra": {
+            "setup_engine": "Setup Engine v1.0",
+            "select_theme": "SELECCIONAR TEMA VISUAL",
+            "email": "E-mail",
+            "email_placeholder": "tu@email.com",
+            "confirm_password": "Confirmar Contraseña",
+            "copied": "¡Copiado!",
+            "logo_alt": "Logo",
+            "copyright": "© 2026 TRADERLOG PRO · JOURNAL ENGINE"
         }
     }
 }

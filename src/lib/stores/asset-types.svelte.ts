@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { AssetType } from "$lib/types";
+import { compareAssetTypeIds, normalizeAssetTypeId } from "$lib/utils";
 
 export class AssetTypesStore {
     assetTypes = $state<AssetType[]>([]);
@@ -21,14 +22,14 @@ export class AssetTypesStore {
     }
 
     updateAssetType(id: string, item: Partial<AssetType>) {
-        this.assetTypes = this.assetTypes.map(at => at.id === id ? { ...at, ...item } : at);
+        this.assetTypes = this.assetTypes.map(at => compareAssetTypeIds(at.id, id) ? { ...at, ...item } : at);
         this.saveAssetTypes();
     }
 
     async deleteAssetType(id: string): Promise<{ success: boolean; error?: string }> {
         try {
-            await invoke("delete_asset_type", { id });
-            this.assetTypes = this.assetTypes.filter(at => at.id !== id);
+            await invoke("delete_asset_type", { id: normalizeAssetTypeId(id) });
+            this.assetTypes = this.assetTypes.filter(at => !compareAssetTypeIds(at.id, id));
             return { success: true };
         } catch (e) {
             return { success: false, error: String(e) };
@@ -36,7 +37,7 @@ export class AssetTypesStore {
     }
 
     getAssetTypeName(id: string): string {
-        const item = this.assetTypes.find(at => at.id === id);
+        const item = this.assetTypes.find(at => compareAssetTypeIds(at.id, id));
         return item ? item.name : "N/A";
     }
 

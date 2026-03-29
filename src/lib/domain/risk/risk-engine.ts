@@ -1,7 +1,8 @@
 import type { 
     RiskProfileConfig, 
     TradeRiskSnapshot, 
-    DailyRiskStatus 
+    DailyRiskStatus,
+    GrowthPhase
 } from './types';
 
 /**
@@ -9,13 +10,16 @@ import type {
  * 
  * @param profile - A configuração do perfil de risco do usuário
  * @param trades - O histórico de trades (será filtrado para o dia atual)
+ * @param growthPhase - (Opcional) Fase de crescimento atual para sobreposição de limites
  * @returns O status diário sumarizado (Target/Loss/Lock/Running)
  */
 export function calculateDailyRiskStatus(
     profile: RiskProfileConfig, 
-    trades: TradeRiskSnapshot[]
+    trades: TradeRiskSnapshot[],
+    growthPhase?: GrowthPhase
 ): DailyRiskStatus {
-    const todayStr = new Date().toISOString().substring(0, 10);
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     
     const todayTrades = trades.filter((t) => {
         const tDate = typeof t.date === 'string' ? t.date : t.date.toISOString();
@@ -24,28 +28,82 @@ export function calculateDailyRiskStatus(
 
     let dailyPnL = 0;
     let dailyPnLPoints = 0;
+    let dailyGrossLoss = 0;
+    
+    // Para cálculo de Max Intraday Drawdown
+    let dailyPeak = 0;
+    let maxDailyDrawdown = 0;
+    let currentEquity = 0;
 
     for (const trade of todayTrades) {
         dailyPnL += trade.pnl;
         dailyPnLPoints += trade.pnlPoints;
+        
+        if (trade.pnl < 0) {
+            dailyGrossLoss += Math.abs(trade.pnl);
+        }
+        
+        currentEquity += trade.pnl;
+        if (currentEquity > dailyPeak) {
+            dailyPeak = currentEquity;
+        }
+        const currentDD = dailyPeak - currentEquity;
+        if (currentDD > maxDailyDrawdown) {
+            maxDailyDrawdown = currentDD;
+        }
     }
 
     const isCurrencyLoss = profile.maxDailyLossType === 'currency';
     const isCurrencyTarget = profile.dailyTargetType === 'currency';
 
+    // Resolver limites efetivos (Fase de Crescimento > Modo Avançado > Modo Simples)
+    let effectiveMaxDailyLoss = profile.maxDailyLossValue;
+    let effectiveDailyTarget = profile.dailyTargetValue;
+
+    // Prioridade 1: Fase de Crescimento (Extração de Condições Dinâmicas)
+    if (growthPhase) {
+        // Tenta encontrar uma regra de perda diária/limite nas condições de regressão da fase
+        const lossCondition = growthPhase.conditionsToDemote.find(c => {
+            const canonical = c.metric.toLowerCase().trim();
+            return canonical.includes('perda_diaria') || 
+                   canonical.includes('max_daily_loss') || 
+                   canonical.includes('daily_loss') ||
+                   canonical.includes('max_loss_limit') ||
+                   canonical.includes('drawdown_limit') ||
+                   canonical.includes('drawdown');
+        });
+
+        if (lossCondition && lossCondition.value > 0) {
+            effectiveMaxDailyLoss = lossCondition.value;
+        } else if (growthPhase.maxDailyLoss !== undefined && growthPhase.maxDailyLoss > 0) {
+            effectiveMaxDailyLoss = growthPhase.maxDailyLoss;
+        }
+    } 
+    // Prioridade 2: Regras Avançadas do Perfil
+    else if (profile.useAdvancedRules && profile.riskRules) {
+        const lossRule = profile.riskRules.find(r => r.targetType === 'max_daily_loss' && r.enabled);
+        if (lossRule) effectiveMaxDailyLoss = Number(lossRule.value);
+
+        const targetRule = profile.riskRules.find(r => r.targetType === 'profit_target' && r.enabled);
+        if (targetRule) effectiveDailyTarget = Number(targetRule.value);
+    }
+
     const currentLossMetric = isCurrencyLoss ? dailyPnL : dailyPnLPoints;
     const currentTargetMetric = isCurrencyTarget ? dailyPnL : dailyPnLPoints;
 
-    const dailyLossHit = currentLossMetric <= -profile.maxDailyLossValue;
-    const dailyTargetHit = currentTargetMetric >= profile.dailyTargetValue;
+    // O critério de bloqueio agora considera o PREJUÍZO BRUTO se o usuário optar por proteção estrita,
+    // mas por padrão no TraderLog usamos o PnL Líquido do dia.
+    // Para resolver o pedido do usuário ("drawdown diário some"), vamos manter o hit se any metric for violada.
+    const dailyLossHit = currentLossMetric <= -effectiveMaxDailyLoss || dailyGrossLoss >= effectiveMaxDailyLoss;
+    const dailyTargetHit = currentTargetMetric >= effectiveDailyTarget;
 
     const remainingLossAllowance = isCurrencyLoss 
-        ? Math.max(0, profile.maxDailyLossValue + dailyPnL)
-        : Math.max(0, profile.maxDailyLossValue + dailyPnLPoints);
+        ? Math.max(0, effectiveMaxDailyLoss - dailyGrossLoss) // Usamos o Bruto para o "Restante" para ser conservador
+        : Math.max(0, effectiveMaxDailyLoss + dailyPnLPoints);
 
     const remainingTargetToHit = isCurrencyTarget
-        ? Math.max(0, profile.dailyTargetValue - dailyPnL)
-        : Math.max(0, profile.dailyTargetValue - dailyPnLPoints);
+        ? Math.max(0, effectiveDailyTarget - dailyPnL)
+        : Math.max(0, effectiveDailyTarget - dailyPnLPoints);
 
     const isLocked = Boolean(profile.lockOnLoss && dailyLossHit);
 
@@ -69,8 +127,13 @@ export function calculateDailyRiskStatus(
         dailyPnLPoints,
         dailyTargetHit,
         dailyLossHit,
+        effectiveMaxDailyLoss,
+        effectiveDailyTarget,
         remainingLossAllowance,
         remainingTargetToHit,
+        dailyGrossLoss,
+        maxDailyDrawdown,
+        currentDailyDrawdown: dailyPeak - currentEquity,
         isLocked,
         statusLabel
     };

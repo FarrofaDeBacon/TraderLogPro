@@ -9,7 +9,7 @@
     import LicenseBanner from "$lib/components/layout/LicenseBanner.svelte";
     import AutoTradeDetectionDialog from "$lib/components/trades/AutoTradeDetectionDialog.svelte";
     import { ScrollArea } from "$lib/components/ui/scroll-area";
-    import { invoke } from "@tauri-apps/api/core";
+    import { safeInvoke } from "$lib/services/tauri";
 
     let { children } = $props();
     let dataLoaded = $state(false);
@@ -18,8 +18,8 @@
         console.log("[Layout] App layout mounted, data handled by root.");
 
         // --- DIAGNOSTICS ---
-        invoke("diagnostic_dump_trades").catch((e) => console.error(e));
-        invoke("diagnostic_dump_users").catch((e) => console.error(e));
+        safeInvoke("diagnostic_dump_trades").catch((e) => console.error(e));
+        safeInvoke("diagnostic_dump_users").catch((e) => console.error(e));
         // -------------------
 
         dataLoaded = true;

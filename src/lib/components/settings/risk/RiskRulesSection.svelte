@@ -20,7 +20,7 @@
         assetRiskProfiles: AssetRiskProfile[];
     }>();
 
-    const prefix = "settings.risk.form.ruleBuilder";
+    const prefix = "risk.ruleBuilder";
 
     let showForm = $state(false);
     let editingRule = $state<RiskRule | undefined>(undefined);
@@ -192,7 +192,7 @@
                                     <div class="w-2 h-2 rounded-full {r.enabled ? 'bg-emerald-500' : 'bg-muted-foreground'}"></div>
                                     {r.name}
                                 </span>
-                                <Badge variant="outline" class="text-[10px] capitalize bg-muted border-muted-foreground/20">{r.target_type}</Badge>
+                                <Badge variant="outline" class="text-[10px] capitalize bg-muted border-muted-foreground/20">{$t(`${prefix}.targetType.${r.target_type}`) || r.target_type}</Badge>
                             </div>
                             <div class="text-xs text-muted-foreground flex flex-wrap items-center gap-2">
                                 <span class="bg-muted/50 px-1.5 py-0.5 rounded font-mono">

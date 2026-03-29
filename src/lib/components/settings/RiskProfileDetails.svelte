@@ -22,6 +22,23 @@
     let currentPlan = $derived(
         profile.growth_plan_id ? riskSettingsStore.getGrowthPlanForProfile(profile.id) : null
     );
+
+    function getEffectiveLimits(p: RiskProfile) {
+        let dailyLoss = p.max_daily_loss;
+        let dailyTarget = p.daily_target;
+
+        if (p.use_advanced_rules && p.risk_rules) {
+            const lossRule = p.risk_rules.find(r => r.enabled && r.target_type === 'max_daily_loss');
+            if (lossRule) dailyLoss = Number(lossRule.value);
+            
+            const targetRule = p.risk_rules.find(r => r.enabled && r.target_type === 'profit_target');
+            if (targetRule) dailyTarget = Number(targetRule.value);
+        }
+        
+        return { dailyLoss, dailyTarget };
+    }
+
+    let limits = $derived(getEffectiveLimits(profile));
 </script>
 
 <div class="space-y-6 py-4">
@@ -72,7 +89,7 @@
                     <span
                         class="font-bold text-red-600 dark:text-red-400 text-lg"
                     >
-                        R$ {profile.max_daily_loss.toFixed(2)}
+                        R$ {limits.dailyLoss.toFixed(2)}
                     </span>
                 </div>
                 <div class="flex justify-between items-center">
@@ -104,7 +121,7 @@
                     <span
                         class="font-bold text-green-600 dark:text-green-400 text-lg"
                     >
-                        R$ {profile.daily_target.toFixed(2)}
+                        R$ {limits.dailyTarget.toFixed(2)}
                     </span>
                 </div>
                 <div class="flex justify-between items-center">

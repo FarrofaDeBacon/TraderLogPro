@@ -1,5 +1,5 @@
 {
-    "cockpit": {
+    "aiCockpit": {
         "ctaBtn": "Analytical Cockpit",
         "health": {
             "title": "Algorithmic Health",
@@ -20,6 +20,13 @@
             "insufficientVolume": "Insufficient volume to point out edges. Follow your initial plan.",
             "healthy": "System in perfect mechanical functioning. Zero failures.",
             "desc": "Risk diagnostics, operational factors, and psychological calibration."
+        },
+        "aiPsychology": {
+            "title": "Strategy vs Psychology",
+            "dominantState": "Dominant State",
+            "netProfit": "Net Profit",
+            "loss": "Loss",
+            "history": "Your algorithmic history of desk behavior."
         },
         "psychology": {
             "title": "Strategy vs Psychology",

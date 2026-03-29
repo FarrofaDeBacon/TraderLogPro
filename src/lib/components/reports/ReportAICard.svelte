@@ -1,33 +1,42 @@
 <script lang="ts">
     import { llmService } from '$lib/services/llmService';
     import { integrationsStore } from '$lib/stores/integrations.svelte';
-    import { Card, CardContent } from "$lib/components/ui/card";
     import { Button } from "$lib/components/ui/button";
+    import { SystemAICard, SystemHeader } from "$lib/components/ui/system";
     import { BrainCircuit, Sparkles, AlertCircle, Target, TrendingUp, ShieldAlert, Loader2 } from 'lucide-svelte';
     import { fade, slide } from 'svelte/transition';
+    import { cn } from "$lib/utils";
 
-    export let periodStr: string = "Período Personalizado";
-    export let metricsPayload: any = {};
-    export let isPrintMode: boolean = false;
+    interface Props {
+        periodStr?: string;
+        metricsPayload?: any;
+        isPrintMode?: boolean;
+    }
 
-    let isLoading = false;
-    let error: string | null = null;
-    let insightData: any = null;
+    let { 
+        periodStr = "Período Personalizado", 
+        metricsPayload = {}, 
+        isPrintMode = false 
+    }: Props = $props();
 
-    $: hasAIConfig = integrationsStore.apiConfigs.some(
+    let isLoading = $state(false);
+    let error = $state<string | null>(null);
+    let insightData = $state<any>(null);
+
+    let hasAIConfig = $derived(integrationsStore.apiConfigs.some(
         (c: any) => c.enabled && (c.provider === 'openai' || c.provider === 'google_gemini')
-    );
-    $: hasEnoughData = (metricsPayload.tradeCount ?? 0) >= 3;
+    ));
+    let hasEnoughData = $derived((metricsPayload.tradeCount ?? 0) >= 3);
 
-    let lastHash = "";
-    $: {
+    let lastHash = $state("");
+    $effect(() => {
         const h = JSON.stringify(metricsPayload);
         if (h !== lastHash) {
             insightData = null;
             error = null;
             lastHash = h;
         }
-    }
+    });
 
     async function generateInsight() {
         if (!hasAIConfig) {
@@ -47,84 +56,78 @@
             isLoading = false;
         }
     }
+
+    let status = $derived<"success" | "error" | "loading" | "idle">(
+        isLoading ? 'loading' :
+        error ? 'error' :
+        insightData ? 'success' : 'idle'
+    );
 </script>
 
 {#if !isPrintMode || insightData}
-<Card class="border border-border/20 shadow-none bg-primary/[0.02] backdrop-blur-md relative overflow-hidden group mt-4">
-    <div class="absolute -left-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl pointer-events-none group-hover:bg-primary/10 transition-colors"></div>
+    <SystemAICard 
+        {status} 
+        class="mt-4"
+        title="Visão Executiva de Portfólio (IA)"
+        description="Cruzamento macro de KPIs e eficiência de capital."
+        errorText={error || "Falha ao gerar a Visão Executiva."}
+        origin={insightData?._meta?.origin}
+        responseTimeMs={insightData?._meta?.responseTimeMs}
+    >
+        {#snippet idleActions()}
+            <Button 
+                variant="outline" 
+                size="sm" 
+                onclick={generateInsight} 
+                disabled={!hasAIConfig || !hasEnoughData}
+                class="h-7 text-[10px] px-3 border-primary/20 hover:bg-primary/5 text-primary/80 font-bold uppercase tracking-wider"
+            >
+                Gerar Análise
+            </Button>
+        {/snippet}
 
-    <CardContent class="p-3">
-        {#if !insightData && !isLoading && !error}
-            <div class="flex items-center justify-between gap-4">
-               <div class="flex items-center gap-3">
-                  <div class="p-2 bg-primary/10 rounded-lg text-primary">
-                     <BrainCircuit class="w-4 h-4" />
-                  </div>
-                  <div>
-                     <h4 class="text-xs font-bold text-foreground/90 leading-tight">Visão Executiva de Portfólio (IA)</h4>
-                     <p class="text-[10px] text-muted-foreground font-medium">Cruzamento macro de KPIs e eficiência de capital.</p>
-                  </div>
-               </div>
-               <Button 
-                   variant="outline" 
-                   size="sm" 
-                   onclick={generateInsight} 
-                   disabled={!hasAIConfig || !hasEnoughData}
-                   class="h-7 text-[10px] px-3 border-primary/20 hover:bg-primary/5 text-primary/80 font-bold uppercase tracking-wider"
-               >
-                   Gerar Análise
-               </Button>
+        {#snippet retryAction()}
+            <Button size="sm" variant="ghost" class="h-6 text-[9px] text-rose-500 hover:bg-rose-500/10 font-black uppercase" onclick={generateInsight}>Tentar Novamente</Button>
+        {/snippet}
+
+        {#snippet content()}
+            <div class="hidden md:block">
+                <SystemHeader 
+                    title="Súmula Institucional"
+                    icon={Target}
+                    class="mb-1 text-primary/60"
+                />
+                <p class="text-[11px] leading-relaxed text-foreground/80 font-medium line-clamp-2 italic">"{insightData.executiveSummary}"</p>
             </div>
-        {:else if isLoading}
-            <div class="flex items-center justify-center gap-3 py-1" transition:fade>
-                <Loader2 class="w-4 h-4 animate-spin text-primary/40" />
-                <span class="text-[10px] font-black uppercase tracking-widest text-primary/50">Auditando performance executiva...</span>
-            </div>
-        {:else if error}
-            <div class="flex items-center justify-between gap-4 bg-rose-500/5 p-2 rounded-md border border-rose-500/10">
-                <div class="flex items-center gap-2">
-                    <AlertCircle class="w-4 h-4 text-rose-500/60" />
-                    <span class="text-[10px] font-bold text-rose-500/80 uppercase tracking-tight">{error}</span>
-                </div>
-                <Button size="sm" variant="ghost" class="h-6 text-[9px] text-rose-500 hover:bg-rose-500/10 font-black uppercase" onclick={generateInsight}>Tentar Novamente</Button>
-            </div>
-        {:else if insightData && !isLoading}
-            <div class="flex flex-col md:flex-row gap-4 items-center" transition:slide>
-                <!-- Resumo -->
-                <div class="flex-1 min-w-0 border-r border-border/10 pr-4 hidden md:block">
-                    <div class="flex items-center gap-1.5 mb-1 text-primary/60">
-                        <Target class="w-3 h-3" />
-                        <h4 class="font-black text-[8px] uppercase tracking-widest">Súmula Institucional</h4>
-                    </div>
-                    <p class="text-[11px] leading-relaxed text-foreground/80 font-medium line-clamp-2 italic">"{insightData.executiveSummary}"</p>
+        {/snippet}
+
+        {#snippet matrix()}
+            <div class="grid grid-cols-2 gap-3 w-full">
+                <div class="p-2.5 rounded-md border border-emerald-500/10 bg-emerald-500/[0.02]">
+                    <SystemHeader 
+                        title="Core Advantage"
+                        icon={TrendingUp}
+                        class="mb-1 text-emerald-500/70"
+                    />
+                    <p class="text-[10px] text-foreground/80 font-bold leading-snug">{insightData.majorEdge}</p>
                 </div>
 
-                <!-- Edge e Fragilidade -->
-                <div class="flex-[2] grid grid-cols-2 gap-3 w-full">
-                    <div class="p-2.5 rounded-md border border-emerald-500/10 bg-emerald-500/[0.02]">
-                        <div class="flex items-center gap-1.5 mb-1 text-emerald-500/70">
-                            <TrendingUp class="w-3 h-3" />
-                            <h4 class="font-black text-[8px] uppercase tracking-widest">Core Advantage</h4>
-                        </div>
-                        <p class="text-[10px] text-foreground/80 font-bold leading-snug">{insightData.majorEdge}</p>
-                    </div>
-
-                    <div class="p-2.5 rounded-md border border-rose-500/10 bg-rose-500/[0.02]">
-                        <div class="flex items-center gap-1.5 mb-1 text-rose-500/70">
-                            <ShieldAlert class="w-3 h-3" />
-                            <h4 class="font-black text-[8px] uppercase tracking-widest">Ponto Crítico</h4>
-                        </div>
-                        <p class="text-[10px] text-foreground/80 font-bold leading-snug">{insightData.majorFragility}</p>
-                    </div>
-                </div>
-
-                <!-- Focus -->
-                <div class="flex flex-col items-center justify-center p-2 rounded-lg bg-primary/5 border border-primary/10 shrink-0 w-32">
-                    <span class="text-[8px] font-black text-primary/60 uppercase mb-1 tracking-tighter">Foco Requerido</span>
-                    <p class="text-[10px] font-black text-primary text-center leading-tight">"{insightData.nextWindowFocus}"</p>
+                <div class="p-2.5 rounded-md border border-rose-500/10 bg-rose-500/[0.02]">
+                    <SystemHeader 
+                        title="Ponto Crítico"
+                        icon={ShieldAlert}
+                        class="mb-1 text-rose-500/70"
+                    />
+                    <p class="text-[10px] text-foreground/80 font-bold leading-snug">{insightData.majorFragility}</p>
                 </div>
             </div>
-        {/if}
-    </CardContent>
-</Card>
+        {/snippet}
+        
+        {#snippet actions()}
+            <div class="flex flex-col items-center justify-center p-2 rounded-lg bg-primary/5 border border-primary/10 shrink-0 w-32 mt-1">
+                <span class="text-[8px] font-black text-primary/60 uppercase mb-1 tracking-tighter">Foco Requerido</span>
+                <p class="text-[10px] font-black text-primary text-center leading-tight">"{insightData.nextWindowFocus}"</p>
+            </div>
+        {/snippet}
+    </SystemAICard>
 {/if}

@@ -24,6 +24,7 @@
     import * as Dialog from "$lib/components/ui/dialog";
     import { t, locale } from "svelte-i18n";
     import { cn, formatCurrency } from "$lib/utils";
+    import { SystemCard, SystemHeader, SystemMetric } from "$lib/components/ui/system";
 
     let showTransactionDialog = $state(false);
     let showTransferDialog = $state(false);
@@ -41,11 +42,12 @@
     let accountsByCurrency = $derived.by(() => {
         const groups: Record<string, { total: number; accounts: any[] }> = {};
         accountsStore.accounts.forEach((acc) => {
-            if (!groups[acc.currency]) {
-                groups[acc.currency] = { total: 0, accounts: [] };
+            const currency = acc.currency || userProfileStore.userProfile?.main_currency || "BRL";
+            if (!groups[currency]) {
+                groups[currency] = { total: 0, accounts: [] };
             }
-            groups[acc.currency].accounts.push(acc);
-            groups[acc.currency].total += acc.balance;
+            groups[currency].accounts.push(acc);
+            groups[currency].total += acc.balance;
         });
         return groups;
     });
@@ -122,23 +124,14 @@
 
 <div class="space-y-6 animate-in fade-in duration-500">
     <div class="flex-1 flex flex-col space-y-8 p-4 md:p-8">
-        <div
-            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-        >
-            <div>
-                <h2 class="text-3xl font-bold tracking-tight">
-                    {$t("finance.title")}
-                </h2>
-                <p class="text-muted-foreground">
-                    {$t("finance.description")}
-                </p>
-            </div>
+        {#snippet actions()}
             <div class="flex flex-wrap gap-2">
                 <Button
                     variant="outline"
                     onclick={() => (showClosureWizard = true)}
+                    class="bg-background/40 hover:bg-background/60 border border-border/40 text-[9px] font-black h-8 uppercase tracking-widest px-3"
                 >
-                    <Calculator class="w-4 h-4 mr-2" />
+                    <Calculator class="w-3.5 h-3.5 mr-2" />
                     {$t("finance.dailyClosure")}
                 </Button>
 
@@ -146,54 +139,48 @@
                     variant="outline"
                     onclick={handleSync}
                     disabled={isSyncing}
+                    class="bg-background/40 hover:bg-background/60 border border-border/40 text-[9px] font-black h-8 uppercase tracking-widest px-3"
                 >
                     <ArrowRightLeft
-                        class={cn("w-4 h-4 mr-2", isSyncing && "animate-spin")}
+                        class={cn("w-3.5 h-3.5 mr-2", isSyncing && "animate-spin")}
                     />
                     {isSyncing
                         ? $t("settings.api.integrations.currency.syncing")
                         : $t("settings.api.integrations.currency.syncNow")}
                 </Button>
-                <Button onclick={() => (showTransactionDialog = true)}>
-                    <Plus class="w-4 h-4 mr-2" />
+                <Button onclick={() => (showTransactionDialog = true)} class="bg-primary hover:bg-primary/90 text-[10px] font-black h-8 uppercase tracking-widest px-4 shadow-lg shadow-primary/20">
+                    <Plus class="w-3.5 h-3.5 mr-2" />
                     {$t("finance.newTransaction")}
                 </Button>
             </div>
-        </div>
+        {/snippet}
+
+        <SystemCard status="primary" class="p-3 mb-6 bg-primary/5">
+            <SystemHeader 
+                title={$t("finance.title")}
+                subtitle={$t("finance.description")}
+                icon={Wallet}
+                variant="page"
+                class="mb-0"
+                {actions}
+            />
+        </SystemCard>
 
         <!-- Consolidated Balances by Currency -->
         <div
             class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
         >
             <!-- Main Converted Balance -->
-            <Card.Root class="card-glass border-l-4 border-l-emerald-500">
-                <Card.Content class="py-0.5 px-2">
-                    <div class="flex items-center justify-between">
-                        <span
-                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60 leading-none"
-                        >
-                            {$t("finance.quickStats.totalEquity")} (BRL)
-                        </span>
-                        <Wallet class="w-3 h-3 text-emerald-500" />
-                    </div>
-                    <div class="mt-0">
-                        <div
-                            class="text-base font-mono font-bold text-emerald-500 tabular-nums tracking-tight leading-none"
-                        >
-                            {formatCurrency(
-                                totalBalanceBRL,
-                                "BRL",
-                                $locale || "pt-BR",
-                            )}
-                        </div>
-                        <p
-                            class="text-[9px] text-muted-foreground/50 leading-none mt-0.5"
-                        >
-                            {$t("finance.quickStats.consolidated")}
-                        </p>
-                    </div>
-                </Card.Content>
-            </Card.Root>
+            <SystemCard status="success" class="p-4 overflow-hidden relative group">
+                <div class="absolute -right-4 -bottom-4 opacity-[0.03] rotate-12"><Wallet class="w-20 h-20"/></div>
+                <SystemMetric 
+                    label={$t("finance.quickStats.totalEquity") + " (BRL)"}
+                    value={formatCurrency(totalBalanceBRL, "BRL", $locale || "pt-BR")}
+                    status="success"
+                    subvalue={$t("finance.quickStats.consolidated")}
+                    weight="black"
+                />
+            </SystemCard>
 
             {#each Object.entries(accountsByCurrency) as [currency, data]}
                 <button
@@ -201,96 +188,31 @@
                     onclick={() => handleBreakdown(currency)}
                     class="text-left w-full h-full"
                 >
-                    <Card.Root
-                        class={cn(
-                            "card-glass border-l-4 cursor-pointer",
-                            getCurrencyColor(currency),
-                        )}
-                    >
-                        <Card.Content class="py-0.5 px-2">
-                            <div class="flex items-center justify-between">
-                                <span
-                                    class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60 leading-none"
-                                >
-                                    {$t("finance.quickStats.balanceIn", {
-                                        values: { currency },
-                                    })}
-                                </span>
-                                <Landmark
-                                    class={cn(
-                                        "w-3 h-3",
-                                        getCurrencyTextColor(currency),
-                                    )}
-                                />
-                            </div>
-                            <div class="mt-0">
-                                <div
-                                    class="text-base font-mono font-bold tabular-nums tracking-tight leading-none"
-                                >
-                                    {formatCurrency(
-                                        data.total,
-                                        currency,
-                                        $locale || "pt-BR",
-                                    )}
-                                </div>
-                                <p
-                                    class="text-[9px] text-muted-foreground/50 leading-none mt-0.5"
-                                >
-                                    {$t("finance.quickStats.viewBreakdown")}
-                                </p>
-                            </div>
-                        </Card.Content>
-                    </Card.Root>
+                    <SystemCard hover={true} class="p-4 overflow-hidden relative h-full">
+                        <div class="absolute -right-4 -bottom-4 opacity-[0.03] rotate-12"><Landmark class={cn("w-20 h-20", getCurrencyTextColor(currency))}/></div>
+                        <SystemMetric 
+                            label={$t("finance.quickStats.balanceIn", { values: { currency } })}
+                            value={formatCurrency(data.total, currency, $locale || "pt-BR")}
+                            subvalue={$t("finance.quickStats.viewBreakdown")}
+                            weight="bold"
+                        />
+                    </SystemCard>
                 </button>
             {/each}
 
-            <Card.Root
-                class={cn(
-                    "card-glass border-l-4",
-                    monthResultBRL >= 0
-                        ? "border-l-emerald-500"
-                        : "border-l-rose-500",
-                )}
+            <SystemCard 
+                status={monthResultBRL >= 0 ? "success" : "danger"}
+                class="p-4 overflow-hidden relative"
             >
-                <Card.Content class="py-0.5 px-2">
-                    <div class="flex items-center justify-between">
-                        <span
-                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60 leading-none"
-                        >
-                            {$t("finance.quickStats.monthlyResult")}
-                        </span>
-                        <TrendingUp
-                            class={cn(
-                                "w-3 h-3",
-                                monthResultBRL >= 0
-                                    ? "text-emerald-500"
-                                    : "text-rose-500",
-                            )}
-                        />
-                    </div>
-                    <div class="mt-0">
-                        <div
-                            class={cn(
-                                "text-base font-mono font-bold tabular-nums tracking-tight leading-none",
-                                monthResultBRL >= 0
-                                    ? "text-emerald-500"
-                                    : "text-rose-500",
-                            )}
-                        >
-                            {formatCurrency(
-                                monthResultBRL,
-                                "BRL",
-                                $locale || "pt-BR",
-                            )}
-                        </div>
-                        <p
-                            class="text-[9px] text-muted-foreground/50 leading-none mt-0.5"
-                        >
-                            {$t("finance.quickStats.monthlyResultDesc")}
-                        </p>
-                    </div>
-                </Card.Content>
-            </Card.Root>
+                <div class="absolute -right-4 -bottom-4 opacity-[0.03] rotate-12"><TrendingUp class={cn("w-20 h-20", monthResultBRL >= 0 ? "text-emerald-500" : "text-rose-500")}/></div>
+                <SystemMetric 
+                    label={$t("finance.quickStats.monthlyResult")}
+                    value={formatCurrency(monthResultBRL, "BRL", $locale || "pt-BR")}
+                    status={monthResultBRL >= 0 ? "success" : "danger"}
+                    subvalue={$t("finance.quickStats.monthlyResultDesc")}
+                    weight="black"
+                />
+            </SystemCard>
         </div>
 
         <!-- (Suas Contas section removed) -->

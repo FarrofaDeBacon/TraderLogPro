@@ -57,12 +57,8 @@ export function getDashboardStats(
     };
   }
 
-  // Ordenação do mais antigo para o mais novo para calcular a curva de capital exata
-  const sorted = [...trades].sort((a, b) => {
-    const da = parseSafeDate(a.date).getTime();
-    const db = parseSafeDate(b.date).getTime();
-    return (isNaN(da) ? 0 : da) - (isNaN(db) ? 0 : db);
-  });
+  // Otimizado Hydra v4: assume que os trades já chegam ordenados (pelo TradesStore)
+  const sorted = trades;
 
   let current = 0,
     totalW = 0,
@@ -76,6 +72,12 @@ export function getDashboardStats(
     tradesToday = 0,
     rFactorSum = 0,
     rFactorCount = 0;
+
+  // Cache baseDate bounds for fast day/month checks
+  const baseTimeStart = new Date(baseDate).setHours(0,0,0,0);
+  const baseTimeEnd = new Date(baseDate).setHours(23,59,59,999);
+  const monthStart = startOfMonth(baseDate).getTime();
+  const monthEnd = new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
 
   const equity = sorted.map((t) => {
     const res = convertTradeResult(t);
@@ -93,21 +95,14 @@ export function getDashboardStats(
       totalL += Math.abs(res);
     }
 
-    try {
-      const tDate = parseISO(t.date);
-      const tExitDate = t.exit_date ? parseISO(t.exit_date) : tDate;
+    const tTime = t.processed_timestamp || 0;
+    if (tTime >= baseTimeStart && tTime <= baseTimeEnd) {
+      dayRes += res;
+      tradesToday++;
+    }
 
-      if (isSameDay(tExitDate, baseDate)) {
-        dayRes += res;
-        tradesToday++;
-      }
-
-      const tMonthStr = format(tExitDate, "yyyy-MM");
-      if (tMonthStr === yearMonthStr) {
-        monthRes += res;
-      }
-    } catch (e) {
-      // Ignora datas incorretamente preenchidas (graceful degradation)
+    if (tTime >= monthStart && tTime <= monthEnd) {
+      monthRes += res;
     }
 
     discSum += t.followed_plan ? 100 : 0;
@@ -118,7 +113,7 @@ export function getDashboardStats(
       rFactorCount++;
     }
 
-    return [parseSafeDate(t.date).getTime(), current];
+    return [tTime, current];
   });
 
   // Lógica Semanal
@@ -129,23 +124,20 @@ export function getDashboardStats(
   const d = new Date(baseDate);
   const day = d.getDay();
   const diff = d.getDate() - day + (day === 0 ? -6 : 1); 
-  const startOfWeek = new Date(d.setDate(diff));
-  startOfWeek.setHours(0, 0, 0, 0);
+  const startOfWeekTime = new Date(d.setDate(diff)).setHours(0, 0, 0, 0);
 
-  // Re-lap over trades to find current week data accurately
+  // Otimizado: Percorre a lista já processada
   trades.forEach(t => {
-    try {
-      const tDate = parseISO(t.date);
-      const tExitDate = t.exit_date ? parseISO(t.exit_date) : tDate;
-      const tTime = tExitDate.getTime();
-      
-      if (tTime >= startOfWeek.getTime() && tTime <= baseDate.getTime()) {
-        const res = convertTradeResult(t);
-        weekRes += res;
-        const dateKey = format(tExitDate, "yyyy-MM-dd");
-        weekDailyResults[dateKey] = (weekDailyResults[dateKey] || 0) + res;
-      }
-    } catch {}
+    const tTime = t.processed_timestamp || 0;
+    
+    if (tTime >= startOfWeekTime && tTime <= baseTimeEnd) {
+      const res = convertTradeResult(t);
+      weekRes += res;
+      // Key format is still needed for weekDailyResults aggregation
+      // but we only do it for trades in the current week
+      const dateKey = format(new Date(tTime), "yyyy-MM-dd");
+      weekDailyResults[dateKey] = (weekDailyResults[dateKey] || 0) + res;
+    }
   });
 
   let weekPositiveDays = 0;

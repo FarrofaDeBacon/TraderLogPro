@@ -32,7 +32,7 @@
             "yesterday": "Yesterday"
         }
     },
-    "general": {
+    "common": {
         "actions": "Actions",
         "operator": "Operator",
         "save": "Save",
@@ -58,6 +58,7 @@
         "empty": "No assessment in",
         "error": "Error",
         "finish": "Finish",
+        "progress": "Progress",
         "from": "From",
         "intensity_short": "int.",
         "items": "Items",
@@ -99,7 +100,6 @@
         "weeks_upper": "WEEKS",
         "weight": "weight",
         "yes": "Yes",
-        "progress": "Progress",
         "add": "Add New",
         "confirmDelete": "Are you sure you want to delete?",
         "form": {
@@ -111,6 +111,38 @@
         "none": "None",
         "saveSuccess": "Saved successfully!",
         "unknown": "Unknown"
+    },
+    "general": {
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "confirmDeleteTitle": "Confirm Delete",
+        "confirmDeleteDescription": "Are you sure? This action cannot be undone.",
+        "save": "Save",
+        "add": "Add",
+        "back": "Back",
+        "error": "Error",
+        "success": "Success",
+        "loading": "Loading...",
+        "saveSuccess": "Saved successfully!",
+        "deleteSuccess": "Deleted successfully!",
+        "none": "None",
+        "unknown": "Unknown",
+        "custom": "Custom",
+        "form": {
+            "nameRequired": "Name is required.",
+            "assetRequired": "Asset is required.",
+            "invalidPoints": "Invalid points.",
+            "invaildContracts": "Invalid contracts number."
+        },
+        "weekdays": {
+            "sun": "Sun",
+            "mon": "Mon",
+            "tue": "Tue",
+            "wed": "Wed",
+            "thu": "Thu",
+            "fri": "Fri",
+            "sat": "Sat"
+        }
     },
     "help": {
         "title": "Help Center",

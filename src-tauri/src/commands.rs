@@ -685,6 +685,8 @@ pub async fn get_trades(db: State<'_, DbState>) -> Result<Vec<Trade>, String> {
     // This avoids the "{ String: '...' }" or Thing object issues once and for all.
     let sql = "SELECT *, 
             type::string(id) as id, 
+            type::string(date) as date,
+            (IF exit_date THEN type::string(exit_date) ELSE null END) as exit_date,
             type::string(account_id) as account_id,
             type::string(asset_type_id) as asset_type_id,
             type::string(strategy_id) as strategy_id,

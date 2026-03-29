@@ -1,27 +1,76 @@
 import { financialConfigStore } from "$lib/stores/financial-config.svelte";
-
 import { accountsStore } from "$lib/stores/accounts.svelte";
-import { invoke } from "@tauri-apps/api/core";
-import { getLocalDatePart } from "$lib/utils";
+import { safeInvoke } from "$lib/services/tauri";
+import { getLocalDatePart, parseSafeDate } from "$lib/utils";
 import type { Trade, Account, Currency, UserProfile } from "$lib/types";
 import { appStore } from "$lib/stores/app.svelte";
+import { currenciesStore } from "./currencies.svelte";
 import { calculateAverageTimeBetweenTrades } from "$lib/utils/gann";
 
 class TradesStore {
     trades = $state<Trade[]>([]);
     isLoading = $state<boolean>(false);
+    isInitialLoading = $state<boolean>(true);
 
     async loadTrades() {
         if (this.isLoading) return;
         this.isLoading = true;
         try {
-            const trades = await invoke("get_trades") as Trade[];
-            this.trades = trades;
+            const rawTrades = await safeInvoke<Trade[]>("get_trades", "Trades") || [];
+            const processed = this.processTrades(rawTrades);
+            // SORT ONCE: From oldest to newest for consistent stats calculation
+            this.trades = processed.sort((a, b) => (a.processed_timestamp || 0) - (b.processed_timestamp || 0));
         } catch (e) {
             console.error("[TradesStore] Error loading trades:", e);
         } finally {
             this.isLoading = false;
+            this.isInitialLoading = false;
         }
+    }
+
+    private processTrades(rawTrades: Trade[]): Trade[] {
+        const accounts = accountsStore.accounts;
+        const currencies = currenciesStore.currencies;
+
+        // O(1) lookup maps
+        const accountMap = new Map(accounts.map(a => [this.normalizeId(a.id), a]));
+        const currencyMap = new Map(currencies.map(c => [c.code, c]));
+        // Also map by ID for currencies that use ID as currency_id
+        currencies.forEach(c => {
+            const cid = this.normalizeId(c.id);
+            if (cid) currencyMap.set(cid, c);
+        });
+
+        return rawTrades.map(t => {
+            // Pre-calculate timestamp for fast sorting/filtering
+            const timestamp = parseSafeDate(t.exit_date || t.date).getTime();
+            
+            // Pre-calculate BRL result for fast dashboard stats
+            // Inline the logic for maximum speed
+            const accId = this.normalizeId(t.account_id);
+            const account = accountMap.get(accId);
+            
+            let rawResult = t.result;
+            if (typeof rawResult === 'string') {
+                rawResult = parseFloat(String(rawResult).replace(/[^\d,-]/g, "").replace(",", "."));
+            }
+            const numericResult = Number(rawResult) || 0;
+            
+            let brlResult = numericResult;
+            if (account) {
+                const curRef = account.currency || account.currency_id || "";
+                const normalizedCurRef = this.normalizeId(curRef);
+                const currency = currencyMap.get(normalizedCurRef) || (curRef ? currencyMap.get(curRef) : undefined);
+                const rate = currency?.exchange_rate || 1.0;
+                brlResult = numericResult * rate;
+            }
+
+            return {
+                ...t,
+                processed_timestamp: isNaN(timestamp) ? 0 : timestamp,
+                processed_result_brl: brlResult
+            };
+        });
     }
 
     async addTrade(trade: Omit<Trade, 'id'>) {
@@ -29,15 +78,15 @@ class TradesStore {
             const newTrade = { ...trade, id: crypto.randomUUID() } as Trade;
             console.log("[TradesStore] Adding new trade:", newTrade.id);
 
-            await invoke("save_trade", { trade: $state.snapshot(newTrade) });
+            await safeInvoke("save_trade", { trade: $state.snapshot(newTrade) });
 
             // Re-fetch instead of just pushing to ensure we have the DB's true state
             await this.loadTrades();
             await financialConfigStore.loadCashTransactions();
 
             // Sync account balances because save_trade might have updated them
-            invoke("get_accounts").then(res => {
-                if (res) accountsStore.accounts = res as Account[];
+            safeInvoke<Account[]>("get_accounts", "Accounts Sync").then(res => {
+                if (res) accountsStore.accounts = res;
             }).catch(e => console.error("Failed to sync accounts after trade addition", e));
 
             return { success: true, trade: newTrade };
@@ -100,7 +149,7 @@ class TradesStore {
             const updatedTrade = { ...existing, ...trade, id: existing.id };
 
             console.log("[TradesStore] Calling save_trade with ID:", updatedTrade.id);
-            const result = await invoke("save_trade", { trade: $state.snapshot(updatedTrade) });
+            const result = await safeInvoke("save_trade", { trade: $state.snapshot(updatedTrade) });
             console.log("[TradesStore] save_trade result:", result);
 
             this.trades = this.trades.map((t, i) => i === existingIdx ? updatedTrade : t);
@@ -109,8 +158,8 @@ class TradesStore {
             await financialConfigStore.loadCashTransactions();
 
             // Sync account balances
-            invoke("get_accounts").then(res => {
-                if (res) accountsStore.accounts = res as Account[];
+            safeInvoke<Account[]>("get_accounts", "Accounts Sync Update").then(res => {
+                if (res) accountsStore.accounts = res;
             }).catch(e => console.error("Failed to sync accounts after trade update", e));
 
             return { success: true };
@@ -125,7 +174,7 @@ class TradesStore {
             const normalizedInputId = this.normalizeId(id);
             console.log("[TradesStore] removeTrade: Normalized Input ID:", normalizedInputId);
 
-            await invoke("delete_trade", { id });
+            await safeInvoke("delete_trade", { id });
 
             // Optimistic local update
             this.trades = this.trades.filter(t => {
@@ -137,8 +186,8 @@ class TradesStore {
             await financialConfigStore.loadCashTransactions();
 
             // Sync account balances
-            invoke("get_accounts").then(res => {
-                if (res) accountsStore.accounts = res as Account[];
+            safeInvoke<Account[]>("get_accounts", "Accounts Sync Delete").then(res => {
+                if (res) accountsStore.accounts = res;
             }).catch(e => console.error("Failed to sync accounts after trade deletion", e));
 
             return { success: true };
@@ -151,7 +200,7 @@ class TradesStore {
     async removeTrades(ids: string[]) {
         try {
             console.log("[TradesStore] removeTrades: count=", ids.length);
-            await invoke("delete_trades_by_ids", { ids });
+            await safeInvoke("delete_trades_by_ids", { ids });
 
             const normalizedIds = ids.map(id => this.normalizeId(id));
 
@@ -165,8 +214,8 @@ class TradesStore {
             await financialConfigStore.loadCashTransactions();
 
             // Sync account balances
-            invoke("get_accounts").then(res => {
-                if (res) accountsStore.accounts = res as Account[];
+            safeInvoke<Account[]>("get_accounts", "Accounts Sync Batch Delete").then(res => {
+                if (res) accountsStore.accounts = res;
             }).catch(e => console.error("Failed to sync accounts after batch trade deletion", e));
 
             return { success: true };
@@ -183,7 +232,7 @@ class TradesStore {
         return accounts.map(acc => {
             const accCleanId = this.normalizeId(acc.id);
             const accountTrades = this.trades.filter(t => {
-                const isClosed = t.exit_price !== null && t.exit_price !== undefined;
+                const isClosed = (t.exit_price !== null && t.exit_price !== undefined) || (Number(t.result) !== 0);
                 if (!isClosed) return false;
 
                 const dateToUse = getLocalDatePart(t.exit_date || t.date);
@@ -207,7 +256,7 @@ class TradesStore {
     getTradesCountForDate(date: string) {
         const normalizedTargetDate = getLocalDatePart(date);
         return this.trades.filter(t => {
-            const isClosed = t.exit_price !== null && t.exit_price !== undefined;
+            const isClosed = (t.exit_price !== null && t.exit_price !== undefined) || (Number(t.result) !== 0);
             if (!isClosed) return false;
 
             const dateToUse = getLocalDatePart(t.exit_date || t.date);
@@ -218,7 +267,7 @@ class TradesStore {
     getMonthlyTradeResult(yearMonth: string, accounts: Account[], currencies: Currency[]) {
         let total = 0;
         const monthlyTrades = this.trades.filter(t => {
-            const isClosed = t.exit_price !== null && t.exit_price !== undefined;
+            const isClosed = (t.exit_price !== null && t.exit_price !== undefined) || (Number(t.result) !== 0);
             if (!isClosed) return false;
 
             // Use startsWith but also support date objects if they ever leak here
@@ -245,7 +294,12 @@ class TradesStore {
         }, 0);
     }
 
-    getConvertedTradeResult(trade: Trade, accounts: Account[], currencies: Currency[]): number {
+    getConvertedTradeResult(trade: any, accounts: Account[] = [], currencies: Currency[] = []): number {
+        // HYDRA V5: Priority to pre-calculated result for O(1) performance
+        if (trade.processed_result_brl !== undefined) {
+            return trade.processed_result_brl;
+        }
+
         const account = accounts.find(a => a.id === trade.account_id);
 
         let rawResult = trade.result;
@@ -314,9 +368,7 @@ class TradesStore {
 
             let result = trade.result;
             if (currencyMode === 'main') {
-                const currency = currencies.find(c => c.code === accCurrency);
-                const rate = currency?.exchange_rate || 1.0;
-                result = trade.result * rate;
+                result = this.getConvertedTradeResult(trade, accounts, currencies);
             }
 
             total_profit += result;
@@ -350,9 +402,7 @@ class TradesStore {
     }
 
     constructor() {
-        if (typeof window !== "undefined") {
-            this.loadTrades();
-        }
+        // Initialization only. Control is delegated to appStore shell load.
     }
 }
 

@@ -12,6 +12,8 @@
     import { Button } from "$lib/components/ui/button";
     import * as Select from "$lib/components/ui/select";
     import { Separator } from "$lib/components/ui/separator";
+    import { SystemHeader, SystemCard } from "$lib/components/ui/system";
+    import { Layers } from "lucide-svelte";
 
     let searchTerm = $state("");
     let selectedType = $state("all");
@@ -44,18 +46,7 @@
 <div class="space-y-6 animate-in fade-in duration-500">
     <div class="flex-1 flex flex-col space-y-8 p-4 md:p-8">
         <!-- Header with Search & actions -->
-        <div
-            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-        >
-            <div>
-                <h2 class="text-3xl font-bold tracking-tight">
-                    {$t("strategy.list.title")}
-                </h2>
-                <p class="text-muted-foreground">
-                    {$t("strategy.list.description")}
-                </p>
-            </div>
-
+        {#snippet strategyActions()}
             <div class="flex items-center gap-2 w-full md:w-auto">
                 <div class="relative flex-1 md:w-64">
                     <Search
@@ -63,30 +54,43 @@
                     />
                     <Input
                         type="search"
-                        placeholder={$t("strategy.list.searchPlaceholder")}
-                        class="pl-8"
+                        placeholder={$t("strategyList.searchPlaceholder")}
+                        class="pl-8 h-8 bg-background/50 border-border/40 focus:bg-background/80 transition-all"
                         bind:value={searchTerm}
                     />
                 </div>
 
                 <Select.Root type="single" bind:value={selectedType}>
-                    <Select.Trigger class="w-[180px]">
-                        <Filter class="w-4 h-4 mr-2" />
-                        {assetTypesStore.assetTypes.find(
-                            (t) => t.id === selectedType,
-                        )?.name || $t("trades.placeholders.all_types")}
+                    <Select.Trigger class="w-[180px] h-8 bg-background/50 border-border/40">
+                        <Filter class="w-3.5 h-3.5 mr-2 opacity-60" />
+                        <span class="text-[10px] font-bold uppercase tracking-tight">
+                            {assetTypesStore.assetTypes.find(
+                                (t) => t.id === selectedType,
+                            )?.name || $t("trades.placeholders.all_types")}
+                        </span>
                     </Select.Trigger>
                     <Select.Content>
-                        <Select.Item value="all"
+                        <Select.Item value="all" class="text-[10px] uppercase font-bold"
                             >{$t("trades.placeholders.all_types")}</Select.Item
                         >
                         {#each assetTypesStore.assetTypes as type}
-                            <Select.Item value={type.id}>{type.name}</Select.Item>
+                            <Select.Item value={type.id} class="text-[10px] uppercase font-bold">{type.name}</Select.Item>
                         {/each}
                     </Select.Content>
                 </Select.Root>
             </div>
-        </div>
+        {/snippet}
+
+        <SystemCard status="primary" class="p-3 mb-6 bg-primary/5">
+            <SystemHeader 
+                title={$t("strategyList.title")}
+                subtitle={$t("strategyList.description")}
+                icon={Layers}
+                variant="page"
+                class="mb-0"
+                actions={strategyActions}
+            />
+        </SystemCard>
 
         <Separator />
 
@@ -116,13 +120,13 @@
                     <Search class="w-8 h-8 text-muted-foreground" />
                 </div>
                 <h3 class="text-lg font-semibold">
-                    {$t("strategy.list.notFound.title")}
+                    {$t("strategyList.notFound.title")}
                 </h3>
                 <p class="text-muted-foreground max-w-sm mt-2">
-                    {$t("strategy.list.notFound.description")}
+                    {$t("strategyList.notFound.description")}
                 </p>
                 <Button href="/settings/strategies" variant="link" class="mt-4">
-                    {$t("strategy.list.notFound.action")}
+                    {$t("strategyList.notFound.action")}
                 </Button>
             </div>
         {/if}

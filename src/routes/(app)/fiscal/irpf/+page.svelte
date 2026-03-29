@@ -33,6 +33,7 @@
     import DarfDetailsDialog from "$lib/components/finance/DarfDetailsDialog.svelte";
     import HierarchicalList from "$lib/components/shared/HierarchicalList.svelte";
     import { Badge } from "$lib/components/ui/badge";
+    import { SystemCard, SystemHeader, SystemMetric } from "$lib/components/ui/system";
 
     // View Modal State
     let isViewModalOpen = $state(false);
@@ -295,154 +296,119 @@
     class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20"
 >
     <!-- Header & Actions -->
-    <div
-        class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border/30 pb-6"
-    >
-        <div>
-            <h2
-                class="text-3xl font-bold text-foreground tracking-tight flex items-center gap-3"
-            >
-                <FileText class="w-8 h-8 text-primary" />
-                {$t("fiscal.irpf.title")}
-            </h2>
-            <p class="text-muted-foreground mt-1">
-                {$t("fiscal.irpf.description")}
-            </p>
-        </div>
+    {#snippet actions()}
         <div class="flex gap-2">
             <Button
                 variant="outline"
                 href="/fiscal/irpf/darf"
-                class="border-border"
+                class="bg-background/40 hover:bg-background/60 border border-border/40 text-[9px] font-black h-8 uppercase tracking-widest px-3"
             >
-                <FileText class="w-4 h-4 mr-2" />
+                <FileText class="w-3.5 h-3.5 mr-2" />
                 {$t("fiscal.irpf.manageDarfs")}
             </Button>
 
             <Button
                 onclick={() => (isAppraisalModalOpen = true)}
-                class="neon-glow bg-primary text-primary-foreground font-bold"
+                class="neon-glow bg-primary text-primary-foreground text-[10px] font-black h-8 uppercase tracking-widest px-4 shadow-lg shadow-primary/20"
             >
-                <Calendar class="w-4 h-4 mr-2" />
+                <Calendar class="w-3.5 h-3.5 mr-2" />
                 {$t("fiscal.irpf.newAppraisal")}
             </Button>
         </div>
-    </div>
+    {/snippet}
 
-    <!-- KPI Cards (Standardized - Single Container for Perfect Height) -->
+    <SystemCard status="primary" class="p-3 mb-6 bg-primary/5">
+        <SystemHeader 
+            title={$t("fiscal.irpf.title")}
+            subtitle={$t("fiscal.irpf.description")}
+            icon={FileText}
+            variant="page"
+            class="mb-0"
+            {actions}
+        />
+    </SystemCard>
+
+    <!-- KPI Cards (Standardized) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Total Devido -->
-        <div class="card-glass border-l-4 border-l-rose-500 overflow-hidden">
-            <div class="flex items-start justify-between py-2 px-4">
-                <span
-                    class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
-                >
-                    {$t("fiscal.irpf.kpis.totalDue")} ({irpfStore.selectedYear})
-                </span>
-                <DollarSign class="h-3.5 w-3.5 text-rose-500" />
-            </div>
-            <div class="py-2 px-4">
-                <div
-                    class="text-base font-mono font-bold text-foreground uppercase tracking-tighter"
-                >
-                    {formatCurrency(irpfStore.totalDue)}
-                </div>
-                <p class="text-[10px] text-muted-foreground mt-0.5">
-                    {$t("fiscal.irpf.kpis.dueYearHint")}
-                </p>
-            </div>
-        </div>
+        <SystemCard status="danger" class="p-4 overflow-hidden relative group">
+            <div class="absolute -right-4 -bottom-4 opacity-[0.03] rotate-12"><DollarSign class="w-20 h-20"/></div>
+            <SystemMetric 
+                label={$t("fiscal.irpf.kpis.totalDue") + " (" + irpfStore.selectedYear + ")"}
+                value={formatCurrency(irpfStore.totalDue)}
+                status="danger"
+                subvalue={$t("fiscal.irpf.kpis.dueYearHint")}
+                weight="black"
+            />
+        </SystemCard>
 
         <!-- Total Pago -->
-        <div class="card-glass border-l-4 border-l-emerald-500 overflow-hidden">
-            <div class="flex items-start justify-between py-2 px-4">
-                <span
-                    class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
-                >
-                    {$t("fiscal.irpf.kpis.totalPaid")} ({irpfStore.selectedYear})
-                </span>
-                <CheckCircle2 class="h-3.5 w-3.5 text-emerald-500" />
-            </div>
-            <div class="py-2 px-4">
-                <div
-                    class="text-base font-mono font-bold text-emerald-500 uppercase tracking-tighter"
-                >
-                    {formatCurrency(irpfStore.totalPaid)}
-                </div>
-                <p class="text-[10px] text-muted-foreground mt-0.5">
-                    {$t("fiscal.irpf.kpis.paidYearHint")}
-                </p>
-            </div>
-        </div>
+        <SystemCard status="success" class="p-4 overflow-hidden relative group">
+            <div class="absolute -right-4 -bottom-4 opacity-[0.03] rotate-12"><CheckCircle2 class="w-20 h-20"/></div>
+            <SystemMetric 
+                label={$t("fiscal.irpf.kpis.totalPaid") + " (" + irpfStore.selectedYear + ")"}
+                value={formatCurrency(irpfStore.totalPaid)}
+                status="success"
+                subvalue={$t("fiscal.irpf.kpis.paidYearHint")}
+                weight="black"
+            />
+        </SystemCard>
 
         <!-- Card 3: Pendente Atual -->
-        <div class="card-glass border-l-4 border-l-amber-500 overflow-hidden">
-            <div class="flex items-start justify-between py-2 px-4">
-                <span
-                    class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
-                >
-                    {$t("fiscal.irpf.kpis.pending")}
-                </span>
-                <AlertTriangle class="h-3.5 w-3.5 text-amber-500" />
-            </div>
-            <div class="py-2 px-4">
-                <div
-                    class="text-base font-mono font-bold text-amber-500 uppercase tracking-tighter"
-                >
-                    {formatCurrency(irpfStore.pendingAmount)}
-                </div>
-                <div class="flex justify-between items-center mt-0.5">
-                    <p class="text-[10px] text-muted-foreground">
-                        {$t("fiscal.irpf.kpis.pendingHint", {
-                            values: { count: irpfStore.pendingGuiasCount },
-                        })}
-                    </p>
-                    <Button
-                        variant="link"
-                        href="/fiscal/irpf/darf"
-                        class="h-auto p-0 text-[10px] text-amber-500/80 hover:text-amber-500 hover:no-underline font-bold uppercase"
-                    >
-                        Verificar &rarr;
-                    </Button>
-                </div>
-            </div>
-        </div>
+        <SystemCard status="warning" class="p-4 overflow-hidden relative group">
+            <div class="absolute -right-4 -bottom-4 opacity-[0.03] rotate-12"><AlertTriangle class="w-20 h-20"/></div>
+            <SystemMetric 
+                label={$t("fiscal.irpf.kpis.pending")}
+                value={formatCurrency(irpfStore.pendingAmount)}
+                status="warning"
+                weight="black"
+            >
+                {#snippet subvalue()}
+                    <div class="flex justify-between items-center mt-1">
+                        <p class="text-[9px] text-muted-foreground opacity-60 font-black uppercase tracking-widest">
+                            {$t("fiscal.irpf.kpis.pendingHint", {
+                                values: { count: irpfStore.pendingGuiasCount },
+                            })}
+                        </p>
+                        <Button
+                            variant="link"
+                            href="/fiscal/irpf/darf"
+                            class="h-auto p-0 text-[10px] text-amber-500/80 hover:text-amber-500 hover:no-underline font-black uppercase tracking-widest"
+                        >
+                            Verificar &rarr;
+                        </Button>
+                    </div>
+                {/snippet}
+            </SystemMetric>
+        </SystemCard>
 
         <!-- Card 4: Prejuízos Acumulados -->
-        <div class="card-glass border-l-4 border-l-blue-500 overflow-hidden">
-            <div class="flex items-start justify-between py-2 px-4">
-                <span
-                    class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
-                >
-                    {$t("fiscal.irpf.kpis.losses")}
-                </span>
-                <TrendingDown class="h-3.5 w-3.5 text-blue-500" />
-            </div>
-            <div class="py-2 px-4 space-y-1">
-                <div class="flex justify-between items-center">
-                    <span
-                        class="text-[10px] font-bold text-muted-foreground uppercase opacity-60"
-                        >Day Trade</span
-                    >
-                    <span
-                        class="text-sm font-mono font-bold text-rose-500 tabular-nums"
-                    >
-                        {formatCurrency(getTotalLoss("DayTrade"))}
-                    </span>
+        <SystemCard class="p-4 overflow-hidden relative group border-l-4 border-l-blue-500">
+            <div class="absolute -right-4 -bottom-4 opacity-[0.03] rotate-12"><TrendingDown class="w-20 h-20 text-blue-500"/></div>
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2">
+                    <TrendingDown class="w-3.5 h-3.5 text-blue-500" />
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">{$t("fiscal.irpf.kpis.losses")}</span>
                 </div>
-                <div class="flex justify-between items-center">
-                    <span
-                        class="text-[10px] font-bold text-muted-foreground uppercase opacity-60"
-                        >Swing Trade</span
-                    >
-                    <span
-                        class="text-sm font-mono font-bold text-rose-500 tabular-nums"
-                    >
-                        {formatCurrency(getTotalLoss("SwingTrade"))}
-                    </span>
+                <div class="grid grid-cols-2 gap-4">
+                    <SystemMetric 
+                        label="Day Trade" 
+                        value={formatCurrency(getTotalLoss("DayTrade"))} 
+                        variant="compact" 
+                        status="danger"
+                        weight="bold"
+                    />
+                    <SystemMetric 
+                        label="Swing Trade" 
+                        value={formatCurrency(getTotalLoss("SwingTrade"))} 
+                        variant="compact" 
+                        status="danger"
+                        weight="bold"
+                        class="text-right items-end"
+                    />
                 </div>
             </div>
-        </div>
+        </SystemCard>
     </div>
 
     <!-- Charts Section -->
@@ -579,7 +545,7 @@
                     class="grid grid-cols-7 lg:grid-cols-13 gap-1 bg-muted/20 p-1"
                 >
                     <Tabs.Trigger value="all" class="text-xs"
-                        >{$t("general.all")}</Tabs.Trigger
+                        >{$t("common.all")}</Tabs.Trigger
                     >
                     {#each months as m}
                         <Tabs.Trigger value={m.val.toString()} class="text-xs">

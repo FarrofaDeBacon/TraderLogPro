@@ -116,7 +116,39 @@
             }
         },
         "syncingTerminal": "Syncing Terminal...",
-        "waitingSurvivorData": "Waiting for Survivor Hub data matrix"
+        "waitingSurvivorData": "Waiting for Survivor Hub data matrix",
+        "actions": {
+            "detailedRegister": "DETAILED REGISTER",
+            "evolutionJournal": "EVOLUTION JOURNAL",
+            "riskControlShort": "R.C",
+            "newTrade": "NEW ORDER",
+            "reviewDone": "Review Completed",
+            "finishTrading": "Finish Trading Session"
+        },
+        "sections": {
+            "traderAssistant": "Trader Assistant",
+            "behavioralRadar": "Behavioral Radar (Heuristic AI)",
+            "behavioralRadarLabel": "BEHAVIORAL RADAR",
+            "evolutionStreaks": "Evolution & Streaks",
+            "assistantLabel": "ASSISTANT",
+            "systemStatus": "SYSTEM STATUS",
+            "allClear": "All Clear (Normal Sizing)",
+            "noAnomalies": "No anomalies detected"
+        },
+        "stats": {
+            "todayPnL": "Today's P&L",
+            "todayPnLShort": "DAILY P&L",
+            "tradeFrequency": "Trade Frequency",
+            "weekPnL": "Week's P&L",
+            "weekPnLShort": "WEEKLY",
+            "gainLabel": "GAIN",
+            "lossLabel": "LOSS",
+            "rollingScore": "Rolling Score (30T)",
+            "emotionalControl": "Emotional Control",
+            "unbreakableDiscipline": "Unbreakable Discipline",
+            "greenDays": "Green Days",
+            "streaks": "STREAKS"
+        }
     },
     "home": {
         "newTrade": "New Trade",

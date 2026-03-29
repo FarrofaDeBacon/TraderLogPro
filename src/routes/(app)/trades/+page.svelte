@@ -50,6 +50,7 @@
     import TradeDetailView from "$lib/components/trades/TradeDetailView.svelte";
     import * as Select from "$lib/components/ui/select";
     import { Separator } from "$lib/components/ui/separator";
+    import { SystemHeader, SystemCard, SystemMetric } from "$lib/components/ui/system";
     import TradeOutcomePieChart from "$lib/components/trades/TradeOutcomePieChart.svelte";
     import TradeEquityChart from "$lib/components/trades/TradeEquityChart.svelte";
     import { calculateAverageTimeBetweenTrades, formatDuration } from "$lib/utils/gann";
@@ -588,34 +589,24 @@
 
 <div class="space-y-6 animate-in fade-in duration-500">
     <div class="flex-1 flex flex-col space-y-8 p-4 md:p-8">
-        <div
-            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-        >
-            <div class="space-y-1">
-                <h2 class="text-3xl font-bold text-foreground tracking-tight">
-                    {$t("trades.title")}
-                </h2>
-                <p class="text-muted-foreground">
-                    {$t("trades.subtitle")}
-                </p>
-            </div>
+        {#snippet tradeActions()}
             <div class="flex gap-2 items-center">
                 <div class="relative hidden sm:block">
                     <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input bind:ref={searchInputRef} bind:value={searchQuery} placeholder="Buscar ativo/nota... (Ctrl+K)" class="pl-8 h-9 w-[180px] lg:w-[220px] bg-background/50 border-border/50 text-xs shadow-sm font-medium" />
+                    <Input bind:ref={searchInputRef} bind:value={searchQuery} placeholder="Buscar ativo/nota... (Ctrl+K)" class="pl-8 h-8 w-[180px] lg:w-[220px] bg-background/50 border-border/50 text-[10px] shadow-none font-medium" />
                 </div>
                 
                 <Button
                     variant={showFilters ? "secondary" : "outline"}
                     size="sm"
-                    class="h-9"
+                    class="h-8 text-[10px] font-bold uppercase tracking-tight"
                     onclick={() => (showFilters = !showFilters)}
                 >
-                    <Filter class="w-4 h-4 mr-2" />
+                    <Filter class="w-3.5 h-3.5 mr-2" />
                     {$t("trades.filters.title") || "Filtrar"}
                     {#if filterStatus !== "all" || filterAccount !== "all" || filterStrategy !== "all" || filterAssetType !== "all"}
                         <Badge
-                            class="ml-2 h-4 w-4 p-0 flex items-center justify-center bg-primary text-primary-foreground"
+                            class="ml-2 h-3.5 w-3.5 p-0 flex items-center justify-center bg-primary text-primary-foreground text-[10px]"
                             >!</Badge
                         >
                     {/if}
@@ -623,208 +614,91 @@
 
                 <Button
                     size="sm"
-                    class="h-9"
+                    class="h-8 text-[10px] font-bold uppercase tracking-tight"
                     variant="outline"
                     onclick={() => {
                         selectedTrade = null;
                         isEditOpen = true;
                     }}
                 >
+                    <Plus class="w-3.5 h-3.5 mr-1" />
                     {$t("trades.actions.new_trade") || "Novo Trade"}
                 </Button>
                 
                 <Button
                     size="sm"
-                    class="h-9"
+                    class="h-8 text-[10px] font-bold uppercase tracking-tight"
                     variant="outline"
                     onclick={handleImportProfit}
                 >
-                    <ArrowRightLeft class="w-4 h-4 mr-2" />
-                    {$t("trades.actions.import_profit") || "Importar Profit"}
+                    <ArrowRightLeft class="w-3.5 h-3.5 mr-2 opacity-60" />
+                    {$t("trades.actions.import_profit") || "Importar"}
                 </Button>
             </div>
-        </div>
+        {/snippet}
+
+        <SystemCard status="primary" class="p-3 mb-4 bg-primary/5">
+            <SystemHeader 
+                title={$t("trades.title")}
+                subtitle={$t("trades.subtitle")}
+                icon={ArrowRightLeft}
+                variant="page"
+                class="mb-0"
+                actions={tradeActions}
+            />
+        </SystemCard>
 
         <!-- Secundário: Registro Ultra Rápido (Fase 2) -->
         <QuickLog />
 
         <!-- KPI Row -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-2">
-            <Card.Root
-                class="card-glass border-l-2 {kpis.profitTotal >= 0
-                    ? 'border-l-emerald-500'
-                    : 'border-l-rose-500'} shadow-sm"
-            >
-                <Card.Content class="py-0.5 px-2">
-                    <div class="flex items-center justify-between">
-                        <span
-                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60 leading-none"
-                        >
-                            {$t("trades.quickStats.totalBalance")}
-                        </span>
-                        <Coins
-                            class="w-3 h-3 {kpis.profitTotal >= 0
-                                ? 'text-emerald-500'
-                                : 'text-rose-500'}"
-                        />
-                    </div>
-                    <div
-                        class="mt-1 flex items-center justify-between gap-2 overflow-hidden"
-                    >
-                        <div class="flex flex-col">
-                            {#each Object.entries(kpis.pnlByCurrency) as [curr, val]}
-                                <div
-                                    class="flex items-baseline gap-1 leading-none"
-                                >
-                                    <span
-                                        class="text-[8px] font-black uppercase text-muted-foreground/40"
-                                        >{curr}</span
-                                    >
-                                    <span
-                                        class="text-sm font-mono font-bold tabular-nums tracking-tight {(val as number) >=
-                                        0
-                                            ? 'text-emerald-500'
-                                            : 'text-rose-500'}"
-                                    >
-                                        {formatNumber(val as number)}
-                                    </span>
-                                </div>
-                            {/each}
-                        </div>
-                        {#if Object.keys(kpis.pnlByCurrency).length > 1}
-                            <div
-                                class="text-right border-l border-border pl-2 leading-none shrink-0"
-                            >
-                                <span
-                                    class="text-sm font-mono font-bold tabular-nums tracking-tight {kpis.consolidatedTotal >=
-                                    0
-                                        ? 'text-emerald-500'
-                                        : 'text-rose-500'}"
-                                >
-                                    {formatCurrency(
-                                        kpis.consolidatedTotal,
-                                        kpis.mainCurrency,
-                                        $locale || "pt-BR",
-                                    )}
-                                </span>
-                            </div>
-                        {/if}
-                    </div>
-                </Card.Content>
-            </Card.Root>
+            <SystemCard status={kpis.profitTotal >= 0 ? 'success' : 'danger'} class="p-3">
+                <SystemMetric 
+                    label={$t("trades.quickStats.totalBalance")}
+                    value={formatCurrency(kpis.consolidatedTotal, kpis.mainCurrency)}
+                    status={kpis.consolidatedTotal >= 0 ? 'success' : 'danger'}
+                    weight="black"
+                />
+            </SystemCard>
 
-            <Card.Root
-                class="card-glass border-l-2 border-l-cyan-500 shadow-sm"
-            >
-                <Card.Content class="py-1 px-3">
-                    <div class="flex items-center justify-between">
-                        <span
-                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60 leading-none"
-                        >
-                            {$t("trades.quickStats.winRate")}
-                        </span>
-                        <Percent class="w-3 h-3 text-cyan-500" />
-                    </div>
-                    <div class="mt-1">
-                        <div
-                            class="text-sm font-mono font-bold text-foreground tabular-nums tracking-tight leading-none"
-                        >
-                            {kpis.winRate}%
-                        </div>
-                        <p
-                            class="text-[9px] text-muted-foreground/50 leading-none mt-0.5"
-                        >
-                            {$t("trades.quickStats.winRateDesc", {
-                                values: {
-                                    winners: kpis.winners,
-                                    total: kpis.total,
-                                },
-                            })}
-                        </p>
-                    </div>
-                </Card.Content>
-            </Card.Root>
+            <SystemCard status="info" class="p-3">
+                <SystemMetric 
+                    label={$t("trades.quickStats.winRate")}
+                    value={kpis.winRate + "%"}
+                    status={Number(kpis.winRate) >= 50 ? 'success' : 'danger'}
+                    weight="black"
+                    subvalue={$t("trades.quickStats.winRateDesc", {
+                        values: { winners: kpis.winners, total: kpis.total }
+                    })}
+                />
+            </SystemCard>
 
-            <Card.Root
-                class="card-glass border-l-2 border-l-indigo-500 shadow-sm"
-            >
-                <Card.Content class="py-1 px-3">
-                    <div class="flex items-center justify-between">
-                        <span
-                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60 leading-none"
-                        >
-                            {$t("trades.quickStats.profitFactor")}
-                        </span>
-                        <TrendingUp class="w-3 h-3 text-indigo-500" />
-                    </div>
-                    <div class="mt-1">
-                        <div
-                            class="text-sm font-mono font-bold text-foreground tabular-nums tracking-tight leading-none"
-                        >
-                            {kpis.profitFactor}
-                        </div>
-                        <p
-                            class="text-[9px] text-muted-foreground/50 leading-none mt-0.5"
-                        >
-                            {$t("trades.quickStats.profitFactorDesc")}
-                        </p>
-                    </div>
-                </Card.Content>
-            </Card.Root>
+            <SystemCard status="info" class="p-3">
+                <SystemMetric 
+                    label={$t("trades.quickStats.profitFactor")}
+                    value={kpis.profitFactor}
+                    status={Number(kpis.profitFactor) >= 1.2 ? 'success' : Number(kpis.profitFactor) >= 1.0 ? 'warning' : 'danger'}
+                    weight="black"
+                />
+            </SystemCard>
 
-            <Card.Root
-                class="card-glass border-l-2 border-l-amber-500 shadow-sm"
-            >
-                <Card.Content class="py-1 px-3">
-                    <div class="flex items-center justify-between">
-                        <span
-                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60 leading-none"
-                        >
-                            {$t("trades.quickStats.openTrades")}
-                        </span>
-                        <Clock class="w-3 h-3 text-amber-500" />
-                    </div>
-                    <div class="mt-1">
-                        <div
-                            class="text-sm font-mono font-bold text-foreground tabular-nums tracking-tight leading-none"
-                        >
-                            {kpis.openCount}
-                        </div>
-                        <p
-                            class="text-[9px] text-muted-foreground/50 leading-none mt-0.5"
-                        >
-                            {$t("trades.quickStats.openTradesDesc")}
-                        </p>
-                    </div>
-                </Card.Content>
-            </Card.Root>
+            <SystemCard status="warning" class="p-3">
+                <SystemMetric 
+                    label={$t("trades.quickStats.openTrades")}
+                    value={kpis.openCount}
+                    status={kpis.openCount > 0 ? 'warning' : 'none'}
+                    weight="bold"
+                />
+            </SystemCard>
 
-            <Card.Root
-                class="card-glass border-l-2 border-l-fuchsia-500 shadow-sm"
-            >
-                <Card.Content class="py-1 px-3">
-                    <div class="flex items-center justify-between">
-                        <span
-                            class="text-[9px] font-black uppercase tracking-wider text-muted-foreground/60 leading-none"
-                        >
-                            {$t("trades.quickStats.avgInterval")}
-                        </span>
-                        <Timer class="w-3 h-3 text-fuchsia-500" />
-                    </div>
-                    <div class="mt-1">
-                        <div
-                            class="text-sm font-mono font-bold text-foreground tabular-nums tracking-tight leading-none"
-                        >
-                            {formatDuration(kpis.avgInterval)}
-                        </div>
-                        <p
-                            class="text-[9px] text-muted-foreground/50 leading-none mt-0.5"
-                        >
-                            {$t("trades.quickStats.avgIntervalDesc") || "Intervalo médio entre operações consecutivas"}
-                        </p>
-                    </div>
-                </Card.Content>
-            </Card.Root>
+            <SystemCard status="info" class="p-3">
+                <SystemMetric 
+                    label={$t("trades.quickStats.avgInterval")}
+                    value={formatDuration(kpis.avgInterval)}
+                    weight="bold"
+                />
+            </SystemCard>
         </div>
 
         {#if showFilters}
@@ -842,7 +716,7 @@
                                 class="bg-background/50 h-9"
                             >
                                 {#if filterStatus === "all"}
-                                    {$t("general.all") || "Todos"}
+                                    {$t("common.all") || "Todos"}
                                 {:else if filterStatus === "open"}
                                     {$t("trades.table.status_open") || "Aberto"}
                                 {:else if filterStatus === "closed"}
@@ -854,7 +728,7 @@
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Item value="all"
-                                    >{$t("general.all") || "Todos"}</Select.Item
+                                    >{$t("common.all") || "Todos"}</Select.Item
                                 >
                                 <Select.Item value="open"
                                     >{$t("trades.table.status_open") ||
@@ -882,12 +756,12 @@
                                 {accountsStore.accounts.find(
                                     (a) => a.id === filterAccount,
                                 )?.nickname ||
-                                    $t("general.all") ||
+                                    $t("common.all") ||
                                     "Todas"}
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Item value="all"
-                                    >{$t("general.all") || "Todas"}</Select.Item
+                                    >{$t("common.all") || "Todas"}</Select.Item
                                 >
                                 {#each accountsStore.accounts as acc}
                                     <Select.Item value={acc.id}
@@ -912,12 +786,12 @@
                                 {workspaceStore.strategies.find(
                                     (s) => s.id === filterStrategy,
                                 )?.name ||
-                                    $t("general.all") ||
+                                    $t("common.all") ||
                                     "Todas"}
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Item value="all"
-                                    >{$t("general.all") || "Todas"}</Select.Item
+                                    >{$t("common.all") || "Todas"}</Select.Item
                                 >
                                 {#each workspaceStore.strategies as strat}
                                     <Select.Item value={strat.id}
@@ -942,12 +816,12 @@
                                 {assetTypesStore.assetTypes.find(
                                     (at) => at.id === filterAssetType,
                                 )?.name ||
-                                    $t("general.all") ||
+                                    $t("common.all") ||
                                     "Todos"}
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Item value="all"
-                                    >{$t("general.all") || "Todos"}</Select.Item
+                                    >{$t("common.all") || "Todos"}</Select.Item
                                 >
                                 {#each assetTypesStore.assetTypes as type}
                                     <Select.Item value={type.id}
@@ -971,12 +845,12 @@
                                 class="bg-background/50 h-9"
                             >
                                 {filterCurrency === "all"
-                                    ? $t("general.all") || "Todas"
+                                    ? $t("common.all") || "Todas"
                                     : filterCurrency}
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Item value="all"
-                                    >{$t("general.all") || "Todas"}</Select.Item
+                                    >{$t("common.all") || "Todas"}</Select.Item
                                 >
                                 {#each [...new Set(accountsStore.accounts.map((a) => a.currency))] as curr}
                                     <Select.Item value={curr}

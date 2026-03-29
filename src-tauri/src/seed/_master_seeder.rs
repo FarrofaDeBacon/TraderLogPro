@@ -33,6 +33,7 @@ pub async fn run_all_seeds(db: &Surreal<Db>) -> Result<(), String> {
     tags_seed::seed_tags(db, None).await?;
     chart_types_seed::seed_chart_types(db, None).await?;
     fees_seed::seed_fees(db, None).await?;
+    risk_seed::seed_growth_plans(db).await?;
     risk_seed::seed_risk_profiles(db, None).await?;
     tax_seed::seed_tax_rules(db).await?;
 
@@ -67,6 +68,7 @@ pub async fn run_base_seeds(db: &Surreal<Db>) -> Result<(), String> {
     tags_seed::seed_tags(db, None).await?;
     chart_types_seed::seed_chart_types(db, None).await?;
     fees_seed::seed_fees(db, None).await?;
+    risk_seed::seed_growth_plans(db).await?;
     risk_seed::seed_risk_profiles(db, None).await?;
     tax_seed::seed_tax_rules(db).await?;
 
@@ -123,6 +125,7 @@ pub async fn force_reseed_all(db: &Surreal<Db>) -> Result<(), String> {
         REMOVE TABLE chart_type;
         REMOVE TABLE fee_profile;
         REMOVE TABLE risk_profile;
+        REMOVE TABLE growth_plan;
         REMOVE TABLE tax_rule;
         REMOVE TABLE tax_profile;
         REMOVE TABLE tax_profile_entry;
@@ -211,6 +214,7 @@ pub async fn run_selective_seeds(db: &Surreal<Db>, selection: Vec<String>) -> Re
     }
     if has_module("risk") {
         risk_seed::seed_risk_profiles(db, get_filter("risk")).await?;
+        risk_seed::seed_growth_plans(db).await?;
     }
 
     // Nível 2
@@ -302,6 +306,7 @@ pub async fn run_custom_seeds(
     chart_types_seed::seed_chart_types(db, None).await?;
     fees_seed::seed_fees(db, None).await?;
     risk_seed::seed_risk_profiles(db, None).await?;
+    risk_seed::seed_growth_plans(db).await?;
     tax_seed::seed_tax_rules(db).await?;
 
     // Nível 2: Mercados Selecionados

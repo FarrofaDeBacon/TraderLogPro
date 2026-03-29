@@ -167,19 +167,17 @@
         "currency_modes": {
             "main": "Main",
             "original": "Original"
-        }
-    },
-    "strategy": {
-        "card": {
+        },
+        "strategyCard": {
             "totalResult": "Total Result",
             "tradesSuffix": "trades",
             "viewAnalysis": "View Full Analysis"
         },
-        "gann": {
+        "strategyGann": {
             "adherence": "Adherence",
             "accuracy": "Accuracy",
             "alignment": "Alignment",
-            "alignmentDesc": "Entries on SQ9 Levels",
+            "alignmentDesc": "SQ9 Level Entries",
             "angleScore": "Angle Score",
             "analyticalConfluence": "Analytical Confluence",
             "confluenceDesc": "How this strategy reacts to Gann's Mathematical Laws",
@@ -187,46 +185,46 @@
             "cycleWatchDesc": "Win Rate on Natural Dates",
             "geometricPrecision": "Geometric Precision",
             "geometryLaw": "Law of Geometry",
-            "geometryLawDesc": "Angle Adherence represents the balance between Price and Time. Strategies that respect geometric angles (like 45°) are considered stable and sustainable throughout the Master Cycle.",
+            "geometryLawDesc": "Angle Adherence represents the balance between Price and Time. Strategies that respect geometric angles (like 45°) are considered stable and sustainable through the Master Cycle.",
             "mastery": "Gann Mastery",
             "mathematicalConfluence": "Mathematical Confluence",
             "success": "Success",
             "timeLaw": "Law of Time",
-            "timeLawDesc": "The Cycle Success Rate reveals if this strategy is \"seasonal\". Gann believed that time is the most important factor; this score indicates if the strategy's edge is amplified during Season Changes.",
+            "timeLawDesc": "Cycle Success Rate reveals if this strategy is \"seasonal\". Gann believed time is the most important factor; this score indicates if the strategy's edge is amplified during Season Changes.",
             "vibrationLaw": "Law of Vibration",
-            "vibrationLawDesc": "The alignment of the strategy with the vibrations of the Square of Nine measures the quality of its entries. A high score suggests that the strategy naturally finds liquidity at Gann's mathematical expansion points."
+            "vibrationLawDesc": "The alignment of the strategy with Square of Nine vibrations measures the quality of your entries. A high score suggests the strategy naturally finds liquidity at Gann's mathematical expansion points."
         },
-        "dashboard": {
+        "strategyDashboard": {
             "charts": {
                 "drawdown": "Drawdown",
                 "drawdownStrategy": "Drawdown (Strategy)",
-                "equity": "Net Equity",
+                "equity": "Equity",
                 "equityStrategy": "Equity (Strategy)"
             },
             "checklist": {
                 "economicCalendar": "Economic Calendar",
                 "items": {
                     "gap_analysis": "Opening Gap: Did I identify if it's a Novice or Professional Gap?",
-                    "mindset": "Mental: Am I calm and focused to trade?",
+                    "mindset": "Mindset: Am I calm and focused to trade?",
                     "news": "News: Did I check the Economic Calendar for the day?",
                     "newsDetected": "⚠️ High Impact News Detected:",
                     "newsNone": "No relevant news on the calendar today.",
                     "prior_levels": "Key Levels: Did I mark yesterday's High and Low?",
-                    "riskInput": "Loss Limit Today ({currency}):",
+                    "riskInput": "Daily Loss Limit ($):",
                     "risk_limit": "Risk: Did I define my maximum Stop Loss for today?",
                     "trend_200ma": "Territory (200MA): Above (Bull) or Below (Bear)?",
-                    "trend_20ma": "Trend (20MA): Is price respecting the 20-period moving average?"
+                    "trend_20ma": "Trend (20MA): Is price respecting the 20MA?"
                 },
-                "ready": "READY TO OPERATE",
+                "ready": "READY TO TRADE",
                 "reset": "Reset",
                 "start": "Start Trading Session",
-                "subtitle": "Verify fundamentals before the first click.",
-                "success": "Excellent! You are prepared. Good trades!",
+                "subtitle": "Check the foundations before the first click.",
+                "success": "Checklist completed. Ready to trade.",
                 "title": "Pre-Market Check-in (Oliver Velez)",
                 "verified": "verified",
                 "newsUpdateError": "Error updating economic events feed.",
                 "newsUpdateSuccess": "Economic feed updated successfully.",
-                "resetSuccess": "Checklist statistics reset."
+                "resetSuccess": "Checklist stats reset."
             },
             "heatmap": {
                 "days": {
@@ -242,12 +240,12 @@
                     "breakeven": "Breakeven",
                     "loss": "Loss",
                     "profit": "Profit",
-                    "strongLoss": "Strong Loss",
-                    "strongProfit": "Strong Profit"
+                    "strongLoss": "High Loss",
+                    "strongProfit": "High Profit"
                 },
-                "noMarket": "No market linked",
-                "subtitle": "Accumulated performance by Day of the Week and Hour",
-                "title": "Heatmap (P&L)",
+                "noMarket": "No linked market",
+                "subtitle": "Accumulated performance by Day of Week and Hour",
+                "title": "P&L Heatmap",
                 "tooltip": {
                     "loss": "Loss",
                     "neutral": "Neutral",
@@ -261,17 +259,17 @@
             "stats": {
                 "averageLoss": "Average Loss",
                 "averageWin": "Average Win",
-                "avgDurationLoss": "Average Duration (Loss)",
-                "avgDurationWin": "Average Duration (Win)",
-                "avgInterval": "Interval Between Trades",
-                "avgTimeBetweenTrades": "Average Time Between Trades",
+                "avgDurationLoss": "Avg Duration (Loss)",
+                "avgDurationWin": "Avg Duration (Profit)",
+                "avgInterval": "Trade Interval",
+                "avgTimeBetweenTrades": "Avg Time Between Trades",
                 "bestTrade": "Best Trade",
                 "consecutiveLosses": "Consecutive Losses",
                 "consecutiveWins": "Consecutive Wins",
-                "mathExpectation": "Mathematical Expectation",
+                "mathExpectation": "Math Expectation",
                 "maxDrawdown": "Max Drawdown",
                 "netResult": "Net Result",
-                "operations": "Operations",
+                "operations": "Trades",
                 "payoff": "Payoff",
                 "planAdherence": "Plan Adherence",
                 "profitFactor": "Profit Factor",
@@ -283,7 +281,7 @@
             },
             "subtitle": "Welcome to your command center.",
             "summary": {
-                "chartPlaceholder": "Performance Chart (Coming soon)",
+                "chartPlaceholder": "Performance Chart (Soon)",
                 "noTrades": "No trades performed today.",
                 "title": "Day Summary"
             },
@@ -293,7 +291,7 @@
             },
             "title": "Dashboard"
         },
-        "dossier": {
+        "strategyDossier": {
             "all": "All",
             "assetTypes": "Asset Types",
             "context": "Operational Context",
@@ -302,27 +300,27 @@
             "exit": "Stop / Exit",
             "indicators": "Indicators",
             "linkedMarkets": "Linked Markets",
-            "management": "Conduction / Management",
+            "management": "Management",
             "multi": "MULTI",
             "noCriteria": "No criteria defined.",
             "noImages": "No images attached.",
-            "noLinkedMarket": "No specific linked market (Free Schedule).",
+            "noLinkedMarket": "No specific market linked (Anytime).",
             "partials": "Partial Exits",
             "specificAssets": "Specific Assets",
             "timeframes": "Timeframes",
             "visualExamples": "Visual Examples"
         },
-        "list": {
-            "description": "Track the statistical performance of your setups.",
+        "strategyList": {
+            "description": "Track the statistical performance of your operational setups.",
             "new": "New",
             "notFound": {
                 "action": "Go to Settings",
-                "description": "We didn't find setups with current filters. How about creating a new one in Settings?",
+                "description": "We couldn't find setups with current filters. How about creating a new one in Settings?",
                 "title": "No strategy found"
             },
             "searchPlaceholder": "Search strategy...",
             "title": "Strategies"
         },
-        "notFound": "Strategy not found"
+        "strategyNotFound": "Strategy not found"
     }
 }

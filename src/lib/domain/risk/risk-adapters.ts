@@ -38,7 +38,18 @@ export function adaptSettingsProfileToDomain(profile: RiskProfile): RiskProfileC
         emotionalLookbackTrades: profile.psychological_lookback_count,
         emotionalPenaltyThreshold: profile.psychological_threshold,
         
-        growthPlanEnabled: !!profile.growth_plan_id
+        growthPlanEnabled: !!profile.growth_plan_id,
+        useAdvancedRules: profile.use_advanced_rules,
+        riskRules: profile.risk_rules?.map(r => ({
+            id: r.id,
+            name: r.name,
+            enabled: r.enabled,
+            scope: r.scope,
+            targetType: r.target_type,
+            operator: r.operator,
+            value: r.value,
+            valueSecondary: r.value_secondary
+        }))
     };
 }
 
@@ -73,7 +84,7 @@ export function adaptTradeToDomain(trade: Trade): TradeRiskSnapshot {
     return {
         tradeId: trade.id,
         date: trade.exit_date || trade.date,
-        pnl: trade.result,
+        pnl: Number(trade.result) || 0,
         pnlPoints: isNaN(pnlPoints) ? 0 : pnlPoints,
         resultR: isNaN(resultR) || !isFinite(resultR) ? (isWin ? 1 : isLoss ? -1 : 0) : resultR,
         isWin,
@@ -91,24 +102,28 @@ export function adaptTradeToDomain(trade: Trade): TradeRiskSnapshot {
 export function adaptGrowthPhaseToDomain(phase: AppGrowthPhase): DomainGrowthPhase | undefined {
     if (!phase) return undefined;
 
-    // Extrai lógicas dinâmicas de conditions_to_advance/demote
-    // Exemplo: { metric: 'WinRate', operator: '>=', value: 40 }
-    const getCondition = (arr: any[], metricName: string, fallback: number) => {
-        const cond = arr.find(c => c.metric === metricName);
-        return cond ? Number(cond.value) : fallback;
-    };
-
     return {
         id: phase.id || phase.name,
         name: phase.name,
         maxContracts: phase.lot_size,
-        minTrades: getCondition(phase.conditions_to_advance, 'MinTrades', 0),
-        minWinRate: getCondition(phase.conditions_to_advance, 'WinRate', 0),
-        minProfitFactor: getCondition(phase.conditions_to_advance, 'ProfitFactor', 0),
-        minExpectancyR: getCondition(phase.conditions_to_advance, 'Expectancy', 0),
-        minNetPnL: getCondition(phase.conditions_to_advance, 'NetProfit', 0),
-        maxDrawdownPercent: getCondition(phase.conditions_to_demote, 'Drawdown', 100),
-        allowPromotion: phase.conditions_to_advance.length > 0,
-        allowRegression: phase.conditions_to_demote.length > 0
+        minTrades: 0, // Campos legados, mantidos como 0
+        minWinRate: 0,
+        minProfitFactor: 0,
+        minExpectancyR: 0,
+        minNetPnL: 0,
+        maxDrawdownPercent: 100,
+        allowPromotion: (phase.conditions_to_advance || []).length > 0,
+        allowRegression: (phase.conditions_to_demote || []).length > 0,
+        conditionsToAdvance: (phase.conditions_to_advance || []).map(c => ({
+            metric: c.metric,
+            operator: c.operator,
+            value: Number(c.value)
+        })),
+        conditionsToDemote: (phase.conditions_to_demote || []).map(c => ({
+            metric: c.metric,
+            operator: c.operator,
+            value: Number(c.value)
+        }))
     };
 }
+

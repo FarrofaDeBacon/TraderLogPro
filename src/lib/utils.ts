@@ -5,6 +5,21 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
+/**
+ * Normalizes an asset type ID by removing the legacy "asset_type:" prefix if present.
+ */
+export function normalizeAssetTypeId(id: string | null | undefined): string {
+    if (!id) return "";
+    return id.replace(/^asset_type:/, "");
+}
+
+/**
+ * Compares two asset type IDs by normalizing them first.
+ */
+export function compareAssetTypeIds(id1: string | null | undefined, id2: string | null | undefined): boolean {
+    return normalizeAssetTypeId(id1) === normalizeAssetTypeId(id2);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type WithoutChild<T> = T extends { child?: any } ? Omit<T, "child"> : T;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -155,3 +170,16 @@ export const ensureLocalOffset = (dateStr: string): string => {
 
     return `${normalized}${sign}${offHours}:${offMinutes}`;
 };
+
+/**
+ * Executes a Tauri invoke command with a timeout.
+ * Prevents the UI from hanging indefinitely if the backend is unresponsive.
+ * Now bridged with centralized environment detection for web resilience.
+ */
+import { safeInvoke } from "./services/tauri";
+
+export async function invokeWithTimeout<T>(command: string, args?: any, timeoutMs: number = 5000): Promise<T> {
+    const result = await safeInvoke<T>(command, args, timeoutMs);
+    // Note: safeInvoke might return null if mocking, we cast or handle null depending on use case.
+    return result as T;
+}

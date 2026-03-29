@@ -18,7 +18,7 @@ class GamificationStore {
             tradesStore.trades, 
             dailyReviewsStore.reviews, 
             { 
-                getConvertedResult: (t: any) => tradesStore.getConvertedTradeResult(t, accountsStore.accounts, currenciesStore.currencies),
+                getConvertedResult: (t: any) => t.processed_result_brl || 0,
                 getEmotionalState: (id: string) => workspaceStore.emotionalStates.find(e => e.id === id)
             }
         );
@@ -37,7 +37,7 @@ class GamificationStore {
             tradesStore.trades, 
             dailyReviewsStore.reviews,
             { 
-                getConvertedResult: (t: any) => tradesStore.getConvertedTradeResult(t, accountsStore.accounts, currenciesStore.currencies),
+                getConvertedResult: (t: any) => t.processed_result_brl || 0,
                 getEmotionalState: (id: string) => workspaceStore.emotionalStates.find(e => e.id === id)
             }
         );
@@ -55,7 +55,7 @@ class GamificationStore {
             this.streaks,
             this.scoreStats,
             { 
-                getConvertedResult: (t: any) => tradesStore.getConvertedTradeResult(t, accountsStore.accounts, currenciesStore.currencies),
+                getConvertedResult: (t: any) => t.processed_result_brl || 0,
                 getEmotionalState: (id: string) => workspaceStore.emotionalStates.find(e => e.id === id)
             }
         );

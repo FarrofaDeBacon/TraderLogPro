@@ -32,7 +32,7 @@
             "yesterday": "Ontem"
         }
     },
-    "general": {
+    "common": {
         "actions": "Ações",
         "operator": "Operador",
         "save": "Salvar",
@@ -54,10 +54,11 @@
         "description": "Descrição",
         "destination": "Destino",
         "details": "Detalhes",
-        "edit": "Edit",
+        "edit": "Editar",
         "empty": "Nenhuma apuração em",
         "error": "Erro",
         "finish": "Finalizar",
+        "progress": "Progresso",
         "from": "De",
         "intensity_short": "int.",
         "items": "Itens",
@@ -65,9 +66,9 @@
         "month": "Mês",
         "name": "Name",
         "next": "Próximo",
-        "no": "No",
-        "noData": "No Data",
-        "of": "Of",
+        "no": "Não",
+        "noData": "Sem Dados",
+        "of": "de",
         "optional": "Opcional",
         "origin": "Origem",
         "quantity": "Qtd",
@@ -99,7 +100,6 @@
         "weeks_upper": "SEMANAS",
         "weight": "peso",
         "yes": "Sim",
-        "progress": "Progresso",
         "add": "Adicionar Novo",
         "confirmDelete": "Tem certeza que deseja excluir?",
         "form": {
@@ -111,6 +111,41 @@
         "none": "Nenhum",
         "saveSuccess": "Salvo com sucesso!",
         "unknown": "Desconhecido"
+    },
+    "general": {
+        "yes": "Sim",
+        "no": "Não",
+        "cancel": "Cancelar",
+        "delete": "Excluir",
+        "confirmDeleteTitle": "Confirmar Exclusão",
+        "confirmDeleteDescription": "Tem certeza que deseja excluir? Esta ação não pode ser desfeita.",
+        "save": "Salvar",
+        "edit": "Editar",
+        "add": "Adicionar",
+        "back": "Voltar",
+        "error": "Erro",
+        "success": "Sucesso",
+        "loading": "Carregando...",
+        "saveSuccess": "Salvo com sucesso!",
+        "deleteSuccess": "Excluído com sucesso!",
+        "none": "Nenhum",
+        "unknown": "Desconhecido",
+        "custom": "Personalizado",
+        "form": {
+            "nameRequired": "O nome é obrigatório.",
+            "assetRequired": "O ativo é obrigatório.",
+            "invalidPoints": "Pontuação inválida.",
+            "invaildContracts": "Número de contratos inválido."
+        },
+        "weekdays": {
+            "sun": "Dom",
+            "mon": "Seg",
+            "tue": "Ter",
+            "wed": "Qua",
+            "thu": "Qui",
+            "fri": "Sex",
+            "sat": "Sáb"
+        }
     },
     "help": {
         "title": "Central de Ajuda",

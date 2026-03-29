@@ -24,7 +24,7 @@ class WorkspaceStore {
             if (tagsRes) this.tags = tagsRes;
             if (journalEntriesRes) {
                 this.journalEntries = journalEntriesRes;
-                await this.deduplicateJournalEntries();
+                await this.deduplicateJournalEntries(true);
             }
 
             console.log("[WorkspaceStore] Data loaded.");
@@ -128,7 +128,7 @@ class WorkspaceStore {
             }
         }
     }
-    private async deduplicateJournalEntries() {
+    private async deduplicateJournalEntries(skipSave: boolean = false) {
         const uniqueEntries = new Map<string, JournalEntry>();
         for (const entry of this.journalEntries) {
             const key = `${entry.date.split('T')[0]}_${entry.emotional_state_id}_${entry.intensity}`;
@@ -140,7 +140,7 @@ class WorkspaceStore {
         let shouldSave = uniqueEntries.size !== this.journalEntries.length;
         this.journalEntries = Array.from(uniqueEntries.values());
         
-        if (shouldSave) {
+        if (shouldSave && !skipSave) {
             await this.saveJournalEntries();
         }
     }

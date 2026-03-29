@@ -25,76 +25,45 @@
     ];
 
     let displayItems = $derived(
-        tickerItems.length > 0 ? tickerItems : defaultItems,
+        (tickerItems.length > 0 ? tickerItems : defaultItems).slice(0, 5),
     );
 
-    onMount(() => {
-        // Initial sync on mount
-        currenciesStore.syncExchangeRates();
+    const formatRate = (rate: number) => {
+        return rate.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 4,
+        });
+    };
 
-        // Auto-refresh every 2 minutes (120000ms)
+    onMount(() => {
+        currenciesStore.syncExchangeRates();
         const interval = setInterval(() => {
-            console.log("[CurrencyTicker] Background Auto-Sync starting...");
             currenciesStore.syncExchangeRates();
         }, 120000);
-
         return () => clearInterval(interval);
     });
 </script>
 
-<div
-    class="w-full bg-zinc-950/80 backdrop-blur-md border-y border-zinc-800/50 py-1.5 overflow-hidden select-none"
->
-    <div class="ticker-content flex items-center whitespace-nowrap">
-        <!-- We repeat the content to create a seamless loop -->
-        <div class="ticker-track flex items-center gap-12 px-6">
-            {#each [...displayItems, ...displayItems, ...displayItems] as item}
-                <div class="flex items-center gap-2">
-                    <span
-                        class="text-[10px] font-bold text-zinc-500 uppercase tracking-tighter"
-                        >{item.pair}</span
-                    >
-                    <span
-                        class="font-mono text-sm font-black text-zinc-100 italic"
-                    >
-                        {item.rate.toLocaleString("pt-BR", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 4,
-                        })}
-                    </span>
+<div class="w-full py-2 px-4 overflow-hidden select-none border-b border-white/5">
+    <div class="max-w-7xl mx-auto flex items-center justify-center gap-x-8 md:gap-x-12 opacity-80 hover:opacity-100 transition-opacity duration-500">
+        {#each displayItems as item}
+            <div class="flex items-center gap-2 text-xs font-medium">
+                <span class="text-white/70 uppercase tracking-wider">{item.pair}</span>
+                <span class="font-mono tabular-nums text-white/90">
+                    {formatRate(item.rate)}
+                </span>
+                <div class="shrink-0 flex items-center">
                     {#if item.rate > 5}
-                        <!-- Just a visual detail -->
-                        <TrendingUp class="w-3 h-3 text-emerald-500/50" />
+                        <TrendingUp class="w-3 h-3 text-emerald-400" />
                     {:else}
-                        <TrendingUp class="w-3 h-3 text-emerald-500/20" />
+                        <TrendingDown class="w-3 h-3 text-rose-400" />
                     {/if}
                 </div>
-            {/each}
-        </div>
+            </div>
+        {/each}
     </div>
 </div>
 
 <style>
-    .ticker-track {
-        display: flex;
-        animation: scroll 60s linear infinite;
-    }
-
-    .ticker-track:hover {
-        animation-play-state: paused;
-    }
-
-    @keyframes scroll {
-        0% {
-            transform: translateX(0);
-        }
-        100% {
-            transform: translateX(-33.33%);
-        }
-    }
-
-    /* Glossy effect */
-    .ticker-track span {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-    }
+    /* Minimalist Ticker - No Animation as per Stage 1 requirements */
 </style>

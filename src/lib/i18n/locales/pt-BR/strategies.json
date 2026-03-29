@@ -169,160 +169,158 @@
             "original": "Original"
         }
     },
-    "strategy": {
-        "card": {
-            "totalResult": "Resultado Total",
-            "tradesSuffix": "trades",
-            "viewAnalysis": "Ver Análise Completa"
+    "strategyCard": {
+        "totalResult": "Resultado Total",
+        "tradesSuffix": "trades",
+        "viewAnalysis": "Ver Análise Completa"
+    },
+    "strategyGann": {
+        "adherence": "Aderência",
+        "accuracy": "Acurácia",
+        "alignment": "Alinhamento",
+        "alignmentDesc": "Entradas em Níveis SQ9",
+        "angleScore": "Pontuação de Ângulo",
+        "analyticalConfluence": "Confluência Analítica",
+        "confluenceDesc": "Como esta estratégia reage às Leis Matemáticas de Gann",
+        "cycleWatch": "Vigilância de Ciclo",
+        "cycleWatchDesc": "Win Rate em Datas Naturais",
+        "geometricPrecision": "Precisão Geométrica",
+        "geometryLaw": "Lei da Geometria",
+        "geometryLawDesc": "A Aderência ao Ângulo representa o equilíbrio entre Preço e Tempo. Estratégias que respeitam os ângulos geométricos (como 45°) são consideradas estáveis e sustentáveis ao longo do Ciclo Mestre.",
+        "mastery": "Gann Mastery",
+        "mathematicalConfluence": "Confluência Matemática",
+        "success": "Sucesso",
+        "timeLaw": "Lei do Tempo",
+        "timeLawDesc": "A Taxa de Sucesso do Ciclo revela se esta estratégia é \"sazonal\". Gann acreditava que o tempo é o fator mais importante; esta pontuação indica se a borda da estratégia é amplificada durante as Mudanças de Estação.",
+        "vibrationLaw": "Lei da Vibração",
+        "vibrationLawDesc": "O alinhamento da estratégia com as vibrações do Quadrado de Nove mede a qualidade de suas entradas. Uma pontuação alta sugere que a estratégia encontra naturalmente liquidez nos pontos de expansão matemática de Gann."
+    },
+    "strategyDashboard": {
+        "charts": {
+            "drawdown": "Drawdown",
+            "drawdownStrategy": "Drawdown (Estratégia)",
+            "equity": "Capital Líquido",
+            "equityStrategy": "Capital (Estratégia)"
         },
-        "gann": {
-            "adherence": "Aderência",
-            "accuracy": "Acurácia",
-            "alignment": "Alinhamento",
-            "alignmentDesc": "Entradas em Níveis SQ9",
-            "angleScore": "Pontuação de Ângulo",
-            "analyticalConfluence": "Confluência Analítica",
-            "confluenceDesc": "Como esta estratégia reage às Leis Matemáticas de Gann",
-            "cycleWatch": "Vigilância de Ciclo",
-            "cycleWatchDesc": "Win Rate em Datas Naturais",
-            "geometricPrecision": "Precisão Geométrica",
-            "geometryLaw": "Lei da Geometria",
-            "geometryLawDesc": "A Aderência ao Ângulo representa o equilíbrio entre Preço e Tempo. Estratégias que respeitam os ângulos geométricos (como 45°) são consideradas estáveis e sustentáveis ao longo do Ciclo Mestre.",
-            "mastery": "Gann Mastery",
-            "mathematicalConfluence": "Confluência Matemática",
-            "success": "Sucesso",
-            "timeLaw": "Lei do Tempo",
-            "timeLawDesc": "A Taxa de Sucesso do Ciclo revela se esta estratégia é \"sazonal\". Gann acreditava que o tempo é o fator mais importante; esta pontuação indica se a borda da estratégia é amplificada durante as Mudanças de Estação.",
-            "vibrationLaw": "Lei da Vibração",
-            "vibrationLawDesc": "O alinhamento da estratégia com as vibrações do Quadrado de Nove mede a qualidade de suas entradas. Uma pontuação alta sugere que a estratégia encontra naturalmente liquidez nos pontos de expansão matemática de Gann."
+        "checklist": {
+            "economicCalendar": "Economic Calendar",
+            "items": {
+                "gap_analysis": "Gap de Abertura: Identifiquei se é Gap de Novato ou Profissional?",
+                "mindset": "Mental: Estou calmo e focado para operar?",
+                "news": "Notícias: Verifiquei o Calendário Econômico do dia?",
+                "newsDetected": "⚠️ Notícias de Alto Impacto Detectadas:",
+                "newsNone": "Sem notícias relevantes no calendário hoje.",
+                "prior_levels": "Níveis Chave: Marquei Máxima e Mínima de ontem?",
+                "riskInput": "Limite de Prejuízo Hoje (R$):",
+                "risk_limit": "Risco: Defini meu Stop Loss máximo para hoje?",
+                "trend_200ma": "Território (200MA): Acima (Touro) ou Abaixo (Urso)?",
+                "trend_20ma": "Tendência (20MA): Preço está respeitando a média de 20?"
+            },
+            "ready": "PRONTO PARA OPERAR",
+            "reset": "Resetar",
+            "start": "Iniciar Sessão de Trading",
+            "subtitle": "Verifique os fundamentos antes do primeiro clique.",
+            "success": "Checklist concluído. Pronto para operar.",
+            "title": "Check-in Pré-Mercado (Oliver Velez)",
+            "verified": "verificados",
+            "newsUpdateError": "Erro ao atualizar feed de eventos econômicos.",
+            "newsUpdateSuccess": "Feed econômico atualizado com sucesso.",
+            "resetSuccess": "Estatísticas de checklist reiniciadas."
         },
-        "dashboard": {
-            "charts": {
-                "drawdown": "Drawdown",
-                "drawdownStrategy": "Drawdown (Estratégia)",
-                "equity": "Capital Líquido",
-                "equityStrategy": "Capital (Estratégia)"
+        "heatmap": {
+            "days": {
+                "fri": "Sex",
+                "mon": "Seg",
+                "sat": "Sáb",
+                "sun": "Dom",
+                "thu": "Qui",
+                "tue": "Ter",
+                "wed": "Qua"
             },
-            "checklist": {
-                "economicCalendar": "Economic Calendar",
-                "items": {
-                    "gap_analysis": "Gap de Abertura: Identifiquei se é Gap de Novato ou Profissional?",
-                    "mindset": "Mental: Estou calmo e focado para operar?",
-                    "news": "Notícias: Verifiquei o Calendário Econômico do dia?",
-                    "newsDetected": "⚠️ Notícias de Alto Impacto Detectadas:",
-                    "newsNone": "Sem notícias relevantes no calendário hoje.",
-                    "prior_levels": "Níveis Chave: Marquei Máxima e Mínima de ontem?",
-                    "riskInput": "Limite de Prejuízo Hoje (R$):",
-                    "risk_limit": "Risco: Defini meu Stop Loss máximo para hoje?",
-                    "trend_200ma": "Território (200MA): Acima (Touro) ou Abaixo (Urso)?",
-                    "trend_20ma": "Tendência (20MA): Preço está respeitando a média de 20?"
-                },
-                "ready": "PRONTO PARA OPERAR",
-                "reset": "Resetar",
-                "start": "Iniciar Sessão de Trading",
-                "subtitle": "Verifique os fundamentos antes do primeiro clique.",
-                "success": "Checklist concluído. Pronto para operar.",
-                "title": "Check-in Pré-Mercado (Oliver Velez)",
-                "verified": "verificados",
-                "newsUpdateError": "Erro ao atualizar feed de eventos econômicos.",
-                "newsUpdateSuccess": "Feed econômico atualizado com sucesso.",
-                "resetSuccess": "Estatísticas de checklist reiniciadas."
+            "legend": {
+                "breakeven": "Breakeven",
+                "loss": "Prejuízo",
+                "profit": "Lucro",
+                "strongLoss": "Prejuízo Alto",
+                "strongProfit": "Lucro Alto"
             },
-            "heatmap": {
-                "days": {
-                    "fri": "Sex",
-                    "mon": "Seg",
-                    "sat": "Sáb",
-                    "sun": "Dom",
-                    "thu": "Qui",
-                    "tue": "Ter",
-                    "wed": "Qua"
-                },
-                "legend": {
-                    "breakeven": "Breakeven",
-                    "loss": "Prejuízo",
-                    "profit": "Lucro",
-                    "strongLoss": "Prejuízo Alto",
-                    "strongProfit": "Lucro Alto"
-                },
-                "noMarket": "Nenhum mercado vinculado",
-                "subtitle": "Desempenho acumulado por Dia da Semana e Hora",
-                "title": "Mapa de Calor (P&L)",
-                "tooltip": {
-                    "loss": "Prejuízo",
-                    "neutral": "Neutro",
-                    "profit": "Lucro",
-                    "status": "Status"
-                }
-            },
-            "messages": {
-                "noTrades": "Sem trades no período selecionado."
-            },
-            "stats": {
-                "averageLoss": "Média de Perda",
-                "averageWin": "Média de Ganho",
-                "avgDurationLoss": "Duração Média (Prejuízo)",
-                "avgDurationWin": "Duração Média (Lucro)",
-                "avgInterval": "Intervalo Entre Trades",
-                "avgTimeBetweenTrades": "Tempo Médio entre Trades",
-                "bestTrade": "Melhor Trade",
-                "consecutiveLosses": "Losses Consecutivos",
-                "consecutiveWins": "Wins Consecutivos",
-                "mathExpectation": "Expectativa Matemática",
-                "maxDrawdown": "Max Drawdown",
-                "netResult": "Resultado Líquido",
-                "operations": "Trades",
-                "payoff": "Payoff",
-                "planAdherence": "Aderência ao Plano",
-                "profitFactor": "Profit Factor",
-                "recoveryFactor": "Fator de Recuperação",
-                "totalTrades": "Total de Trades",
-                "winRate": "Win Rate",
-                "winningTrades": "Trades Vencedores",
-                "worstTrade": "Pior Trade"
-            },
-            "subtitle": "Bem-vindo ao seu centro de comando.",
-            "summary": {
-                "chartPlaceholder": "Gráfico de Performance (Em breve)",
-                "noTrades": "Nenhum trade realizado hoje.",
-                "title": "Resumo do Dia"
-            },
-            "tabs": {
-                "dashboard": "Dashboard",
-                "dossier": "Dossiê da Estratégia"
-            },
-            "title": "Dashboard"
+            "noMarket": "Nenhum mercado vinculado",
+            "subtitle": "Desempenho acumulado por Dia da Semana e Hora",
+            "title": "Mapa de Calor (P&L)",
+            "tooltip": {
+                "loss": "Prejuízo",
+                "neutral": "Neutro",
+                "profit": "Lucro",
+                "status": "Status"
+            }
         },
-        "dossier": {
-            "all": "Todos",
-            "assetTypes": "Tipos de Ativo",
-            "context": "Contexto Operacional",
-            "daysSuffix": "dias",
-            "entryTriggers": "Gatilhos de Entrada",
-            "exit": "Stop / Saída",
-            "indicators": "Indicadores",
-            "linkedMarkets": "Mercados Vinculados",
-            "management": "Condução / Gestão",
-            "multi": "MULTI",
-            "noCriteria": "Nenhum critério definido.",
-            "noImages": "Nenhuma imagem anexada.",
-            "noLinkedMarket": "Nenhum mercado vinculado especificamente (Horário Livre).",
-            "partials": "Saídas Parciais",
-            "specificAssets": "Ativos Específicos",
-            "timeframes": "Timeframes",
-            "visualExamples": "Exemplos Visuais"
+        "messages": {
+            "noTrades": "Sem trades no período selecionado."
         },
-        "list": {
-            "description": "Acompanhe o desempenho estatístico dos seus setups operacionais.",
-            "new": "Nova",
-            "notFound": {
-                "action": "Ir para Configurações",
-                "description": "Não encontramos setups com os filtros atuais. Que tal criar um novo em Configurações?",
-                "title": "Nenhuma estratégia encontrada"
-            },
-            "searchPlaceholder": "Buscar estratégia...",
-            "title": "Estratégias"
+        "stats": {
+            "averageLoss": "Média de Perda",
+            "averageWin": "Média de Ganho",
+            "avgDurationLoss": "Duração Média (Prejuízo)",
+            "avgDurationWin": "Duração Média (Lucro)",
+            "avgInterval": "Intervalo Entre Trades",
+            "avgTimeBetweenTrades": "Tempo Médio entre Trades",
+            "bestTrade": "Melhor Trade",
+            "consecutiveLosses": "Losses Consecutivos",
+            "consecutiveWins": "Wins Consecutivos",
+            "mathExpectation": "Expectativa Matemática",
+            "maxDrawdown": "Max Drawdown",
+            "netResult": "Resultado Líquido",
+            "operations": "Trades",
+            "payoff": "Payoff",
+            "planAdherence": "Aderência ao Plano",
+            "profitFactor": "Profit Factor",
+            "recoveryFactor": "Fator de Recuperação",
+            "totalTrades": "Total de Trades",
+            "winRate": "Win Rate",
+            "winningTrades": "Trades Vencedores",
+            "worstTrade": "Pior Trade"
         },
-        "notFound": "Estratégia não encontrada"
-    }
+        "subtitle": "Bem-vindo ao seu centro de comando.",
+        "summary": {
+            "chartPlaceholder": "Gráfico de Performance (Em breve)",
+            "noTrades": "Nenhum trade realizado hoje.",
+            "title": "Resumo do Dia"
+        },
+        "tabs": {
+            "dashboard": "Dashboard",
+            "dossier": "Dossiê da Estratégia"
+        },
+        "title": "Dashboard"
+    },
+    "strategyDossier": {
+        "all": "Todos",
+        "assetTypes": "Tipos de Ativo",
+        "context": "Contexto Operacional",
+        "daysSuffix": "dias",
+        "entryTriggers": "Gatilhos de Entrada",
+        "exit": "Stop / Saída",
+        "indicators": "Indicadores",
+        "linkedMarkets": "Mercados Vinculados",
+        "management": "Condução / Gestão",
+        "multi": "MULTI",
+        "noCriteria": "Nenhum critério definido.",
+        "noImages": "Nenhuma imagem anexada.",
+        "noLinkedMarket": "Nenhum mercado vinculado especificamente (Horário Livre).",
+        "partials": "Saídas Parciais",
+        "specificAssets": "Ativos Específicos",
+        "timeframes": "Timeframes",
+        "visualExamples": "Exemplos Visuais"
+    },
+    "strategyList": {
+        "description": "Acompanhe o desempenho estatístico dos seus setups operacionais.",
+        "new": "Nova",
+        "notFound": {
+            "action": "Ir para Configurações",
+            "description": "Não encontramos setups com os filtros atuais. Que tal criar um novo em Configurações?",
+            "title": "Nenhuma estratégia encontrada"
+        },
+        "searchPlaceholder": "Buscar estratégia...",
+        "title": "Estratégias"
+    },
+    "strategyNotFound": "Estratégia não encontrada"
 }

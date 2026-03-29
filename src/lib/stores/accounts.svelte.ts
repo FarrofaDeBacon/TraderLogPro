@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { safeInvoke } from "$lib/services/tauri";
 import { type Account } from "$lib/types";
 
 export class AccountsStore {
@@ -7,7 +7,7 @@ export class AccountsStore {
     async saveAccounts() {
         for (const account of this.accounts) {
             try {
-                await invoke("save_account", { account: $state.snapshot(account) });
+                await safeInvoke("save_account", { account: $state.snapshot(account) });
             } catch (e) {
                 console.error("[AccountsStore] Error saving account:", e);
             }
@@ -26,7 +26,7 @@ export class AccountsStore {
 
     async deleteAccount(id: string): Promise<{ success: boolean; error?: string }> {
         try {
-            await invoke("delete_account", { id });
+            await safeInvoke("delete_account", { id });
             this.accounts = this.accounts.filter(a => a.id !== id);
             return { success: true };
         } catch (e) {
@@ -42,7 +42,7 @@ export class AccountsStore {
                 seenNicks.add(acc.nickname);
                 toKeep.push(acc);
             } else {
-                await invoke("delete_account", { id: acc.id }).catch(e => console.error(e));
+                await safeInvoke("delete_account", { id: acc.id }).catch(e => console.error(e));
             }
         }
         this.accounts = toKeep;

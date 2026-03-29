@@ -21,7 +21,7 @@
         onCancel: () => void;
     }>();
 
-    const isEditing = !!rule;
+    const isEditing = $derived(!!rule);
 
     let formData = $state<RiskRule>({
         id: rule?.id ?? crypto.randomUUID(),
@@ -35,7 +35,25 @@
         asset_risk_profile_ids: rule?.asset_risk_profile_ids ? [...rule.asset_risk_profile_ids] : [],
     });
 
-    const prefix = "settings.risk.form.ruleBuilder";
+    // Synchronize form data when the rule prop changes (e.g. clicking edit on a different rule)
+    $effect(() => {
+        if (rule) {
+            formData = {
+                id: rule.id,
+                name: rule.name,
+                enabled: rule.enabled,
+                scope: rule.scope,
+                target_type: rule.target_type,
+                operator: rule.operator,
+                value: rule.value,
+                value_secondary: rule.value_secondary,
+                asset_risk_profile_ids: rule.asset_risk_profile_ids ? [...rule.asset_risk_profile_ids] : [],
+            };
+            nameManuallyEdited = true;
+        }
+    });
+
+    const prefix = "risk.ruleBuilder";
 
     const allTargetTypes: RiskRuleTargetType[] = [
         "sum_contracts",
@@ -142,10 +160,11 @@
         if (!nameManuallyEdited && !isEditing) {
             const typeLabel = $t(`${prefix}.targetType.${formData.target_type}`);
             if (isBooleanRule) {
-                formData.name = `${typeLabel} (${formData.value ? 'Ativo' : 'Inativo'})`;
+                formData.name = `${typeLabel} (${formData.value ? $t("risk.form.active") : $t("risk.form.inactive")})`;
             } else {
                 const opLabel = getOperatorSymbol(formData.operator);
-                const val2 = showSecondaryValue && formData.value_secondary !== undefined ? ` e ${formData.value_secondary}` : '';
+                const andLabel = $t("risk.form.and") || "e";
+                const val2 = showSecondaryValue && formData.value_secondary !== undefined ? ` ${andLabel} ${formData.value_secondary}` : '';
                 formData.name = `${typeLabel} ${opLabel} ${formData.value}${val2}`;
             }
         }
@@ -249,7 +268,7 @@
                     onValueChange={(v: string) => { if (v) addAssetProfile(v); }}
                 >
                     <Select.Trigger class="w-full">
-                        {$t("settings.risk.management.assetProfileSelector")}
+                        {$t("risk.form.assetProfileSelector")}
                     </Select.Trigger>
                     <Select.Content>
                         {#each availableProfiles as profile}
@@ -291,7 +310,7 @@
                 <Input
                     type="number"
                     step="0.01"
-                    bind:value={() => Number(formData.value), (v) => formData.value = v}
+                    bind:value={formData.value as number}
                 />
             </div>
 
@@ -303,7 +322,7 @@
                     <Input
                         type="number"
                         step="0.01"
-                        bind:value={() => formData.value_secondary ?? 0, (v) => formData.value_secondary = v}
+                        bind:value={formData.value_secondary}
                     />
                 </div>
             {/if}

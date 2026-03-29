@@ -10,7 +10,7 @@
 
 {#if status === "trial"}
     <div
-        class="bg-blue-600 px-4 py-2 text-white flex items-center justify-between shadow-lg"
+        class="bg-blue-600 px-4 py-1.5 text-white flex items-center justify-between shadow-lg"
     >
         <div class="flex items-center gap-2">
             <Clock class="w-4 h-4" />
@@ -36,7 +36,7 @@
     </div>
 {:else if status === "expired"}
     <div
-        class="bg-destructive px-4 py-2 text-destructive-foreground flex items-center justify-between shadow-xl animate-pulse"
+        class="bg-destructive px-4 py-1.5 text-destructive-foreground flex items-center justify-between shadow-xl animate-pulse"
     >
         <div class="flex items-center gap-2">
             <AlertTriangle class="w-4 h-4" />

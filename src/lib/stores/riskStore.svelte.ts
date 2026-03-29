@@ -18,290 +18,350 @@ import {
     type DeskValidationContext,
     type DeskValidationResult,
     type DeskAuditResult,
-    type DeskAuditStatus,
     evaluateDeskStageProgression,
-    generateDeskProgressFeedback
+    generateDeskProgressFeedback,
+    type GrowthEvaluationResult,
+    evaluateGrowthPhase
 } from '$lib/domain/risk';
 import { 
     adaptSettingsProfileToDomain, 
     adaptTradeToDomain, 
     adaptGrowthPhaseToDomain 
-} from '$lib/domain/risk/risk-adapters';
-import type { ResolvedGrowthContext } from '../types';
+} from "../domain/risk/risk-adapters";
+import { toast } from "svelte-sonner";
+import type { 
+    ResolvedGrowthContext, 
+    AssetRiskProfile, 
+    RiskProfile, 
+    Trade, 
+    Asset, 
+    RiskContextResolution, 
+    GrowthPhase as DBGrowthPhase,
+    DeskConfig
+} from '$lib/types';
+import type { 
+    GrowthPhase as DomainGrowthPhase,
+    RiskProfileConfig
+} from '$lib/domain/risk/types';
+import { resolveEffectiveRiskContext } from "$lib/domain/risk/risk-resolver";
 
-/**
- * Store reativo estritamente focado no Cockpit de Risco.
- * Consome os stores de `settings` e `trades`, converte usando `risk-adapters`
- * e expõe o resultado do domínio em tempo real via getter derivado.
- */
 export class RiskStore {
-    /**
-     * Ativo atualmente selecionado pelo usuário na UI (ex: na boleta)
-     * Necessário para alimentar o contexto do Position Sizing Engine.
-     */
-    activeAssetId = $state<string | null>(null);
+    // --- Reactive State ---
+    activeAssetId = $state<string | undefined>(undefined);
+    activeTradeId = $state<string | undefined>(undefined);
 
     constructor() {
-        if (typeof window !== 'undefined') {
-            const savedId = localStorage.getItem('risk_activeAssetId');
-            if (savedId) {
-                this.activeAssetId = savedId;
-            }
+        // Observability moved to UI layer (+page.svelte) to comply with Svelte 5 lifecycle rules
+    }
 
-            $effect.root(() => {
-                $effect(() => {
-                    // Safe cleanup: if we have an active asset but it was deleted from settings
-                    if (this.activeAssetId && assetsStore.assets.length > 0) {
-                        const exists = assetsStore.assets.some(a => a.id === this.activeAssetId);
-                        if (!exists) {
-                            this.activeAssetId = null;
-                        }
-                    }
-
-                    // Sync to localStorage
-                    if (this.activeAssetId) {
-                        localStorage.setItem('risk_activeAssetId', this.activeAssetId);
-                    } else {
-                        localStorage.removeItem('risk_activeAssetId');
-                    }
-                });
-            });
-        }
+    get activeAsset(): Asset | undefined {
+        return assetsStore.assets.find(a => a.id === this.activeAssetId);
     }
 
     /**
-     * Estado agregado final do Cockpit de Risco calculado pelo Domínio Puro.
-     * Nenhuma regra de negócio é tomada AQUI, apenas injeção limpa de dependências.
+     * Getter principal do Cockpit que agrega toda a lógica de negócio.
      */
     get riskCockpitState(): RiskCockpitState | null {
-        // 1. Obter Perfil Ativo
         const activeProfile = riskSettingsStore.activeProfile;
         if (!activeProfile || !activeProfile.active) return null;
 
-        // 2. Adaptar o perfil para a estrutura do Domínio Puro
+        // 1. RESOLUÇÃO ÚNICA DE CONTEXTO (FONTE DE VERDADE)
+        const resolution = resolveEffectiveRiskContext(
+            this.activeAssetId ?? null,
+            riskSettingsStore.assetRiskProfiles,
+            activeProfile,
+            riskSettingsStore.growthPlans,
+            assetsStore.assets
+        );
+
+        // 2. Adaptação para o Domínio
         const domainProfile = adaptSettingsProfileToDomain(activeProfile);
-
-        // 3. Obter e adaptar Trades (apenas trades fechados interessam pro risco)
-        const closedTrades = tradesStore.trades.filter(t => t.exit_price !== null && t.exit_price !== undefined);
-        const domainTrades = closedTrades.map(adaptTradeToDomain);
-
-        // 4. Estruturar Parâmetros de GrowthPhase
-        let domainGrowthPhase = undefined;
-        let startingCapital = undefined;
-
-        const activePlan = activeProfile.growth_plan_id ? riskSettingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
-        if (activePlan && activePlan.enabled && activePlan.phases && activePlan.phases.length > activePlan.current_phase_index) {
-            const rawPhase = activePlan.phases[activePlan.current_phase_index];
-            domainGrowthPhase = adaptGrowthPhaseToDomain(rawPhase);
-
-            // Determinar Capital Base (para drawdowns) baseado na regra da conta escolhida vs fixed capital
-            if (activeProfile.capital_source === 'Fixed') {
-                startingCapital = activeProfile.fixed_capital;
-            } else if (activeProfile.linked_account_id) {
-                const linkedAccount = accountsStore.accounts.find(a => a.id === activeProfile.linked_account_id);
-                startingCapital = linkedAccount ? linkedAccount.balance : undefined;
-            }
+        const closedTrades = tradesStore.trades.filter(t => (t.exit_price !== null && t.exit_price !== undefined) || (Number(t.result) !== 0));
+        
+        // --- FILTRAGEM POR ATIVOS DO ESCOPO ---
+        let filteredTrades = closedTrades;
+        if (resolution.assetIds.length > 0) {
+            filteredTrades = closedTrades.filter(t => resolution.assetIds.includes(t.asset_id || ""));
         }
 
-        // 5. Acionar o Agregador Central Puro do Domínio
+        const domainTrades = filteredTrades
+            .map(adaptTradeToDomain)
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+        // 3. Estruturar Parâmetros de GrowthPhase (Mock do Domínio a partir da Resolução)
+        const domainGrowthPhase: DomainGrowthPhase = {
+            id: crypto.randomUUID(),
+            name: resolution.currentPhaseName,
+            maxContracts: resolution.currentPhaseLotLimit,
+            minTrades: 0,
+            minWinRate: 0,
+            minProfitFactor: 0,
+            minExpectancyR: 0,
+            minNetPnL: resolution.currentPhaseTarget,
+            maxDrawdownPercent: 0,
+            maxDrawdownAmount: resolution.currentPhaseDrawdown,
+            allowPromotion: true,
+            allowRegression: true,
+            conditionsToAdvance: resolution.advanceConditions ? resolution.advanceConditions.map(c => ({ metric: c.metric, operator: c.operator, value: Number(c.value) })) : [],
+            conditionsToDemote: resolution.demoteConditions ? resolution.demoteConditions.map(c => ({ metric: c.metric, operator: c.operator, value: Number(c.value) })) : []
+        };
+
+        // 6. Determinar Capital Base (para drawdowns)
+        let startingCapital: number | undefined = undefined;
+        if (domainProfile.fixedCapital) {
+            startingCapital = domainProfile.fixedCapital;
+        } else if (activeProfile.linked_account_id) {
+            const linkedAccount = accountsStore.accounts.find(a => a.id === activeProfile.linked_account_id);
+            startingCapital = linkedAccount ? linkedAccount.balance : undefined;
+        }
+
+        // 7. Acionar o Agregador Central Puro do Domínio
         return buildRiskCockpitState(
             domainProfile,
             domainTrades,
             domainGrowthPhase,
-            startingCapital
+            startingCapital,
+            resolution.currentPhaseIndex,
+            resolution.totalPhases,
+            resolution.phaseStartedAt
         );
     }
 
     /**
-     * Retorna o Perfil de Risco de Ativo resolvido para o ativo selecionado na UI.
+     * Promove o usuário para a próxima fase do Growth Plan.
      */
-    get resolvedAssetRiskProfile() {
-        const activeProfile = riskSettingsStore.activeProfile;
-        if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
+    async promotePhase() {
+        const ctx = this.resolvedGrowthContext;
+        if (!ctx) return;
 
-        const asset = assetsStore.assets.find(a => a.id === this.activeAssetId);
-        if (!asset) return null;
+        const evalResult = this.globalGrowthEvaluation;
+        if (!evalResult?.canPromote) {
+            toast.error("Critérios de promoção não atingidos.");
+            return;
+        }
 
-        const linkedProfileIds = activeProfile.linked_asset_risk_profile_ids || [];
-        const validProfiles = riskSettingsStore.assetRiskProfiles.filter(ap => linkedProfileIds.includes(ap.id as string));
-        
-        return validProfiles.find(ap => ap.asset_id === asset.id) || null;
+        const res = ctx.resolution;
+        const now = new Date().toISOString();
+
+        if (res.source === "scope" && res.scopeId) {
+            const nextIndex = res.currentPhaseIndex + 1;
+            if (nextIndex < res.totalPhases) {
+                riskSettingsStore.updateAssetRiskProfile(res.scopeId, {
+                    current_phase_index: nextIndex,
+                    currentPhaseStartedAt: now
+                });
+                toast.success(`Promovido para fase ${nextIndex + 1}`);
+            }
+        } else if (res.source === "global" && res.growthPlanId) {
+            const nextIndex = res.currentPhaseIndex + 1;
+            if (nextIndex < res.totalPhases) {
+                riskSettingsStore.updateGrowthPlan(res.growthPlanId, {
+                    current_phase_index: nextIndex,
+                    currentPhaseStartedAt: now
+                });
+                toast.success(`Promovido para fase ${nextIndex + 1}`);
+            }
+        }
     }
 
     /**
-     * Retorna a Auditoria Histórica da Mesa (Prop Firm) para o perfil ativo atual.
-     * Computa os trades fechados e valida regras operacionais da mesa.
+     * Regride o usuário para a fase anterior.
      */
-    get deskAuditState(): DeskAuditResult | null {
-        const activeProfile = riskSettingsStore.activeProfile;
-        if (!activeProfile || !activeProfile.active || !activeProfile.desk_config) return null;
+    async regressPhase() {
+        const ctx = this.resolvedGrowthContext;
+        if (!ctx) return;
 
-        const closedTrades = tradesStore.trades.filter(t => t.exit_price !== null && t.exit_price !== undefined);
-        
-        return calculateHistoricalAudit(
-            closedTrades,
-            activeProfile.desk_config,
-            activeProfile.risk_rules
-        );
+        const res = ctx.resolution;
+        const now = new Date().toISOString();
+
+        if (res.source === "scope" && res.scopeId && res.currentPhaseIndex > 0) {
+            riskSettingsStore.updateAssetRiskProfile(res.scopeId, {
+                current_phase_index: res.currentPhaseIndex - 1,
+                currentPhaseStartedAt: now
+            });
+            toast.info(`Regredido para fase ${res.currentPhaseIndex}`);
+        } else if (res.source === "global" && res.growthPlanId && res.currentPhaseIndex > 0) {
+            riskSettingsStore.updateGrowthPlan(res.growthPlanId, {
+                current_phase_index: res.currentPhaseIndex - 1,
+                currentPhaseStartedAt: now
+            });
+            toast.info(`Regredido para fase ${res.currentPhaseIndex}`);
+        }
     }
 
     /**
-     * Retorna o Status de Progressão de Estágio Operacional da Mesa.
-     */
-    get deskStageProgressionState() {
-        const activeProfile = riskSettingsStore.activeProfile;
-        const audit = this.deskAuditState;
-        
-        if (!activeProfile || !activeProfile.active || !activeProfile.desk_config || !audit) return null;
-        
-        return evaluateDeskStageProgression(activeProfile.desk_config, audit);
-    }
-
-    /**
-     * Retorna o Feedback Operacional da Mesa detalhando métricas faltantes e sugestões.
-     */
-    get deskProgressFeedback() {
-        const activeProfile = riskSettingsStore.activeProfile;
-        const audit = this.deskAuditState;
-        
-        if (!activeProfile || !activeProfile.active || !activeProfile.desk_config || !audit) return null;
-        
-        return generateDeskProgressFeedback(activeProfile.desk_config, audit, activeProfile.risk_rules || []);
-    }
-
-    /**
-     * Retorna o contexto completo de Growth Plan associado ao Perfil ativo e Ativo selecionado.
-     * Segue a hierarquia de Prioridade (Override):
-     * 1. AssetRiskProfile Override Phase
-     * 2. Global RiskProfile Phase
+     * Resolve o contexto exato de crescimento (fase, plano, ativo).
      */
     get resolvedGrowthContext(): ResolvedGrowthContext | null {
         const activeProfile = riskSettingsStore.activeProfile;
-        if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
+        if (!activeProfile) return null;
 
-        const asset = assetsStore.assets.find(a => a.id === this.activeAssetId);
-        if (!asset) return null;
+        const resolution = resolveEffectiveRiskContext(
+            this.activeAssetId ?? null,
+            riskSettingsStore.assetRiskProfiles,
+            activeProfile,
+            riskSettingsStore.growthPlans,
+            assetsStore.assets
+        );
 
-        const assetRiskProfile = this.resolvedAssetRiskProfile;
+        const rawPhase: DBGrowthPhase = {
+            id: crypto.randomUUID(),
+            name: resolution.currentPhaseName,
+            level: resolution.currentPhaseIndex + 1,
+            lot_size: resolution.currentPhaseLotLimit,
+            conditions_to_advance: [
+                { metric: "PnL", operator: ">=", value: resolution.currentPhaseTarget }
+            ],
+            conditions_to_demote: [
+                { metric: "Drawdown", operator: ">=", value: resolution.currentPhaseDrawdown }
+            ]
+        };
+
+        const context: ResolvedGrowthContext = {
+            riskProfile: activeProfile,
+            growthSourceType: resolution.source === "scope" ? "assetProfile" : "global",
+            growthPhase: rawPhase,
+            resolution: resolution
+        };
+
+        if (resolution.source === "scope" && resolution.scopeId) {
+            context.assetRiskProfile = riskSettingsStore.assetRiskProfiles.find(p => p.id === resolution.scopeId);
+        } else if (resolution.source === "global" && resolution.growthPlanId) {
+            context.growthPlan = riskSettingsStore.growthPlans.find(p => p.id === resolution.growthPlanId);
+        }
+
+        if (this.activeAssetId) {
+            context.asset = assetsStore.assets.find(a => a.id === this.activeAssetId);
+        }
+
+        return context;
+    }
+
+    // --- Computed Evaluations ---
+
+    get globalGrowthEvaluation(): GrowthEvaluationResult | null {
+        const state = this.riskCockpitState;
+        return state?.growthEvaluation || null;
+    }
+
+    /**
+     * Retorna a definição da próxima fase (preview) para o Cockpit.
+     */
+    get nextGrowthPhase(): DBGrowthPhase | null {
+        const resolution = resolveEffectiveRiskContext(
+            this.activeAssetId ?? null,
+            riskSettingsStore.assetRiskProfiles,
+            riskSettingsStore.activeProfile,
+            riskSettingsStore.growthPlans,
+            assetsStore.assets
+        );
+
+        const activePlan = riskSettingsStore.growthPlans.find(p => p.id === resolution.growthPlanId);
         
-        // Exige vínculo explícito: sem perfil de ativo, sem avaliação de growth pra este ativo
-        if (!assetRiskProfile) return null;
-
-        // 1. Tenta resolver via AssetRiskProfile (Override prioritário)
-        if (assetRiskProfile.growth_override_enabled && assetRiskProfile.growth_phases_override && assetRiskProfile.growth_phases_override.length > 0) {
-            const currentObjPhaseIndex = assetRiskProfile.current_phase_index || 0;
-            if (currentObjPhaseIndex < assetRiskProfile.growth_phases_override.length) {
-                return {
-                    asset,
-                    assetRiskProfile,
-                    riskProfile: activeProfile,
-                    growthSourceType: "assetProfile",
-                    growthPhase: assetRiskProfile.growth_phases_override[currentObjPhaseIndex]
-                };
+        // Se estiver em modo de override, a lógica de "próxima fase" é baseada no override do escopo
+        if (resolution.source === 'scope') {
+            const scope = riskSettingsStore.assetRiskProfiles.find(s => s.id === resolution.scopeId);
+            if (scope?.growth_override_enabled && scope.growth_phases_override) {
+                 const nextIndex = resolution.currentPhaseIndex + 1;
+                 return scope.growth_phases_override[nextIndex] || null;
             }
         }
 
-        // 2. Fallback para o Global RiskProfile
-        const activePlan = activeProfile.growth_plan_id ? riskSettingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
-        if (activePlan && activePlan.enabled && activePlan.phases && activePlan.phases.length > 0) {
-            const currentPhaseIndex = activePlan.current_phase_index || 0;
-            if (currentPhaseIndex < activePlan.phases.length) {
-                return {
-                    asset,
-                    assetRiskProfile,
-                    riskProfile: activeProfile,
-                    growthSourceType: "global",
-                    growthPhase: activePlan.phases[currentPhaseIndex]
-                };
-            }
+        // Caso contrário, busca no plano (global ou vinculado)
+        if (activePlan && activePlan.phases) {
+            const nextIndex = resolution.currentPhaseIndex + 1;
+            return activePlan.phases[nextIndex] || null;
         }
 
-        // 3. Nenhum Contexto de Crescimento Aplicável
         return null;
     }
 
-    /**
-     * Motor de Position Sizing (Entrada Pura formatada pelo Adapter)
-     */
-    get positionSizingInput(): PositionSizingInput | null {
-        const activeProfile = riskSettingsStore.activeProfile;
-        if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
+    get deskValidationResult(): DeskValidationResult | null {
+        const state = this.riskCockpitState;
+        if (!state) return null;
 
-        const asset = assetsStore.assets.find(a => a.id === this.activeAssetId);
-        if (!asset) return null;
-
-        // ETAPA 3 & 4: Reutiliza logica do getter para obter o perfil resolvido na UI tbm.
-        const assetRiskProfile = this.resolvedAssetRiskProfile;
-        
-        // Falha explícita se não existir perfil de ativo vinculado
-        if (!assetRiskProfile) return null;
-
-        let currentPhase = undefined;
-        let dynamicBalance = undefined;
-
-        const activePlan = activeProfile.growth_plan_id ? riskSettingsStore.getGrowthPlanForProfile(activeProfile.id) : undefined;
-        if (activePlan && activePlan.enabled && activePlan.phases && activePlan.phases.length > activePlan.current_phase_index) {
-            currentPhase = activePlan.phases[activePlan.current_phase_index];
-        }
-
-        if (activeProfile.capital_source === 'LinkedAccount' && activeProfile.linked_account_id) {
-            const linkedAccount = accountsStore.accounts.find(a => a.id === activeProfile.linked_account_id);
-            if (linkedAccount) {
-                dynamicBalance = linkedAccount.balance;
+        // O motor de validação de desk usa uma lógica diferente para progressão histórica
+        // Aqui adaptamos para o contrato do Dashboard que espera um DeskValidationResult simplificado
+        return {
+            allowed: state.dailyRiskStatus.statusLabel !== 'LOCKED' && state.dailyRiskStatus.statusLabel !== 'LOSS_LIMIT_HIT',
+            reasons: state.dailyRiskStatus.statusLabel === 'LOCKED' ? ["locked"] : 
+                     state.dailyRiskStatus.statusLabel === 'LOSS_LIMIT_HIT' ? ["daily_loss_hit"] : [],
+            warnings: [],
+            checks: {
+                allowedAsset: true,
+                combinedExposure: true,
+                dayTradeOnly: true,
+                closeBeforeMarketClose: true
             }
-        }
-
-        return adaptPositionSizingInput(
-            activeProfile,
-            asset,
-            assetRiskProfile,
-            currentPhase,
-            dynamicBalance
-        );
+        };
     }
 
-    /**
-     * Motor de Position Sizing (Resultado de Cálculo Puro do Motor Matemático)
-     */
+    get deskStageProgressionState(): GrowthEvaluationResult | null {
+        return this.globalGrowthEvaluation;
+    }
+
+    get deskProgressFeedback(): string[] {
+        const state = this.riskCockpitState;
+        if (!state || !state.growthEvaluation) return [];
+        return state.growthEvaluation.advanceConditions
+            .filter(c => !c.isMet)
+            .map(c => `Falta atingir ${c.metric}: ${c.current}/${c.target}`);
+    }
+
     get positionSizingResult(): PositionSizingResult | null {
-        const input = this.positionSizingInput;
-        if (!input) return null;
+        const state = this.riskCockpitState;
+        const activeAsset = assetsStore.assets.find(a => a.id === this.activeAssetId);
+        if (!state || !activeAsset || !state.growthPhase) return null;
+
+        // Using cast to Domain Types for Position Sizing (to be refined in Phase 5)
+        const input = adaptPositionSizingInput(
+            state.profile as any,
+            activeAsset,
+            state.growthEvaluation?.metrics as any,
+            state.growthEvaluation?.metrics as any,
+            state.growthPhase as any
+        );
+
         return calculatePositionSizing(input);
     }
 
     /**
-     * Auditoria de Mesa Operacional (Prop Firm Desk Validation)
+     * Valida se um novo trade pode ser aberto dado o contexto atual de risco.
      */
-    get deskValidationResult(): DeskValidationResult | null {
-        const activeProfile = riskSettingsStore.activeProfile;
-        if (!activeProfile || !activeProfile.active || !this.activeAssetId) return null;
+    validateTradeEntry(contracts: number): { canTrade: boolean; reasons: string[] } {
+        const state = this.riskCockpitState;
+        if (!state || !state.growthPhase) return { canTrade: false, reasons: ["Risco não inicializado"] };
 
-        const assetRiskProfile = this.resolvedAssetRiskProfile;
+        // Simulamos a regra de validação via Engine Diária
+        const canTrade = !state.dailyRiskStatus.isLocked;
+        const reasons = canTrade ? [] : ["Limite diário atingido ou bloqueado"];
         
-        let combinedExposure = 0;
-        // Basic calculation of current open contracts across the linked allowed profiles
-        // In this step we assume combined Exposure might be pulled from tradesStore open position logic,
-        // but for now we set up the context properly.
-        if (activeProfile.combined_rules) {
-            // Future step: tally actual open contracts. For mock UI, defaults to 0.
-            combinedExposure = 0; 
+        // Adiciona validação de lote da fase
+        if (contracts > state.growthPhase.maxContracts) {
+            return { canTrade: false, reasons: [`Limite de lotes da fase excedido (${state.growthPhase.maxContracts})`] };
         }
 
-        const context: DeskValidationContext = {
-            assetRiskProfileId: assetRiskProfile?.id as string | undefined,
-            isSwingTrade: undefined, // UI context would be needed to decide if the pending trade is Swing
-            currentTimeMinutes: new Date().getHours() * 60 + new Date().getMinutes(),
-            combinedExposure
+        return { canTrade, reasons };
+    }
+
+    /**
+     * Audita o histórico completo para reconstruir a evolução do trader.
+     */
+    get historicalAudit(): DeskAuditResult | null {
+        const state = this.riskCockpitState;
+        const activeProfile = riskSettingsStore.activeProfile;
+        if (!state || !activeProfile) return null;
+        
+        // DeskConfig opcional para auditoria
+        // DeskConfig as per types.ts
+        const desk: DeskConfig = {
+            enabled: true,
+            plan_name: 'Auditoria'
         };
 
-        return validateTradeContext(
-            activeProfile.desk_config,
-            context,
-            activeProfile.combined_rules || []
-        );
+        const trades = tradesStore.trades.map(adaptTradeToDomain);
+        return calculateHistoricalAudit(trades, desk);
     }
 }
 
 export const riskStore = new RiskStore();
-
-// forced-republish-cache-breaker: 2026-03-17

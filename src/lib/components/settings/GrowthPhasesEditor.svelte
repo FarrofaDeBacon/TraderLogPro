@@ -109,7 +109,21 @@
                                     {#each phase.conditions_to_advance as rule, ri}
                                         <div class="flex flex-wrap items-center gap-1.5 animate-in fade-in slide-in-from-top-1 bg-background p-1 rounded border border-emerald-500/20 shadow-sm">
                                             <Select.Root type="single" bind:value={rule.metric}>
-                                                <Select.Trigger class="h-7 text-xs flex-1 border-0 bg-transparent shadow-none px-2"><span class="truncate font-medium">{rule.metric === 'profit_target' ? 'Lucro' : rule.metric === 'days_positive' ? 'Dias O.K' : rule.metric === 'win_rate' ? 'Win Rate %' : rule.metric === 'consistency_days' ? 'Consistência' : rule.metric}</span></Select.Trigger>
+                                                <Select.Trigger class="h-7 text-xs flex-1 border-0 bg-transparent shadow-none px-2">
+                                                <span class="truncate font-medium">
+                                                    {#if rule.metric === 'profit_target'}
+                                                        {$t("settings.risk.growthPlan.requirements.profit") || 'Lucro'}
+                                                    {:else if rule.metric === 'days_positive'}
+                                                        {$t("settings.risk.growthPlan.requirements.days") || 'Dias O.K'}
+                                                    {:else if rule.metric === 'win_rate'}
+                                                        {$t("settings.risk.growthPlan.requirements.winRate") || 'Win Rate %'}
+                                                    {:else if rule.metric === 'consistency_days'}
+                                                        {$t("settings.risk.growthPlan.requirements.consistency") || 'Consistência'}
+                                                    {:else}
+                                                        {rule.metric}
+                                                    {/if}
+                                                </span>
+                                            </Select.Trigger>
                                                 <Select.Content>
                                                     <Select.Item value="profit_target" class="text-xs">Lucro ($/pts)</Select.Item>
                                                     <Select.Item value="days_positive" class="text-xs">Dias O.K</Select.Item>
@@ -161,7 +175,17 @@
                                         <div class="flex flex-wrap items-center gap-1.5 animate-in fade-in slide-in-from-top-1 bg-background p-1 rounded border border-rose-500/20 shadow-sm">
                                             <Select.Root type="single" bind:value={rule.metric}>
                                                 <Select.Trigger class="h-7 text-xs flex-1 border-0 bg-transparent shadow-none px-2">
-                                                    <span class="truncate font-medium">{rule.metric === 'drawdown_limit' ? 'Drawdown' : rule.metric === 'daily_loss_limit' ? 'Perda Diária' : rule.metric === 'max_daily_loss_streak' ? 'Dias de Loss' : rule.metric}</span>
+                                                    <span class="truncate font-medium">
+                                                        {#if rule.metric === 'drawdown_limit'}
+                                                            {$t("settings.risk.growthPlan.requirements.drawdown") || 'Drawdown'}
+                                                        {:else if rule.metric === 'daily_loss_limit'}
+                                                            {$t("settings.risk.growthPlan.requirements.dailyLoss") || 'Perda Diária'}
+                                                        {:else if rule.metric === 'max_daily_loss_streak'}
+                                                            {$t("settings.risk.growthPlan.requirements.lossStreak") || 'Dias de Loss'}
+                                                        {:else}
+                                                            {rule.metric}
+                                                        {/if}
+                                                    </span>
                                                 </Select.Trigger>
                                                 <Select.Content>
                                                     <Select.Item value="drawdown_limit" class="text-xs">Drawdown ($/pts)</Select.Item>
@@ -196,7 +220,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>Card.Root>
+                    </div>
                 {/if}
             {/each}
         </div>

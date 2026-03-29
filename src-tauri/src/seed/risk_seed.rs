@@ -1,6 +1,6 @@
 // src-tauri/src/seed/risk_seed.rs
 use crate::models::{
-    GrowthPhase, RiskCondition, RiskProfile,
+    GrowthPhase, RiskCondition, RiskProfile, GrowthPlan,
 };
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
@@ -9,6 +9,9 @@ pub async fn seed_risk_profiles(
     db: &Surreal<Db>,
     filter: Option<Vec<String>>,
 ) -> Result<(), String> {
+    println!("[SEED] 🧨 CLEAN RESET: Removendo perfis de risco existentes...");
+    db.query("DELETE FROM risk_profile; DELETE FROM asset_risk_profile;").await.map_err(|e| e.to_string())?;
+
     println!("[SEED] Verificando Perfis de Risco...");
 
     // Seed WIN/WDO AssetRiskProfiles for the Prop Firm Mock
@@ -80,6 +83,18 @@ pub async fn seed_risk_profiles(
             "Prop",
             false,
         ),
+        (
+            "r_institucional",
+            "Plano Institucional",
+            100.0,
+            500.0,
+            1.0,
+            5,
+            2.0,
+            true,
+            "All",
+            true,
+        ),
     ];
 
     for (
@@ -92,7 +107,7 @@ pub async fn seed_risk_profiles(
         min_rr,
         lock,
         account_type,
-        growth_enabled,
+        _growth_enabled,
     ) in profiles
     {
         if let Some(ref f) = filter {
@@ -143,7 +158,7 @@ pub async fn seed_risk_profiles(
             psychological_threshold: -2,
             lot_reduction_multiplier: 0.5,
             psychological_search_strategy: "Strict".to_string(),
-            active: name == "Conservador", // Default one as active
+            active: name == "Plano Institucional", // Define Institucional como ativo por padrão para validação do usuário
             default_stop_points: None,
             min_contracts: None,
             max_contracts: None,
@@ -167,7 +182,7 @@ pub async fn seed_risk_profiles(
             },
             desk_config,
             risk_rules: None,
-            growth_plan_id: None,
+            growth_plan_id: if id == "r_institucional" { Some("growth_plan:institucional_10".to_string()) } else { None },
         };
         let mut json = serde_json::to_value(&data).unwrap();
         if let Some(obj) = json.as_object_mut() {
@@ -184,5 +199,164 @@ pub async fn seed_risk_profiles(
         println!("  ✓ {}", name);
     }
 
+    Ok(())
+}
+
+pub async fn seed_growth_plans(db: &Surreal<Db>) -> Result<(), String> {
+    println!("[SEED] 🧨 CLEAN RESET: Removendo planos de crescimento existentes...");
+    db.query("DELETE FROM growth_plan;").await.map_err(|e| e.to_string())?;
+
+    println!("[SEED] Verificando Planos de Crescimento...");
+
+    let growth_phases: Vec<GrowthPhase> = vec![
+        GrowthPhase {
+            id: Some("growth_phase:institucional_f1".to_string()),
+            level: 1,
+            name: "Iniciante".to_string(),
+            lot_size: 1,
+            conditions_to_advance: vec![
+                RiskCondition { metric: "profit_target".to_string(), operator: ">=".to_string(), value: 500.0 }
+            ],
+            conditions_to_demote: vec![
+                RiskCondition { metric: "drawdown_limit".to_string(), operator: ">=".to_string(), value: 250.0 },
+                RiskCondition { metric: "daily_loss_limit".to_string(), operator: ">=".to_string(), value: 100.0 }
+            ]
+        },
+        GrowthPhase {
+            id: Some("growth_phase:institucional_f2".to_string()),
+            level: 2,
+            name: "Estágio 2".to_string(),
+            lot_size: 1,
+            conditions_to_advance: vec![
+                RiskCondition { metric: "profit_target".to_string(), operator: ">=".to_string(), value: 1000.0 }
+            ],
+            conditions_to_demote: vec![
+                RiskCondition { metric: "drawdown_limit".to_string(), operator: ">=".to_string(), value: 400.0 },
+                RiskCondition { metric: "daily_loss_limit".to_string(), operator: ">=".to_string(), value: 150.0 }
+            ]
+        },
+        GrowthPhase {
+            id: Some("growth_phase:institucional_f3".to_string()),
+            level: 3,
+            name: "Estágio 3".to_string(),
+            lot_size: 2,
+            conditions_to_advance: vec![
+                RiskCondition { metric: "profit_target".to_string(), operator: ">=".to_string(), value: 2000.0 }
+            ],
+            conditions_to_demote: vec![
+                RiskCondition { metric: "drawdown_limit".to_string(), operator: ">=".to_string(), value: 800.0 },
+                RiskCondition { metric: "daily_loss_limit".to_string(), operator: ">=".to_string(), value: 250.0 }
+            ]
+        },
+        GrowthPhase {
+            id: Some("growth_phase:institucional_f4".to_string()),
+            level: 4,
+            name: "Estágio 4".to_string(),
+            lot_size: 2,
+            conditions_to_advance: vec![
+                RiskCondition { metric: "profit_target".to_string(), operator: ">=".to_string(), value: 3000.0 }
+            ],
+            conditions_to_demote: vec![
+                RiskCondition { metric: "drawdown_limit".to_string(), operator: ">=".to_string(), value: 1000.0 },
+                RiskCondition { metric: "daily_loss_limit".to_string(), operator: ">=".to_string(), value: 300.0 }
+            ]
+        },
+        GrowthPhase {
+            id: Some("growth_phase:institucional_f5".to_string()),
+            level: 5,
+            name: "Estágio 5".to_string(),
+            lot_size: 3,
+            conditions_to_advance: vec![
+                RiskCondition { metric: "profit_target".to_string(), operator: ">=".to_string(), value: 5000.0 }
+            ],
+            conditions_to_demote: vec![
+                RiskCondition { metric: "drawdown_limit".to_string(), operator: ">=".to_string(), value: 1500.0 },
+                RiskCondition { metric: "daily_loss_limit".to_string(), operator: ">=".to_string(), value: 400.0 }
+            ]
+        },
+        GrowthPhase {
+            id: Some("growth_phase:institucional_f6".to_string()),
+            level: 6,
+            name: "Estágio 6".to_string(),
+            lot_size: 3,
+            conditions_to_advance: vec![
+                RiskCondition { metric: "profit_target".to_string(), operator: ">=".to_string(), value: 8000.0 }
+            ],
+            conditions_to_demote: vec![
+                RiskCondition { metric: "drawdown_limit".to_string(), operator: ">=".to_string(), value: 2000.0 },
+                RiskCondition { metric: "daily_loss_limit".to_string(), operator: ">=".to_string(), value: 500.0 }
+            ]
+        },
+        GrowthPhase {
+            id: Some("growth_phase:institucional_f7".to_string()),
+            level: 7,
+            name: "Estágio 7".to_string(),
+            lot_size: 4,
+            conditions_to_advance: vec![
+                RiskCondition { metric: "profit_target".to_string(), operator: ">=".to_string(), value: 12000.0 }
+            ],
+            conditions_to_demote: vec![
+                RiskCondition { metric: "drawdown_limit".to_string(), operator: ">=".to_string(), value: 3000.0 },
+                RiskCondition { metric: "daily_loss_limit".to_string(), operator: ">=".to_string(), value: 750.0 }
+            ]
+        },
+        GrowthPhase {
+            id: Some("growth_phase:institucional_f8".to_string()),
+            level: 8,
+            name: "Fase Profissional".to_string(),
+            lot_size: 6,
+            conditions_to_advance: vec![
+                RiskCondition { metric: "profit_target".to_string(), operator: ">=".to_string(), value: 20000.0 }
+            ],
+            conditions_to_demote: vec![
+                RiskCondition { metric: "drawdown_limit".to_string(), operator: ">=".to_string(), value: 5000.0 },
+                RiskCondition { metric: "daily_loss_limit".to_string(), operator: ">=".to_string(), value: 1000.0 }
+            ]
+        },
+        GrowthPhase {
+            id: Some("growth_phase:institucional_f9".to_string()),
+            level: 9,
+            name: "Fase Senior".to_string(),
+            lot_size: 10,
+            conditions_to_advance: vec![
+                RiskCondition { metric: "profit_target".to_string(), operator: ">=".to_string(), value: 35000.0 }
+            ],
+            conditions_to_demote: vec![
+                RiskCondition { metric: "drawdown_limit".to_string(), operator: ">=".to_string(), value: 8000.0 },
+                RiskCondition { metric: "daily_loss_limit".to_string(), operator: ">=".to_string(), value: 1500.0 }
+            ]
+        },
+        GrowthPhase {
+            id: Some("growth_phase:institucional_f10".to_string()),
+            level: 10,
+            name: "Fase Master".to_string(),
+            lot_size: 20,
+            conditions_to_advance: vec![], // Última fase
+            conditions_to_demote: vec![
+                RiskCondition { metric: "drawdown_limit".to_string(), operator: ">=".to_string(), value: 15000.0 },
+                RiskCondition { metric: "daily_loss_limit".to_string(), operator: ">=".to_string(), value: 2500.0 }
+            ]
+        }
+    ];
+
+    let plan = GrowthPlan {
+        id: "growth_plan:institucional_10".to_string(),
+        name: "Plano Institucional 10 Fases".to_string(),
+        enabled: true,
+        current_phase_index: 0,
+        phases: growth_phases,
+    };
+
+    let mut json = serde_json::to_value(&plan).unwrap();
+    if let Some(obj) = json.as_object_mut() {
+        obj.remove("id");
+    }
+
+    db.query("UPSERT growth_plan:institucional_10 CONTENT $data")
+        .bind(("data", json))
+        .await
+        .map_err(|e| e.to_string())?;
+
+    println!("  ✓ Plano Institucional 10 Fases");
     Ok(())
 }

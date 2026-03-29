@@ -87,9 +87,9 @@
                 }
                 return item;
             });
-            toast.success($t("strategy.dashboard.checklist.newsUpdateSuccess"));
+            toast.success($t("strategyDashboard.checklist.newsUpdateSuccess"));
         } catch (e) {
-            toast.error($t("strategy.dashboard.checklist.newsUpdateError") + ": " + (e as Error).message);
+            toast.error($t("strategyDashboard.checklist.newsUpdateError") + ": " + (e as Error).message);
         } finally {
             newsLoading = false;
         }
@@ -173,12 +173,12 @@
             return { ...i, checked: false, inputValue: "" };
         });
         showWidget = false;
-        toast.info($t("strategy.dashboard.checklist.resetSuccess"));
+        toast.info($t("strategyDashboard.checklist.resetSuccess"));
     }
 
     function startTrading() {
         if (!readyToTrade) return;
-        toast.success($t("strategy.dashboard.checklist.success"));
+        toast.success($t("strategyDashboard.checklist.success"));
     }
 </script>
 
@@ -190,12 +190,12 @@
                     class="text-[11px] font-black uppercase tracking-wider"
                 >
                     <ClipboardCheck class="w-4 h-4 text-primary" />
-                    {$t("strategy.dashboard.checklist.title")}
+                    {$t("strategyDashboard.checklist.title")}
                 </CardTitle>
                 <CardDescription
                     class="text-[8px] mt-0 opacity-60 leading-none"
                 >
-                    {$t("strategy.dashboard.checklist.subtitle")}
+                    {$t("strategyDashboard.checklist.subtitle")}
                 </CardDescription>
             </div>
             <div class="flex items-center gap-3">
@@ -208,7 +208,7 @@
                     <div
                         class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold animate-pulse dark:bg-green-900/30 dark:text-green-400"
                     >
-                        {$t("strategy.dashboard.checklist.ready")}
+                        {$t("strategyDashboard.checklist.ready")}
                     </div>
                 {/if}
             </div>
@@ -229,7 +229,7 @@
                             {checkedCount}
                             {$t("general.of")}
                             {totalCount}
-                            {$t("strategy.dashboard.checklist.verified")}
+                            {$t("strategyDashboard.checklist.verified")}
                         </span>
                         <span
                             class="font-bold {progress === 100
@@ -274,7 +274,7 @@
                                                 >
                                                     <span>
                                                         {$t(
-                                                            "strategy.dashboard.checklist.items.news",
+                                                            "strategyDashboard.checklist.items.news",
                                                         )}
                                                     </span>
                                                     <!-- Botão de Refresh -->
@@ -298,14 +298,14 @@
                                                             />
                                                         {/if}
                                                         {$t(
-                                                            "strategy.dashboard.checklist.newsUpdate",
+                                                            "strategyDashboard.checklist.newsUpdate",
                                                         )}
                                                     </Button>
                                                 </div>
                                             </div>
                                         {:else}
                                             {$t(
-                                                `strategy.dashboard.checklist.items.${item.label}`,
+                                                `strategyDashboard.checklist.items.${item.label}`,
                                             )}
                                         {/if}
                                     </Label>
@@ -322,12 +322,12 @@
                                                     class="w-3 h-3"
                                                 />
                                                 {$t(
-                                                    "strategy.dashboard.checklist.volatilityAlert",
+                                                    "strategyDashboard.checklist.volatilityAlert",
                                                 )}
                                                 <span
                                                     class="text-[10px] font-normal text-muted-foreground ml-auto"
                                                     >{$t(
-                                                        "strategy.dashboard.checklist.scrollMore",
+                                                        "strategyDashboard.checklist.scrollMore",
                                                     )}</span
                                                 >
                                             </div>
@@ -373,7 +373,7 @@
                                             <span
                                                 class="text-xs text-muted-foreground"
                                                 >{$t(
-                                                    "strategy.dashboard.checklist.items.riskInput",
+                                                    "strategyDashboard.checklist.items.riskInput",
                                                 )}</span
                                             >
                                             <Input
@@ -401,7 +401,7 @@
                         class="flex items-center gap-2 mb-3 text-sm font-semibold text-muted-foreground"
                     >
                         <CalendarDays class="w-4 h-4" />
-                        {$t("strategy.dashboard.checklist.economicCalendar")}
+                        {$t("strategyDashboard.checklist.economicCalendar")}
                     </div>
 
                     <div
@@ -412,7 +412,7 @@
                             width="100%"
                             height="100%"
                             title={$t(
-                                "strategy.dashboard.checklist.calendarTitle",
+                                "strategyDashboard.checklist.calendarTitle",
                             )}
                             frameborder="0"
                             allowtransparency={null}
@@ -434,13 +434,13 @@
                     onclick={startTrading}
                 >
                     <PlayCircle class="w-4 h-4 mr-2" />
-                    {$t("strategy.dashboard.checklist.start")}
+                    {$t("strategyDashboard.checklist.start")}
                 </Button>
             </div>
         {:else}
             <div class="pt-4 flex justify-end">
                 <Button variant="ghost" size="sm" onclick={resetChecklist}>
-                    {$t("strategy.dashboard.checklist.reset")}
+                    {$t("strategyDashboard.checklist.reset")}
                 </Button>
             </div>
         {/if}

@@ -629,7 +629,7 @@
                         <Select.Item
                             value="100"
                             class="text-[10px] font-bold uppercase"
-                            >{$t("general.all")}</Select.Item
+                            >{$t("common.all")}</Select.Item>
                         >
                     </Select.Content>
                 </Select.Root>

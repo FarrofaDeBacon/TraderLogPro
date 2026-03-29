@@ -158,6 +158,11 @@ export type Trade = {
     stop_loss: number | null;
     take_profit: number | null;
     intensity: number;
+    asset_id?: string;
+    
+    // Processed fields for high-performance dashboard calculations
+    processed_timestamp?: number;
+    processed_result_brl?: number;
 };
 
 export type Strategy = {
@@ -335,6 +340,7 @@ export type GrowthPlan = {
     name: string;
     enabled: boolean;
     current_phase_index: number;
+    currentPhaseStartedAt?: string; // ISO String
     phases: GrowthPhase[];
 };
 
@@ -378,6 +384,7 @@ export type RiskProfile = {
     risk_rules?: RiskRule[];
     desk_config?: DeskConfig;
     growth_plan_id?: string;
+    use_advanced_rules?: boolean;
 };
 
 export type DeskStage = {
@@ -484,10 +491,14 @@ export type CombinedRiskRule = {
     limit_value: number;
 };
 
-export type AssetRiskProfile = {
+export type RiskScopeProfile = {
     id?: string;
     name: string;
-    asset_id: string; // The Thing ID from SurrealDB
+    /** @deprecated Use asset_ids para suporte a múltiplos ativos */
+    asset_id?: string; 
+    /** Lista de IDs de ativos que pertencem a este escopo operacional */
+    asset_type_id?: string;
+    asset_ids: string[];
     default_stop_points: number;
     min_contracts: number;
     max_contracts: number;
@@ -495,14 +506,40 @@ export type AssetRiskProfile = {
     growth_override_enabled?: boolean;
     growth_phases_override?: GrowthPhase[];
     current_phase_index?: number;
+    currentPhaseStartedAt?: string; // ISO String
+};
+
+/** Alias mantido para compatibilidade legado em toda a aplicação durante a transição */
+export type AssetRiskProfile = RiskScopeProfile;
+
+export type RiskContextResolution = {
+    source: "scope" | "global";
+    sourceReason: string;
+    scopeId?: string;
+    scopeName?: string;
+    growthPlanId?: string;
+    growthPlanName?: string;
+    currentPhaseIndex: number;
+    totalPhases: number;
+    currentPhaseName: string;
+    currentPhaseTarget: number;
+    currentPhaseDrawdown: number;
+    currentPhaseLotLimit: number;
+    assetIds: string[];
+    advanceConditions?: RiskCondition[];
+    demoteConditions?: RiskCondition[];
+    phaseStartedAt?: string;
+    resolvedAt: string;
 };
 
 export type ResolvedGrowthContext = {
-    asset: Asset;
-    assetRiskProfile: AssetRiskProfile;
+    asset?: Asset;
+    assetRiskProfile?: RiskScopeProfile;
     riskProfile: RiskProfile;
+    growthPlan?: GrowthPlan;
     growthSourceType: "global" | "assetProfile";
     growthPhase: GrowthPhase;
+    resolution: RiskContextResolution;
 };
 
 export type TaxPayment = {

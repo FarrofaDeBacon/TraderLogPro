@@ -43,6 +43,7 @@
     import { t, locale } from "svelte-i18n";
     import { mode } from "mode-watcher";
     import { invoke } from "@tauri-apps/api/core";
+    import { SystemHeader, SystemCard, SystemMetric } from "$lib/components/ui/system";
 
     // Theme-aware colors for ECharts
     const chartTheme = $derived(
@@ -434,65 +435,71 @@
 {:else}
     <div class="space-y-4 p-2 md:p-0 transition-opacity duration-300 {isRustLoading ? 'opacity-50 pointer-events-none scale-[0.99]' : 'opacity-100 scale-100'}">
         <!-- Header -->
-        <div class="flex items-center gap-4 mb-2">
-            <Button
-                variant="ghost"
-                size="icon"
-                href="/strategies"
-                class="h-8 w-8"
-            >
-                <ArrowLeft class="w-4 h-4" />
-            </Button>
-            <h1 class="text-xl font-semibold tracking-tight">
-                {strategy.name}
-            </h1>
-            <Badge variant="outline" class="font-mono text-xs">
-                {strategy.specific_assets[0] || $t("strategy.dossier.multi")}
-            </Badge>
-
-            <div class="flex-1"></div>
-
-            <!-- Phase 21: Strategy Cockpit Drawer -->
-            <Button variant="outline" size="sm" onclick={() => isCockpitOpen = true} class="gap-2 bg-background/50 backdrop-blur-sm border-dashed border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-500 transition-colors">
-                <Radar class="w-4 h-4" />
-                {$t("cockpit.ctaBtn")}
-            </Button>
+        <SystemHeader 
+            title={strategy.name}
+            variant="page"
+            class="mb-4"
+        >
+            {#snippet leading()}
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    href="/strategies"
+                    class="h-8 w-8 mr-2"
+                >
+                    <ArrowLeft class="w-4 h-4" />
+                </Button>
+            {/snippet}
+            {#snippet actions()}
+                <div class="flex items-center gap-3">
+                    <Badge variant="outline" class="font-mono text-xs">
+                        {strategy.specific_assets[0] || $t("strategyDossier.multi")}
+                    </Badge>
+                    <Button variant="outline" size="sm" onclick={() => isCockpitOpen = true} class="gap-2 bg-background/50 backdrop-blur-sm border-dashed border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-500 transition-colors">
+                        <Radar class="w-4 h-4" />
+                        {$t("aiCockpit.ctaBtn")}
+                    </Button>
+                </div>
+            {/snippet}
+        </SystemHeader>
             
             <Sheet.Root bind:open={isCockpitOpen}>
                 <Sheet.Content side="right" class="w-full sm:max-w-md overflow-y-auto bg-background/95 backdrop-blur-xl border-l-border/50 p-6">
                     <Sheet.Header class="mb-6">
                         <Sheet.Title class="flex items-center gap-2">
                             <Radar class="w-5 h-5 text-emerald-500" />
-                            {$t("cockpit.ctaBtn")}
+                            {$t("aiCockpit.ctaBtn")}
                         </Sheet.Title>
-                        <Sheet.Description>{$t("cockpit.ai.desc")}</Sheet.Description>
+                        <Sheet.Description>{$t("aiCockpit.ai.desc")}</Sheet.Description>
                     </Sheet.Header>
 
                     <!-- Bloco 1: Saúde da Estratégia -->
                     <div class="space-y-4 mb-8">
-                        <h3 class="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                            <Activity class="w-4 h-4" /> {$t("cockpit.health.title")}
-                        </h3>
+                        <SystemHeader 
+                            title={$t("aiCockpit.health.title")}
+                            icon={Activity}
+                            class="mb-3"
+                        />
                         {#if stats.diagnostic.status === "INSUFFICIENT_DATA"}
-                            <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("cockpit.ai.insufficientVolume")}</div>
+                            <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("aiCockpit.ai.insufficientVolume")}</div>
                         {:else}
                             <div class="grid grid-cols-2 gap-2">
                                 <div class="p-3 rounded-lg border bg-background/50 flex flex-col gap-1">
-                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("cockpit.health.status")}</span>
-                                    <span class="text-sm font-black {stats.diagnostic.status === 'HOT' ? 'text-emerald-500' : stats.diagnostic.status === 'COLD' ? 'text-rose-500' : 'text-amber-500'}">
-                                        {stats.diagnostic.status}
+                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("aiCockpit.health.status")}</span>
+                                    <span class="text-xs font-black {stats.diagnostic.status === 'HOT' ? 'text-emerald-500' : stats.diagnostic.status === 'COLD' ? 'text-rose-500' : 'text-amber-500'}">
+                                        {$t(`aiCockpit.values.${stats.diagnostic.status}`) || stats.diagnostic.status}
                                     </span>
                                 </div>
                                 <div class="p-3 rounded-lg border bg-background/50 flex flex-col gap-1">
-                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("cockpit.health.currentRisk")}</span>
-                                    <span class="text-sm font-black {stats.diagnostic.current_risk === 'LOW' ? 'text-emerald-500' : stats.diagnostic.current_risk === 'CRITICAL' ? 'text-rose-500' : 'text-amber-500'}">
-                                        {stats.diagnostic.current_risk}
+                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("aiCockpit.health.currentRisk")}</span>
+                                    <span class="text-xs font-black {stats.diagnostic.current_risk === 'LOW' ? 'text-emerald-500' : stats.diagnostic.current_risk === 'CRITICAL' ? 'text-rose-500' : 'text-amber-500'}">
+                                        {$t(`aiCockpit.values.${stats.diagnostic.current_risk}`) || stats.diagnostic.current_risk}
                                     </span>
                                 </div>
                                 <div class="p-3 rounded-lg border bg-background/50 flex flex-col gap-1 col-span-2">
-                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("cockpit.health.stability")}</span>
-                                    <span class="text-sm font-black {stats.diagnostic.stability === 'STABLE' ? 'text-blue-500' : 'text-amber-500'}">
-                                        {stats.diagnostic.stability}
+                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("aiCockpit.health.stability")}</span>
+                                    <span class="text-xs font-black {stats.diagnostic.stability === 'STABLE' ? 'text-blue-500' : 'text-amber-500'}">
+                                        {$t(`aiCockpit.values.${stats.diagnostic.stability}`) || stats.diagnostic.stability}
                                     </span>
                                 </div>
                             </div>
@@ -501,11 +508,13 @@
 
                     <!-- Bloco 2: Estratégia x Psicologia -->
                     <div class="space-y-4 mb-8">
-                        <h3 class="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                            <Brain class="w-4 h-4" /> {$t("cockpit.psychology.title")}
-                        </h3>
+                        <SystemHeader 
+                            title={$t("aiCockpit.psychology.title")}
+                            icon={Brain}
+                            class="mb-3"
+                        />
                         {#if stats.psychology.emotion_breakdown.length === 0}
-                             <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("cockpit.ai.insufficientVolume")}</div>
+                             <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("aiCockpit.ai.insufficientVolume")}</div>
                         {:else}
                             <div class="p-3 rounded-lg border bg-rose-500/10 border-rose-500/20 mb-3 flex items-center justify-between">
                                 <span class="text-xs font-semibold text-rose-400">Taxa de Perda por Indisciplina:</span>
@@ -516,7 +525,7 @@
                                     <div class="flex items-center justify-between p-2 rounded-md bg-muted/20 text-xs">
                                         <span class="font-semibold uppercase tracking-wider">{emo.emotion_name || "N/A"}</span>
                                         <div class="flex gap-3 text-muted-foreground">
-                                            <span title="Win Rate" class="{emo.win_rate > 50 ? 'text-emerald-500' : 'text-rose-500'} font-bold">{(emo.win_rate).toFixed(0)}% WR</span>
+                                            <span title="Win Rate" class="{emo.win_rate > 50 ? 'text-emerald-500' : 'text-rose-500'} font-bold">{(emo.win_rate).toFixed(0)}% {$t("aiCockpit.values.winRateShort")}</span>
                                             <span title="Net Result" class="{emo.net_result >= 0 ? 'text-emerald-500' : 'text-rose-500'}">{formatCurrency(emo.net_result)}</span>
                                         </div>
                                     </div>
@@ -527,32 +536,36 @@
 
                     <!-- Bloco 3: Raio-X Operacional -->
                     <div class="space-y-4 mb-8">
-                        <h3 class="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                            <Target class="w-4 h-4" /> {$t("cockpit.xray.title")}
-                        </h3>
+                        <SystemHeader 
+                            title={$t("aiCockpit.xray.title")}
+                            icon={Target}
+                            class="mb-3"
+                        />
                         {#if !stats.operational.best_asset && !stats.operational.best_time_of_day}
-                            <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("cockpit.ai.insufficientVolume")}</div>
+                            <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("aiCockpit.ai.insufficientVolume")}</div>
                         {:else}
                             <div class="grid grid-cols-2 gap-2 text-xs">
                                 <div class="p-2 border rounded-md">
-                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("cockpit.xray.bestAsset").toUpperCase()}</div>
+                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("aiCockpit.xray.bestAsset").toUpperCase()}</div>
                                     <div class="font-bold text-emerald-500">{stats.operational.best_asset || "N/A"}</div>
                                 </div>
                                 <div class="p-2 border rounded-md">
-                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("cockpit.xray.worstAsset").toUpperCase()}</div>
+                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("aiCockpit.xray.worstAsset").toUpperCase()}</div>
                                     <div class="font-bold text-rose-500">{stats.operational.worst_asset || "N/A"}</div>
                                 </div>
                                 <div class="p-2 border rounded-md">
-                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("cockpit.xray.bestTime").toUpperCase()}</div>
+                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("aiCockpit.xray.bestTime").toUpperCase()}</div>
                                     <div class="font-bold text-emerald-500">{stats.operational.best_time_of_day ? `${stats.operational.best_time_of_day}h` : "N/A"}</div>
                                 </div>
                                 <div class="p-2 border rounded-md">
-                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("cockpit.xray.worstTime").toUpperCase()}</div>
+                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("aiCockpit.xray.worstTime").toUpperCase()}</div>
                                     <div class="font-bold text-rose-500">{stats.operational.worst_time_of_day ? `${stats.operational.worst_time_of_day}h` : "N/A"}</div>
                                 </div>
                                 <div class="p-2 border rounded-md col-span-2 text-center bg-muted/10">
-                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("cockpit.xray.bestSide").toUpperCase()}</div>
-                                    <div class="font-bold uppercase tracking-widest text-blue-500">{stats.operational.best_direction || "N/A"}</div>
+                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("aiCockpit.xray.bestSide").toUpperCase()}</div>
+                                    <div class="font-bold uppercase tracking-widest text-blue-500">
+                                        {$t(`aiCockpit.values.${stats.operational.best_direction}`) || stats.operational.best_direction || "N/A"}
+                                    </div>
                                 </div>
                             </div>
                         {/if}
@@ -561,7 +574,7 @@
                     <!-- Bloco 4: Leitura Resumida -->
                     <div class="p-4 rounded-xl border-l-4 {stats.diagnostic.current_risk === 'CRITICAL' ? 'border-rose-500 bg-rose-500/5' : stats.diagnostic.status === 'HOT' ? 'border-emerald-500 bg-emerald-500/5' : 'border-blue-500 bg-blue-500/5'}">
                         <div class="font-bold text-sm mb-2 flex items-center gap-2">
-                            <Zap class="w-4 h-4" /> {$t("cockpit.ai.title")}
+                            <Zap class="w-4 h-4" /> {$t("aiCockpit.ai.title")}
                         </div>
                         <p class="text-xs text-muted-foreground leading-relaxed">
                             {#if stats.diagnostic.status === "INSUFFICIENT_DATA"}
@@ -571,7 +584,7 @@
                             {:else if stats.diagnostic.status === "HOT" && stats.diagnostic.current_risk === "LOW"}
                                 O sistema vibra em harmonia máxima. O fluxo operacional e emocional provam consistência direcional. <span class="font-bold text-emerald-500 block mt-2">Ação: Mantenha volume cheio. Deixe os lucros transbordarem na lei geométrica dos alvos originais.</span>
                             {:else}
-                                Consistência em maturação. Resultados sofrem atrito cruzado (Hot/Cold) entre classes de ativos ou sessões horárias. <span class="font-bold text-blue-500 block mt-2">Ação: Adote a direção predominante ({stats.operational.best_direction || "N/A"}) como viés primário para estabilizar os drawdowns curtos.</span>
+                                Consistência em maturação. Resultados sofrem atrito cruzado (Quente/Frio) entre classes de ativos ou sessões horárias. <span class="font-bold text-blue-500 block mt-2">Ação: Adote a direção predominante ({$t(`aiCockpit.values.${stats.operational.best_direction}`) || stats.operational.best_direction || "N/A"}) como viés primário para estabilizar os drawdowns curtos.</span>
                             {/if}
                         </p>
                     </div>
@@ -579,15 +592,14 @@
                     <!-- Bloco AI Executive Removido do Drawer para evitar duplicidade, mantendo apenas raw stats aqui -->
                 </Sheet.Content>
             </Sheet.Root>
-        </div>
 
         <Tabs.Root value="dashboard" class="w-full">
             <Tabs.List class="grid w-full grid-cols-3 mb-4">
                 <Tabs.Trigger value="dashboard"
-                    >{$t("strategy.dashboard.tabs.dashboard")}</Tabs.Trigger
+                    >{$t("strategyDashboard.tabs.dashboard")}</Tabs.Trigger
                 >
                 <Tabs.Trigger value="dossier"
-                    >{$t("strategy.dashboard.tabs.dossier")}</Tabs.Trigger
+                    >{$t("strategyDashboard.tabs.dossier")}</Tabs.Trigger
                 >
                 <Tabs.Trigger value="gann" class="gap-2">
                     <Compass class="w-3.5 h-3.5" />
@@ -607,7 +619,7 @@
                         class="h-7 px-3 text-[10px] font-bold tracking-wider uppercase transition-all"
                         onclick={() => (selectedMarketId = null)}
                     >
-                        {$t("general.all")}
+                        {$t("common.all")}
                     </Button>
                     {#each availableMarkets as m}
                         <Button
@@ -623,7 +635,7 @@
                     {/each}
                     {#if availableMarkets.length === 0}
                         <div class="text-[10px] text-muted-foreground italic">
-                            {$t("strategy.dashboard.heatmap.noMarket")}
+                            {$t("strategyDashboard.heatmap.noMarket")}
                         </div>
                     {/if}
                 </div>
@@ -643,18 +655,13 @@
                                     <div
                                         class="flex justify-between items-center mb-4"
                                     >
-                                        <h3
-                                            class="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
-                                        >
-                                            {$t(
-                                                "strategy.dashboard.charts.equityStrategy",
-                                            )}
-                                        </h3>
+                                        <SystemHeader 
+                                            title={$t("strategyDashboard.charts.equityStrategy")}
+                                            variant="section"
+                                            class="mb-0"
+                                        />
                                         <span
-                                            class="text-lg font-bold {stats.netResult >=
-                                            0
-                                                ? 'text-emerald-500'
-                                                : 'text-rose-500'}"
+                                            class="text-xl font-mono font-black {stats.netResult >= 0 ? 'text-emerald-500' : 'text-rose-500'} tabular-nums tracking-tight"
                                         >
                                             {formatCurrency(stats.netResult)}
                                         </span>
@@ -688,15 +695,13 @@
                                     <div
                                         class="flex justify-between items-center mb-4"
                                     >
-                                        <h3
-                                            class="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
-                                        >
-                                            {$t(
-                                                "strategy.dashboard.charts.drawdown",
-                                            )}
-                                        </h3>
+                                        <SystemHeader 
+                                            title={$t("strategyDashboard.charts.drawdown")}
+                                            variant="section"
+                                            class="mb-0"
+                                        />
                                         <span
-                                            class="text-lg font-bold text-rose-500"
+                                            class="text-xl font-mono font-black text-rose-500 tabular-nums tracking-tight"
                                         >
                                             {formatCurrency(stats.drawdown)}
                                         </span>
@@ -731,11 +736,11 @@
                                 <div
                                     class="flex justify-between items-center mb-4 px-2"
                                 >
-                                    <h3
-                                        class="text-xs font-bold text-muted-foreground uppercase tracking-widest"
-                                    >
-                                        {$t("strategy.dashboard.heatmap.title")}
-                                    </h3>
+                                    <SystemHeader 
+                                        title={$t("strategyDashboard.heatmap.title")}
+                                        variant="section"
+                                        class="mb-0"
+                                    />
                                     <div
                                         class="flex gap-4 text-[10px] font-medium"
                                     >
@@ -744,7 +749,7 @@
                                                 class="w-2.5 h-2.5 rounded-full bg-rose-700"
                                             ></div>
                                             {$t(
-                                                "strategy.dashboard.heatmap.legend.strongLoss",
+                                                "strategyDashboard.heatmap.legend.strongLoss",
                                             )}</span
                                         >
                                         <span class="flex items-center gap-1.5"
@@ -752,7 +757,7 @@
                                                 class="w-2.5 h-2.5 rounded-full bg-emerald-700"
                                             ></div>
                                             {$t(
-                                                "strategy.dashboard.heatmap.legend.strongProfit",
+                                                "strategyDashboard.heatmap.legend.strongProfit",
                                             )}</span
                                         >
                                     </div>
@@ -812,160 +817,116 @@
                     <!-- RIGHT SIDE: Integrated Sidebar (1 col) -->
                     <div class="col-span-1 flex flex-col gap-2 h-[676px]">
                         <!-- 1. Net Result -->
-                        <Card
-                            class="flex-1 h-[78px] shadow-md bg-card/60 backdrop-blur-xl border border-l-4 border-l-emerald-500"
+                        <SystemCard 
+                            status={stats.netResult >= 0 ? "success" : "danger"}
+                            class="flex-1 h-[78px] p-2 flex flex-col justify-center items-center text-center overflow-hidden"
                         >
-                            <CardContent
-                                class="p-2 flex flex-col justify-center items-center text-center h-full"
-                            >
-                                <div
-                                    class="text-[9px] font-bold text-muted-foreground uppercase mb-1"
-                                >
-                                    {$t("strategy.dashboard.stats.netResult")}
-                                </div>
-                                <div
-                                    class="text-base font-black {stats.netResult >=
-                                    0
-                                        ? 'text-emerald-500'
-                                        : 'text-rose-500'}"
-                                >
-                                    {formatCurrency(stats.netResult)}
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <SystemMetric 
+                                label={$t("strategyDashboard.stats.netResult")}
+                                value={formatCurrency(stats.netResult)}
+                                status={stats.netResult >= 0 ? "success" : "danger"}
+                                class="w-full items-center"
+                                valueClass="text-base"
+                            />
+                        </SystemCard>
+
                         <!-- 2. Win Rate -->
-                        <Card
-                            class="flex-1 h-[78px] shadow-md bg-card/60 backdrop-blur-xl border border-l-4 border-l-blue-500"
+                        <SystemCard 
+                            status="info"
+                            class="flex-1 h-[78px] p-2 flex flex-col justify-center items-center text-center overflow-hidden"
                         >
-                            <CardContent
-                                class="p-2 flex flex-col justify-center items-center text-center h-full"
-                            >
-                                <div
-                                    class="text-[9px] font-bold text-muted-foreground uppercase mb-1"
-                                >
-                                    {$t("strategy.dashboard.stats.winRate")}
-                                </div>
-                                <div class="text-base font-black text-blue-500">
-                                    {stats.winRate.toFixed(1)}%
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <SystemMetric 
+                                label={$t("strategyDashboard.stats.winRate")}
+                                value={`${stats.winRate.toFixed(1)}%`}
+                                status="info"
+                                class="w-full items-center"
+                                valueClass="text-base"
+                            />
+                        </SystemCard>
+
                         <!-- 3. Profit Factor -->
-                        <Card
-                            class="flex-1 h-[78px] shadow-md bg-card/60 backdrop-blur-xl border border-l-4 border-l-yellow-600"
+                        <SystemCard 
+                            status="warning"
+                            class="flex-1 h-[78px] p-2 flex flex-col justify-center items-center text-center overflow-hidden"
                         >
-                            <CardContent
-                                class="p-2 flex flex-col justify-center items-center text-center h-full"
-                            >
-                                <div
-                                    class="text-[9px] font-bold text-muted-foreground uppercase mb-1"
-                                >
-                                    {$t(
-                                        "strategy.dashboard.stats.profitFactor",
-                                    )}
-                                </div>
-                                <div
-                                    class="text-base font-black text-yellow-600"
-                                >
-                                    {stats.profitFactor.toFixed(2)}
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <SystemMetric 
+                                label={$t("strategyDashboard.stats.profitFactor")}
+                                value={stats.profitFactor.toFixed(2)}
+                                status="warning"
+                                class="w-full items-center"
+                                valueClass="text-base"
+                            />
+                        </SystemCard>
+
                         <!-- 4. Payoff -->
-                        <Card
-                            class="flex-1 h-[78px] shadow-md bg-card/60 backdrop-blur-xl border border-l-4 border-l-indigo-400"
+                        <SystemCard 
+                            status="info"
+                            class="flex-1 h-[78px] p-2 flex flex-col justify-center items-center text-center overflow-hidden"
                         >
-                            <CardContent
-                                class="p-2 flex flex-col justify-center items-center text-center h-full"
-                            >
-                                <div
-                                    class="text-[9px] font-bold text-muted-foreground uppercase mb-1"
-                                >
-                                    {$t("strategy.dashboard.stats.payoff")}
-                                </div>
-                                <div
-                                    class="text-base font-black text-indigo-400"
-                                >
-                                    {stats.payoff.toFixed(2)}
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <SystemMetric 
+                                label={$t("strategyDashboard.stats.payoff")}
+                                value={stats.payoff.toFixed(2)}
+                                status="info"
+                                class="w-full items-center"
+                                valueClass="text-base text-cyan-400"
+                            />
+                        </SystemCard>
+
                         <!-- 5. Math Expectation -->
-                        <Card
-                            class="flex-1 h-[78px] shadow-md bg-card/60 backdrop-blur-xl border border-l-4 border-l-slate-400"
+                        <SystemCard 
+                            status="none"
+                            class="flex-1 h-[78px] p-2 flex flex-col justify-center items-center text-center overflow-hidden"
                         >
-                            <CardContent
-                                class="p-2 flex flex-col justify-center items-center text-center h-full"
-                            >
-                                <div
-                                    class="text-[9px] font-bold text-muted-foreground uppercase mb-1"
-                                >
-                                    {$t(
-                                        "strategy.dashboard.stats.mathExpectation",
-                                    )}
-                                </div>
-                                <div class="text-sm font-black text-slate-300">
-                                    {formatCurrency(stats.mathExpectation)}
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <SystemMetric 
+                                label={$t("strategyDashboard.stats.mathExpectation")}
+                                value={formatCurrency(stats.mathExpectation)}
+                                status="none"
+                                class="w-full items-center"
+                                valueClass="text-sm opacity-80"
+                            />
+                        </SystemCard>
+
                         <!-- 6. Max Drawdown -->
-                        <Card
-                            class="flex-1 h-[78px] shadow-md bg-card/60 backdrop-blur-xl border border-l-4 border-l-rose-500"
+                        <SystemCard 
+                            status="danger"
+                            class="flex-1 h-[78px] p-2 flex flex-col justify-center items-center text-center overflow-hidden"
                         >
-                            <CardContent
-                                class="p-2 flex flex-col justify-center items-center text-center h-full"
-                            >
-                                <div
-                                    class="text-[9px] font-bold text-muted-foreground uppercase mb-1"
-                                >
-                                    {$t("strategy.dashboard.stats.maxDrawdown")}
-                                </div>
-                                <div class="text-base font-black text-rose-500">
-                                    {formatCurrency(stats.maxDrawdown)}
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <SystemMetric 
+                                label={$t("strategyDashboard.stats.maxDrawdown")}
+                                value={formatCurrency(stats.maxDrawdown)}
+                                status="danger"
+                                class="w-full items-center"
+                                valueClass="text-base"
+                            />
+                        </SystemCard>
+
                         <!-- 7. Recovery Factor -->
-                        <Card
-                            class="flex-1 h-[78px] shadow-md bg-card/60 backdrop-blur-xl border border-l-4 border-l-cyan-500"
+                        <SystemCard 
+                            status="info"
+                            class="flex-1 h-[78px] p-2 flex flex-col justify-center items-center text-center overflow-hidden"
                         >
-                            <CardContent
-                                class="p-2 flex flex-col justify-center items-center text-center h-full"
-                            >
-                                <div
-                                    class="text-[9px] font-bold text-muted-foreground uppercase mb-1"
-                                >
-                                    {$t(
-                                        "strategy.dashboard.stats.recoveryFactor",
-                                    )}
-                                </div>
-                                <div class="text-base font-black text-cyan-500">
-                                    {stats.recoveryFactor.toFixed(2)}
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <SystemMetric 
+                                label={$t("strategyDashboard.stats.recoveryFactor")}
+                                value={stats.recoveryFactor.toFixed(2)}
+                                status="info"
+                                class="w-full items-center"
+                                valueClass="text-base"
+                            />
+                        </SystemCard>
+
                         <!-- 8. Plan Adherence -->
-                        <Card
-                            class="flex-1 h-[78px] shadow-md bg-card/60 backdrop-blur-xl border border-l-4 border-l-orange-500"
+                        <SystemCard 
+                            status="warning"
+                            class="flex-1 h-[78px] p-2 flex flex-col justify-center items-center text-center overflow-hidden"
                         >
-                            <CardContent
-                                class="p-2 flex flex-col justify-center items-center text-center h-full"
-                            >
-                                <div
-                                    class="text-[9px] font-bold text-muted-foreground uppercase mb-1"
-                                >
-                                    {$t(
-                                        "strategy.dashboard.stats.planAdherence",
-                                    )}
-                                </div>
-                                <div
-                                    class="text-base font-black text-orange-500"
-                                >
-                                    {stats.planAdherence.toFixed(1)}%
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <SystemMetric 
+                                label={$t("strategyDashboard.stats.planAdherence")}
+                                value={`${stats.planAdherence.toFixed(1)}%`}
+                                status="warning"
+                                class="w-full items-center"
+                                valueClass="text-base opacity-90"
+                            />
+                        </SystemCard>
                     </div>
                 </div>
 
@@ -973,120 +934,89 @@
                 <div
                     class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-4"
                 >
-                    <Card
-                        class="border shadow-sm bg-card/60 backdrop-blur-xl border-l-4 border-l-slate-400 h-[80px]"
+                    <SystemCard 
+                        status="none" 
+                        class="h-[80px] p-0 flex flex-col justify-center items-center overflow-hidden"
                     >
-                        <CardContent
-                            class="p-0 flex flex-col justify-center items-center h-full"
-                        >
-                            <div
-                                class="text-[9px] font-bold text-muted-foreground uppercase mb-0.5"
-                            >
-                                {$t("strategy.dashboard.stats.totalTrades")}
-                            </div>
-                            <div class="text-sm font-black">
-                                {stats.totalTrades}
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card
-                        class="border shadow-sm bg-card/60 backdrop-blur-xl border-l-4 border-l-emerald-500 h-[80px]"
+                        <SystemMetric 
+                            label={$t("strategyDashboard.stats.totalTrades")}
+                            value={stats.totalTrades}
+                            status="none"
+                            class="w-full items-center"
+                        />
+                    </SystemCard>
+
+                    <SystemCard 
+                        status="success" 
+                        class="h-[80px] p-0 flex flex-col justify-center items-center overflow-hidden"
                     >
-                        <CardContent
-                            class="p-0 flex flex-col justify-center items-center h-full"
-                        >
-                            <div
-                                class="text-[9px] font-bold text-muted-foreground uppercase mb-0.5"
-                            >
-                                {$t("strategy.dashboard.stats.winningTrades")}
-                            </div>
-                            <div class="text-sm font-black text-emerald-500">
-                                {stats.winningTrades}
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card
-                        class="border shadow-sm bg-card/60 backdrop-blur-xl border-l-4 border-l-emerald-600 h-[80px]"
+                        <SystemMetric 
+                            label={$t("strategyDashboard.stats.winningTrades")}
+                            value={stats.winningTrades}
+                            status="success"
+                            class="w-full items-center"
+                        />
+                    </SystemCard>
+
+                    <SystemCard 
+                        status="success" 
+                        class="h-[80px] p-0 flex flex-col justify-center items-center overflow-hidden"
                     >
-                        <CardContent
-                            class="p-0 flex flex-col justify-center items-center h-full"
-                        >
-                            <div
-                                class="text-[9px] font-bold text-muted-foreground uppercase mb-0.5"
-                            >
-                                {$t("strategy.dashboard.stats.bestTrade")}
-                            </div>
-                            <div class="text-sm font-black text-emerald-600">
-                                {formatCurrency(stats.bestTrade)}
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card
-                        class="border shadow-sm bg-card/60 backdrop-blur-xl border-l-4 border-l-rose-500 h-[80px]"
+                        <SystemMetric 
+                            label={$t("strategyDashboard.stats.bestTrade")}
+                            value={formatCurrency(stats.bestTrade)}
+                            status="success"
+                            class="w-full items-center"
+                        />
+                    </SystemCard>
+
+                    <SystemCard 
+                        status="danger" 
+                        class="h-[80px] p-0 flex flex-col justify-center items-center overflow-hidden"
                     >
-                        <CardContent
-                            class="p-0 flex flex-col justify-center items-center h-full"
-                        >
-                            <div
-                                class="text-[9px] font-bold text-muted-foreground uppercase mb-0.5"
-                            >
-                                {$t("strategy.dashboard.stats.worstTrade")}
-                            </div>
-                            <div class="text-sm font-black text-rose-500">
-                                {formatCurrency(stats.worstTrade)}
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card
-                        class="border shadow-sm bg-card/60 backdrop-blur-xl border-l-4 border-l-blue-400 h-[80px]"
+                        <SystemMetric 
+                            label={$t("strategyDashboard.stats.worstTrade")}
+                            value={formatCurrency(stats.worstTrade)}
+                            status="danger"
+                            class="w-full items-center"
+                        />
+                    </SystemCard>
+
+                    <SystemCard 
+                        status="success" 
+                        class="h-[80px] p-0 flex flex-col justify-center items-center overflow-hidden"
                     >
-                        <CardContent
-                            class="p-0 flex flex-col justify-center items-center h-full"
-                        >
-                            <div
-                                class="text-[9px] font-bold text-muted-foreground uppercase mb-0.5"
-                            >
-                                {$t("strategy.dashboard.stats.avgDurationWin")}
-                            </div>
-                            <div class="text-sm font-black text-emerald-500">
-                                {stats.avgDurationWin}m
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card
-                        class="border shadow-sm bg-card/60 backdrop-blur-xl border-l-4 border-l-rose-400 h-[80px]"
+                        <SystemMetric 
+                            label={$t("strategyDashboard.stats.avgDurationWin")}
+                            value={`${stats.avgDurationWin}m`}
+                            status="success"
+                            class="w-full items-center"
+                        />
+                    </SystemCard>
+
+                    <SystemCard 
+                        status="danger" 
+                        class="h-[80px] p-0 flex flex-col justify-center items-center overflow-hidden"
                     >
-                        <CardContent
-                            class="p-0 flex flex-col justify-center items-center h-full"
-                        >
-                            <div
-                                class="text-[9px] font-bold text-muted-foreground uppercase mb-0.5"
-                            >
-                                {$t("strategy.dashboard.stats.avgDurationLoss")}
-                            </div>
-                            <div class="text-sm font-black text-rose-500">
-                                {stats.avgDurationLoss}m
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card
-                        class="border shadow-sm bg-card/60 backdrop-blur-xl border-l-4 border-l-indigo-400 h-[80px]"
+                        <SystemMetric 
+                            label={$t("strategyDashboard.stats.avgDurationLoss")}
+                            value={`${stats.avgDurationLoss}m`}
+                            status="danger"
+                            class="w-full items-center"
+                        />
+                    </SystemCard>
+
+                    <SystemCard 
+                        status="info" 
+                        class="h-[80px] p-0 flex flex-col justify-center items-center overflow-hidden"
                     >
-                        <CardContent
-                            class="p-0 flex flex-col justify-center items-center h-full"
-                        >
-                            <div
-                                class="text-[9px] font-bold text-muted-foreground uppercase mb-0.5"
-                            >
-                                {$t(
-                                    "strategy.dashboard.stats.avgTimeBetweenTrades",
-                                )}
-                            </div>
-                            <div class="text-sm font-black text-blue-500">
-                                {stats.avgTimeBetweenTrades}d
-                            </div>
-                        </CardContent>
-                    </Card>
+                        <SystemMetric 
+                            label={$t("strategyDashboard.stats.avgTimeBetweenTrades")}
+                            value={`${stats.avgTimeBetweenTrades}d`}
+                            status="info"
+                            class="w-full items-center"
+                        />
+                    </SystemCard>
                 </div>
 
                 <!-- AI Executive Summary (12/12 pattern) -->
@@ -1110,7 +1040,7 @@
                             <h3
                                 class="text-sm font-semibold tracking-tight uppercase"
                             >
-                                {$t("strategy.dossier.context")}
+                                {$t("strategyDossier.context")}
                             </h3>
                         </div>
 
@@ -1119,7 +1049,7 @@
                             <div class="space-y-1">
                                 <Label
                                     class="text-[10px] text-muted-foreground uppercase font-bold"
-                                    >{$t("strategy.dossier.timeframes")}</Label
+                                    >{$t("strategyDossier.timeframes")}</Label
                                 >
                                 <div class="flex flex-wrap gap-1.5">
                                     {#each strategy.timeframes as tf}
@@ -1140,7 +1070,7 @@
                             <div class="space-y-1">
                                 <Label
                                     class="text-[10px] text-muted-foreground uppercase font-bold"
-                                    >{$t("strategy.dossier.indicators")}</Label
+                                    >{$t("strategyDossier.indicators")}</Label
                                 >
                                 <div class="flex flex-wrap gap-1.5">
                                     {#each strategy.indicators as ind}
@@ -1161,7 +1091,7 @@
                             <div class="space-y-1">
                                 <Label
                                     class="text-[10px] text-muted-foreground uppercase font-bold"
-                                    >{$t("strategy.dossier.assetTypes")}</Label
+                                    >{$t("strategyDossier.assetTypes")}</Label
                                 >
                                 <div class="flex flex-wrap gap-1.5">
                                     {#each strategy.asset_types as at}
@@ -1182,7 +1112,7 @@
                                 <Label
                                     class="text-[10px] text-muted-foreground uppercase font-bold"
                                     >{$t(
-                                        "strategy.dossier.specificAssets",
+                                        "strategyDossier.specificAssets",
                                     )}</Label
                                 >
                                 <div class="flex flex-wrap gap-1.5">
@@ -1194,7 +1124,7 @@
                                     {:else}
                                         <span
                                             class="text-xs text-muted-foreground"
-                                            >{$t("strategy.dossier.all")}</span
+                                            >{$t("strategyDossier.all")}</span
                                         >
                                     {/each}
                                 </div>
@@ -1211,7 +1141,7 @@
                             <h3
                                 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider"
                             >
-                                {$t("strategy.dossier.linkedMarkets")}
+                                {$t("strategyDossier.linkedMarkets")}
                             </h3>
                         </div>
                         <div class="flex flex-wrap gap-2">
@@ -1232,7 +1162,7 @@
                             {:else}
                                 <span class="text-xs text-muted-foreground"
                                     >{$t(
-                                        "strategy.dossier.noLinkedMarket",
+                                        "strategyDossier.noLinkedMarket",
                                     )}</span
                                 >
                             {/each}
@@ -1249,13 +1179,13 @@
                                 class="text-xs font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-2"
                             >
                                 <TrendingUp class="w-3 h-3" />
-                                {$t("strategy.dossier.entryTriggers")}
+                                {$t("strategyDossier.entryTriggers")}
                             </h4>
                             <div
                                 class="bg-background/50 p-3 rounded-md border min-h-[100px] text-xs whitespace-pre-line"
                             >
                                 {strategy.entry_criteria ||
-                                    $t("strategy.dossier.noCriteria")}
+                                    $t("strategyDossier.noCriteria")}
                             </div>
                         </CardContent>
                     </Card>
@@ -1267,13 +1197,13 @@
                                 class="text-xs font-bold uppercase tracking-wider text-rose-600 flex items-center gap-2"
                             >
                                 <Activity class="w-3 h-3" />
-                                {$t("strategy.dossier.exit")}
+                                {$t("strategyDossier.exit")}
                             </h4>
                             <div
                                 class="bg-background/50 p-3 rounded-md border min-h-[100px] text-xs whitespace-pre-line"
                             >
                                 {strategy.exit_criteria ||
-                                    $t("strategy.dossier.noCriteria")}
+                                    $t("strategyDossier.noCriteria")}
                             </div>
                         </CardContent>
                     </Card>
@@ -1285,13 +1215,13 @@
                                 class="text-xs font-bold uppercase tracking-wider text-blue-600 flex items-center gap-2"
                             >
                                 <Clock class="w-3 h-3" />
-                                {$t("strategy.dossier.management")}
+                                {$t("strategyDossier.management")}
                             </h4>
                             <div
                                 class="bg-background/50 p-3 rounded-md border min-h-[100px] text-xs whitespace-pre-line"
                             >
                                 {strategy.management_criteria ||
-                                    $t("strategy.dossier.noCriteria")}
+                                    $t("strategyDossier.noCriteria")}
                             </div>
                         </CardContent>
                     </Card>
@@ -1306,7 +1236,7 @@
                             class="text-xs font-bold uppercase tracking-wider text-amber-600 mb-2 flex items-center gap-2"
                         >
                             <Target class="w-3 h-3" />
-                            {$t("strategy.dossier.partials")}
+                            {$t("strategyDossier.partials")}
                         </h4>
                         <p class="text-xs whitespace-pre-line text-foreground">
                             {strategy.partial_description || "—"}
@@ -1317,7 +1247,7 @@
                 <!-- Visual Examples -->
                 <div class="space-y-3">
                     <h3 class="text-sm font-semibold tracking-tight">
-                        {$t("strategy.dossier.visualExamples")}
+                        {$t("strategyDossier.visualExamples")}
                     </h3>
                     <Separator />
                     {#if strategy.images.length > 0}
@@ -1346,7 +1276,7 @@
                         >
                             <ImageIcon class="w-6 h-6 mb-2 opacity-50" />
                             <span class="text-xs"
-                                >{$t("strategy.dossier.noImages")}</span
+                                >{$t("strategyDossier.noImages")}</span
                             >
                         </div>
                     {/if}
@@ -1389,6 +1319,7 @@
                     </p>
                 {/if}
             </div>
+
         {/if}
     </div>
 {/if}

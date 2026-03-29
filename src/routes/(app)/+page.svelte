@@ -22,14 +22,16 @@
   import QuickLog from "$lib/components/trades/QuickLog.svelte";
   import CurrencyTicker from "$lib/components/finance/CurrencyTicker.svelte";
   import OnboardingWizard from "$lib/components/dashboard/OnboardingWizard.svelte";
+  import SystemCard from "$lib/components/ui/system/SystemCard.svelte";
+  import SystemMetric from "$lib/components/ui/system/SystemMetric.svelte";
+  import SystemHeader from "$lib/components/ui/system/SystemHeader.svelte";
+  import SystemAICard from "$lib/components/ui/system/SystemAICard.svelte";
+  import MindsetSummaryCard from "$lib/components/dashboard/MindsetSummaryCard.svelte";
   import DailyReviewSheet from "$lib/components/trades/DailyReviewSheet.svelte";
   import ScoreBreakdownSheet from "$lib/components/gamification/ScoreBreakdownSheet.svelte";
   import { dailyReviewsStore } from "$lib/stores/daily-reviews.svelte";
   import { gamificationStore } from "$lib/stores/gamification.svelte";
   import {
-    TrendingUp,
-    TrendingDown,
-    Activity,
     Calendar,
     BarChart3,
     ShieldCheck,
@@ -45,7 +47,9 @@
     AlertTriangle,
     ShieldAlert,
     Flame,
-    Info
+    Info,
+    ChevronRight,
+    Globe
   } from "lucide-svelte";
   import { cn, parseSafeDate } from "$lib/utils";
   import {
@@ -111,15 +115,17 @@
   );
 
   const stats = $derived.by(() => {
-    return getDashboardStats(
+    const start = performance.now();
+    const result = getDashboardStats(
       filteredTrades,
       new Date(),
-      (t: any) => tradesStore.getConvertedTradeResult(
-          t,
-          accountsStore.accounts,
-          currenciesStore.currencies
-      )
+      (t: any) => t.processed_result_brl || 0
     );
+    const end = performance.now();
+    if (end - start > 16) {
+      console.warn(`[Dashboard] Slow stats calculation: ${(end - start).toFixed(2)}ms`);
+    }
+    return result;
   });
 
   const growthProgress = $derived.by(() => {
@@ -167,15 +173,31 @@
     </div>
   </div>
 {:else}
-  <div class="space-y-6">
-    <div class="px-4 pt-4 -mb-8">
+  <div class="space-y-4">
+    <div class="px-4 pt-2">
       <CurrencyTicker />
     </div>
 
-    {#if tradesStore.trades.length === 0}
+    {#if !tradesStore.isInitialLoading && tradesStore.trades.length === 0}
       <OnboardingWizard />
+    {:else if tradesStore.isInitialLoading}
+      <!-- HYDRA V4: LIGHTWEIGHT STRUCTURAL SKELETON -->
+      <div class="flex-1 flex flex-col space-y-8 p-4 md:p-8 min-h-screen animate-pulse">
+          <div class="h-8 w-64 bg-muted rounded-md mb-2"></div>
+          <div class="h-4 w-96 bg-muted/60 rounded-md"></div>
+          
+          <div class="h-32 w-full bg-card/40 rounded-xl border border-border/40"></div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="h-40 bg-card/60 rounded-xl border border-border/40"></div>
+              <div class="h-40 bg-card/60 rounded-xl border border-border/40"></div>
+              <div class="h-40 bg-card/60 rounded-xl border border-border/40"></div>
+          </div>
+          
+          <div class="h-24 w-full bg-card/40 rounded-xl border border-border/40"></div>
+      </div>
     {:else}
-      <div class="flex-1 flex flex-col space-y-8 p-4 md:p-8 min-h-screen">
+      <div class="flex-1 flex flex-col space-y-3 p-3 md:p-4 min-h-screen">
         <Dialog.Root bind:open={isNewTradeOpen}>
         <Dialog.Content
           class="max-w-3xl max-h-[85vh] p-0 border-0 bg-transparent shadow-none"
@@ -186,258 +208,214 @@
 
       <DailyReviewSheet bind:open={isReviewOpen} date={todayStr} />
 
-      <!-- TOP Navigation & Survivor Hub (Compact Header) -->
-      <div
-        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
-      >
-        <div class="space-y-0.5">
-          <h1 class="text-3xl font-bold tracking-tight text-foreground">
-            {$t("dashboard.title")}
-          </h1>
-          <div class="flex items-center gap-3">
-            <p class="text-sm text-muted-foreground">
-              {$t("dashboard.subtitle")}
-            </p>
-            <Separator orientation="vertical" class="h-4" />
-            <div class="flex items-center gap-2">
-              <p class="text-xs font-medium text-muted-foreground/80">
-                {$t("dashboard.terminalHub")}
-              </p>
-              <Select type="single" bind:value={selectedAccountId}>
-                <SelectTrigger class="w-[180px] h-8 text-xs font-medium">
-                  <div class="flex items-center gap-2">
-                    <Wallet class="w-3 h-3 text-muted-foreground shrink-0" />
-                    <span class="truncate">
-                      {selectedAccountId === "all"
-                        ? $t("general.all")
-                        : accountsStore.accounts.find(
-                            (a) => a.id === selectedAccountId,
-                          )?.nickname || $t("trades.filters.account")}
-                    </span>
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{$t("general.all")}</SelectItem>
-                  {#each accountsStore.accounts as acc}
-                    <SelectItem value={acc.id}>{acc.nickname}</SelectItem>
-                  {/each}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-4">
-          <Button
-            onclick={() => (isNewTradeOpen = true)}
-            class="bg-emerald-600 hover:bg-emerald-700 shadow-md gap-2 font-semibold px-6"
-          >
-            <Plus class="w-4 h-4" />
+      <!-- TOP Navigation & Survivor Hub (ULTRA COMPACT COCKPIT) -->
+      {#snippet dashboardActions()}
+        <div class="flex items-center gap-2">
+          <Button variant="outline" size="sm" onclick={() => isNewTradeOpen = true} class="text-[9px] font-black h-7 uppercase tracking-widest text-muted-foreground hover:text-foreground border-dashed bg-background/20 px-3">
+            {$t('dashboard.actions.detailedRegister')}
+          </Button>
+          <Button size="sm" href="/evolution" class="bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 text-[9px] font-black h-7 uppercase tracking-widest shadow-none gap-2 px-3">
+            <Brain class="w-3 h-3 shrink-0" />
+            {$t('dashboard.actions.evolutionJournal')}
+          </Button>
+          <Button size="sm" href="/risk-control" class="bg-indigo-600/10 text-indigo-500 hover:bg-indigo-600/20 border border-indigo-500/20 text-[9px] font-black h-7 uppercase tracking-widest shadow-none gap-2 px-3">
+            <ShieldCheck class="w-3 h-3 shrink-0" />
+            {$t('dashboard.actions.riskControlShort')}
+          </Button>
+          <Button onclick={() => (isNewTradeOpen = true)} size="sm" class="bg-emerald-600 hover:bg-emerald-700 shadow-lg text-[9px] font-black h-7 uppercase tracking-widest px-4 gap-1.5">
+            <Plus class="w-3 h-3" />
             {$t("dashboard.newTrade")}
           </Button>
         </div>
-      </div>
+      {/snippet}
 
-      <!-- BLOCO 5 - Ações Rápidas & Quick Log -->
-      <div class="mb-4 bg-card/60 rounded-xl p-5 border border-border/60 shadow-sm">
-        <QuickLog />
-        <div class="mt-5 flex flex-col sm:flex-row gap-3 justify-end items-center border-t border-border/40 pt-4">
-          <Button variant="outline" size="sm" onclick={() => isNewTradeOpen = true} class="w-full sm:w-auto text-[10px] font-bold h-8 uppercase tracking-widest text-muted-foreground hover:text-foreground border-dashed">
-            Registro Detalhado (Wizard)
-          </Button>
-          <Button size="sm" href="/evolution" class="w-full sm:w-auto bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 text-[10px] font-black h-8 uppercase tracking-widest shadow-none gap-2">
-            <Brain class="w-3.5 h-3.5 shrink-0" />
-            Diário de Evolução
-          </Button>
-          <Button size="sm" href="/risk-control" class="w-full sm:w-auto bg-indigo-600/10 text-indigo-500 hover:bg-indigo-600/20 border border-indigo-500/20 text-[10px] font-black h-8 uppercase tracking-widest shadow-none gap-2">
-            <ShieldCheck class="w-3.5 h-3.5 shrink-0" />
-            Cockpit Operacional
-          </Button>
-          {#if shouldShowReviewCta}
-            <Button size="sm" onclick={() => isReviewOpen = true} class="w-full sm:w-auto text-[10px] font-black h-8 uppercase tracking-widest shadow-none gap-2 border {hasReviewedToday ? 'bg-zinc-900 text-muted-foreground border-white/5 hover:bg-zinc-800' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-emerald-500/30 shadow-sm animate-pulse'}">
-                <BookOpen class="w-3.5 h-3.5 shrink-0" />
-                {hasReviewedToday ? "Revisão Concluída" : "Finalizar Pregão"}
-            </Button>
-          {/if}
-        </div>
-      </div>
-
-      <!-- BLOCO PROATIVO: ASSISTENTE DO TRADER -->
-      {#if gamificationStore.proactiveSignals.length > 0}
-      <div class="mb-4 space-y-3">
-        <h3 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest flex items-center gap-2 pl-1">
-          <Brain class="w-3.5 h-3.5" />
-          Assistente do Trader
-        </h3>
-        <div class="grid grid-cols-1 gap-3">
-          {#each gamificationStore.proactiveSignals.slice(0, 1) as signal}
-            <div class={cn(
-                "p-4 border border-border/50 rounded-xl flex items-start gap-4 transition-colors relative overflow-hidden",
-                signal.type === 'warning' ? "bg-rose-500/5 hover:bg-rose-500/10 border-rose-500/30" : 
-                signal.type === 'reminder' ? "bg-amber-500/5 hover:bg-amber-500/10 border-amber-500/30" : 
-                "bg-emerald-500/5 hover:bg-emerald-500/10 border-emerald-500/30"
-            )}>
-              <div class={cn(
-                  "p-2.5 rounded-full shrink-0 flex items-center justify-center",
-                  signal.type === 'warning' ? "bg-rose-500/20 text-rose-500" : 
-                  signal.type === 'reminder' ? "bg-amber-500/20 text-amber-500" : 
-                  "bg-emerald-500/20 text-emerald-500"
-              )}>
-                 {#if signal.type === 'warning'} <ShieldAlert class="w-5 h-5" />
-                 {:else if signal.type === 'reminder'} <AlertTriangle class="w-5 h-5" />
-                 {:else} <Zap class="w-5 h-5" /> {/if}
-              </div>
-              
-              <div class="flex-1 pt-0.5">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class={cn(
-                      "text-xs font-black uppercase tracking-widest",
-                      signal.type === 'warning' ? "text-rose-500" : signal.type === 'reminder' ? "text-amber-500" : "text-emerald-500"
-                  )}>
-                    {signal.title}
-                  </span>
-                  <Badge variant="outline" class="text-[8px] uppercase tracking-wider bg-background/50 border-border/40">{signal.type}</Badge>
-                </div>
-                <p class="text-xs font-medium text-foreground/80 leading-relaxed pr-6">
-                  {signal.message}
-                </p>
-              </div>
-            </div>
-          {/each}
-        </div>
-      </div>
-      {/if}
-
-      <!-- BLOCO 3: INSIGHT AUTOMÁTICO (Radar Comportamental Fase 5) -->
-      <div class="mb-4 space-y-3">
-        <h3 class="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2 pl-1">
-          <Brain class="w-3.5 h-3.5 text-indigo-500" />
-          Radar Comportamental (IA Heurística)
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {#each stats.insights as insight}
-            <div class={cn(
-                "p-4 border-l-4 border-y border-r border-border/50 rounded-r-xl rounded-l-sm flex flex-col gap-2 transition-colors",
-                insight.type === 'danger' ? "bg-rose-500/10 border-l-rose-500 hover:bg-rose-500/20" : 
-                insight.type === 'warning' ? "bg-amber-500/10 border-l-amber-500 hover:bg-amber-500/20" : 
-                "bg-emerald-500/10 border-l-emerald-500 hover:bg-emerald-500/20"
-            )}>
+      {#snippet dashboardLeading()}
+        <div class="flex items-center gap-3">
+          <Select type="single" bind:value={selectedAccountId}>
+            <SelectTrigger class="w-[140px] h-8 text-[10px] font-bold bg-background/50 border-border/30">
               <div class="flex items-center gap-2">
-                {#if insight.type === 'danger'} <ShieldAlert class="w-4 h-4 text-rose-500 shrink-0" />
-                {:else if insight.type === 'warning'} <AlertTriangle class="w-4 h-4 text-amber-500 shrink-0" />
-                {:else} <Zap class="w-4 h-4 text-emerald-500 shrink-0" /> {/if}
-                <span class={cn(
-                    "text-[10px] font-black uppercase tracking-widest drop-shadow-sm",
-                    insight.type === 'danger' ? "text-rose-500" : insight.type === 'warning' ? "text-amber-500" : "text-emerald-500"
-                )}>
-                  {insight.title}
+                <Wallet class="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                <span class="truncate uppercase tracking-tight">
+                  {selectedAccountId === "all"
+                    ? $t("general.all")
+                    : accountsStore.accounts.find((a) => a.id === selectedAccountId)?.nickname || $t("common.account")}
                 </span>
               </div>
-              <p class="text-[11px] font-medium text-foreground/90 leading-snug">
-                {insight.description}
-              </p>
-            </div>
-          {/each}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{$t("common.all")}</SelectItem>
+              {#each accountsStore.accounts as acc}
+                <SelectItem value={acc.id}>{acc.nickname}</SelectItem>
+              {/each}
+            </SelectContent>
+          </Select>
+          <Separator orientation="vertical" class="h-7 opacity-20" />
+        </div>
+      {/snippet}
+
+      <SystemCard status="primary" class="p-2.5 mb-4 bg-primary/5">
+        <SystemHeader 
+          title={$t("dashboard.title")}
+          subtitle={$t("dashboard.terminalHub")}
+          icon={Zap}
+          variant="page"
+          class="mb-0"
+          actions={dashboardActions}
+          leading={dashboardLeading}
+        />
+      </SystemCard>
+
+      <!-- OPERATIONAL COCKPIT STATUS (Dense Grid - Assistant + Radar) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-4">
+        <!-- Quick Log (5 cols) -->
+        <div class="lg:col-span-5 bg-card/60 rounded-xl p-3 border border-border/60 shadow-sm flex flex-col justify-center overflow-hidden">
+          <QuickLog />
+        </div>
+
+        <!-- AI Assistant & Radar (7 cols) -->
+        <div class="lg:col-span-7 flex flex-col gap-3">
+           <!-- AI ASSISTANT (Institutional Standard) -->
+           <SystemAICard 
+              title={$t('dashboard.sections.assistantLabel')}
+              status={gamificationStore.proactiveSignals.length > 0 ? "success" : "idle"}
+              class="flex-1"
+           >
+              {#snippet content()}
+                {#if gamificationStore.proactiveSignals.length > 0}
+                  {@const signal = gamificationStore.proactiveSignals[0]}
+                   <div class="flex items-center gap-3">
+                      <div class={cn(
+                          "w-8 h-8 rounded-full shrink-0 flex items-center justify-center border",
+                          signal.type === 'warning' ? "bg-rose-500/20 text-rose-500 border-rose-500/30" : 
+                          signal.type === 'reminder' ? "bg-amber-500/20 text-amber-500 border-amber-500/30" : 
+                          "bg-emerald-500/20 text-emerald-500 border-emerald-500/30"
+                      )}>
+                         {#if signal.type === 'warning'} <ShieldAlert class="w-4 h-4" />
+                         {:else if signal.type === 'reminder'} <AlertTriangle class="w-4 h-4" />
+                         {:else} <Zap class="w-4 h-4" /> {/if}
+                      </div>
+                      <div class="min-w-0">
+                        <h5 class="text-[10px] font-black uppercase text-foreground/90 leading-tight truncate">{signal.title}</h5>
+                        <p class="text-[10px] font-bold text-muted-foreground leading-tight line-clamp-1">{signal.message}</p>
+                      </div>
+                   </div>
+                {:else}
+                    <div class="flex items-center gap-3">
+                       <ShieldCheck class="w-4 h-4 text-emerald-500" />
+                       <span class="text-[10px] font-black uppercase text-emerald-500/80">{$t('dashboard.sections.allClear')}</span>
+                    </div>
+                {/if}
+              {/snippet}
+
+              {#snippet matrix()}
+                 <div class="flex flex-col gap-2">
+                    <SystemHeader 
+                      title={$t('dashboard.sections.behavioralRadarLabel')}
+                      icon={Brain}
+                      variant="compact"
+                      class="mb-0 text-indigo-500"
+                    />
+                    <div class="flex gap-2">
+                      {#if stats.insights.length > 0}
+                        {#each stats.insights.slice(0, 2) as insight}
+                          <div class={cn(
+                              "flex-1 p-1.5 rounded-lg border flex items-center gap-2 bg-background/40",
+                              insight.type === 'danger' ? "border-rose-500/20 text-rose-500" : 
+                              insight.type === 'warning' ? "border-amber-500/20 text-amber-500" : 
+                              "border-emerald-500/20 text-emerald-500"
+                          )} title={insight.description}>
+                            <span class="text-[8px] font-black uppercase tracking-tight truncate">{insight.title}</span>
+                          </div>
+                        {/each}
+                      {:else}
+                        <div class="w-full text-center py-1 opacity-40">
+                           <span class="text-[8px] font-bold text-muted-foreground tracking-widest uppercase">{$t('dashboard.sections.noAnomalies')}</span>
+                        </div>
+                      {/if}
+                    </div>
+                 </div>
+              {/snippet}
+           </SystemAICard>
         </div>
       </div>
 
-      <!-- BLOCOS 1, 2 e 4: Resumos Executivos de 3 segundos -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-        <!-- Bloco 1: Resultado do Dia -->
-        <Card class={cn("card-glass border-l-4 transition-all hover:border-l-8", stats.dayResult >= 0 ? "border-l-emerald-500" : "border-l-rose-500")}>
-           <CardContent class="p-5">
-              <div class="flex items-center justify-between">
-                <h3 class="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                  <Calendar class="w-3.5 h-3.5" />
-                  P&L de Hoje
-                </h3>
-              </div>
-              <p class={cn("text-4xl lg:text-5xl font-mono font-black mt-3 tracking-tighter truncate", stats.dayResult >= 0 ? "text-emerald-500" : "text-rose-500")}>
-                {formatCurrency(stats.dayResult)}
-              </p>
-              <div class="mt-4 flex items-center justify-between border-t border-border/40 pt-3">
-                <p class="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                  Frequência (Trades)
-                </p>
-                <Badge variant="outline" class="font-mono text-[10px] bg-background/50">{stats.tradesToday}</Badge>
-              </div>
-           </CardContent>
-        </Card>
+      <!-- EXECSummary Layout (Mindset + Multi-Metrics) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Mindset Summary (Reintegrated) -->
+        <MindsetSummaryCard />
 
-        <!-- Bloco 4: Resumo da Semana -->
-        <Card class={cn("card-glass border-l-4 transition-all hover:border-l-8", stats.weekResult >= 0 ? "border-l-emerald-500" : "border-l-rose-500")}>
-           <CardContent class="p-5">
-              <div class="flex items-center justify-between">
-                <h3 class="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                  <BarChart3 class="w-3.5 h-3.5" />
-                  P&L da Semana
-                </h3>
+        <!-- Rezult Cards -->
+        <SystemCard status={stats.dayResult >= 0 ? 'success' : 'danger'} class="transition-all hover:border-l-8">
+           <div class="p-2.5">
+              <SystemMetric 
+                label={$t('dashboard.stats.todayPnLShort')}
+                value={formatCurrency(stats.dayResult)} 
+                status={stats.dayResult >= 0 ? 'success' : 'danger'}
+                weight="black"
+                class="mt-1"
+              />
+              <div class="mt-3 flex items-center justify-between border-t border-border/20 pt-2">
+                <p class="text-[8px] font-black text-muted-foreground uppercase tracking-widest">{$t('dashboard.stats.tradeFrequency')}</p>
+                <Badge variant="outline" class="font-mono text-[9px] h-4 bg-background/50 px-1 border-0">{stats.tradesToday}</Badge>
               </div>
-              <p class={cn("text-3xl lg:text-4xl font-mono font-black mt-4 tracking-tighter truncate", stats.weekResult >= 0 ? "text-emerald-500" : "text-rose-500")}>
-                {formatCurrency(stats.weekResult)}
-              </p>
-              <div class="flex gap-2 mt-4 relative w-full h-7">
-                 <div class="flex-1 flex flex-col justify-center items-center rounded-sm bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 transition-colors hover:bg-emerald-500/20">
-                    <div class="flex items-center gap-1">
-                       <span class="text-[8px] uppercase font-black tracking-widest">Gain</span>
-                       <span class="text-[10px] font-mono font-bold">{stats.weekPositiveDays}d</span>
-                    </div>
-                 </div>
-                 <div class="flex-1 flex flex-col justify-center items-center rounded-sm bg-rose-500/10 border border-rose-500/20 text-rose-600 transition-colors hover:bg-rose-500/20">
-                    <div class="flex items-center gap-1">
-                       <span class="text-[8px] uppercase font-black tracking-widest">Loss</span>
-                       <span class="text-[10px] font-mono font-bold">{stats.weekNegativeDays}d</span>
-                    </div>
-                 </div>
-              </div>
-           </CardContent>
-        </Card>
-
-        <!-- Bloco 2: Trader Streaks & Score -->
-        <Card class="card-glass border-l-4 border-l-amber-500 relative overflow-hidden transition-all hover:border-l-8">
-           <div class="absolute -right-4 -top-8 rotate-12 opacity-5 pointer-events-none">
-             <Trophy class="w-32 h-32" />
            </div>
-           <CardContent class="p-5 relative z-10">
-              <h3 class="text-[10px] font-black text-amber-500 uppercase tracking-widest flex items-center gap-2">
-                <Flame class="w-4 h-4" />
-                Evolution & Streaks
-              </h3>
-              <div class="mt-4 space-y-3">
+        </SystemCard>
+
+        <SystemCard status={stats.weekResult >= 0 ? 'success' : 'danger'} class="transition-all hover:border-l-8">
+           <div class="p-2.5">
+              <SystemMetric 
+                label={$t('dashboard.stats.weekPnLShort')}
+                value={formatCurrency(stats.weekResult)}
+                status={stats.weekResult >= 0 ? 'success' : 'danger'}
+                weight="black"
+                class="mt-1"
+              />
+              <div class="flex gap-1.5 mt-3 relative w-full h-5">
+                 <div class="flex-1 flex flex-col justify-center items-center rounded-sm bg-emerald-500/10 border border-emerald-500/20 text-emerald-600">
+                    <div class="flex items-center gap-1">
+                       <span class="text-[7px] uppercase font-black tracking-widest">{$t('dashboard.stats.gainLabel')}</span>
+                       <span class="text-[9px] font-mono font-bold">{stats.weekPositiveDays}d</span>
+                    </div>
+                 </div>
+                 <div class="flex-1 flex flex-col justify-center items-center rounded-sm bg-rose-500/10 border border-rose-500/20 text-rose-600">
+                    <div class="flex items-center gap-1">
+                       <span class="text-[7px] uppercase font-black tracking-widest">{$t('dashboard.stats.lossLabel')}</span>
+                       <span class="text-[9px] font-mono font-bold">{stats.weekNegativeDays}d</span>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </SystemCard>
+
+        <SystemCard status="warning" class="relative overflow-hidden transition-all hover:border-l-8">
+           <div class="p-2.5 relative z-10">
+               <SystemHeader 
+                 title={$t('dashboard.stats.streaks')}
+                 icon={Flame}
+                 variant="compact"
+                 class="mb-2 text-amber-500"
+               />
+              <div class="mt-2 space-y-1.5">
                 <button 
-                  class="w-full flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm hover:bg-amber-500/5 hover:border-amber-500/30 transition-colors group cursor-pointer"
+                  class="w-full flex items-center justify-between bg-background/40 p-1 rounded-md border border-border/20 backdrop-blur-sm hover:bg-amber-500/5 transition-colors group"
                   onclick={() => isScoreBreakdownOpen = true}
                 >
-                  <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase group-hover:text-amber-500 transition-colors">
-                    Rolling Score (30T)
-                  </span>
-                  <div class="flex items-center gap-2">
-                      <span class="font-mono font-bold text-amber-400 text-xs bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{gamificationStore.scoreStats.score.toFixed(0)}</span>
-                      <Info class="w-3 h-3 text-muted-foreground/50 group-hover:text-amber-500 transition-colors" />
+                  <span class="text-[8px] font-black tracking-widest text-muted-foreground uppercase group-hover:text-amber-500">{$t('dashboard.stats.rollingScore')}</span>
+                  <div class="flex items-center gap-1.5">
+                      <span class="font-mono font-bold text-amber-400 text-[9px] bg-amber-500/10 px-1.5 rounded border border-amber-500/20">{gamificationStore.scoreStats.score.toFixed(0)}</span>
                   </div>
                 </button>
-                <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
-                  <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase">
-                    Controle Emocional
-                  </span>
-                  <span class="font-mono font-bold {gamificationStore.streaks.emotionalControlStreak > 0 ? 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' : 'text-muted-foreground bg-muted border-muted-foreground/20'} text-xs px-2 py-0.5 rounded border">{gamificationStore.streaks.emotionalControlStreak}d</span>
+                <div class="flex items-center justify-between bg-background/40 p-1 rounded-md border border-border/20">
+                  <span class="text-[8px] font-black tracking-widest text-muted-foreground uppercase">{$t('dashboard.stats.emotionalControl')}</span>
+                  <span class="font-mono font-bold {gamificationStore.streaks.emotionalControlStreak > 0 ? 'text-indigo-400' : 'text-muted-foreground/40'} text-[9px]">{gamificationStore.streaks.emotionalControlStreak}d</span>
                 </div>
-                <div class="flex items-center justify-between bg-background/40 p-2.5 rounded-md border border-border/40 backdrop-blur-sm">
-                  <span class="flex items-center gap-2 text-[9px] font-black tracking-widest text-muted-foreground uppercase">
-                    Disciplina Inquebrável
-                  </span>
-                  <span class="font-mono font-bold {gamificationStore.streaks.disciplineStreak > 0 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-muted-foreground bg-muted border-muted-foreground/20'} text-xs px-2 py-0.5 rounded border">{gamificationStore.streaks.disciplineStreak}d</span>
-                </div>
-                <!-- Secondary Streak -->
-                <div class="flex items-center justify-between bg-background/40 p-2 opacity-70 rounded-md border border-border/40 backdrop-blur-sm">
-                  <span class="flex items-center gap-2 text-[8px] font-black tracking-widest text-muted-foreground uppercase">
-                    Dias de Lucro (Secundário)
-                  </span>
-                  <span class="font-mono font-bold {gamificationStore.streaks.greenStreak > 0 ? 'text-emerald-400/80 bg-emerald-500/5' : 'text-muted-foreground/50'} text-[10px] px-1.5 py-0.5 rounded border border-transparent">{gamificationStore.streaks.greenStreak}d</span>
+                <div class="flex items-center justify-between bg-background/40 p-1 rounded-md border border-border/20">
+                  <span class="text-[8px] font-black tracking-widest text-muted-foreground uppercase">{$t('dashboard.stats.unbreakableDiscipline')}</span>
+                  <span class="font-mono font-bold {gamificationStore.streaks.disciplineStreak > 0 ? 'text-emerald-400' : 'text-muted-foreground/40'} text-[9px]">{gamificationStore.streaks.disciplineStreak}d</span>
                 </div>
               </div>
-           </CardContent>
-        </Card>
+           </div>
+        </SystemCard>
       </div>
       </div>
     {/if}

@@ -49,7 +49,7 @@ export const setupI18n = async () => {
     });
 
     // EN-US Modules
-    register('en', async () => {
+    register('en-US', async () => {
         const modules = await Promise.all([
             import('./locales/en-US/common.json'),
             import('./locales/en-US/navigation.json'),
@@ -64,7 +64,7 @@ export const setupI18n = async () => {
             import('./locales/en-US/ai.json'),
             import('./locales/en-US/evolution.json')
         ]);
-        return safeMerge('en', ...modules);
+        return safeMerge('en-US', ...modules);
     });
 
     // ES-ES Modules

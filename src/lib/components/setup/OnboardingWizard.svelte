@@ -347,7 +347,7 @@
                         <p
                             class="text-[9px] text-muted-foreground uppercase tracking-widest font-black opacity-70"
                         >
-                            Setup Engine v1.0
+                            {$t("onboarding.wizard_extra.setup_engine")}
                         </p>
                     </div>
                 </div>
@@ -357,7 +357,7 @@
                         <p
                             class="text-[9px] font-black text-muted-foreground uppercase tracking-widest"
                         >
-                            {$t("general.progress")}
+                            {$t("common.progress")}
                         </p>
                         <p class="text-xs font-bold">
                             {step}
@@ -453,7 +453,7 @@
                                     <p
                                         class="text-[10px] font-black uppercase tracking-[0.2em] text-center text-muted-foreground mb-4"
                                     >
-                                        SELECIONE O TEMA VISUAL
+                                        {$t("onboarding.wizard_extra.select_theme")}
                                     </p>
                                     <div class="grid grid-cols-2 gap-4">
                                         <button
@@ -528,12 +528,12 @@
                                     <div class="space-y-2">
                                         <Label
                                             class="text-[10px] font-black uppercase tracking-widest"
-                                            >E-mail</Label
+                                            >{$t("onboarding.wizard_extra.email")}</Label
                                         >
                                         <Input
                                             type="email"
                                             bind:value={formData.email}
-                                            placeholder="seu@email.com"
+                                            placeholder={$t("onboarding.wizard_extra.email_placeholder")}
                                             class="h-11"
                                         />
                                     </div>
@@ -557,7 +557,7 @@
                                         <div class="space-y-2">
                                             <Label
                                                 class="text-[10px] font-black uppercase tracking-widest text-primary"
-                                                >Confirmar Senha</Label
+                                                >{$t("onboarding.wizard_extra.confirm_password")}</Label
                                             >
                                             <Input
                                                 type="password"
@@ -606,7 +606,7 @@
                                         navigator.clipboard.writeText(
                                             recoveryKey,
                                         );
-                                        toast.success("Copiado!");
+                                        toast.success($t("onboarding.wizard_extra.copied"));
                                     }}
                                     onkeydown={(e) => {
                                         if (
@@ -616,7 +616,7 @@
                                             navigator.clipboard.writeText(
                                                 recoveryKey,
                                             );
-                                            toast.success("Copiado!");
+                                            toast.success($t("onboarding.wizard_extra.copied"));
                                         }
                                     }}
                                 >
@@ -1122,7 +1122,7 @@
             <p
                 class="text-[8px] font-black text-muted-foreground uppercase tracking-[0.4em] opacity-40"
             >
-                © 2026 TRADERLOG PRO · JOURNAL ENGINE
+                {$t("onboarding.wizard_extra.copyright")}
             </p>
         </footer>
     </div>

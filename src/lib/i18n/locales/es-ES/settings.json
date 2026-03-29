@@ -509,7 +509,8 @@
                     "points": "Puntos"
                 },
                 "save": "Guardar",
-                "unitLabel": "Etiqueta de Unidad"
+                "unitLabel": "Etiqueta de Unidad",
+                "unitLabelPlaceholder": "Ej: Pts, Contratos, etc."
             },
             "labels": {
                 "brokerageProfile": "Perfil de Broker",
@@ -926,7 +927,10 @@
                 "risk": "Gestiona límites de riesgo",
                 "strategies": "Gestiona tus estrategias",
                 "tags": "Gestiona etiquetas",
-                "timeframes": "Gestiona temporalidades"
+                "timeframes": "Gestiona temporalidades",
+                "asset-profiles": "Configura límites y reglas específicas para cada activo.",
+                "risk-management": "Configura su plan de riesgo global y límites de pérdida.",
+                "growth-plans": "Crea planos con progresión y regresión automática de fases."
             },
             "emotionalStates": "Estados Emocionales",
             "fees": "Tasas",
@@ -955,8 +959,11 @@
             "strategies": "Estrategias",
             "tags": "Etiquetas",
             "timeframes": "Timeframes",
+            "asset-profiles": "Perfiles de Activos",
             "assetProfiles": "Perfiles de Activos",
+            "risk-management": "Gestión de Riesgos",
             "riskManagement": "Gestión de Riesgos",
+            "growth-plans": "Planes de Crecimiento",
             "growthPlans": "Planes de Crecimiento"
         },
         "profile": {

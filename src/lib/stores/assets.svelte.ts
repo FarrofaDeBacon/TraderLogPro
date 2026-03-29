@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { safeInvoke } from "$lib/services/tauri";
 import type { Asset, AssetType, Strategy } from "$lib/types";
 
 export class AssetsStore {
@@ -6,7 +6,7 @@ export class AssetsStore {
 
     async loadAssets(): Promise<void> {
         try {
-            const assetsRes = await invoke("get_assets") as Asset[];
+            const assetsRes = await safeInvoke<Asset[]>("get_assets", "Assets") || [];
             if (assetsRes) {
                 this.assets = assetsRes.map(a => ({
                     ...a,
@@ -26,7 +26,7 @@ export class AssetsStore {
 
         for (const asset of this.assets) {
             try {
-                await invoke("save_asset", { asset: $state.snapshot(asset) });
+                await safeInvoke("save_asset", { asset: $state.snapshot(asset) });
                 successCount++;
             } catch (e) {
                 failCount++;
@@ -68,7 +68,7 @@ export class AssetsStore {
             return { success: false, error: "This Asset is specifically referenced in Strategies." };
         }
         try {
-            await invoke("delete_asset", { id });
+            await safeInvoke("delete_asset", { id });
             this.assets = this.assets.filter(a => a.id !== id);
             return { success: true };
         } catch (e) {
