@@ -492,14 +492,6 @@
                   {/snippet}
               </SystemHeader>
 
-              <div class="p-2 mb-2 bg-rose-500/20 text-rose-300 font-mono text-[8px] rounded border border-rose-500/30">
-                [SYSTEM METRICS] 
-                total_trades={tradesStore.trades.length} | 
-                cockpit_cnt={growthEval?.metrics?.tradeCount ?? 'N/A'} | 
-                net={growthEval?.metrics?.netPnL ?? 'N/A'} |
-                dateFilter={(riskStore.resolvedGrowthContext?.resolution?.phaseStartedAt) || 'NONE'}
-              </div>
-
               <div class="grid gap-2">
                 {#if growthEval?.advanceConditions}
                     {#each growthEval.advanceConditions as cond, i (i)}
