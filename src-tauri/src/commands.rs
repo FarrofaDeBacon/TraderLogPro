@@ -1414,6 +1414,51 @@ pub async fn delete_risk_profile(db: State<'_, DbState>, id: String) -> Result<(
     delete_record(&db.0, "risk_profile", &clean_id).await
 }
 
+// --- Asset Risk Profiles ---
+
+#[tauri::command]
+pub async fn get_asset_risk_profiles(db: State<'_, DbState>) -> Result<Vec<AssetRiskProfile>, String> {
+    println!("[COMMAND] get_asset_risk_profiles called");
+    let mut result = db.0
+        .query("SELECT *, type::string(id) as id FROM asset_risk_profile")
+        .await
+        .map_err(|e| e.to_string())?;
+    let profiles: Vec<AssetRiskProfile> = result.take(0).map_err(|e| {
+        println!("[ERROR] get_asset_risk_profiles deserialization failure: {}", e);
+        e.to_string()
+    })?;
+    println!("[COMMAND] get_asset_risk_profiles returning {} items", profiles.len());
+    Ok(profiles)
+}
+
+#[tauri::command]
+pub async fn save_asset_risk_profile(db: State<'_, DbState>, profile: AssetRiskProfile) -> Result<(), String> {
+    let id = profile.id.clone().unwrap_or_else(|| {
+        // Gerar ID único sem uuid crate
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let ts = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_nanos();
+        format!("asset_risk_profile:arp_{}", ts)
+    });
+    let mut json = serde_json::to_value(&profile).map_err(|e| e.to_string())?;
+    if let Some(obj) = json.as_object_mut() {
+        obj.remove("id");
+    }
+    let clean_id = id.split(':').last().unwrap_or(id.as_str())
+        .replace("⟨", "")
+        .replace("⟩", "");
+    println!("[COMMAND] save_asset_risk_profile id={}", clean_id);
+    upsert_record(&db.0, "asset_risk_profile", &clean_id, json).await
+}
+
+#[tauri::command]
+pub async fn delete_asset_risk_profile(db: State<'_, DbState>, id: String) -> Result<(), String> {
+    let clean_id = id.split(':').last().unwrap_or(&id)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    println!("[COMMAND] delete_asset_risk_profile id={}", clean_id);
+    delete_record(&db.0, "asset_risk_profile", &clean_id).await
+}
+
 // --- Growth Plans ---
 
 #[tauri::command]
