@@ -34,8 +34,10 @@
       TrendingDown,
       Timer,
       ArrowUpCircle,
-      ArrowDownCircle
+      ArrowDownCircle,
+      RotateCcw
   } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
   import { adaptGrowthPhaseToDomain } from "$lib/domain/risk/risk-adapters";
   import * as Select from "$lib/components/ui/select";
   import { Button } from "$lib/components/ui/button";
@@ -53,6 +55,7 @@
   let growthContext = $derived(riskStore.resolvedGrowthContext);
 
   let dailyDrawdown = $derived(cockpit?.dailyRiskStatus.currentDailyDrawdown || 0);
+  let growthEval = $derived(riskStore.riskCockpitState?.growthEvaluation || riskStore.globalGrowthEvaluation);
   let netPnL = $derived(growthEval?.metrics?.netPnL || 0);
   let isBlocked = $derived(!validation?.allowed || cockpit?.dailyRiskStatus.isLocked || cockpit?.dailyRiskStatus.dailyLossHit);
   let hasWarnings = $derived(validation?.warnings && validation.warnings.length > 0);
@@ -77,7 +80,7 @@
      if (tradesStore.trades.length === 0) {
          console.warn("[Cockpit] Trades vazios na montagem local, disparando reload defensivo!");
          tradesStore.loadTrades();
-         if (!appStore.hasLoadedData) appStore.loadData();
+         if (!appStore.isInitialLoadComplete) appStore.loadData();
      }
   });
 
@@ -133,14 +136,13 @@
   let nextPhase = $derived.by((): DomainGrowthPhase | null => {
      return riskStore.nextGrowthPhase || null;
   });
-  let growthEval = $derived(riskStore.riskCockpitState?.growthEvaluation || riskStore.globalGrowthEvaluation);
   
   let profitGoal = $derived(
       activePhase?.conditionsToAdvance?.find((c: any) => c.metric === 'profit_target' || c.metric === 'target_financial')?.value || 0
   );
   
   let currentLimit = $derived(cockpit?.dailyRiskStatus.effectiveMaxDailyLoss || activeProfile?.max_daily_loss || 0);
-  let limitLabel = $derived(growthEval ? "Limite do Estágio Atual" : $t('risk.cockpit.stats.globalLimit'));
+  let limitLabel = $derived(growthEval ? $t('risk.cockpit.stats.stageLimit') : $t('risk.cockpit.stats.globalLimit'));
   let ptcLoss = $derived(Math.min((dailyDrawdown / (currentLimit || 1)) * 100, 100));
   let isLossHot = $derived(ptcLoss > 80);
 
@@ -159,8 +161,8 @@
   <SystemCard status="primary" class="flex flex-col md:flex-row justify-between items-center gap-4 p-3 shadow-2xl bg-primary/5">
     <div class="flex items-center gap-6">
       <SystemHeader 
-        title={$t('risk.dashboard.title') || 'RISK CONTROL'}
-        subtitle={$t('risk.dashboard.subtitle')}
+        title={$t('risk.cockpit.title')}
+        subtitle={$t('risk.cockpit.subtitle')}
         icon={Shield}
         variant="page"
         class="mb-0"
@@ -185,14 +187,14 @@
               <div class="flex items-center gap-2">
                 <Layers class="w-3 h-3" />
                 <span>
-                    {res.source === 'scope' ? `GRUPO: ${res.scopeName}` : `MODO GLOBAL: ${res.currentPhaseName}`}
+                    {res.source === 'scope' ? `${$t('risk.cockpit.group').toUpperCase()}: ${res.scopeName}` : `${$t('risk.cockpit.globalMode').toUpperCase()}: ${res.currentPhaseName}`}
                 </span>
               </div>
               
               {#if res.source === 'scope' && res.assetIds.length > 0}
                 <Separator orientation="vertical" class="h-3 opacity-20 bg-emerald-500" />
                 <div class="flex items-center gap-1.5 overflow-hidden max-w-[200px]">
-                  <span class="text-[8px] opacity-60">ATIVOS NO ESCOPO:</span>
+                  <span class="text-[8px] opacity-60">{$t('risk.cockpit.assetsInScope').toUpperCase()}:</span>
                   {#each res.assetIds as aid}
                     <span class="text-[8px] font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/10">
                       {assetsStore.assets.find(a => a.id === aid)?.symbol}
@@ -218,7 +220,7 @@
             </Select.Trigger>
             <Select.Content class="bg-card border-border/60">
                 <Select.Group>
-                    <Select.Label class="text-[9px] font-black uppercase tracking-widest opacity-40 py-2">MERCADO ATIVO</Select.Label>
+                    <Select.Label class="text-[9px] font-black uppercase tracking-widest opacity-40 py-2">{$t('risk.cockpit.activeMarket').toUpperCase()}</Select.Label>
                     {#each assetsStore.assets as asset}
                         <Select.Item value={asset.id} class="text-[10px] font-bold uppercase tracking-widest">
                             {asset.symbol} - {asset.name}
@@ -381,7 +383,7 @@
                   <span class="text-3xl font-black font-mono text-white tracking-tighter">
                     {riskStore.positionSizingResult.allowedContracts}
                   </span>
-                  <span class="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-40">{$t('risk.finance.contracts').toUpperCase()}</span>
+                  <span class="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-40">{$t('risk.plan.finance.contracts').toUpperCase()}</span>
                 </div>
               {/if}
             {:else}
@@ -428,7 +430,7 @@
                   <div class="flex items-center gap-2">
                     <Layers class={cn("w-4 h-4", growthEval?.phaseStatus === 'maintenance' ? "text-indigo-400" : "text-emerald-400")} />
                     <span class={cn("text-[10px] font-black uppercase tracking-[0.2em]", growthEval?.phaseStatus === 'maintenance' ? "text-indigo-400/80" : "text-emerald-400/80")}>
-                      {$t('risk.cockpit.stats.current_phase')}
+                      {$t('risk.cockpit.stats.currentPhase')}
                       <span class="opacity-30 ml-2">[{activePhase?.level || 1} / {(riskStore.resolvedGrowthContext?.resolution.totalPhases || 1)}]</span>
                     </span>
                   </div>
@@ -445,34 +447,51 @@
                     onclick={() => riskStore.promotePhase()}
                   >
                     <TrendingUp class="w-3 h-3 mr-2" />
-                    {$t('risk.evolution.promote')}
+                    {$t('risk.growth.actions.promote')}
                   </Button>
-                {:else if growthEval?.phaseStatus === 'max_reached'}
+                  {:else if growthEval?.phaseStatus === 'max_reached'}
                     <Badge variant="outline" class="border-amber-500/20 text-amber-400 text-[9px] font-black uppercase tracking-widest py-1 bg-amber-500/5">
-                        {$t('risk.cockpit.status.phase_max_reached')}
+                        {$t('risk.states.phaseMaxReached')}
                     </Badge>
-                {:else if growthEval?.phaseStatus === 'protected'}
+                  {:else if growthEval?.phaseStatus === 'protected'}
                     <Badge variant="outline" class="border-rose-500/20 text-rose-400 text-[9px] font-black uppercase tracking-widest py-1 bg-rose-500/5">
-                        {$t('risk.status_list.regression_triggered')}
+                        {$t('risk.states.violation')}
                     </Badge>
                 {:else}
-                    <Badge variant="outline" class="border-white/10 text-muted-foreground/40 text-[9px] font-black uppercase tracking-widest py-1">
-                        {$t('risk.evolution.stages.should_remain')}
-                    </Badge>
+                    <div class="flex gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            class="h-8 px-3 text-[9px] font-black uppercase tracking-widest border-rose-500/10 text-rose-500/40 hover:bg-rose-500/10 hover:text-rose-400 transition-all"
+                            onclick={() => {
+                                if (confirm($t('risk.messages.restartConfirm'))) {
+                                    riskStore.restartGrowthPlan();
+                                    toast.success($t('risk.messages.restartSuccess'));
+                                }
+                            }}
+                        >
+                            <RotateCcw class="w-3 h-3 mr-2" />
+                            {$t('risk.growth.actions.restart')}
+                        </Button>
+
+                        <Badge variant="outline" class="border-white/10 text-muted-foreground/40 text-[9px] font-black uppercase tracking-widest py-1 h-8">
+                            {$t('risk.desk.progression.should_remain')}
+                        </Badge>
+                    </div>
                 {/if}
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-1">
-                    <p class="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest">Lotes Permitidos</p>
-                    <p class="text-lg font-black font-mono text-white">{activePhase?.maxContracts || '0'} <span class="text-[10px] opacity-40">CONTRATOS</span></p>
+                    <p class="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest">{$t('risk.growth.planName')}</p>
+                    <p class="text-lg font-black font-mono text-white">{activePhase?.maxContracts || '0'} <span class="text-[10px] opacity-40">{$t('risk.plan.finance.contracts').toUpperCase()}</span></p>
                 </div>
                 <div class="space-y-1 text-right">
                     <p class="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest">
-                        {growthEval?.phaseStatus === 'max_reached' ? $t('risk.cockpit.status.maintenance_mode') : 'Objetivo de Lucro'}
+                        {growthEval?.phaseStatus === 'max_reached' ? $t('risk.cockpit.status.maintenanceMode') : $t('risk.cockpit.stats.goal')}
                     </p>
                     <p class={cn("text-lg font-black font-mono", growthEval?.phaseStatus === 'maintenance' ? "text-indigo-400" : "text-emerald-400")}>
-                        {growthEval?.phaseStatus === 'max_reached' ? 'ESTÁVEL' : formatValue(profitGoal)}
+                        {growthEval?.phaseStatus === 'max_reached' ? $t('risk.states.phaseMaxReached').toUpperCase() : formatValue(profitGoal)}
                     </p>
                 </div>
               </div>
@@ -481,13 +500,13 @@
              <!-- CAMADA 2: MISSÕES / CHECKLIST DE CRITÉRIOS (Layer 3) -->
             <div class="space-y-3 flex-1 flex flex-col pt-1">
               <SystemHeader 
-                  title={growthEval?.phaseStatus === 'max_reached' ? "MANUTENÇÃO DE CONSISTÊNCIA" : $t('risk.cockpit.sections.pendingMissions')}
+                  title={growthEval?.phaseStatus === 'max_reached' ? $t('risk.cockpit.status.maintenanceMode').toUpperCase() : $t('risk.cockpit.sections.pendingMissions')}
                   icon={growthEval?.phaseStatus === 'max_reached' ? ShieldCheck : Activity}
                   class="mb-0 {growthEval?.phaseStatus === 'maintenance' ? 'text-indigo-400/70' : 'text-emerald-500/70'}"
               >
                   {#snippet actions()}
                       <span class="text-[8px] font-black text-muted-foreground opacity-30 uppercase tracking-widest">
-                        {growthEval?.phaseStatus === 'max_reached' ? "AUDITORIA CONTÍNUA" : "REQUISITOS DE EVOLUÇÃO"}
+                        {growthEval?.phaseStatus === 'max_reached' ? $t('risk.states.continuousAudit') : $t('risk.states.evolutionRequirements')}
                       </span>
                   {/snippet}
               </SystemHeader>
@@ -512,7 +531,7 @@
                                         {$t(cond.label_key)}
                                     </span>
                                     <span class="text-[9px] font-bold text-muted-foreground/60 uppercase">
-                                        {$t('risk.evolution.growthPlan')}
+                                        {$t('risk.growth.title')}
                                     </span>
                                 </div>
                             </div>
@@ -527,7 +546,7 @@
                                          (cond.current || 0)}
                                     </span>
                                     <span class="text-[8px] font-black text-muted-foreground/30 uppercase tracking-tighter">
-                                        META: {cond.metric.includes('win_rate') ? (cond.target || 0).toFixed(1) + '%' : 
+                                        {$t('risk.cockpit.stats.goal')}: {cond.metric.includes('win_rate') ? (cond.target || 0).toFixed(1) + '%' : 
                                                cond.metric.includes('profit') || cond.metric.includes('target') ? formatValue(cond.target || 0) : 
                                                (cond.target || 0)}
                                     </span>
@@ -541,8 +560,8 @@
                         <div class="p-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center gap-3 animate-pulse">
                             <ShieldAlert class="w-5 h-5 text-rose-500" />
                             <div class="flex flex-col">
-                                <span class="text-[10px] font-black text-rose-400 uppercase tracking-widest">{$t('risk.status_list.regression_triggered')}</span>
-                                <span class="text-[9px] font-bold text-rose-500/60 uppercase">Motivo: {$t(growthEval.regressionReasonKey || 'risk.status_list.stable')}</span>
+                                <span class="text-[10px] font-black text-rose-400 uppercase tracking-widest">{$t('risk.states.violation')}</span>
+                                <span class="text-[9px] font-bold text-rose-500/60 uppercase">{$t('risk.states.reason')}: {$t(growthEval.regressionReasonKey || 'risk.states.stable')}</span>
                             </div>
                         </div>
                     {/if}
@@ -572,18 +591,18 @@
                       <div class="flex justify-between items-center mb-2">
                           <div class="flex items-center gap-2">
                               <ChevronRight class="w-3.5 h-3.5 text-indigo-400/60" />
-                              <span class="text-[8px] font-black uppercase tracking-[0.3em] text-indigo-400/40">{$t('risk.cockpit.stats.next_phase')}</span>
+                              <span class="text-[8px] font-black uppercase tracking-[0.3em] text-indigo-400/40">{$t('risk.cockpit.stats.nextPhase')}</span>
                           </div>
                       </div>
                       <div class="flex justify-between items-baseline">
                           <h4 class="text-sm font-black text-indigo-300 uppercase tracking-widest leading-none">{nextPhase.name}</h4>
                           <div class="flex gap-4">
                               <div class="text-right">
-                                  <span class="text-[8px] font-bold text-muted-foreground/30 uppercase block">Lotes</span>
+                                  <span class="text-[8px] font-bold text-muted-foreground/30 uppercase block">{$t('risk.plan.finance.contracts')}</span>
                                   <span class="text-xs font-black font-mono text-indigo-200">{nextPhase.maxContracts}</span>
                               </div>
                               <div class="text-right">
-                                  <span class="text-[8px] font-bold text-muted-foreground/30 uppercase block">Meta</span>
+                                  <span class="text-[8px] font-bold text-muted-foreground/30 uppercase block">{$t('risk.cockpit.stats.goal')}</span>
                                   <span class="text-xs font-black font-mono text-indigo-200">
                                       {formatValue(nextPhase.conditionsToAdvance?.find((c: any) => c.metric === 'profit_target' || c.metric === 'target_financial')?.value || 0)}
                                   </span>
@@ -655,7 +674,7 @@
               {$t('risk.cockpit.supervisor.stable')}
             {/if}
           </p>
-          <p class="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-40">{$t('risk.cockpit.status.aiEngineStatus')}</p>
+          <p class="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-40">{$t('risk.states.aiEngineStatus')}</p>
         </div>
         
         <div class="flex items-center gap-2 opacity-20 group-hover:opacity-50 transition-all duration-700">

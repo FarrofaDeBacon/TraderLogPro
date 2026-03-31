@@ -20,7 +20,7 @@
         Link,
         ChevronRight,
     } from "lucide-svelte";
-    import { t } from "svelte-i18n";
+    import { t, locale } from "svelte-i18n";
     import type { RiskProfile } from "$lib/types";
     import * as Tabs from "$lib/components/ui/tabs";
     import * as Card from "$lib/components/ui/card";
@@ -138,30 +138,28 @@
     const accountTypes = $derived([
         {
             value: "All",
-            label: $t("settings.risk.accountTypes.All") || "Todas as Contas",
+            label: $t("risk.plan.applicability.all"),
         },
         {
             value: "Prop",
-            label: $t("settings.risk.accountTypes.Prop") || "Mesa Proprietária",
+            label: $t("risk.plan.applicability.prop"),
         },
         {
             value: "Real",
-            label: $t("settings.risk.accountTypes.Real") || "Conta Real",
+            label: $t("risk.plan.applicability.real"),
         },
         {
             value: "Demo",
-            label: $t("settings.risk.accountTypes.Demo") || "Conta Demo",
+            label: $t("risk.plan.applicability.demo"),
         },
         {
             value: "Specific",
-            label:
-                $t("settings.risk.accountTypes.Specific") ||
-                "Specific Accounts",
+            label: $t("risk.plan.applicability.specific"),
         },
     ]);
 
     const growthPlanOptions = $derived([
-        { value: "none", label: $t("risk.evolution.none") },
+        { value: "none", label: $t("risk.growth.none") },
         ...riskSettingsStore.growthPlans.map(p => ({ value: p.id, label: p.name }))
     ]);
 
@@ -200,6 +198,12 @@
         return 0;
     });
 
+    const getCapitalSourceName = (source: string) => {
+        if (source === 'Fixed') return $t('risk.plan.finance.fixedValue');
+        if (source === 'LinkedAccount') return $t('risk.plan.finance.linkAccount');
+        return source;
+    };
+
     const currencyCode = $derived(
         formData.linked_account_id
         ? accountsStore.accounts.find(a => a.id === formData.linked_account_id)?.currency || 'BRL'
@@ -213,7 +217,7 @@
     {#if !initialData}
         <div class="space-y-2 pb-2 bg-muted/20 p-4 rounded-xl border border-border/50">
             <Label class="text-xs text-muted-foreground uppercase font-bold">
-                {$t("risk.finance.baseTemplate")}
+                {$t("risk.plan.finance.baseTemplate")}
             </Label>
             <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
                 <Select.Root
@@ -228,15 +232,15 @@
                     }}
                 >
                     <Select.Trigger class="w-full md:w-[350px] bg-background">
-                        {$t("risk.finance.startBlank")}
+                        {$t("risk.plan.finance.startBlank")}
                     </Select.Trigger>
                     <Select.Content>
                         <Select.Item value="blank">
-                            {$t("risk.finance.startBlank")}
+                            {$t("risk.plan.finance.startBlank")}
                         </Select.Item>
                         <Select.Group>
                             <Select.Label>
-                                {$t("risk.finance.copyOf")}
+                                {$t("risk.plan.finance.copyOf")}
                             </Select.Label>
                             {#each riskSettingsStore.riskProfiles as baseProfile}
                                 <Select.Item value={baseProfile.id}>
@@ -247,7 +251,7 @@
                     </Select.Content>
                 </Select.Root>
                 <span class="text-xs text-muted-foreground max-w-sm">
-                    {$t("risk.finance.templateDesc")}
+                    {$t("risk.plan.finance.templateDesc")}
                 </span>
             </div>
         </div>
@@ -263,25 +267,25 @@
             </div>
             <div class="space-y-1">
                 <h4 class="text-sm font-bold text-primary flex items-center gap-2">
-                    {$t("risk.scope.hierarchy.title")}
+                    {$t("risk.plan.hierarchy.title")}
                 </h4>
                 <div class="flex flex-wrap gap-x-4 gap-y-1 text-[10px] uppercase font-bold tracking-wider text-muted-foreground/70">
-                    <span class="flex items-center gap-1"><UI_Badge variant="outline" class="h-4 px-1 text-[8px]">1</UI_Badge> {$t("risk.scope.hierarchy.global")}</span>
+                    <span class="flex items-center gap-1"><UI_Badge variant="outline" class="h-4 px-1 text-[8px]">1</UI_Badge> {$t("risk.plan.hierarchy.global")}</span>
                     <ChevronRight class="w-3 h-3 text-muted-foreground/50" />
-                    <span class="flex items-center gap-1"><UI_Badge variant="outline" class="h-4 px-1 text-[8px]">2</UI_Badge> {$t("risk.scope.hierarchy.asset")}</span>
+                    <span class="flex items-center gap-1"><UI_Badge variant="outline" class="h-4 px-1 text-[8px]">2</UI_Badge> {$t("risk.plan.hierarchy.asset")}</span>
                     <ChevronRight class="w-3 h-3 text-muted-foreground/50" />
-                    <span class="flex items-center gap-1"><UI_Badge variant="outline" class="h-4 px-1 text-[8px]">3</UI_Badge> {$t("risk.scope.hierarchy.growth")}</span>
+                    <span class="flex items-center gap-1"><UI_Badge variant="outline" class="h-4 px-1 text-[8px]">3</UI_Badge> {$t("risk.plan.hierarchy.growth")}</span>
                     <ChevronRight class="w-3 h-3 text-muted-foreground/50" />
-                    <span class="flex items-center gap-1 text-primary"><UI_Badge variant="outline" class="h-4 px-1 text-[8px] border-primary/30 text-primary">4</UI_Badge> {$t("risk.scope.hierarchy.rules")}</span>
+                    <span class="flex items-center gap-1 text-primary"><UI_Badge variant="outline" class="h-4 px-1 text-[8px] border-primary/30 text-primary">4</UI_Badge> {$t("risk.plan.hierarchy.rules")}</span>
                 </div>
             </div>
         </div>
 
         <div class="space-y-2">
-            <Label>{$t("risk.form.name")}</Label>
+            <Label>{$t("risk.plan.name")}</Label>
             <Input
                 bind:value={formData.name}
-                placeholder={$t("risk.form.namePlaceholder")}
+                placeholder={$t("risk.plan.namePlaceholder")}
             />
         </div>
     </div>
@@ -289,16 +293,16 @@
     <Tabs.Root bind:value={activeTab} class="w-full">
         <Tabs.List class="flex flex-wrap w-full justify-start sm:justify-center p-1 h-auto gap-1">
             <Tabs.Trigger value="protection" class="flex-1 min-w-[120px]"
-                >{$t("risk.tabs.protection")}</Tabs.Trigger
+                >{$t("risk.plan.tabs.protection")}</Tabs.Trigger
             >
             <Tabs.Trigger value="evolution" class="flex-1 min-w-[120px]"
-                >{$t("risk.tabs.evolution")}</Tabs.Trigger
+                >{$t("risk.plan.tabs.evolution")}</Tabs.Trigger
             >
             <Tabs.Trigger value="adaptation" class="flex-1 min-w-[120px]"
-                >{$t("risk.tabs.adaptation")}</Tabs.Trigger
+                >{$t("risk.plan.tabs.adaptation")}</Tabs.Trigger
             >
             <Tabs.Trigger value="scope" class="flex-1 min-w-[120px]"
-                >{$t("risk.tabs.scope")}</Tabs.Trigger
+                >{$t("risk.plan.tabs.scope")}</Tabs.Trigger
             >
         </Tabs.List>
 
@@ -308,51 +312,51 @@
                 <div class="flex items-center justify-between">
                     <h3 class="flex items-center gap-2 font-bold text-emerald-500">
                         <Target class="w-4 h-4" />
-                        {$t("risk.finance.capital")}
+                        {$t("risk.plan.finance.title")}
                     </h3>
                     <div class="flex items-center gap-2">
                         <UI_Badge variant="outline" class="border-emerald-500/30 text-emerald-500 bg-emerald-500/5">
-                            {$t("risk.finance.estimatedRisk")}
+                            {$t("risk.cockpit.stats.allowedSizing")}
                         </UI_Badge>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div class="space-y-2.5">
-                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.finance.currency")}</Label>
+                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.plan.finance.money")}</Label>
                         <Select.Root
                             type="single"
                             bind:value={formData.target_type}
                         >
                             <Select.Trigger class="w-full">
-                                {formData.target_type === "Financial" ? "Financeiro ($)" : "Pontos (pts)"}
+                                {formData.target_type === "Financial" ? $t("risk.plan.finance.money") : $t("risk.plan.finance.points")}
                             </Select.Trigger>
                             <Select.Content>
-                                <Select.Item value="Financial">Financeiro ($)</Select.Item>
-                                <Select.Item value="Points">Pontos (pts)</Select.Item>
+                                <Select.Item value="Financial">{$t("risk.plan.finance.money")}</Select.Item>
+                                <Select.Item value="Points">{$t("risk.plan.finance.points")}</Select.Item>
                             </Select.Content>
                         </Select.Root>
                     </div>
 
                     <div class="space-y-2.5">
-                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.finance.capitalSource")}</Label>
+                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.plan.finance.linkAccount")}</Label>
                         <Select.Root
                             type="single"
                             bind:value={formData.capital_source}
                         >
                             <Select.Trigger class="w-full">
-                                {formData.capital_source === "Fixed" ? $t("risk.finance.fixedValue") : $t("risk.finance.linkAccount")}
+                                {formData.capital_source === "Fixed" ? $t("risk.plan.finance.fixedValue") : $t("risk.plan.finance.linkAccount")}
                             </Select.Trigger>
                             <Select.Content>
-                                <Select.Item value="Fixed">{$t("risk.finance.fixedValue")}</Select.Item>
-                                <Select.Item value="LinkedAccount">{$t("risk.finance.linkAccount")}</Select.Item>
+                                <Select.Item value="Fixed">{$t("risk.plan.finance.fixedValue")}</Select.Item>
+                                <Select.Item value="LinkedAccount">{$t("risk.plan.finance.linkAccount")}</Select.Item>
                             </Select.Content>
                         </Select.Root>
                     </div>
 
                     {#if formData.capital_source === "Fixed"}
                         <div class="space-y-2.5 animate-in fade-in slide-in-from-top-1">
-                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.finance.capitalBase")}</Label>
+                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.plan.finance.capitalBase")}</Label>
                             <Input
                                 type="number"
                                 step="0.01"
@@ -362,13 +366,13 @@
                         </div>
                     {:else}
                          <div class="space-y-2.5 animate-in fade-in slide-in-from-top-1">
-                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.finance.referenceAccount")}</Label>
+                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.plan.finance.referenceAccount")}</Label>
                             <Select.Root
                                 type="single"
                                 bind:value={selectedLinkedAccount}
                             >
                                 <Select.Trigger class="w-full">
-                                    {accountsStore.accounts.find(a => a.id === selectedLinkedAccount)?.nickname ?? $t("risk.finance.selectAccount")}
+                                    {accountsStore.accounts.find(a => a.id === selectedLinkedAccount)?.nickname ?? $t("risk.plan.finance.selectAccount")}
                                 </Select.Trigger>
                                 <Select.Content>
                                     {#each accountsStore.accounts as account}
@@ -387,10 +391,10 @@
                     <div class="space-y-1">
                         <h3 class="font-bold text-primary flex items-center gap-2">
                             <Zap class="w-4 h-4" />
-                            {$t("risk.finance.advancedRules")}
+                            {$t("risk.rules.advancedRules")}
                         </h3>
                         <p class="text-xs text-muted-foreground max-w-xl">
-                            {$t("risk.finance.advancedRulesDesc")}
+                            {$t("risk.rules.advancedRulesDesc")}
                         </p>
                     </div>
                     <Switch bind:checked={formData.use_advanced_rules} />
@@ -404,20 +408,20 @@
                         <div class="flex items-center justify-between">
                             <h3 class="flex items-center gap-2 font-bold text-rose-500">
                                 <Shield class="w-4 h-4" />
-                                {$t("risk.finance.dailyLoss")}
+                                {$t("risk.rules.engine.max_daily_loss")}
                             </h3>
                             <div class="text-right">
-                                <span class="text-[10px] uppercase font-bold text-muted-foreground block leading-none">{$t("risk.finance.estimatedRisk")}</span>
+                                <span class="text-[10px] uppercase font-bold text-muted-foreground block leading-none">{$t("risk.cockpit.stats.allowedSizing")}</span>
                                 <span class="text-sm font-mono font-bold text-rose-500">
                                     {formData.target_type === 'Financial' ? (currencyCode === 'BRL' ? 'R$ ' : '$ ') : ''}
-                                    {estimatedRiskPerTrade.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                    {estimatedRiskPerTrade.toLocaleString($locale || 'pt-BR', { minimumFractionDigits: 2 })}
                                 </span>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-2.5">
                                 <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.finance.dailyLoss")} ({formData.target_type === 'Financial' ? '$' : 'pts'})
+                                    {$t("risk.rules.engine.max_daily_loss")} ({formData.target_type === 'Financial' ? '$' : 'pts'})
                                 </Label>
                                 <Input
                                     type="number"
@@ -427,7 +431,7 @@
                             </div>
                             <div class="space-y-2.5">
                                 <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.finance.allocation")} (%)
+                                    {$t("risk.rules.adaptation.multiplier")} (%)
                                 </Label>
                                 <Input
                                     type="number"
@@ -442,12 +446,12 @@
                     <div class="space-y-5 p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 shadow-sm">
                         <h3 class="flex items-center gap-2 font-bold text-emerald-500">
                             <Target class="w-4 h-4" />
-                            {$t("risk.finance.dailyProfit")}
+                            {$t("risk.rules.engine.profit_target")}
                         </h3>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-2.5">
                                 <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.finance.dailyProfit")} ({formData.target_type === 'Financial' ? '$' : 'pts'})
+                                    {$t("risk.rules.engine.profit_target")} ({formData.target_type === 'Financial' ? '$' : 'pts'})
                                 </Label>
                                 <Input
                                     type="number"
@@ -457,7 +461,7 @@
                             </div>
                             <div class="space-y-2.5">
                                 <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.finance.minRR")}
+                                    {$t("risk.cockpit.criteria.win_rate")}
                                 </Label>
                                 <Input
                                     type="number"
@@ -477,18 +481,18 @@
                     <!-- Estratégia de Base (Configurações Globais no Modo Avançado) -->
                     <div class="p-5 rounded-xl border border-primary/20 bg-black/20 shadow-sm">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xs font-bold uppercase tracking-widest text-primary/70">{$t("risk.finance.baseStrategy")}</h3>
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-primary/70">{$t("risk.plan.finance.baseStrategy")}</h3>
                             <div class="text-right">
-                                <span class="text-[10px] uppercase font-bold text-muted-foreground block leading-none">{$t("risk.finance.estimatedRisk")}</span>
+                                <span class="text-[10px] uppercase font-bold text-muted-foreground block leading-none">{$t("risk.cockpit.stats.allowedSizing")}</span>
                                 <span class="text-sm font-mono font-bold text-primary">
                                     {formData.target_type === 'Financial' ? (currencyCode === 'BRL' ? 'R$ ' : '$ ') : ''}
-                                    {estimatedRiskPerTrade.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                    {estimatedRiskPerTrade.toLocaleString($locale || 'pt-BR', { minimumFractionDigits: 2 })}
                                 </span>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-6">
                             <div class="space-y-2.5">
-                                <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.finance.allocation")} (%)</Label>
+                                <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.rules.adaptation.multiplier")} (%)</Label>
                                 <div class="relative">
                                     <Input
                                         type="number"
@@ -500,7 +504,7 @@
                                 </div>
                             </div>
                             <div class="space-y-2.5">
-                                <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.finance.minRR")}</Label>
+                                <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.cockpit.criteria.win_rate")}</Label>
                                 <Input
                                     type="number"
                                     step="0.1"
@@ -526,7 +530,7 @@
             <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
                 <h3 class="flex items-center gap-2 font-bold text-muted-foreground">
                     <Lock class="w-4 h-4" />
-                    {$t("risk.finance.disciplineTitle")}
+                    {$t("risk.rules.disciplineTitle")}
                 </h3>
                 <div class="flex items-center space-x-4">
                     <div class="flex items-center space-x-2">
@@ -540,7 +544,7 @@
                 {#if formData.lock_on_loss}
                     <p class="text-xs text-rose-400 flex items-center gap-1">
                         <AlertTriangle class="w-3 h-3" />
-                        {$t("risk.finance.lockOnLossWarn")}
+                        {$t("risk.rules.lockOnLossWarn")}
                     </p>
                 {/if}
             </div>
@@ -883,7 +887,7 @@
                             bind:value={selectedGrowthPlan}
                         >
                             <Select.Trigger class="w-full">
-                                {growthPlanOptions.find(o => o.value === selectedGrowthPlan)?.label ?? "Desconhecido"}
+                                {growthPlanOptions.find(o => o.value === selectedGrowthPlan)?.label ?? $t("risk.status_list.insufficient_data")}
                             </Select.Trigger>
                             <Select.Content>
                                 {#each growthPlanOptions as opt}
@@ -899,8 +903,8 @@
 
     <div class="flex justify-end gap-2 pt-4 border-t">
         <Button variant="outline" onclick={onCancel}
-            >{$t("general.cancel")}</Button
+            >{$t("risk.plan.actions.cancel")}</Button
         >
-        <Button onclick={save}>{$t("general.save")}</Button>
+        <Button onclick={save}>{$t("risk.plan.actions.save")}</Button>
     </div>
 </div>

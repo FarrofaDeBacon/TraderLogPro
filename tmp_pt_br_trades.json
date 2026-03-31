@@ -1,0 +1,379 @@
+﻿{
+    "trades": {
+        "actions": {
+            "clear_filters": "Limpar Filtros",
+            "delete": "Excluir",
+            "delete_day": "Excluir Dia",
+            "edit": "Editar",
+            "import": "Importar Trades",
+            "import_profit": "Importar Profit",
+            "new_trade": "Novo Trade",
+            "view": "Ver Detalhes"
+        },
+        "status": {
+            "open": "Aberto",
+            "closed": "Fechado"
+        },
+        "dashboard": {
+            "weekOf": "Semana de {date}"
+        },
+        "delete": {
+            "confirmation": "Tem certeza que deseja excluir esta trade? Esta a├º├úo n├úo pode ser desfeita.",
+            "confirmation_with_closure": "Esta trade faz parte de um Fechamento Di├írio. O extrato ser├í recalculado automaticamente ap├│s a exclus├úo. Tem certeza que deseja excluir?",
+            "day_confirmation": "Tem certeza que deseja excluir todas as {count} trades do dia {date}? Esta a├º├úo n├úo pode ser desfeita.",
+            "title": "Excluir Trade"
+        },
+        "details": {
+            "basic_info": "Informa├º├Áes B├ísicas",
+            "emotional_entry": "Emo├º├úo na Entrada",
+            "emotional_exit": "Emo├º├úo na Sa├¡da",
+            "entry_price": "Pre├ºo de Entrada",
+            "execution": "Execu├º├úo",
+            "exit_price": "Pre├ºo de Sa├¡da",
+            "fees": "Taxas",
+            "gross_result": "Resultado Bruto",
+            "media": "M├¡dia e Notas",
+            "net_result": "Resultado L├¡quido",
+            "no_media": "Nenhuma imagem anexada.",
+            "no_notes": "Nenhuma nota registrada.",
+            "no_records": "Nenhum registro",
+            "notes": "Notas da Trade",
+            "partial_exits": "Sa├¡das Parciais",
+            "partial_date": "Data/Hora",
+            "partial_price": "Pre├ºo",
+            "partial_qty": "Qtd",
+            "partial_notes": "Notas",
+            "psychology": "Psicologia",
+            "stop_loss": "Stop Loss",
+            "take_profit": "Take Profit",
+            "title": "Detalhes da Trade"
+        },
+        "empty": {
+            "description": "Conecte sua plataforma ou adicione trades manualmente.",
+            "title": "Hist├│rico Vazio"
+        },
+        "filters": {
+            "account": "Conta",
+            "asset": "Ativo",
+            "assetType": "Tipo de Ativo",
+            "currency": "Currency",
+            "market": "Mercado",
+            "modality": "Modalidade",
+            "period": "Per├¡odo",
+            "status": "Status",
+            "strategy": "Estrat├®gia",
+            "title": "Filtros"
+        },
+        "import": "Importar Trades",
+        "messages": {
+            "all_period": "Todo o Per├¡odo",
+            "delete_success": "Trade exclu├¡da com sucesso.",
+            "trade_created": "Trade criada!",
+            "trade_updated": "Trade atualizada!",
+            "trades_count": "trades",
+            "delete_error": "N├úo foi poss├¡vel excluir o trade.",
+            "importing": "Importando hist├│rico operacional...",
+            "no_accounts": "Por favor, cadastre uma conta na aba de Financeiro."
+        },
+        "placeholders": {
+            "search": "Buscar por ativo ou estrat├®gia...",
+            "all_types": "Todos os Tipos"
+        },
+        "quickStats": {
+            "openTrades": "Em Aberto",
+            "openTradesDesc": "Posi├º├Áes Atuais",
+            "avgInterval": "Intervalo Entre Trades",
+            "avgIntervalDesc": "Tempo m├®dio entre trades executadas",
+            "profitFactor": "Fator de Lucro",
+            "profitFactorDesc": "Fator de Lucratividade",
+            "totalBalance": "Saldo Total",
+            "winRate": "Taxa de Acerto",
+            "winRateDesc": "{winners} de {total} Trades"
+        },
+        "sidebar": {
+            "distribution": "Distribui├º├úo",
+            "equityCurve": "Curva de Capital - Drawdown",
+            "gain": "Gain",
+            "performance": "Desempenho",
+            "summary": "Resumo Lateral"
+        },
+        "stats": {
+            "avg_rr": "R:R M├®dio",
+            "closed_trades": "Trades Fechadas",
+            "daily_pnl": "P&L Di├írio",
+            "open_trades": "abertas",
+            "profit_factor": "Profit Factor",
+            "total_pl": "Resultado Acumulado",
+            "total_pnl": "P&L Total",
+            "total_trades": "Trades Realizadas",
+            "trades": "trades",
+            "win_rate": "Taxa de Acerto",
+            "winners": "acertos"
+        },
+        "subtitle": "Visualize e gerencie seu hist├│rico detalhado de trades.",
+        "table": {
+            "actions": "A├º├Áes",
+            "asset": "Ativo",
+            "asset_type": "Tipo de Ativo",
+            "buy": "Compra",
+            "date": "Data",
+            "direction": "Dire├º├úo",
+            "entry": "Entrada",
+            "exit": "Sa├¡da",
+            "notes": "Anota├º├Áes do Dia",
+            "pl": "Resultado",
+            "quantity": "Qtd",
+            "sell": "Venda",
+            "status": "Status",
+            "status_closed": "Fechado",
+            "status_open": "Aberto",
+            "strategy": "Estrat├®gia"
+        },
+        "title": "Trades",
+        "wizard": {
+            "adherence": {
+                "no_msg": "Houve desvio nas regras do setup.",
+                "title": "Ader├¬ncia ao Plano",
+                "yes_msg": "Trade executada conforme a estrat├®gia."
+            },
+            "auto_detection": {
+                "ignore": "Ignorar",
+                "register": "Registrar Agora",
+                "source": "Via Profit RTD",
+                "title": "Nova Execu├º├úo Detectada!"
+            },
+            "charts": {
+                "equity": {
+                    "capital": "Capital",
+                    "drawdown": "Drawdown",
+                    "empty": "Sem trades no per├¡odo"
+                },
+                "outcome": {
+                    "be": "BE",
+                    "empty": "Sem trades",
+                    "gain": "Gain",
+                    "loss": "Loss",
+                    "trades_label": "TRADES",
+                    "vazio": "Vazio"
+                }
+            },
+            "checklist": {
+                "calm": "Estado emocional equilibrado?",
+                "distraction": "Foco total / Sem distra├º├Áes?",
+                "ideal_condition": "Condi├º├úo Ideal",
+                "plan": "Cen├írios de trade definidos?",
+                "ready": "PRONTO PARA O MERCADO!",
+                "risk": "Aceito o stop do dia?",
+                "sleep": "Dormi pelo menos 7h?"
+            },
+            "emotions": {
+                "extreme": "Extrema",
+                "intense": "Intenso",
+                "intensity_hint": "O quanto voc├¬ estava sentindo essa emo├º├úo (0-10)",
+                "intensity_label": "Intensidade Emocional",
+                "light": "Leve",
+                "moderate": "Moderada"
+            },
+            "exit_reasons": {
+                "manual": "Encerramento Manual",
+                "sl": "Stop Loss Atingido",
+                "stop_loss": "Stop Loss",
+                "strategy": "Mudan├ºa de Setup",
+                "take_profit": "Take Profit",
+                "time": "Tempo Operacional",
+                "tp": "Take Profit Atingido"
+            },
+            "fields": {
+                "account": "Conta",
+                "asset": "Ativo / Contrato",
+                "asset_direction": "Ativo / Dire├º├úo",
+                "asset_type": "Tipo de Ativo",
+                "buy": "Compra",
+                "confirmation_signals": "Sinais de Confirma├º├úo",
+                "date_time": "Data e Hora",
+                "direction": "Dire├º├úo",
+                "emotional_state": "Emocional",
+                "entry": "Entrada",
+                "entry_price": "Pre├ºo de Entrada",
+                "entry_rationale": "Racional da Entrada",
+                "exit": "Sa├¡da",
+                "exit_date": "Data Sa├¡da",
+                "exit_price": "P. Sa├¡da",
+                "exit_reason": "Motivo",
+                "followed_plan": "Seguiu o Plano?",
+                "improvements": "O que funcionou / Melhorias",
+                "market_context": "Contexto de Mercado / Not├¡cias",
+                "notes": "Notas",
+                "quantity": "Qtd",
+                "sell": "Venda",
+                "stop_loss": "Stop Loss",
+                "strategy": "Estrat├®gia",
+                "take_profit": "Take Profit",
+                "timeframe": "Tempo Gr├ífico",
+                "volatility": "Volatilidade"
+            },
+            "media": {
+                "attachment": "Anexo #",
+                "description": "Adicione prints do Profit, TradingView ou fotos do setup.",
+                "drag_drop": "Arraste ou Clique",
+                "images": "Imagens",
+                "select_files": "Selecionar Arquivos"
+            },
+            "messages": {
+                "asset_type_required": "Tipo de Ativo ├® obrigat├│rio. Por favor, selecione um.",
+                "closure_exists_warning": "J├í existe um fechamento di├írio para este dia. O trade ser├í adicionado e o fechamento ser├í atualizado automaticamente se poss├¡vel.",
+                "entry_price_required": "Informe o pre├ºo de entrada",
+                "no_status": "Nenhum estado",
+                "required_fields": "Preencha os campos obrigat├│rios.",
+                "rtd_not_available": "Pre├ºo n├úo dispon├¡vel no RTD - Verifique o Profit",
+                "rtd_sync_success": "Pre├ºo e Hor├írio atualizados ({symbol}): {price}",
+                "save_error": "Erro ao salvar trade",
+                "save_success": "Trade salvo com sucesso!",
+                "save_success_with_sync": "Trade salvo e fechamento di├írio atualizado!",
+                "select_asset": "Selecione um ativo",
+                "update_error": "Erro ao atualizar trade.",
+                "update_success": "Trade atualizada!",
+                "valid_asset_type": "Por favor, selecione um Tipo de Ativo v├ílido.",
+                "complementary_darf_warning": "Aten├º├úo: Aumento de resultado detectado!",
+                "invalid_asset_symbol": "S├¡mbolo do ativo inv├ílido ou n├úo cadastrado.",
+                "invalid_entry_price": "O pre├ºo de entrada deve ser maior que zero.",
+                "invalid_exit_price": "O pre├ºo de sa├¡da ├® inv├ílido.",
+                "invalid_quantity": "A quantidade de lotes deve ser positiva."
+            },
+            "partials": {
+                "add_partial": "Adicionar Parcial",
+                "date_time": "Data/Hora",
+                "entry": "ADI├ç├âO",
+                "executed_volume": "Volume Executado",
+                "exit": "SA├ìDA",
+                "no_partials": "Nenhuma parcial registrada",
+                "observation": "Obs",
+                "price": "Pre├ºo",
+                "quantity": "Qtd",
+                "remaining": "Restantes",
+                "result": "Resultado",
+                "type": "Tipo"
+            },
+            "placeholders": {
+                "all_types": "Todos os Tipos",
+                "context": "Tend├¬ncia, suportes/resist├¬ncias, not├¡cias relevantes...",
+                "improvements": "O que poderia ter sido melhor?",
+                "no_states": "Nenhum estado",
+                "rationale": "Por que voc├¬ entrou nesse trade?",
+                "select": "Selecionar...",
+                "select_asset": "Selecione um ativo",
+                "signals": "Quais sinais o setup confirmou?",
+                "visual_desc": "Screenshots do gr├ífico e contexto (m├íx 5MB)."
+            },
+            "risk": {
+                "alerts_title": "Alertas de Risco",
+                "emotional_warning": "Desvio Emocional: Seu peso atual ({weight}) est├í abaixo do limite ({threshold}). Sugerimos reduzir o lote em {percent}%.",
+                "outlier_warning": "Detec├º├úo de Outlier: Identificamos perdas recentes fora da curva estat├¡stica normal.",
+                "sniper_warning": "Limite Sniper: Voc├¬ j├í realizou {current} de {limit} trades permitidas para hoje.",
+                "reduce_lot_button": "REDUZIR LOTE EM {percent}%",
+                "toast_lot_adjusted": "Lote ajustado com sucesso!"
+            },
+            "sections": {
+                "asset_direction": "Ativo e Dire├º├úo",
+                "calc_memory": "Mem├│ria de C├ílculo",
+                "closing_data": "Dados de Fechamento",
+                "context": "Contexto da Trade",
+                "execution_details": "Detalhes da Execu├º├úo",
+                "final_summary": "RESUMO FINAL",
+                "partial_management": {
+                    "add_partial": "Adicionar Parcial",
+                    "addition": "ADI├ç├âO",
+                    "date_time": "Data/Hora",
+                    "exit": "SA├ìDA",
+                    "no_partials": "Nenhuma parcial registrada",
+                    "observation": "Observa├º├úo",
+                    "price": "Pre├ºo",
+                    "quantity": "Qtd",
+                    "remaining": "Restantes",
+                    "result": "Resultado",
+                    "title": "Gest├úo de Parciais (Adi├º├Áes e Sa├¡das)",
+                    "type": "Tipo",
+                    "volume_executed": "Volume Executado"
+                },
+                "psychology_analysis": "An├ílise Psicol├│gica e Contextual",
+                "visual_evidence": {
+                    "attachment": "Anexo",
+                    "description": "Adicione prints do Profit, TradingView ou fotos do setup.",
+                    "drag_drop": "Arraste ou Clique",
+                    "images_added": "imagem(ns) adicionada(s)",
+                    "invalid_image": "n├úo ├® uma imagem v├ílida",
+                    "process_error": "Erro ao processar",
+                    "select_files": "Selecionar Arquivos",
+                    "title": "Evid├¬ncias Visuais"
+                }
+            },
+            "steps": {
+                "basic": "B├üSICO",
+                "conduction": "CONDU├ç├âO",
+                "media": "M├ìDIA",
+                "psychology": "PSICOLOGIA",
+                "review": "REVIS├âO"
+            },
+            "subtitle": "Preencha os detalhes da sua jornada operacional.",
+            "summary": {
+                "addition": "Adi├º├úo",
+                "calc_desc": "Descri├º├úo",
+                "calc_value": "Valor",
+                "cancel": "Cancelar",
+                "entry": "Entrada",
+                "exit": "Sa├¡da",
+                "final_exit": "Sa├¡da Final",
+                "finish": "Finalizar Registro",
+                "fixed_fee": "Corretagem Fixa",
+                "gross_result": "Resultado Bruto",
+                "exchange_fees": "Taxas de Bolsa",
+                "irrf_estimated": "IRRF Estimado",
+                "images": "Imagens",
+                "n": "N",
+                "na": "N/A",
+                "net_result": "Resultado L├¡quido",
+                "next": "Pr├│ximo",
+                "no": "N├úo",
+                "partial_exit": "Sa├¡da Parcial",
+                "plan": "Plano",
+                "prev": "Anterior",
+                "recording": "Gravando Trade...",
+                "s": "S",
+                "save_btn": "SALVAR TRADE",
+                "save_trade": "Salvar Trade",
+                "saving": "Salvando...",
+                "total_fees": "Total de Taxas",
+                "variable_fee": "Taxa Vari├ível",
+                "yes": "Sim"
+            },
+            "timeframe_options": {
+                "15m": "15 Minutos",
+                "1m": "1 Minuto",
+                "5m": "5 Minutos",
+                "60m": "60 Minutos",
+                "d": "Di├írio"
+            },
+            "title_edit": "Editar Trade",
+            "title_new": "Nova Trade",
+            "tooltips": {
+                "risk": "Risco",
+                "target": "Alvo"
+            },
+            "unit_labels": {
+                "contracts": "CTR"
+            },
+            "volatility_options": {
+                "extreme": "Extrema",
+                "high": "Alta",
+                "low": "Baixa",
+                "normal": "Normal"
+            },
+            "errors": {
+                "required": "Campo obrigat├│rio ausente no assistente de trades."
+            }
+        },
+        "quickEdit": {
+            "title": "Edi├º├úo R├ípida"
+        }
+    }
+}

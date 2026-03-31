@@ -112,15 +112,15 @@ import type { RiskProfile } from "$lib/types";
     <div class="flex items-center justify-between">
         <div class="space-y-0.5">
             <h3 class="text-lg font-medium">
-                {$t("settings.risk.title")}
+                {$t("risk.title")}
             </h3>
             <p class="text-sm text-muted-foreground">
-                {$t("settings.risk.description")}
+                {$t("risk.description")}
             </p>
         </div>
         <Button onclick={openNew}>
             <Plus class="w-4 h-4 mr-2" />
-            {$t("settings.risk.new")}
+            {$t("risk.new")}
         </Button>
     </div>
     <Separator />
@@ -152,17 +152,17 @@ import type { RiskProfile } from "$lib/types";
                                             class="bg-green-500/20 text-green-500 hover:bg-green-500/30 border-green-500/50 text-[10px] py-0 h-4"
                                         >
                                             {$t(
-                                                "settings.risk.profiles.active",
+                                                "risk.profiles.active",
                                             )}
                                         </Badge>
                                     {/if}
                                 </div>
                                 <Card.Description>
                                     {#if profile.account_type_applicability === "All"}
-                                        {$t("settings.risk.accountTypes.All")}
+                                        {$t("risk.accountTypes.All")}
                                     {:else}
                                         {$t(
-                                            `settings.risk.accountTypes.${profile.account_type_applicability}`,
+                                            `risk.accountTypes.${profile.account_type_applicability}`,
                                         )}
                                     {/if}
                                 </Card.Description>
@@ -176,11 +176,11 @@ import type { RiskProfile } from "$lib/types";
                     {@const planInfo = getPlanInfo(profile)}
 
                     <div class="flex justify-between items-center text-red-400">
-                        <span>{$t("settings.risk.profiles.dailyLoss")}:</span>
+                        <span>{$t("risk.profiles.dailyLoss")}:</span>
                         <span class="font-bold">R$ {limits.dailyLoss}</span>
                     </div>
                     <div class="flex justify-between items-center text-green-400">
-                        <span>{$t("settings.risk.profiles.dailyTarget")}:</span>
+                        <span>{$t("risk.profiles.dailyTarget")}:</span>
                         <span class="font-bold">R$ {limits.dailyTarget}</span>
                     </div>
                     
@@ -188,7 +188,7 @@ import type { RiskProfile } from "$lib/types";
                     
                     <div class="space-y-1.5">
                         <div class="flex justify-between items-center text-xs text-muted-foreground">
-                            <span>{$t("settings.risk.capitalSource") || "Fundo"}:</span>
+                            <span>{$t("risk.capitalSource") || "Fundo"}:</span>
                             <span class="text-foreground">
                                 {profile.capital_source === 'Fixed' ? 'Fixo' : 'Conta'} (R$ {profile.capital_source === 'Fixed' ? profile.fixed_capital : (accountsStore.accounts.find(a => a.id === profile.linked_account_id)?.balance || 0)})
                             </span>
@@ -233,7 +233,7 @@ import type { RiskProfile } from "$lib/types";
                                     );
                                 }}
                             >
-                                {$t("settings.risk.profiles.activate")}
+                                {$t("risk.profiles.activate")}
                             </Button>
                         {/if}
                     </div>
@@ -242,7 +242,7 @@ import type { RiskProfile } from "$lib/types";
                             variant="ghost"
                             size="icon"
                             class="h-8 w-8 hover:bg-muted text-muted-foreground"
-                            title={$t("settings.risk.management.duplicate") || "Duplicar Perfil"}
+                            title={$t("risk.management.duplicate") || "Duplicar Perfil"}
                             onclick={async (e) => {
                                 e.stopPropagation();
                                 const newId = await riskSettingsStore.duplicateRiskProfile(profile.id);
@@ -255,7 +255,7 @@ import type { RiskProfile } from "$lib/types";
                             variant="ghost"
                             size="icon"
                             class="h-8 w-8 hover:bg-muted"
-                            title={$t("settings.risk.edit")}
+                            title={$t("risk.edit")}
                             onclick={(e) => {
                                 e.stopPropagation();
                                 openEdit(profile);
@@ -290,8 +290,8 @@ import type { RiskProfile } from "$lib/types";
         <Dialog.Header>
             <Dialog.Title>
                 {editingItem
-                    ? $t("settings.risk.edit")
-                    : $t("settings.risk.new")}
+                    ? $t("risk.edit")
+                    : $t("risk.new")}
             </Dialog.Title>
         </Dialog.Header>
 
@@ -321,7 +321,7 @@ import type { RiskProfile } from "$lib/types";
                     }}
                 >
                     <Pencil class="w-4 h-4 mr-2" />
-                    {$t("settings.risk.edit")}
+                    {$t("risk.edit")}
                 </Button>
             </div>
         {/if}

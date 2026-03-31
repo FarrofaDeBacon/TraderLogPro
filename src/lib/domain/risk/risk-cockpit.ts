@@ -44,8 +44,14 @@ export function buildRiskCockpitState(
     phaseIndex: number = 0,
     totalPhases: number = 1,
     phaseStartedAt?: string,
-    resolution?: any
+    resolution?: any,
+    modes: { 
+        daily_loss_mode?: 'accumulate' | 'recover', 
+        phase_drawdown_mode?: 'accumulate' | 'recover',
+        phase_target_mode?: 'cumulative' | 'reset_each_phase'
+    } = {}
 ): RiskCockpitState {
+    const { daily_loss_mode = 'accumulate', phase_drawdown_mode = 'accumulate', phase_target_mode = 'cumulative' } = modes;
     // 1. Motor Financeiro Diário (Usa TODOS os trades pra filtrar por HOJE)
     const dailyRiskStatus = calculateDailyRiskStatus(
         profile, 
@@ -64,8 +70,10 @@ export function buildRiskCockpitState(
     
     if (growthPhase) {
         let phaseTrades = allTrades;
-        if (phaseStartedAt) {
-            // Normaliza a data de início da fase para meia-noite (início do dia) para evitar ocultar trades do mesmo dia
+        
+        // Se o modo for reset_each_phase, filtramos trades apenas da fase atual.
+        // Se for cumulative, usamos todos os trades do contexto (plano todo).
+        if (phase_target_mode === 'reset_each_phase' && phaseStartedAt) {
             const phaseDateObj = parseSafeDate(phaseStartedAt);
             const phaseStartDateStr = phaseDateObj.toISOString().split('T')[0];
             const phaseStartTime = new Date(`${phaseStartDateStr}T00:00:00Z`).getTime();
@@ -75,18 +83,19 @@ export function buildRiskCockpitState(
                 const tradeDateStr = tradeDateObj.toISOString().split('T')[0];
                 return new Date(`${tradeDateStr}T00:00:00Z`).getTime() >= phaseStartTime;
             });
-            console.log(`[Cockpit Engine] Filter PhaseStartedAt (${phaseStartedAt}): Retained ${phaseTrades.length} of ${allTrades.length} trades.`);
+            console.log(`[Cockpit Engine] RESET_EACH_PHASE mode: Retained ${phaseTrades.length} trades since ${phaseStartedAt}.`);
         } else {
-            console.log(`[Cockpit Engine] Sem phaseStartedAt. Usando os ${phaseTrades.length} trades.`);
+            console.log(`[Cockpit Engine] CUMULATIVE mode: Using all ${phaseTrades.length} trades.`);
         }
 
-        console.log(`[Cockpit Engine] Avaliando GrowthPhase com capital base: ${startingCapital ?? "undefined (fallback 0)"} e trades: ${phaseTrades.length}`);
         growthEvaluation = evaluateGrowthPhase(
             growthPhase, 
             phaseTrades, 
             startingCapital ?? 0,
             phaseIndex,
-            totalPhases
+            totalPhases,
+            daily_loss_mode,
+            phase_drawdown_mode
         );
     }
 

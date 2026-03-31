@@ -243,7 +243,7 @@
 
 <!-- Edit/New Modal -->
 <Dialog.Root bind:open={isDialogOpen}>
-    <Dialog.Content class="max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden">
+    <Dialog.Content class="max-w-3xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden">
         <Dialog.Header>
             <Dialog.Title>
                 {editingItem ? "Editar Plano de Crescimento" : "Novo Plano de Crescimento"}

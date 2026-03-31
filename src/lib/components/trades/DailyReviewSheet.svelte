@@ -64,7 +64,7 @@
 
     function saveReview() {
         if (!rating) {
-            toast.error("Por favor, avalie seu dia primeiro.");
+            toast.error($t("reports.daily.toasts.rateFirst"));
             return;
         }
 
@@ -75,11 +75,11 @@
         const streakAfter = gamificationStore.streaks.disciplineStreak;
 
         if (streakAfter > streakBefore && streakAfter >= 2) {
-            toast.success(`🔥 Shield Wall! Disciplina estendida para ${streakAfter} dias seguidos!`);
+            toast.success($t("reports.daily.toasts.shieldWall", { values: { days: streakAfter } }));
         } else if (streakAfter === 0 && streakBefore > 0) {
-            toast.error("Streak de disciplina quebrada. O foco agora é retomar o controle amanhã.");
+            toast.error($t("reports.daily.toasts.streakBroken"));
         } else {
-            toast.success("Fechamento diário salvo com sucesso! 🎯");
+            toast.success($t("reports.daily.toasts.saveSuccess"));
         }
         
         open = false;
@@ -91,40 +91,40 @@
         <Sheet.Header class="mb-6 mt-4">
             <Sheet.Title class="text-xl font-black tracking-widest text-white uppercase flex items-center gap-2">
                 <Briefcase class="w-5 h-5 text-primary" />
-                Fechamento do Dia
+                {$t("reports.daily.title")}
             </Sheet.Title>
             <Sheet.Description class="text-xs text-muted-foreground/80 font-medium tracking-wide">
-                Revisão comportamental rápida
+                {$t("reports.daily.subtitle")}
             </Sheet.Description>
         </Sheet.Header>
 
         {#if dayTrades.length === 0}
             <div class="h-40 flex items-center justify-center text-muted-foreground text-sm font-medium border border-dashed border-white/10 rounded-xl">
-                Nenhuma operação encontrada nesta data.
+                {$t("reports.daily.empty")}
             </div>
         {:else}
             <div class="space-y-6">
                 <!-- Resumo Financeiro -->
                 <div class="grid grid-cols-2 gap-3">
                     <div class="p-4 rounded-xl bg-zinc-900/60 border border-white/5 space-y-1">
-                        <span class="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Resultado do Dia</span>
+                        <span class="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{$t("reports.daily.sections.summary")}</span>
                         <div class="text-2xl font-black {totalPnL >= 0 ? 'text-emerald-500' : 'text-rose-500'} tabular-nums">
                             {formatCurrency(totalPnL, accountsStore.accounts[0]?.currency || "BRL")}
                         </div>
                     </div>
                     <div class="p-4 rounded-xl bg-zinc-900/60 border border-white/5 space-y-1">
-                        <span class="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Operações</span>
+                        <span class="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{$t("reports.daily.sections.stats")}</span>
                         <div class="text-2xl font-black text-white tabular-nums flex items-baseline gap-2">
                             {dayTrades.length} 
                             <span class="text-[10px] text-muted-foreground font-bold tracking-widest">({winCount}W {lossCount}L)</span>
                         </div>
                     </div>
                     <div class="p-3 rounded-lg bg-zinc-900/40 border-l-[3px] border-l-emerald-500/50 space-y-0.5">
-                        <span class="text-[8px] font-black text-muted-foreground/80 uppercase tracking-widest flex items-center gap-1"><TrendingUp class="w-2.5 h-2.5"/> Melhor</span>
+                        <span class="text-[8px] font-black text-muted-foreground/80 uppercase tracking-widest flex items-center gap-1"><TrendingUp class="w-2.5 h-2.5"/> {$t("reports.daily.sections.best")}</span>
                         <div class="text-xs font-bold text-emerald-500">{formatCurrency(bestTrade, accountsStore.accounts[0]?.currency || "BRL")}</div>
                     </div>
                     <div class="p-3 rounded-lg bg-zinc-900/40 border-l-[3px] border-l-rose-500/50 space-y-0.5">
-                        <span class="text-[8px] font-black text-muted-foreground/80 uppercase tracking-widest flex items-center gap-1"><TrendingDown class="w-2.5 h-2.5"/> Pior</span>
+                        <span class="text-[8px] font-black text-muted-foreground/80 uppercase tracking-widest flex items-center gap-1"><TrendingDown class="w-2.5 h-2.5"/> {$t("reports.daily.sections.worst")}</span>
                         <div class="text-xs font-bold text-rose-500">{formatCurrency(worstTrade, accountsStore.accounts[0]?.currency || "BRL")}</div>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
                 <!-- Insights Comportamentais -->
                 {#if insights.length > 0}
                     <div class="space-y-2.5">
-                        <h4 class="text-[9px] font-black tracking-widest text-muted-foreground uppercase ml-1">Análise Comportamental</h4>
+                        <h4 class="text-[9px] font-black tracking-widest text-muted-foreground uppercase ml-1">{$t("reports.daily.sections.behavioral")}</h4>
                         <div class="space-y-2">
                             {#each insights as insight}
                                 <div class="p-3 rounded-lg border shadow-sm flex gap-3 {insight.type === 'danger' ? 'bg-rose-500/5 border-rose-500/20' : insight.type === 'warning' ? 'bg-amber-500/5 border-amber-500/20' : 'bg-emerald-500/5 border-emerald-500/20'}">
@@ -153,28 +153,28 @@
 
                 <!-- Avaliação Subjetiva (Sentimento) -->
                 <div class="space-y-3 pt-4 border-t border-white/5">
-                    <h4 class="text-[9px] font-black tracking-widest text-muted-foreground uppercase ml-1">Sua Avaliação do Dia</h4>
+                    <h4 class="text-[9px] font-black tracking-widest text-muted-foreground uppercase ml-1">{$t("reports.daily.sections.selfEvaluation")}</h4>
                     <div class="flex gap-2">
                         <button type="button" onclick={() => rating = "good"} class="flex-1 flex flex-col items-center gap-2 py-4 rounded-xl border transition-all {rating === 'good' ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400 scale-[1.02] shadow-sm' : 'bg-zinc-900/50 border-white/5 text-muted-foreground hover:bg-zinc-800'}">
                             <span class="text-2xl drop-shadow-md">👍</span>
-                            <span class="text-[9px] font-black uppercase tracking-widest">Bom</span>
+                            <span class="text-[9px] font-black uppercase tracking-widest">{$t("reports.daily.ratings.good")}</span>
                         </button>
                         <button type="button" onclick={() => rating = "neutral"} class="flex-1 flex flex-col items-center gap-2 py-4 rounded-xl border transition-all {rating === 'neutral' ? 'bg-blue-500/10 border-blue-500/50 text-blue-400 scale-[1.02] shadow-sm' : 'bg-zinc-900/50 border-white/5 text-muted-foreground hover:bg-zinc-800'}">
                             <span class="text-2xl drop-shadow-md">😐</span>
-                            <span class="text-[9px] font-black uppercase tracking-widest">Neutro</span>
+                            <span class="text-[9px] font-black uppercase tracking-widest">{$t("reports.daily.ratings.neutral")}</span>
                         </button>
                         <button type="button" onclick={() => rating = "bad"} class="flex-1 flex flex-col items-center gap-2 py-4 rounded-xl border transition-all {rating === 'bad' ? 'bg-rose-500/10 border-rose-500/50 text-rose-400 scale-[1.02] shadow-sm' : 'bg-zinc-900/50 border-white/5 text-muted-foreground hover:bg-zinc-800'}">
                             <span class="text-2xl drop-shadow-md">👎</span>
-                            <span class="text-[9px] font-black uppercase tracking-widest">Ruim</span>
+                            <span class="text-[9px] font-black uppercase tracking-widest">{$t("reports.daily.ratings.bad")}</span>
                         </button>
                     </div>
 
-                    <Textarea bind:value={notes} placeholder="Nota rápida (opcional)... O que você aprendeu hoje ou onde pecou?" class="bg-zinc-900/50 border-white/10 resize-none h-20 text-xs mt-2 rounded-xl focus:border-primary/50" />
+                    <Textarea bind:value={notes} placeholder={$t("reports.daily.ratings.placeholder")} class="bg-zinc-900/50 border-white/10 resize-none h-20 text-xs mt-2 rounded-xl focus:border-primary/50" />
                 </div>
 
                 <Button class="w-full gap-2 font-black tracking-widest uppercase text-[10px] h-11 mt-4" onclick={saveReview}>
                     <CheckCircle2 class="w-4 h-4" />
-                    Salvar Fechamento
+                    {$t("reports.daily.actions.save")}
                 </Button>
             </div>
         {/if}

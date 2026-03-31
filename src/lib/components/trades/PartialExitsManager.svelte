@@ -209,7 +209,7 @@
                     >
                     <Table.Head
                         class="w-[90px] h-8 text-[10px] font-bold uppercase tracking-tight text-muted-foreground/80 text-right"
-                        >MÉDIO</Table.Head
+                        >{$t("trades.wizard.labels.average")}</Table.Head
                     >
                     <Table.Head
                         class="w-[80px] h-8 text-[10px] font-bold uppercase tracking-tight text-muted-foreground/80 text-center"
@@ -313,7 +313,7 @@
                                     >
                                         {#if resultSuffix === "pts"}
                                             {pts.toLocaleString($locale || 'pt-BR', { maximumFractionDigits: 2 })}
-                                            <span class="text-[8px] opacity-70">pts</span>
+                                            <span class="text-[8px] opacity-70">{$t("trades.wizard.units.points")}</span>
                                         {:else}
                                             {currencySymbol} {Math.abs(res).toLocaleString($locale || 'pt-BR', { minimumFractionDigits: 2 })}
                                         {/if}
@@ -325,7 +325,7 @@
                                         </div>
                                     {:else if resultPrefix !== "" && pts !== 0}
                                         <div class="text-[9px] font-mono font-bold {pts > 0 ? 'text-emerald-500/60' : 'text-rose-500/60'}">
-                                            {pts.toLocaleString($locale || 'pt-BR', { maximumFractionDigits: 2 })} <span class="text-[7px]">pts</span>
+                                            {pts.toLocaleString($locale || 'pt-BR', { maximumFractionDigits: 2 })} <span class="text-[7px]">{$t("trades.wizard.units.points")}</span>
                                         </div>
                                     {/if}
                                 </div>

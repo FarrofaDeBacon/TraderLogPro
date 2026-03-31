@@ -951,7 +951,18 @@ pub struct GrowthPlan {
     pub current_phase_index: i32,
     #[serde(default)]
     pub phases: Vec<GrowthPhase>,
+
+    #[serde(default = "default_daily_loss_mode")]
+    pub daily_loss_mode: String,
+    #[serde(default = "default_phase_drawdown_mode")]
+    pub phase_drawdown_mode: String,
+    #[serde(default = "default_phase_target_mode")]
+    pub phase_target_mode: String,
 }
+
+fn default_daily_loss_mode() -> String { "accumulate".to_string() }
+fn default_phase_drawdown_mode() -> String { "accumulate".to_string() }
+fn default_phase_target_mode() -> String { "cumulative".to_string() }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RiskProfile {

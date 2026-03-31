@@ -33,7 +33,7 @@
         "help": "Aide",
         "settings": "Paramètres",
         "fiscal": {
-            "irpf": "Income Tax"
+            "irpf": "Impôt sur le Revenu"
         },
         "risk": "Contrôle des Risques"
     }

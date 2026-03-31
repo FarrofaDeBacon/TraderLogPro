@@ -1,9 +1,4 @@
 {
-    "Settings": {
-        "Nav": {
-            "Growth-Plans": "Planos de Crescimento"
-        }
-    },
     "finance": {
         "charts": {
             "evolution": "Evolução",
@@ -910,33 +905,33 @@
             "currencies": "Moedas",
             "database": "Banco de Dados",
             "descriptions": {
-                "accounts": "Gerencie suas contas de corretora",
-                "assetTypes": "Gerencie tipos de ativos",
-                "assets": "Gerencie os ativos",
-                "chartTypes": "Gerencie tipos de gráficos",
-                "currencies": "Gerencie as moedas",
-                "database": "Gerencie o banco de dados",
-                "emotionalStates": "Gerencie estados emocionais",
-                "fees": "Gerencie perfis de taxas",
+                "accounts": "Gerencie suas contas e corretoras",
+                "assetTypes": "Organize as categorias de ativos",
+                "assets": "Configure os símbolos que você opera",
+                "chartTypes": "Defina as representações gráficas",
+                "currencies": "Gerencie moedas de negociação",
+                "database": "Estado e integridade dos dados",
+                "emotionalStates": "Mapeie gatilhos emocionais",
+                "fees": "Configure perfis de custos",
                 "fiscal": {
-                    "assignments": "Atribua ativos aos perfis",
-                    "profiles": "Configure perfis tributários",
-                    "rules": "Configure as regras fiscais"
+                    "assignments": "Atribua ativos a perfis fiscais",
+                    "profiles": "Configure perfis IR",
+                    "rules": "Regras de alíquotas e impostos"
                 },
-                "general": "Configurações gerais",
-                "indicators": "Gerencie indicadores",
-                "integrations": "Gerencie integrações de API",
-                "license": "Gerencie sua licença do aplicativo",
-                "markets": "Gerencie os mercados",
-                "modalities": "Gerencie modalidades (ex: Day Trade)",
-                "profile": "Gerencie seu perfil pessoal",
-                "risk": "Gerencie limites de risco",
-                "strategies": "Gerencie suas estratégias",
-                "tags": "Gerencie tags customizadas",
-                "timeframes": "Gerencie tempos gráficos",
-                "asset-profiles": "Configure limites e regras específicas para cada ativo.",
-                "risk-management": "Configure seu plano de risco global e limites de perda.",
-                "growth-plans": "Crie planos com progressão e regressão automática de fases."
+                "general": "Configurações globais e sistema",
+                "indicators": "Gerencie indicadores favoritos",
+                "integrations": "Configure integrações e APIs",
+                "license": "Gerencie o licenciamento vitalício",
+                "markets": "Gerencie os mercados base",
+                "modalities": "Configure estilos operacionais",
+                "profile": "Gerencie seu perfil e preferênccias",
+                "risk": "Configure limites e proteções",
+                "strategies": "Documente seus setups e regras",
+                "tags": "Etiquetas personalizadas para trades",
+                "timeframes": "Configure intervalos operacionais",
+                "asset-profiles": "Perfis específicos por ativo.",
+                "risk-management": "Gerenciamento de risco global.",
+                "growth-plans": "Planos de crescimento automatizado."
             },
             "emotionalStates": "Estados Emocionais",
             "fees": "Taxas",
@@ -952,25 +947,25 @@
             "markets": "Mercados Base",
             "modalities": "Modalidades",
             "profile": "Meu Perfil",
-            "risk": "Gestão de Risco",
+            "risk": "Risco",
             "sections": {
                 "analysis": "Análise",
                 "fiscal": "Fiscal",
                 "general": "Geral",
-                "integrations": "Integrations",
+                "integrations": "Integrações",
                 "operational": "Operacional",
-                "registration": "Cadastro",
+                "registration": "Cadastros",
                 "system": "Sistema"
             },
             "strategies": "Estratégias",
             "tags": "Tags",
             "timeframes": "Timeframes",
-            "asset-profiles": "Limites por Ativo",
-            "assetProfiles": "Limites por Ativo",
+            "asset-profiles": "Perfis de Ativo",
+            "assetProfiles": "Perfis de Ativo",
             "risk-management": "Gestão de Risco",
             "riskManagement": "Gestão de Risco",
-            "growth-plans": "Planos de Crescimento",
-            "growthPlans": "Planos de Crescimento"
+            "growth-plans": "Planos de Growth",
+            "growthPlans": "Planos de Growth"
         },
         "profile": {
             "description": "Gerencie suas informações pessoais e preferências do sistema.",
@@ -1003,11 +998,6 @@
                 "trial": "Licença Trial",
                 "trialBadge": "Período de Testes",
                 "viewDetails": "Ver Detalhes"
-            },
-            "nav": {
-                "descriptions": {
-                    "growth-plans": "Crie planos com progressão e regressão automática de fases."
-                }
             },
             "personalInfo": {
                 "avatar": "Foto de Perfil",

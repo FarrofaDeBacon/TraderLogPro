@@ -62,7 +62,7 @@
             "period": "Période",
             "status": "Statut",
             "strategy": "Stratégie",
-            "title": "Filtres"
+            "title": "Filtros"
         },
         "import": "Importer Trades",
         "messages": {
@@ -234,7 +234,7 @@
                 "update_error": "Erreur lors de la mise à jour de l'Trade.",
                 "update_success": "Trade mise à jour !",
                 "valid_asset_type": "Veuillez sélectionner un type d'actif valide.",
-                "complementary_darf_warning": "Atenção: Aumento de resultado detectado!",
+                "complementary_darf_warning": "Avertissement : Profit rétroactif détecté, une DARF complémentaire peut être requise !",
                 "invalid_asset_symbol": "Symbole d'actif invalide ou non enregistré.",
                 "invalid_entry_price": "Le prix d'entrée doit être supérieur à zéro.",
                 "invalid_exit_price": "Le prix de sortie est invalide.",
@@ -289,7 +289,7 @@
                     "observation": "Observation",
                     "price": "Prix",
                     "quantity": "Qté",
-                    "remaining": "Restants",
+                    "remaining": "Remaining",
                     "result": "Résultat",
                     "title": "Gestion des Partielles",
                     "type": "Type",
@@ -357,10 +357,12 @@
             "title_new": "Nouvelle Trade",
             "tooltips": {
                 "risk": "Risque",
-                "target": "Cible"
+                "target": "Cible",
+                "open_in_separate_window": "Ouvrir dans une fenêtre séparée"
             },
-            "unit_labels": {
-                "contracts": "CTR"
+            "units": {
+                "contracts": "CTR",
+                "points": "pts"
             },
             "volatility_options": {
                 "extreme": "Extrême",
@@ -370,10 +372,125 @@
             },
             "errors": {
                 "required": "Champ obligatoire manquant dans l'assistant de transaction."
+            },
+            "labels": {
+                "average": "Moyenne",
+                "average_price": "Prix Moyen"
             }
         },
         "quickEdit": {
             "title": "Édition Rapide"
+        }
+    },
+    "fiscal": {
+        "darf": {
+            "accountError": "Erreur de Compte",
+            "active": "Actif",
+            "buttons": {
+                "cancel": "Annuler",
+                "confirmPay": "Confirmer le Paiement",
+                "confirmUnpay": "Confirmer le Remboursement",
+                "delete": "Supprimer",
+                "pay": "Payer"
+            },
+            "description": "Gérez et stockez vos justificatifs de recouvrement.",
+            "emptyHistory": "Aucune DARF trouvée.",
+            "fineInterest": "Amende et Intérêts",
+            "history": "Historique des DARF",
+            "labels": {
+                "dueDate": "Échéance",
+                "fine": "Amende ($)",
+                "interest": "Intérêt ($)",
+                "paymentDate": "Date de Paiement",
+                "principal": "Principal",
+                "totalPaid": "Total Payé",
+                "valueToPay": "Montant à Payer"
+            },
+            "messages": {
+                "emptyHistory": "Aucune DARF payée en {year}.",
+                "loading": "Chargement..."
+            },
+            "modal": {
+                "delete": {
+                    "prompt": "Êtes-vous sûr de vouloir supprimer cette DARF ?",
+                    "title": "Confirmer la Suppresion"
+                },
+                "pay": {
+                    "description": "Saisissez os detalhes para registrar o paiement desta DARF.",
+                    "noAccount": "Sélectionnez un compte para débiter.",
+                    "title": "Enregistrer Paiement"
+                },
+                "unpay": {
+                    "descriptionLine1": "Ceci reverterá o status da DARF para Pendente e reembolsará o montant de",
+                    "descriptionLine2": "para le compte d'origine.",
+                    "descriptionLine3": "La transaction de sortie sera supprimée du Hub financier.",
+                    "title": "Annuler Paiement"
+                }
+            },
+            "principalValue": "Montant Principal",
+            "registerPayment": "Enregistrer Paiement",
+            "revenueCode": "Code de Recouvrement",
+            "selectAccount": "Sélectionner Compte",
+            "sourceAccount": "Compte d'Origine",
+            "status": {
+                "late": "En retard",
+                "paid": "Payé",
+                "pending": "En attente"
+            },
+            "table": {
+                "fineInterest": "Amendes/Intérêts",
+                "period": "Période",
+                "principalValue": "Montant Principal",
+                "revenueCode": "Code Recouvrement",
+                "status": "Situation",
+                "totalPaid": "Total Payé"
+            },
+            "title": "Tableau de Bord DARF",
+            "totalPaid": "Total Payé"
+        },
+        "irpf": {
+            "complementary": "Complémentaire",
+            "calculate": "Calculer",
+            "calculating": "Calcul...",
+            "description": "Acompanhe e consolide suas notas e tributos mensais (Day Trade e Swing).",
+            "evolution": "Évolution Fiscale",
+            "history": "Historique des Déclarations",
+            "kpis": {
+                "dueYearHint": "Cumul à payer sur cet exercice.",
+                "losses": "Pertes Cumulées",
+                "paidYearHint": "Somme des guides déjà payées.",
+                "pending": "Guides en Attente",
+                "pendingHint": "Vous avez {count} DARF(s) en attente.",
+                "totalDue": "Impôt Dû",
+                "totalPaid": "Total Payé"
+            },
+            "manageDarfs": "Gérer DARFs",
+            "modal": {
+                "description": "Calculez les résultats nets isolés d'un mois spécifique.",
+                "month": "Mois de Base",
+                "title": "Nouvelle Déclaration",
+                "year": "Année Civile"
+            },
+            "newAppraisal": "Nouvelle Déclaration",
+            "periodFilter": "Filtrer par Année",
+            "table": {
+                "actions": "Actions",
+                "alreadyGenerated": "DARF générée",
+                "cannotDelete": "Impossible de supprimer",
+                "compensated": "Compensé",
+                "generateDarf": "Générer DARF",
+                "minTaxAlert": "IRPF minimum",
+                "minTaxHint": "Valeur inférieure ou égale à R$ 10",
+                "netProfit": "Profit Net",
+                "ok": "Pas d'Impôt",
+                "paid": "Payé",
+                "pending": "En attente",
+                "period": "Mois/Année",
+                "status": "Situation",
+                "toPay": "IR Dû",
+                "type": "Modalité"
+            },
+            "title": "Centre IRPF"
         }
     }
 }

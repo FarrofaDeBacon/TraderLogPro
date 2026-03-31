@@ -52,7 +52,7 @@
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
                 <Badge variant="outline">
                     {$t(
-                        `settings.risk.accountTypes.${profile.account_type_applicability}`,
+                        `risk.accountTypes.${profile.account_type_applicability}`,
                     ) || profile.account_type_applicability}
                 </Badge>
                 {#if currentPlan?.enabled}
@@ -61,7 +61,7 @@
                         class="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/20"
                     >
                         <TrendingUp class="w-3 h-3 mr-1" />
-                        {$t("settings.risk.growthPlan.activeStatus")}
+                        {$t("risk.growth.activeStatus") || $t("risk.status.allowed")}
                     </Badge>
                 {/if}
             </div>
@@ -78,13 +78,13 @@
                     class="text-base flex items-center gap-2 text-red-600 dark:text-red-400"
                 >
                     <Shield class="w-4 h-4" />
-                    {$t("settings.risk.downside")}
+                    {$t("risk.plan.sections.downside")}
                 </Card.Title>
             </Card.Header>
             <Card.Content class="space-y-2">
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-muted-foreground"
-                        >{$t("settings.risk.dailyLossLimit")}</span
+                        >{$t("risk.plan.labels.dailyLossLimit")}</span
                     >
                     <span
                         class="font-bold text-red-600 dark:text-red-400 text-lg"
@@ -94,11 +94,10 @@
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-muted-foreground"
-                        >{$t("settings.risk.maxRiskPerTrade")}</span
+                        >{$t("risk.plan.labels.maxRiskPerTrade")}</span
                     >
                     <span class="font-mono font-medium"
-                        >{profile.max_risk_per_trade_percent}%</span
-                    >
+                        >{profile.max_risk_per_trade_percent}%</span>
                 </div>
             </Card.Content>
         </Card.Root>
@@ -110,13 +109,13 @@
                     class="text-base flex items-center gap-2 text-green-600 dark:text-green-400"
                 >
                     <Target class="w-4 h-4" />
-                    {$t("settings.risk.upside")}
+                    {$t("risk.plan.sections.upside")}
                 </Card.Title>
             </Card.Header>
             <Card.Content class="space-y-2">
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-muted-foreground"
-                        >{$t("settings.risk.dailyGoal")}</span
+                        >{$t("risk.plan.labels.dailyGoal")}</span
                     >
                     <span
                         class="font-bold text-green-600 dark:text-green-400 text-lg"
@@ -126,7 +125,7 @@
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-muted-foreground"
-                        >{$t("settings.risk.minRiskReward")}</span
+                        >{$t("risk.plan.labels.minRiskReward")}</span
                     >
                     <span class="font-mono font-medium"
                         >1:{profile.min_risk_reward}</span
@@ -141,14 +140,14 @@
         <Card.Header class="pb-2">
             <Card.Title class="text-base flex items-center gap-2">
                 <Lock class="w-4 h-4" />
-                {$t("settings.risk.discipline")}
+                {$t("risk.plan.sections.discipline")}
             </Card.Title>
         </Card.Header>
         <Card.Content class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
                 <span
                     class="text-xs text-muted-foreground block uppercase font-bold"
-                    >{$t("settings.risk.maxTradesDay")}</span
+                    >{$t("risk.plan.labels.maxTradesDay")}</span
                 >
                 <div class="flex items-center gap-2">
                     <Clock class="w-4 h-4 text-muted-foreground" />
@@ -161,7 +160,7 @@
             <div class="space-y-1">
                 <span
                     class="text-xs text-muted-foreground block uppercase font-bold"
-                    >{$t("settings.risk.platformLock")}</span
+                    >{$t("risk.plan.labels.platformLock")}</span
                 >
                 <div class="flex items-center gap-2">
                     {#if profile.lock_on_loss}
@@ -183,7 +182,7 @@
                     class="col-span-2 mt-2 p-2 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs rounded flex items-start gap-2"
                 >
                     <AlertTriangle class="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>{$t("settings.risk.lockWarning")}</span>
+                    <span>{$t("risk.plan.labels.lockWarning")}</span>
                 </div>
             {/if}
         </Card.Content>
@@ -191,13 +190,6 @@
 
     <!-- Growth Plan Summary -->
     {#if currentPlan && currentPlan.enabled && currentPlan.phases && currentPlan.phases.length > 0}
-        <div class="space-y-2">
-            <h3
-                class="text-sm font-medium flex items-center gap-2 text-muted-foreground"
-            >
-                <TrendingUp class="w-4 h-4" />
-                {$t("settings.risk.growthPlan.phasesTitle")}
-            </h3>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {#each currentPlan.phases as phase, i}
                     <div
@@ -215,7 +207,7 @@
                             {phase.name}
                         </div>
                         <div class="text-muted-foreground">
-                            {$t("settings.risk.growthPlan.maxLotLabel")}
+                            {$t("risk.growth.maxLotsLabel") || $t("risk.cockpit.stats.allowedSizing")}
                             <span class="font-mono text-foreground"
                                 >{phase.lot_size}</span
                             >
@@ -223,6 +215,5 @@
                     </div>
                 {/each}
             </div>
-        </div>
     {/if}
 </div>

@@ -1,116 +1,4 @@
 {
-    "fiscal": {
-        "darf": {
-            "accountError": "Erro na Conta",
-            "active": "Ativo",
-            "buttons": {
-                "cancel": "Cancelar",
-                "confirmPay": "Confirmar Pagamento",
-                "confirmUnpay": "Confirmar Estorno",
-                "delete": "Excluir",
-                "pay": "Pagar"
-            },
-            "description": "Gerencie e armazene seus comprovantes de arrecadação.",
-            "emptyHistory": "Nenhum DARF encontrado.",
-            "fineInterest": "Multa e Juros",
-            "history": "Histórico de DARFs",
-            "labels": {
-                "dueDate": "Vencimento",
-                "fine": "Multa (R$)",
-                "interest": "Juros (R$)",
-                "paymentDate": "Data do Pagamento",
-                "principal": "Principal",
-                "totalPaid": "Valor Total Pago",
-                "valueToPay": "Valor a Pagar"
-            },
-            "messages": {
-                "emptyHistory": "Nenhuma DARF paga em {year}.",
-                "loading": "Carregando..."
-            },
-            "modal": {
-                "delete": {
-                    "prompt": "Tem certeza que deseja excluir esta DARF?",
-                    "title": "Confirmar Exclusão"
-                },
-                "pay": {
-                    "description": "Insira os detalhes para registrar o pagamento desta DARF.",
-                    "noAccount": "Selecione uma conta para debitar.",
-                    "title": "Registrar Pagamento"
-                },
-                "unpay": {
-                    "descriptionLine1": "Isso irá reverter o status da DARF para Pendente e estornar o valor de",
-                    "descriptionLine2": "para a conta de origem.",
-                    "descriptionLine3": "A transação de saída será removida do Hub Financeiro.",
-                    "title": "Desfazer Pagamento"
-                }
-            },
-            "principalValue": "Valor Principal",
-            "registerPayment": "Registrar Pagamento",
-            "revenueCode": "Código de Receita",
-            "selectAccount": "Selecionar Conta",
-            "sourceAccount": "Conta de Origem",
-            "status": {
-                "late": "Atrasado",
-                "paid": "Pago",
-                "pending": "Pendente"
-            },
-            "table": {
-                "fineInterest": "Multas/Juros",
-                "period": "Período",
-                "principalValue": "Valor Principal",
-                "revenueCode": "Cód. Receita",
-                "status": "Status",
-                "totalPaid": "Total Pago"
-            },
-            "title": "Painel de DARFs",
-            "totalPaid": "Total Pago"
-        },
-        "irpf": {
-            "complementary": "Complementar",
-            "calculate": "Calcular",
-            "calculating": "Calculando...",
-            "description": "Acompanhe e consolide suas notas e tributos mensais (Day Trade e Swing).",
-            "evolution": "Evolução Tributária",
-            "history": "Histórico de Apurações",
-            "kpis": {
-                "dueYearHint": "Acumulado a pagar neste exercício.",
-                "losses": "Prejuízos Acumulados",
-                "paidYearHint": "Soma das guias já quitadas.",
-                "pending": "Guias Pendentes",
-                "pendingHint": "Você possui {count} DARF(s) pendente(s).",
-                "totalDue": "Imposto Devido",
-                "totalPaid": "Total Pago"
-            },
-            "manageDarfs": "Gerenciar DARFs",
-            "modal": {
-                "description": "Calcule os resultados líquidos isolados de um mês específico.",
-                "month": "Mês Base",
-                "title": "Nova Apuração",
-                "year": "Ano-calendário"
-            },
-            "newAppraisal": "Nova Apuração",
-            "periodFilter": "Filtrar por Ano",
-            "saveBeforeDarf": "Salvar apuração antes de gerar a DARF.",
-            "table": {
-                "actions": "Ações",
-                "alreadyGenerated": "DARF gerada",
-                "cannotDelete": "Não é possível excluir",
-                "compensated": "Compensado",
-                "generateDarf": "Gerar DARF",
-                "minTaxAlert": "IRPF mínimo",
-                "minTaxHint": "Valor inferior ou igual à R$ 10",
-                "netProfit": "Lucro Líq.",
-                "ok": "Sem Imposto",
-                "paid": "Quitado",
-                "pending": "Pendente",
-                "period": "Mês/Ano",
-                "status": "Situação",
-                "toPay": "IR Devido",
-                "type": "Modalidade"
-            },
-            "title": "Central de IRPF"
-        }
-    },
     "reports": {
         "operationalTitle": "Relatório de Performance Operacional",
         "imminentRisks": "Riscos Iminentes",
@@ -153,6 +41,34 @@
             "imminentRisks": "Riscos Iminentes",
             "noGraveRisks": "Nenhum risco matricial grave identificado.",
             "executionPlan": "Plano de Execução"
+        },
+        "daily": {
+            "title": "Fechamento do Dia",
+            "subtitle": "Revisão comportamental rápida",
+            "empty": "Nenhuma operação encontrada nesta data.",
+            "sections": {
+                "summary": "Resumo Financeiro",
+                "stats": "Operações",
+                "best": "Melhor",
+                "worst": "Pior",
+                "behavioral": "Análise Comportamental",
+                "selfEvaluation": "Sua Avaliação do Dia"
+            },
+            "ratings": {
+                "good": "Bom",
+                "neutral": "Neutro",
+                "bad": "Ruim",
+                "placeholder": "Nota rápida (opcional)... O que você aprendeu hoje ou onde pecou?"
+            },
+            "actions": {
+                "save": "Salvar Fechamento"
+            },
+            "toasts": {
+                "rateFirst": "Por favor, avalie seu dia primeiro.",
+                "shieldWall": "Shield Wall! Disciplina estendida para {days} dias seguidos!",
+                "streakBroken": "Streak de disciplina quebrada. O foco agora é retomar o controle amanhã.",
+                "saveSuccess": "Fechamento diário salvo com sucesso! 🎯"
+            }
         }
     }
 }

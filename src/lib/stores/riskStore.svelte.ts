@@ -142,7 +142,12 @@ export class RiskStore {
             startingCapital = linkedAccount ? linkedAccount.balance : undefined;
         }
 
-        // 7. Acionar o Agregador Central Puro do Domínio
+        // 7. Resolver Plano Ativo para extrair os Modos
+        const activeGrowthPlan = resolution.growthPlanId 
+            ? riskSettingsStore.growthPlans.find(p => p.id === resolution.growthPlanId)
+            : undefined;
+
+        // 8. Acionar o Agregador Central Puro do Domínio
         const state = buildRiskCockpitState(
             domainProfile,
             domainTrades,
@@ -151,7 +156,12 @@ export class RiskStore {
             resolution.currentPhaseIndex,
             resolution.totalPhases,
             resolution.phaseStartedAt,
-            resolution
+            resolution,
+            {
+                daily_loss_mode: activeGrowthPlan?.daily_loss_mode,
+                phase_drawdown_mode: activeGrowthPlan?.phase_drawdown_mode,
+                phase_target_mode: activeGrowthPlan?.phase_target_mode
+            }
         );
 
         console.log("[CockpitState] Resolution Conditions Raw:", resolution.conditionsToAdvance);
@@ -206,6 +216,35 @@ export class RiskStore {
                 });
                 toast.success(`Promovido para fase ${nextIndex + 1}`);
             }
+        }
+    }
+
+    /**
+     * Reinicia o plano de crescimento atual para a fase 1 e reseta a data de início.
+     */
+    async restartGrowthPlan() {
+        const ctx = this.resolvedGrowthContext;
+        if (!ctx) return;
+
+        const res = ctx.resolution;
+        const now = new Date().toISOString();
+
+        try {
+            if (res.source === "scope" && res.scopeId) {
+                await riskSettingsStore.updateAssetRiskProfile(res.scopeId, {
+                    current_phase_index: 0,
+                    currentPhaseStartedAt: now
+                });
+            } else if (res.source === "global" && res.growthPlanId) {
+                await riskSettingsStore.updateGrowthPlan(res.growthPlanId, {
+                    current_phase_index: 0,
+                    currentPhaseStartedAt: now
+                });
+            }
+            toast.success("Plano reiniciado com sucesso.");
+        } catch (e: any) {
+            console.error("[RiskStore] Erro ao reiniciar plano:", e);
+            toast.error("Falha ao reiniciar plano.");
         }
     }
 

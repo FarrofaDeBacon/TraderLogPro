@@ -70,8 +70,11 @@ export const formatNumber = (amount: number, locale: string = "pt-BR") => {
  * Direct "YYYY-MM-DD" parsing by new Date() often defaults to UTC midnight, 
  * which shifts the date in local Brazilian timezones.
  */
-export const parseSafeDate = (dateStr: string | null | undefined): Date => {
-    if (!dateStr) return new Date();
+export const parseSafeDate = (dateInput: string | Date | null | undefined): Date => {
+    if (!dateInput) return new Date();
+    if (dateInput instanceof Date) return dateInput;
+
+    const dateStr = dateInput;
 
     // If it's strictly YYYY-MM-DD, force it to be local by adding a separator-less time or using parts
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {

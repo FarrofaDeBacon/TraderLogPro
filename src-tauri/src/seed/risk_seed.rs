@@ -345,6 +345,9 @@ pub async fn seed_growth_plans(db: &Surreal<Db>) -> Result<(), String> {
         enabled: true,
         current_phase_index: 0,
         phases: growth_phases,
+        daily_loss_mode: "accumulate".to_string(),
+        phase_drawdown_mode: "accumulate".to_string(),
+        phase_target_mode: "cumulative".to_string(),
     };
 
     let mut json = serde_json::to_value(&plan).unwrap();

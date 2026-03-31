@@ -32,6 +32,7 @@ import { invokeWithTimeout } from "../utils";
 
 class AppFacadeStore {
     isLoadingData = $state<boolean>(false);
+    isInitialLoadComplete = $state<boolean>(false);
 
     constructor() {
         if (typeof window !== "undefined") {
@@ -134,6 +135,7 @@ class AppFacadeStore {
                 
                 const totalDuration = (performance.now() - startTime).toFixed(0);
                 console.log(`[SettingsStore] Hydra pipeline complete. Total load time: ${totalDuration}ms.`);
+                this.isInitialLoadComplete = true;
             };
 
             // Run Background Pipeline

@@ -342,6 +342,9 @@ export type GrowthPlan = {
     current_phase_index: number;
     currentPhaseStartedAt?: string; // ISO String
     phases: GrowthPhase[];
+    daily_loss_mode?: 'accumulate' | 'recover';
+    phase_drawdown_mode?: 'accumulate' | 'recover';
+    phase_target_mode?: 'cumulative' | 'reset_each_phase';
 };
 
 export type RiskProfile = {

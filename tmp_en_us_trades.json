@@ -1,4 +1,4 @@
-{
+﻿{
     "trades": {
         "actions": {
             "clear_filters": "Clear Filters",
@@ -15,7 +15,7 @@
             "closed": "Closed"
         },
         "dashboard": {
-            "weekOf": "Week of {date}"
+            "weekOf": "Semana de {date}"
         },
         "delete": {
             "confirmation": "Are you sure you want to delete this operation? This action cannot be undone.",
@@ -234,15 +234,11 @@
                 "update_error": "Error updating operation.",
                 "update_success": "Operation updated!",
                 "valid_asset_type": "Please select a valid Asset Type.",
-                "complementary_darf_warning": "Warning: Possible retroactive tax (DARF) required due to recalculated profit increase.",
+                "complementary_darf_warning": "Attention: Result increase detected!",
                 "invalid_asset_symbol": "Invalid or unregistered asset symbol.",
                 "invalid_entry_price": "Entry price must be greater than zero.",
                 "invalid_exit_price": "Exit price is invalid.",
-                "invalid_quantity": "Lot quantity must be positive.",
-                "rtd_position_addition": "Position increase detected via Profit RTD",
-                "rtd_profit_asset_active": "Profit RTD connection active",
-                "rtd_partial_exit": "Partial exit via Profit RTD",
-                "sync_warning": "Sync Warning"
+                "invalid_quantity": "Lot quantity must be positive."
             },
             "partials": {
                 "add_partial": "Add Partial",
@@ -318,7 +314,7 @@
                 "psychology": "PSYCHOLOGY",
                 "review": "REVIEW"
             },
-            "subtitle": "Fill in the details of your operational journey.",
+            "subtitle": "Preencha os detalhes da sua jornada operacional.",
             "summary": {
                 "addition": "Addition",
                 "calc_desc": "Description",
@@ -326,12 +322,12 @@
                 "cancel": "Cancel",
                 "entry": "Entry",
                 "exit": "Exit",
-                "final_exit": "Final Entry",
+                "final_exit": "Final Exit",
                 "finish": "Finish Registry",
                 "fixed_fee": "Fixed Fee",
                 "gross_result": "Gross Result",
                 "exchange_fees": "Exchange Fees",
-                "irrf_estimated": "Estimated IRRF",
+                "irrf_estimated": "IRRF Estimated",
                 "images": "Images",
                 "n": "N",
                 "na": "N/A",
@@ -361,12 +357,10 @@
             "title_new": "New Operation",
             "tooltips": {
                 "risk": "Risk",
-                "target": "Target",
-                "open_in_separate_window": "Open in separate window"
+                "target": "Target"
             },
-            "units": {
-                "contracts": "CTR",
-                "points": "pts"
+            "unit_labels": {
+                "contracts": "CTR"
             },
             "volatility_options": {
                 "extreme": "Extreme",
@@ -376,126 +370,10 @@
             },
             "errors": {
                 "required": "Missing required field in trade wizard."
-            },
-            "labels": {
-                "average": "Avg",
-                "average_price": "Avg Price"
             }
         },
         "quickEdit": {
             "title": "Quick Edit"
-        }
-    },
-    "fiscal": {
-        "darf": {
-            "accountError": "Account Error",
-            "active": "Active",
-            "buttons": {
-                "cancel": "Cancel",
-                "confirmPay": "Confirm Payment",
-                "confirmUnpay": "Confirm Reversal",
-                "delete": "Delete",
-                "pay": "Pay"
-            },
-            "description": "Manage and store your tax collection vouchers.",
-            "emptyHistory": "No DARF found.",
-            "fineInterest": "Fine and Interest",
-            "history": "DARF History",
-            "labels": {
-                "dueDate": "Due Date",
-                "fine": "Fine ($)",
-                "interest": "Interest ($)",
-                "paymentDate": "Payment Date",
-                "principal": "Principal",
-                "totalPaid": "Total Paid Amount",
-                "valueToPay": "Value to Pay"
-            },
-            "messages": {
-                "emptyHistory": "No DARF paid in {year}.",
-                "loading": "Loading..."
-            },
-            "modal": {
-                "delete": {
-                    "prompt": "Are you sure you want to delete this DARF?",
-                    "title": "Confirm Deletion"
-                },
-                "pay": {
-                    "description": "Enter the details to record the payment of this DARF.",
-                    "noAccount": "Select an account to debit.",
-                    "title": "Record Payment"
-                },
-                "unpay": {
-                    "descriptionLine1": "This will revert the DARF status to Pending and reverse the value of",
-                    "descriptionLine2": "to the origin account.",
-                    "descriptionLine3": "The output transaction will be removed from the Financial Hub.",
-                    "title": "Undo Payment"
-                }
-            },
-            "principalValue": "Principal Value",
-            "registerPayment": "Record Payment",
-            "revenueCode": "Revenue Code",
-            "selectAccount": "Select Account",
-            "sourceAccount": "Origin Account",
-            "status": {
-                "late": "Late",
-                "paid": "Paid",
-                "pending": "Pending"
-            },
-            "table": {
-                "fineInterest": "Fine/Interest",
-                "period": "Period",
-                "principalValue": "Principal Value",
-                "revenueCode": "Rev. Code",
-                "status": "Status",
-                "totalPaid": "Total Paid"
-            },
-            "title": "DARF Dashboard",
-            "totalPaid": "Total Paid"
-        },
-        "irpf": {
-            "complementary": "Complementary",
-            "calculate": "Calculate",
-            "calculating": "Calculating...",
-            "description": "Track and consolidate your monthly notes and taxes (Day Trade and Swing).",
-            "evolution": "Tax Evolution",
-            "history": "Assessment History",
-            "kpis": {
-                "dueYearHint": "Accumulated to pay in this exercise.",
-                "losses": "Accumulated Losses",
-                "paidYearHint": "Sum of guides already paid.",
-                "pending": "Pending Guides",
-                "pendingHint": "You have {count} pending DARF(s).",
-                "totalDue": "Tax Due",
-                "totalPaid": "Total Paid"
-            },
-            "manageDarfs": "Manage DARFs",
-            "modal": {
-                "description": "Calculate net isolated results for a specific month.",
-                "month": "Base Month",
-                "title": "New Assessment",
-                "year": "Calendar Year"
-            },
-            "newAppraisal": "New Assessment",
-            "periodFilter": "Filter by Year",
-            "saveBeforeDarf": "Save the assessment before generating a DARF.",
-            "table": {
-                "actions": "Actions",
-                "alreadyGenerated": "DARF generated",
-                "cannotDelete": "Cannot delete",
-                "compensated": "Compensated",
-                "generateDarf": "Generate DARF",
-                "minTaxAlert": "Minimum IRPF",
-                "minTaxHint": "Value less than or equal to $ 10",
-                "netProfit": "Net Profit",
-                "ok": "No Tax",
-                "paid": "Paid",
-                "pending": "Pending",
-                "period": "Month/Year",
-                "status": "Status",
-                "toPay": "Tax Due",
-                "type": "Modality"
-            },
-            "title": "IRPF Central"
         }
     }
 }

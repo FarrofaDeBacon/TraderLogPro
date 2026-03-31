@@ -310,8 +310,8 @@
                     type: autoType,
                     notes:
                         autoType === "entry"
-                            ? "Aumento de Posição via RTD"
-                            : "Parcial via RTD",
+                            ? $t("trades.wizard.messages.rtd_position_addition")
+                            : $t("trades.wizard.messages.rtd_partial_exit"),
                 });
                 currentStep = 2; // Move to the partials manager step immediately
             }
@@ -651,7 +651,7 @@
                 return {
                     id: `rtd:${sym}`,
                     symbol: sym,
-                    name: `Ativo Profit RTD (${sym})`,
+                    name: `${$t("trades.wizard.messages.rtd_profit_asset_active")} (${sym})`,
                     asset_type_id: guessedTypeId,
                     point_value: pointValue,
                     default_fee_id: undefined,
@@ -819,7 +819,7 @@
                 const exch = entryValue * (feeProfile.exchange_fee / 100);
                 calculatedFees += exch;
                 memoryItems.push({
-                    label: `Taxas de Bolsa (${feeProfile.exchange_fee}%)`,
+                    label: `${$t("trades.wizard.summary.exchange_fees")} (${feeProfile.exchange_fee}%)`,
                     resultCurrency: -exch,
                     resultPoints: -exch / pointValue,
                     unit: "currency",
@@ -831,7 +831,7 @@
                     grossCurrencyTotal * (feeProfile.withholding_tax / 100);
                 calculatedFees += irrf;
                 memoryItems.push({
-                    label: `IRRF Estimado (${feeProfile.withholding_tax}%)`,
+                    label: `${$t("trades.wizard.summary.irrf_estimated")} (${feeProfile.withholding_tax}%)`,
                     resultCurrency: -irrf,
                     resultPoints: -irrf / pointValue,
                     unit: "currency",
@@ -1149,7 +1149,7 @@
                         size="icon"
                         class="h-8 w-8 text-muted-foreground hover:text-primary"
                         onclick={detach}
-                        title="Abrir em janela independente"
+                        title={$t("trades.wizard.tooltips.open_in_separate_window")}
                     >
                         <ExternalLink class="w-4 h-4" />
                     </Button>
@@ -1209,7 +1209,7 @@
                                     <ShieldCheck class="w-4 h-4" />
                                     <span
                                         class="text-xs font-bold uppercase tracking-wider"
-                                        >Aviso de Sincronização</span
+                                        >{$t("trades.wizard.messages.sync_warning")}</span
                                     >
                                 </div>
                                 <p
@@ -1848,7 +1848,7 @@
                                     <div
                                         class="text-[9px] font-mono text-red-500 font-bold uppercase tracking-tighter"
                                     >
-                                        {$t("trades.wizard.tooltips.risk")}: R$ {Math.abs(
+                                        {$t("trades.wizard.tooltips.risk")}: {calculationResult.currencySymbol} {Math.abs(
                                             (formData.entry_price -
                                                 formData.stop_loss) *
                                                 formData.quantity *
@@ -1883,7 +1883,7 @@
                                         class="text-[9px] font-mono text-emerald-500 font-bold uppercase tracking-tighter"
                                     >
                                         {$t("trades.wizard.tooltips.target")}:
-                                        R$ {Math.abs(
+                                        {calculationResult.currencySymbol} {Math.abs(
                                             (formData.take_profit -
                                                 formData.entry_price) *
                                                 formData.quantity *
@@ -1940,7 +1940,7 @@
                                     $t("trades.wizard.unit_labels.contracts")}
                                 resultSuffix={calculationResult.assetType
                                     ?.result_type === "points"
-                                    ? "pts"
+                                    ? $t("trades.wizard.units.points")
                                     : ""}
                                 resultPrefix={calculationResult.assetType
                                     ?.result_type === "currency"
@@ -2185,7 +2185,7 @@
                                         >
                                         {#if calculationResult.totalEntryQty > formData.quantity}
                                             <span class="ml-2 text-primary/60">
-                                                / MÉDIO: <span
+                                                / {$t("trades.wizard.labels.average").toUpperCase()}: <span
                                                     class="text-foreground font-mono font-bold"
                                                     >{(
                                                         formData.entry_price ||
@@ -2221,7 +2221,7 @@
                                         )}
                                         <span
                                             class="text-xs uppercase font-bold text-muted-foreground mr-1"
-                                            >pts</span
+                                            >{$t("trades.wizard.units.points")}</span
                                         >
                                         <span
                                             class="text-xs text-muted-foreground font-medium block md:inline md:ml-2"
@@ -2448,7 +2448,7 @@
                                                 <span
                                                     class="text-[10px] text-muted-foreground"
                                                 >
-                                                    (Médio: {(
+                                                    ({$t("trades.wizard.labels.average")}: {(
                                                         formData.entry_price ||
                                                         0
                                                     ).toLocaleString(
@@ -2493,7 +2493,7 @@
                                                     {
                                                         maximumFractionDigits: 2,
                                                     },
-                                                )} pts
+                                                )} {$t("trades.wizard.units.points")}
                                                 <span
                                                     class="text-[10px] text-muted-foreground block font-bold"
                                                 >
@@ -2630,7 +2630,7 @@
                                                                 {
                                                                     maximumFractionDigits: 2,
                                                                 },
-                                                            )} pts
+                                                            )} {$t("trades.wizard.units.points")}
                                                             <span
                                                                 class="text-[9px] opacity-60 ml-1"
                                                             >
@@ -2670,7 +2670,7 @@
                                                         {
                                                             maximumFractionDigits: 2,
                                                         },
-                                                    )} pts
+                                                    )} {$t("trades.wizard.units.points")}
                                                     <span
                                                         class="text-[9px] text-muted-foreground ml-1"
                                                     >

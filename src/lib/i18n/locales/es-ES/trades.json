@@ -101,7 +101,7 @@
             "avg_rr": "R:R Medio",
             "closed_trades": "Operaciones Cerradas",
             "daily_pnl": "P&L Diario",
-            "open_trades": "abiertas",
+            "open_trades": "abertas",
             "profit_factor": "Factor de Beneficio",
             "total_pl": "Resultado Acumulado",
             "total_pnl": "P&L Total",
@@ -214,7 +214,7 @@
             },
             "media": {
                 "attachment": "Anexo #",
-                "description": "Agregue capturas de Profit, TradingView o fotos del setup.",
+                "description": "Agregue capturas de Profit, TradingView or setup photos.",
                 "drag_drop": "Arrastra o Haz Clic",
                 "images": "Imágenes",
                 "select_files": "Seleccionar Archivos"
@@ -234,7 +234,7 @@
                 "update_error": "Error al actualizar la operación.",
                 "update_success": "¡Operación actualizada!",
                 "valid_asset_type": "Por favor, seleccione un Tipo de Activo válido.",
-                "complementary_darf_warning": "Atenção: Aumento de resultado detectado!",
+                "complementary_darf_warning": "¡Advertencia: Posible necesidad de DARF complementario detectada debido al aumento del resultado!",
                 "invalid_asset_symbol": "Símbolo de activo inválido o no registrado.",
                 "invalid_entry_price": "El precio de entrada debe ser mayor que cero.",
                 "invalid_exit_price": "El precio de salida es inválido.",
@@ -357,10 +357,12 @@
             "title_new": "Nueva Operación",
             "tooltips": {
                 "risk": "Riesgo",
-                "target": "Objetivo"
+                "target": "Objetivo",
+                "open_in_separate_window": "Abrir en ventana independiente"
             },
-            "unit_labels": {
-                "contracts": "CTR"
+            "units": {
+                "contracts": "CTR",
+                "points": "pts"
             },
             "volatility_options": {
                 "extreme": "Extrema",
@@ -370,10 +372,125 @@
             },
             "errors": {
                 "required": "Falta campo obligatorio en el asistente de trades."
+            },
+            "labels": {
+                "average": "Médio",
+                "average_price": "Precio Medio"
             }
         },
         "quickEdit": {
             "title": "Edición Rápida"
+        }
+    },
+    "fiscal": {
+        "darf": {
+            "accountError": "Error de Cuenta",
+            "active": "Activo",
+            "buttons": {
+                "cancel": "Cancelar",
+                "confirmPay": "Confirmar Pago",
+                "confirmUnpay": "Confirmar Reembolso",
+                "delete": "Eliminar",
+                "pay": "Pagar"
+            },
+            "description": "Gere e armazene sus comprobantes de recaudación.",
+            "emptyHistory": "Nenhum DARF encontrado.",
+            "fineInterest": "Multa e Interés",
+            "history": "Historial de DARFs",
+            "labels": {
+                "dueDate": "Vencimiento",
+                "fine": "Multa ($)",
+                "interest": "Interés ($)",
+                "paymentDate": "Fecha de Pago",
+                "principal": "Principal",
+                "totalPaid": "Total Pagado",
+                "valueToPay": "Valor a Pagar"
+            },
+            "messages": {
+                "emptyHistory": "Nenhuma DARF paga em {year}.",
+                "loading": "Cargando..."
+            },
+            "modal": {
+                "delete": {
+                    "prompt": "¿Seguro que quieres eliminar esta DARF?",
+                    "title": "Confirmar Eliminación"
+                },
+                "pay": {
+                    "description": "Ingrese los detalhes para registrar o pago desta DARF.",
+                    "noAccount": "Seleccione uma cuenta para debitar.",
+                    "title": "Registrar Pago"
+                },
+                "unpay": {
+                    "descriptionLine1": "Esto reverterá o status da DARF para Pendiente e reembolsará o valor de",
+                    "descriptionLine2": "para a cuenta de origen.",
+                    "descriptionLine3": "A transação de saída será removida do Hub Financiero.",
+                    "title": "Deshacer Pago"
+                }
+            },
+            "principalValue": "Valor Principal",
+            "registerPayment": "Registrar Pago",
+            "revenueCode": "Código de Recaudación",
+            "selectAccount": "Seleccionar Cuenta",
+            "sourceAccount": "Cuenta de Origen",
+            "status": {
+                "late": "Atrasado",
+                "paid": "Pagado",
+                "pending": "Pendiente"
+            },
+            "table": {
+                "fineInterest": "Multas/Interés",
+                "period": "Período",
+                "principalValue": "Valor Principal",
+                "revenueCode": "Cód. Recaudación",
+                "status": "Situación",
+                "totalPaid": "Total Pagado"
+            },
+            "title": "Panel de DARFs",
+            "totalPaid": "Total Pagado"
+        },
+        "irpf": {
+            "complementary": "Complementario",
+            "calculate": "Calcular",
+            "calculating": "Calculando...",
+            "description": "Acompanhe e consolide suas notas e tributos mensais (Day Trade e Swing).",
+            "evolution": "Evolución Tributaria",
+            "history": "Histórico de Apurações",
+            "kpis": {
+                "dueYearHint": "Acumulado a pagar neste exercício.",
+                "losses": "Prejuízos Acumulados",
+                "paidYearHint": "Soma das guias já quitadas.",
+                "pending": "Guias Pendentes",
+                "pendingHint": "Você possui {count} DARF(s) pendente(s).",
+                "totalDue": "Imposto Devido",
+                "totalPaid": "Total Pagado"
+            },
+            "manageDarfs": "Gerenciar DARFs",
+            "modal": {
+                "description": "Calcule los resultados líquidos isolados de um mês específico.",
+                "month": "Mês Base",
+                "title": "Nova Apuração",
+                "year": "Ano-calendário"
+            },
+            "newAppraisal": "Nova Apuração",
+            "periodFilter": "Filtrar por Ano",
+            "table": {
+                "actions": "Ações",
+                "alreadyGenerated": "DARF gerada",
+                "cannotDelete": "Não é possível excluir",
+                "compensated": "Compensado",
+                "generateDarf": "Gerar DARF",
+                "minTaxAlert": "IRPF mínimo",
+                "minTaxHint": "Valor inferior ou igual à R$ 10",
+                "netProfit": "Lucro Líq.",
+                "ok": "Sem Imposto",
+                "paid": "Quitado",
+                "pending": "Pendente",
+                "period": "Mês/Ano",
+                "status": "Situação",
+                "toPay": "IR Devido",
+                "type": "Modalidade"
+            },
+            "title": "Central de IRPF"
         }
     }
 }

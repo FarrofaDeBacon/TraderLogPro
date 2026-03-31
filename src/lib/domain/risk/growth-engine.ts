@@ -91,7 +91,9 @@ function getCanonicalMetric(rawKey: string): string {
  */
 export function calculateGrowthMetrics(
     trades: TradeRiskSnapshot[], 
-    startingCapital: number
+    startingCapital: number,
+    dailyLossMode: 'accumulate' | 'recover' = 'accumulate',
+    phaseDrawdownMode: 'accumulate' | 'recover' = 'accumulate'
 ): GrowthMetrics {
     const tradeCount = trades.length;
     if (tradeCount === 0) {
@@ -130,7 +132,16 @@ export function calculateGrowthMetrics(
         if (currentDDPercent > maxDrawdownPercent) maxDrawdownPercent = currentDDPercent;
 
         const dateStr = toLocalDateStr(trade.date);
-        dailyPnL[dateStr] = (dailyPnL[dateStr] || 0) + trade.pnl;
+        
+        if (dailyLossMode === 'accumulate') {
+            // Apenas perdas somam na perda diária consumida
+            if (trade.pnl < 0) {
+                dailyPnL[dateStr] = (dailyPnL[dateStr] || 0) + trade.pnl;
+            }
+        } else {
+            // Ganhos abatem perdas (saldo líquido do dia)
+            dailyPnL[dateStr] = (dailyPnL[dateStr] || 0) + trade.pnl;
+        }
     }
 
     const dailyValues = Object.entries(dailyPnL).sort((a, b) => a[0].localeCompare(b[0]));
@@ -157,8 +168,12 @@ export function calculateGrowthMetrics(
 
     return {
         tradeCount, winRate, profitFactor, expectancyR,
-        drawdownPercent: maxDrawdownPercent, 
-        drawdownAmount: maxDrawdownAmount,
+        drawdownPercent: phaseDrawdownMode === 'recover' 
+            ? (peak > 0 ? ((peak - currentEquity) / peak) * 100 : 0)
+            : maxDrawdownPercent, 
+        drawdownAmount: phaseDrawdownMode === 'recover'
+            ? (peak - currentEquity)
+            : maxDrawdownAmount,
         currentDrawdownAmount: peak - currentEquity,
         currentDrawdownPercent: peak > 0 ? ((peak - currentEquity) / peak) * 100 : 0,
         maxDailyLoss, netPnL, positiveSessions, consistencyDays, consecutiveLossDays
@@ -228,9 +243,11 @@ export function evaluateGrowthPhase(
     trades: TradeRiskSnapshot[],
     startingCapital: number,
     phaseIndex: number = 0,
-    totalPhases: number = 1
+    totalPhases: number = 1,
+    dailyLossMode: 'accumulate' | 'recover' = 'accumulate',
+    phaseDrawdownMode: 'accumulate' | 'recover' = 'accumulate'
 ): GrowthEvaluationResult {
-    const metrics = calculateGrowthMetrics(trades, startingCapital);
+    const metrics = calculateGrowthMetrics(trades, startingCapital, dailyLossMode, phaseDrawdownMode);
 
     const conditions = currentPhase.conditionsToAdvance || [];
     console.log(`[GrowthEngine] Evaluating phase "${currentPhase.name}" with ${conditions.length} conditions.`);
