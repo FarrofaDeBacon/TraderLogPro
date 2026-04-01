@@ -188,13 +188,13 @@ import type { RiskProfile } from "$lib/types";
                     
                     <div class="space-y-1.5">
                         <div class="flex justify-between items-center text-xs text-muted-foreground">
-                            <span>{$t("risk.capitalSource") || "Fundo"}:</span>
+                            <span>{$t("risk.management.capitalSource")}:</span>
                             <span class="text-foreground">
-                                {profile.capital_source === 'Fixed' ? 'Fixo' : 'Conta'} (R$ {profile.capital_source === 'Fixed' ? profile.fixed_capital : (accountsStore.accounts.find(a => a.id === profile.linked_account_id)?.balance || 0)})
+                                {profile.capital_source === 'Fixed' ? $t("risk.plan.finance.fixedValue") : $t("risk.plan.finance.money")} (R$ {profile.capital_source === 'Fixed' ? profile.fixed_capital : (accountsStore.accounts.find(a => a.id === profile.linked_account_id)?.balance || 0)})
                             </span>
                         </div>
                         <div class="flex justify-between items-center text-xs text-muted-foreground">
-                            <span>Risco/Trade:</span>
+                            <span>{$t("risk.plan.labels.maxRiskPerTrade")}:</span>
                             <span class="font-medium text-foreground">
                                 {profile.max_risk_per_trade_percent}% <span class="text-[10px] opacity-70">(R$ {riskVal.toFixed(2)})</span>
                             </span>
@@ -204,8 +204,8 @@ import type { RiskProfile } from "$lib/types";
                     {#if planInfo}
                         <div class="mt-3 p-2 rounded bg-primary/5 border border-primary/10">
                             <div class="flex justify-between items-center text-[10px] mb-1">
-                                <span class="uppercase font-bold text-primary">Plano Ativo</span>
-                                <span class="text-muted-foreground">Fase {planInfo.current}/{planInfo.total}</span>
+                                <span class="uppercase font-bold text-primary">{$t("risk.management.activePlan")}</span>
+                                <span class="text-muted-foreground">{$t("risk.management.phase")} {planInfo.current}/{planInfo.total}</span>
                             </div>
                             <div class="text-[11px] font-medium truncate">{planInfo.name}</div>
                             <div class="mt-1.5 h-1 w-full bg-primary/10 rounded-full overflow-hidden">
@@ -215,8 +215,8 @@ import type { RiskProfile } from "$lib/types";
                     {/if}
 
                     <div class="flex justify-between items-center text-muted-foreground text-[10px] pt-2">
-                        <span>Trades Máx: {profile.max_trades_per_day}</span>
-                        <span>Lock on Loss: {profile.lock_on_loss ? 'Sim' : 'Não'}</span>
+                        <span>{$t("risk.management.maxTrades")}: {profile.max_trades_per_day}</span>
+                        <span>{$t("risk.management.lockOnLoss")}: {profile.lock_on_loss ? $t("general.yes") : $t("general.no")}</span>
                     </div>
                 </Card.Content>
                 <Card.Footer class="justify-between items-center pt-2">
@@ -242,11 +242,11 @@ import type { RiskProfile } from "$lib/types";
                             variant="ghost"
                             size="icon"
                             class="h-8 w-8 hover:bg-muted text-muted-foreground"
-                            title={$t("risk.management.duplicate") || "Duplicar Perfil"}
+                            title={$t("risk.management.duplicate")}
                             onclick={async (e) => {
                                 e.stopPropagation();
                                 const newId = await riskSettingsStore.duplicateRiskProfile(profile.id);
-                                if (newId) toast.success("Perfil duplicado com sucesso!");
+                                if (newId) toast.success($t("risk.messages.saveSuccess"));
                             }}
                         >
                             <Copy class="w-4 h-4" />

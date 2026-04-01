@@ -1,0 +1,191 @@
+{
+    "fiscal": {
+        "irpf": {
+            "title": "Tax Calculation (IRPF)",
+            "description": "View and track the monthly income tax calculation on your trades.",
+            "history": "Tax History",
+            "kpis": {
+                "calculationBasis": "Calculation Basis",
+                "taxDue": "Tax Due",
+                "compensatedLosses": "Compensated Losses",
+                "netProfit": "Net Profit"
+            },
+            "table": {
+                "month": "Month",
+                "netProfit": "Gross Result",
+                "base": "Calc. Basis",
+                "tax": "Tax Due",
+                "status": "Status",
+                "paid": "Paid",
+                "pending": "Pending",
+                "late": "Overdue"
+            },
+            "messages": {
+                "loading": "Loading fiscal data...",
+                "noData": "No tax records found for the year {year}."
+            }
+        },
+        "darf": {
+            "title": "DARF Management",
+            "description": "Control your tax guides, make payments, and keep your history organized.",
+            "active": "PENDING GUIDES / TOTALS",
+            "history": "{year} Payment History",
+            "emptyHistory": "No paid DARFs found in {year}.",
+            "accountError": "Select an account to make the payment.",
+            "registerPayment": "Register DARF Payment",
+            "paymentDescription": "Enter the details of the payment made so the system can update your balance.",
+            "sourceAccount": "Account that Made the Payment",
+            "selectAccount": "Select account...",
+            "principalValue": "Principal Value",
+            "fineInterest": "Fine / Interest",
+            "totalPaid": "Total Paid",
+            "complementary_warning": "Complementary DARF Warning",
+            "complementary_description": "The result for this month increased by {amount}. Check if you need to issue a complementary DARF to avoid late fines.",
+            "min_value_info": "Note: Min DARF value is R$ 10.00.",
+            "labels": {
+                "valueToPay": "Payment Value",
+                "dueDate": "Due Date",
+                "principal": "Principal Value",
+                "fine": "Fine",
+                "interest": "Interest",
+                "paymentDate": "Payment Date",
+                "totalPaid": "Total Amount Paid"
+            },
+            "status": {
+                "pending": "Pending",
+                "paid": "Paid",
+                "late": "Expired"
+            },
+            "buttons": {
+                "pay": "Pay DARF",
+                "view": "View DARF",
+                "delete": "Remove",
+                "unpay": "Undo Payment"
+            },
+            "messages": {
+                "loading": "Loading guide history...",
+                "successPay": "DARF marked as paid and balance updated!",
+                "successDelete": "DARF successfully removed.",
+                "successUnpay": "Payment successfully undone."
+            },
+            "modal": {
+                "pay": {
+                    "noAccount": "Please select an account."
+                }
+            }
+        },
+        "settings": {
+            "title": "Tax Rules",
+            "description": "Configure tax rates (IRPF) for each asset type and modality.",
+            "tabs": {
+                "mappings": "Assignments",
+                "rules": "Tax Rules"
+            },
+            "assignments": {
+                "title": "Tax Assignments",
+                "description": "Assign tax profiles to asset types to automate tax calculation.",
+                "goToAssetTypes": "Go to Asset Types",
+                "tip": {
+                    "title": "Tip:",
+                    "text": "Assignments are based on Asset Types. You can change the tax profile by editing the corresponding Asset Type."
+                },
+                "table": {
+                    "assetType": "Asset Type",
+                    "market": "Market",
+                    "fiscalProfile": "Tax Profile",
+                    "defaultExempt": "Default / Exempt",
+                    "unknownProfile": "Unknown Profile",
+                    "empty": "No assignments found."
+                }
+            },
+            "profiles": {
+                "title": "Tax Profiles",
+                "description": "Tax profiles consolidate multiple rules.",
+                "new": "New Profile",
+                "create": "Create Profile",
+                "empty": "No tax profiles found.",
+                "linkedRules": "Linked Rules",
+                "noLinkedRules": "No rules linked.",
+                "form": {
+                    "titleNew": "New Profile",
+                    "titleEdit": "Edit Profile",
+                    "name": "Name",
+                    "namePlaceholder": "Ex: Stock Profile",
+                    "descriptionLabel": "Description",
+                    "descriptionPlaceholder": "Profile description...",
+                    "modality": "Modality",
+                    "rule": "Tax Rule",
+                    "save": "Save",
+                    "saving": "Saving...",
+                    "update": "Update",
+                    "select": "Select...",
+                    "addModalityHint": "Click + to add a rule to a modality.",
+                    "rulesByModality": "Rules by Modality",
+                    "emptyRules": "No rules added."
+                },
+                "success": {
+                    "create": "Profile created successfully.",
+                    "update": "Profile updated successfully.",
+                    "ruleAdded": "Rule added successfully.",
+                    "ruleAddedDraft": "Rule added as draft.",
+                    "ruleRemoved": "Rule removed successfully.",
+                    "ruleRemovedDraft": "Rule removed from draft."
+                },
+                "error": {
+                    "nameRequired": "Name is required",
+                    "duplicateModality": "This modality is already configured.",
+                    "saveError": "Error saving profile",
+                    "selectRequired": "Selection required",
+                    "errorAddEntry": "Error adding entry"
+                }
+            },
+            "rules": {
+                "title": "Tax Rules",
+                "description": "Individual tax rules.",
+                "new": "New Rule",
+                "empty": "No tax rules configured.",
+                "form": {
+                    "titleNew": "New Tax Rule",
+                    "titleEdit": "Edit Tax Rule",
+                    "name": "Name",
+                    "namePlaceholder": "Ex: Day Trade Rule",
+                    "nameRequired": "Rule name is required.",
+                    "modality": "Modality",
+                    "rate": "Rate",
+                    "rateHint": "Percentage of tax due",
+                    "revenueCode": "Revenue Code",
+                    "revenueCodePlaceholder": "Ex: 6015",
+                    "revenueCodeHint": "DARF code for payment (Ex: 6015, 3317).",
+                    "exemption": "Exemption",
+                    "exemptionHint": "Tax-exempt amount",
+                    "cumulative": "Compensate Losses",
+                    "cumulativeHint": "Allows compensating losses from previous months.",
+                    "basis": "Calculation Basis",
+                    "basisOptions": {
+                        "netProfit": "Net Profit",
+                        "saleAmount": "Sale Amount"
+                    },
+                    "withholding": "Withholding Tax",
+                    "withholdingHint": "Percentage withheld at source that can be deducted.",
+                    "withholdingBasis": "Withholding Basis",
+                    "withholdingBasisOptions": {
+                        "profit": "On Profit",
+                        "sales": "On Sale Amount"
+                    },
+                    "save": "Save Rule",
+                    "successSave": "Rule saved successfully!",
+                    "errorSave": "Error saving tax rule."
+                }
+            },
+            "mappings": {
+                "description": "Associate each Asset Type and Modality with a Tax Rule.",
+                "assetType": "Asset Type",
+                "modality": "Modality",
+                "rule": "Applicable Rule",
+                "noRule": "No Rule (Exempt/Ignored)"
+            }
+        },
+        "darf_warning": "Complementary DARF Warning",
+        "darf_description": "The result for this month increased by {amount}. Check if you need to issue a complementary DARF to avoid late fines."
+    }
+}

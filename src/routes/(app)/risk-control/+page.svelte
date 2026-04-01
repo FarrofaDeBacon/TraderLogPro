@@ -123,7 +123,7 @@
         const resolution = growthContext.resolution;
         return {
             id: "next-phase-fallback",
-            name: (nextPhase as any).name || "Next Phase",
+            name: (nextPhase as any).name || $t('risk.messages.nextPhaseFallback'),
             level: (nextPhase as any).level || ((resolution.currentPhaseIndex || 0) + 2),
             lot_size: (nextPhase as any).lot_size || 0,
             conditions_to_advance: (nextPhase as any).conditions_to_advance || [],
@@ -285,9 +285,9 @@
         <div class="flex-1">
           <p class="text-[11px] font-black uppercase tracking-widest leading-relaxed text-foreground/80 max-w-4xl">
             {#if mainStatus === 'blocked'}
-              {validation?.reasons[0] ? $t(`risk.cockpit.engine.${validation.reasons[0]}`, { default: validation.reasons[0] }) : $t('risk.cockpit.supervisor.blocked')}
+              {validation?.reasons[0] ? $t(`risk.violations.${validation.reasons[0]}`, { default: validation.reasons[0] }) : $t('risk.cockpit.supervisor.blocked')}
             {:else if mainStatus === 'caution'}
-              {validation?.warnings[0] ? $t(`risk.cockpit.engine.${validation.warnings[0]}`, { default: validation.warnings[0] }) : $t('risk.cockpit.supervisor.caution')}
+              {validation?.warnings[0] ? $t(`risk.violations.${validation.warnings[0]}`, { default: validation.warnings[0] }) : $t('risk.cockpit.supervisor.caution')}
             {:else}
               {$t('risk.cockpit.status.onPlanSlogan')}
             {/if}
@@ -406,7 +406,7 @@
                   {#each validation.reasons as reason}
                     <div class="flex items-center gap-2 text-[10px] font-black text-rose-400/90 uppercase tracking-widest bg-rose-500/5 p-2 rounded-lg border border-rose-500/10 animate-in slide-in-from-left duration-300">
                       <TrendingDown class="w-3 h-3 shrink-0 text-rose-500/40" />
-                      <span>{$t(`risk.cockpit.engine.${reason}`, { default: reason })}</span>
+                      <span>{$t(`risk.violations.${reason}`, { default: reason })}</span>
                     </div>
                   {/each}
               </div>

@@ -69,7 +69,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
 
     async function handleSaveProfile() {
         if (!formData.name) {
-            toast.error($t("settings.fiscal.profiles.error.nameRequired"));
+            toast.error($t("fiscal.settings.profiles.error.nameRequired"));
             return;
         }
 
@@ -80,7 +80,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
             if (profileId) {
                 // Editando existente
                 await financialConfigStore.updateTaxProfile(profileId, formData);
-                toast.success($t("settings.fiscal.profiles.success.update"));
+                toast.success($t("fiscal.settings.profiles.success.update"));
             } else {
                 // Criando novo
                 const newId = await financialConfigStore.addTaxProfile(formData);
@@ -93,7 +93,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
                         tax_rule_id: entry.tax_rule_id,
                     });
                 }
-                toast.success($t("settings.fiscal.profiles.success.create"));
+                toast.success($t("fiscal.settings.profiles.success.create"));
             }
 
             // FECHAR modal e resetar estado
@@ -103,7 +103,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
             if (onSave) onSave();
         } catch (e) {
             console.error("Erro ao salvar perfil:", e);
-            toast.error($t("settings.fiscal.profiles.error.saveError"));
+            toast.error($t("fiscal.settings.profiles.error.saveError"));
         } finally {
             isSubmitting = false;
         }
@@ -113,7 +113,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
 
     async function addEntry() {
         if (!newEntryData.modality_id || !newEntryData.tax_rule_id) {
-            toast.error($t("settings.fiscal.profiles.error.selectRequired"));
+            toast.error($t("fiscal.settings.profiles.error.selectRequired"));
             return;
         }
 
@@ -132,7 +132,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
 
             if (exists) {
                 toast.error(
-                    $t("settings.fiscal.profiles.error.duplicateModality"),
+                    $t("fiscal.settings.profiles.error.duplicateModality"),
                 );
                 return;
             }
@@ -144,7 +144,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
                     modality_id: newEntryData.modality_id,
                     tax_rule_id: newEntryData.tax_rule_id,
                 });
-                toast.success($t("settings.fiscal.profiles.success.ruleAdded"));
+                toast.success($t("fiscal.settings.profiles.success.ruleAdded"));
             } else {
                 // Add to local list if creating
                 localEntries.push({
@@ -152,7 +152,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
                     tax_rule_id: newEntryData.tax_rule_id,
                 });
                 toast.success(
-                    $t("settings.fiscal.profiles.success.ruleAddedDraft"),
+                    $t("fiscal.settings.profiles.success.ruleAddedDraft"),
                 );
             }
 
@@ -160,7 +160,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
             newEntryData = { modality_id: "", tax_rule_id: "" };
         } catch (e) {
             console.error("Erro ao adicionar entrada:", e);
-            toast.error($t("settings.fiscal.profiles.error.errorAddEntry"));
+            toast.error($t("fiscal.settings.profiles.error.errorAddEntry"));
         } finally {
             isAddingEntry = false;
         }
@@ -169,13 +169,13 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
     async function removeEntry(entry: any) {
         if (profileId) {
             await financialConfigStore.deleteTaxProfileEntry(entry.id);
-            toast.success($t("settings.fiscal.profiles.success.ruleRemoved"));
+            toast.success($t("fiscal.settings.profiles.success.ruleRemoved"));
         } else {
             localEntries = localEntries.filter(
                 (e) => e.modality_id !== entry.modality_id,
             );
             toast.success(
-                $t("settings.fiscal.profiles.success.ruleRemovedDraft"),
+                $t("fiscal.settings.profiles.success.ruleRemovedDraft"),
             );
         }
     }
@@ -198,11 +198,11 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
             <Dialog.Header>
                 <Dialog.Title>
                     {profileId
-                        ? $t("settings.fiscal.profiles.form.titleEdit")
-                        : $t("settings.fiscal.profiles.form.titleNew")}
+                        ? $t("fiscal.settings.profiles.form.titleEdit")
+                        : $t("fiscal.settings.profiles.form.titleNew")}
                 </Dialog.Title>
                 <Dialog.Description>
-                    {$t("settings.fiscal.profiles.form.description")}
+                    {$t("fiscal.settings.profiles.form.description")}
                 </Dialog.Description>
             </Dialog.Header>
         </div>
@@ -213,27 +213,27 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
                 <div class="grid gap-3">
                     <div class="grid grid-cols-4 items-center gap-4">
                         <Label class="text-right"
-                            >{$t("settings.fiscal.profiles.form.name")}</Label
+                            >{$t("fiscal.settings.profiles.form.name")}</Label
                         >
                         <Input
                             bind:value={formData.name}
                             class="col-span-3"
                             placeholder={$t(
-                                "settings.fiscal.profiles.form.namePlaceholder",
+                                "fiscal.settings.profiles.form.namePlaceholder",
                             )}
                         />
                     </div>
                     <div class="grid grid-cols-4 items-center gap-4">
                         <Label class="text-right"
                             >{$t(
-                                "settings.fiscal.profiles.form.descriptionLabel",
+                                "fiscal.settings.profiles.form.descriptionLabel",
                             )}</Label
                         >
                         <Input
                             bind:value={formData.description}
                             class="col-span-3"
                             placeholder={$t(
-                                "settings.fiscal.profiles.form.descriptionPlaceholder",
+                                "fiscal.settings.profiles.form.descriptionPlaceholder",
                             )}
                         />
                     </div>
@@ -249,7 +249,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
                         >
                             <Plus class="w-4 h-4 text-primary" />
                             {$t(
-                                "settings.fiscal.profiles.form.rulesByModality",
+                                "fiscal.settings.profiles.form.rulesByModality",
                             )}
                         </h4>
                     </div>
@@ -262,7 +262,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
                             <Label
                                 class="text-[10px] uppercase text-muted-foreground font-bold px-1"
                                 >{$t(
-                                    "settings.fiscal.profiles.form.modality",
+                                    "fiscal.settings.profiles.form.modality",
                                 )}</Label
                             >
                             <Select.Root
@@ -277,7 +277,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
                                             m.id === newEntryData.modality_id,
                                     )?.name ||
                                         $t(
-                                            "settings.fiscal.profiles.form.select",
+                                            "fiscal.settings.profiles.form.select",
                                         )}
                                 </Select.Trigger>
                                 <Select.Content>
@@ -293,7 +293,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
                             <Label
                                 class="text-[10px] uppercase text-muted-foreground font-bold px-1"
                                 >{$t(
-                                    "settings.fiscal.profiles.form.rule",
+                                    "fiscal.settings.profiles.form.rule",
                                 )}</Label
                             >
                             <Select.Root
@@ -308,7 +308,7 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
                                             r.id === newEntryData.tax_rule_id,
                                     )?.name ||
                                         $t(
-                                            "settings.fiscal.profiles.form.select",
+                                            "fiscal.settings.profiles.form.select",
                                         )}
                                 </Select.Trigger>
                                 <Select.Content>
@@ -376,13 +376,13 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
                                 />
                                 <span class="text-sm text-muted-foreground"
                                     >{$t(
-                                        "settings.fiscal.profiles.form.emptyRules",
+                                        "fiscal.settings.profiles.form.emptyRules",
                                     )}</span
                                 >
                                 <span
                                     class="text-[10px] text-muted-foreground/50"
                                     >{$t(
-                                        "settings.fiscal.profiles.form.addModalityHint",
+                                        "fiscal.settings.profiles.form.addModalityHint",
                                     )}</span
                                 >
                             </div>
@@ -404,15 +404,16 @@ import type { TaxProfile, TaxProfileEntry } from "$lib/types";
                 >
                     {#if isSubmitting}
                         <span class="loading loading-spinner loading-xs"></span>
-                        {$t("settings.fiscal.profiles.form.saving")}
+                        {$t("fiscal.settings.profiles.form.saving")}
                     {:else}
                         <Save class="w-4 h-4" />
                         {profileId
-                            ? $t("settings.fiscal.profiles.form.update")
-                            : $t("settings.fiscal.profiles.form.save")}
+                            ? $t("fiscal.settings.profiles.form.update")
+                            : $t("fiscal.settings.profiles.form.save")}
                     {/if}
                 </Button>
             </Dialog.Footer>
         </div>
     </Dialog.Content>
 </Dialog.Root>
+

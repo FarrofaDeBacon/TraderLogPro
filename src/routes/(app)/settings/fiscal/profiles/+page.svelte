@@ -51,15 +51,15 @@
     <div class="flex items-center justify-between">
         <div class="space-y-0.5">
             <h3 class="text-lg font-medium">
-                {$t("settings.fiscal.profiles.title")}
+                {$t("fiscal.settings.profiles.title")}
             </h3>
             <p class="text-sm text-muted-foreground">
-                {$t("settings.fiscal.profiles.description")}
+                {$t("fiscal.settings.profiles.description")}
             </p>
         </div>
         <Button onclick={openNewProfile}>
             <Plus class="w-4 h-4 mr-2" />
-            {$t("settings.fiscal.profiles.new")}
+            {$t("fiscal.settings.profiles.new")}
         </Button>
     </div>
 
@@ -104,7 +104,7 @@
                     <h5
                         class="text-xs font-semibold uppercase text-muted-foreground mb-2"
                     >
-                        {$t("settings.fiscal.profiles.linkedRules")}
+                        {$t("fiscal.settings.profiles.linkedRules")}
                     </h5>
                     {#each financialConfigStore.getEntriesForProfile(profile.id) as entry}
                         {#if financialConfigStore.taxRules.find((r) => r.id === entry.tax_rule_id)}
@@ -130,7 +130,7 @@
                         {/if}
                     {:else}
                         <div class="text-xs text-muted-foreground italic p-2">
-                            {$t("settings.fiscal.profiles.noLinkedRules")}
+                            {$t("fiscal.settings.profiles.noLinkedRules")}
                         </div>
                     {/each}
                 </div>
@@ -140,9 +140,9 @@
                 class="col-span-full flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg text-muted-foreground h-[200px]"
             >
                 <ArrowRightLeft class="w-8 h-8 mb-2 opacity-20" />
-                <span>{$t("settings.fiscal.profiles.empty")}</span>
+                <span>{$t("fiscal.settings.profiles.empty")}</span>
                 <Button variant="link" onclick={openNewProfile}
-                    >{$t("settings.fiscal.profiles.create")}</Button
+                    >{$t("fiscal.settings.profiles.create")}</Button
                 >
             </div>
         {/each}
@@ -155,3 +155,4 @@
 />
 
 <DeleteConfirmationModal bind:open={isDeleteOpen} onConfirm={confirmDelete} />
+

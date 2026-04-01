@@ -67,7 +67,7 @@
           <p
             class="text-[10px] text-muted-foreground uppercase font-medium line-clamp-1"
           >
-            {$t("dashboard.mindset.impact_detected", { values: { impact: currentState.impact } })}
+            {$t("dashboard.mindset.impact_detected", { values: { impact: $t(`dashboard.mindset.impacts.${currentState.impact}`) } })}
           </p>
         </div>
       </div>

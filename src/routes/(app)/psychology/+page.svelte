@@ -113,13 +113,13 @@
                         );
                     } else {
                         toast.success(
-                            $t("general.deleteSuccess") ||
+                            $t("common.deleteSuccess") ||
                                 "Removido com sucesso",
                         );
                     }
                 } else {
                     toast.success(
-                        $t("general.deleteSuccess") ||
+                        $t("common.deleteSuccess") ||
                             "Registro removido com sucesso",
                     );
                 }
@@ -138,7 +138,7 @@
                 toast.error("Erro ao excluir: " + result.error);
             } else {
                 toast.success(
-                    $t("general.deleteSuccess") ||
+                    $t("common.deleteSuccess") ||
                         "Registro removido com sucesso",
                 );
             }
@@ -774,7 +774,7 @@
 <DeleteConfirmationModal
     bind:open={showDeleteConfirm}
     onConfirm={confirmDeleteJournal}
-    title={$t("general.confirmDelete") || "Confirmar Exclusão"}
+    title={$t("common.confirmDelete") || "Confirmar Exclusão"}
     description="Você tem certeza que deseja excluir este registro diário psicológico? Esta ação não pode ser desfeita."
 />
 
@@ -784,7 +784,7 @@
     >
         <Dialog.Header>
             <Dialog.Title class="text-foreground">
-                {$t("general.confirmDelete") || "Excluir Registro Psicológico"}
+                {$t("common.confirmDelete") || "Excluir Registro Psicológico"}
             </Dialog.Title>
             <Dialog.Description class="text-muted-foreground">
                 Este registro psicológico possui um <strong
@@ -797,7 +797,7 @@
             <Button
                 variant="outline"
                 onclick={() => (isDeleteWithClosureOpen = false)}
-                >{$t("general.cancel")}</Button
+                >{$t("common.cancel")}</Button
             >
             <Button
                 variant="secondary"
@@ -955,7 +955,7 @@
                     <div
                         class="h-40 flex items-center justify-center text-muted-foreground bg-card/20 border-2 border-dashed rounded-xl border-border/30 backdrop-blur-sm uppercase text-[9px] font-black tracking-widest"
                     >
-                        {$t("general.noData")}
+                        {$t("common.noData")}
                     </div>
                 {:else}
                     <SystemCard class="p-1 shadow-sm overflow-hidden">
@@ -1489,7 +1489,7 @@
                                             >
                                                 {item.asset_symbol ||
                                                     $t(
-                                                        "general.day",
+                                                        "common.day",
                                                     ).toUpperCase()}
                                             </span>
                                             <span

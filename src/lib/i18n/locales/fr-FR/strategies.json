@@ -1,86 +1,141 @@
 {
     "setup": {
         "splash": {
-            "tagline": "L'évolution de votre journal de trading."
+            "tagline": "L'évolution de votre journal de trading"
         },
         "wizard": {
             "accounts": {
-                "add_more_prompt": "Add_more_prompt",
-                "description_intro": "Description_intro",
-                "market_title": "Market_title",
+                "add_more_prompt": "Souhaitez-vous ajouter plus de comptes maintenant ?",
+                "description_intro": "Configurez vos comptes pour commencer.",
+                "market_title": "Marché",
                 "personalize": "Personnaliser",
                 "skip": "Ignorer",
-                "standard_title": "Standard_title",
-                "title": "Title"
+                "standard_title": "Configuration Standard",
+                "title": "Mes Comptes"
+            },
+            "common": {
+                "activation_desc": "Se você já possui uma licença, importe o arquivo .lic abaixo.",
+                "activation_title": "Ativação de Licença",
+                "active_license": "Licença Ativa!",
+                "asset_types_desc": "Quais instrumentos financeiros fazem parte do seu dia a dia?",
+                "asset_types_title": "Tipos de Assets",
+                "assets": {
+                    "T1": "Ações BR",
+                    "T2": "Opções BR",
+                    "T3": "Futuros BR",
+                    "T4": "FIIs",
+                    "T5": "Stocks US (NYSE)",
+                    "T5B": "Stocks US (NASDAQ)",
+                    "T6": "Pares Forex",
+                    "T7": "Criptomoedas"
+                },
+                "configuring": "CONFIGURANDO...",
+                "confirm_password": "Confirmar Senha",
+                "copy_to_clipboard": "Toque para copiar",
+                "currency_desc": "Escolha a moeda oficial para a consolidação de todos os seus lucros e impostos.",
+                "currency_title": "Moeda Base",
+                "email": "E-mail",
+                "import_lic": "IMPORTAR ARQUIVO .LIC",
+                "markets": {
+                    "M1": "B3 (Brasil)",
+                    "M2": "NYSE (EUA)",
+                    "M3": "NASDAQ (EUA)",
+                    "M4": "CME Group",
+                    "M5": "Forex",
+                    "M6": "Cripto"
+                },
+                "markets_desc": "Selecione os mercados para habilitar as ferramentas corretas.",
+                "markets_title": "Onde você opera?",
+                "master_key": "MASTER KEY",
+                "mission_ready": "Missão Pronta!",
+                "mission_ready_desc": "Sua base de trades foi configurada com sucesso. Bons trades!",
+                "name": "Nome Completo",
+                "name_placeholder": "Seu nome",
+                "never_share": "⚠️ NUNCA compartilhe esta chave. Guarde-a em um local físico e seguro.",
+                "no_license_desc": "Ao pular, você iniciará no modo TRIAL limitado.",
+                "no_license_title": "NÃO TEM UMA LICENÇA?",
+                "password": "Senha de Acesso",
+                "plan": "Plano",
+                "recovery_key_desc": "Esta chave é a única forma de recuperar seu acesso caso esqueça a senha.",
+                "recovery_key_title": "Chave de Recuperação",
+                "rtd_active_desc": "Detecte trades do Profit/Tryd instantaneamente.",
+                "rtd_active_now": "Ativar RTD agora",
+                "rtd_desc": "Conecte o Bem-vindo ao TraderLog Pro ao seu terminal de negociação via Excel.",
+                "rtd_later_desc": "Você pode ativar o RTD no menu de configurações a qualquer momento.",
+                "rtd_later_title": "Configurar Depois",
+                "rtd_select_sheet": "SELECIONAR PLANILHA",
+                "rtd_skip": "PULAR ESTE PASSO",
+                "rtd_title": "Conexão Real-Time (RTD)",
+                "start_journey": "INICIAR JORNADA"
             },
             "data": {
                 "custom": {
-                    "desc": "Desc",
-                    "title": "Title"
+                    "desc": "Sélectionnez manuellement ce que vous souhaitez importer.",
+                    "title": "Personnalisé"
                 },
-                "description": "Description",
+                "description": "Choisissez la configuration des données.",
                 "standard": {
-                    "desc": "Desc",
-                    "title": "Title"
+                    "desc": "Configuration recommandée avec les actifs standard de B3.",
+                    "title": "Standard"
                 },
-                "title": "Title"
+                "title": "Configuration des Données"
             },
             "finish": {
                 "configuringDb": "Configuration de la Base de Données...",
-                "description": "Cliquez sur le bouton ci-dessous pour terminer la configuration.",
-                "syncingTerminal": "Sincronizando Terminal",
-                "waitingSurvivorData": "Aguardando dados do Survivor Hub...",
+                "description": "Cliquez sur le bouton ci-dessous pour terminer l'initialisation.",
                 "gann": {
-                    "title": "Vibrações de Gann",
-                    "subtitle": "Confluência Matemática e Ciclos",
                     "kpis": {
-                        "nextCot": "Próxima Reversão (Janela)",
-                        "cycleDay": "Dia do Ciclo",
-                        "vibration": "Vibração Atual",
-                        "masterCycle": "Ciclo Mestre",
-                        "days": "dias",
-                        "hot_window": "JANELA QUENTE",
-                        "neutral": "Neutro"
+                        "cycleDay": "Jour du Cycle",
+                        "days": "jours",
+                        "hot_window": "FENÊTRE CHAUDE",
+                        "masterCycle": "Cycle Maître",
+                        "neutral": "Neutre",
+                        "nextCot": "Prochaine Réversion (Fenêtre)",
+                        "vibration": "Vibration Actuelle"
                     },
                     "sq9": {
-                        "expansion": "Alvos de Expansão",
-                        "retracement": "Alvos de Retração",
                         "degrees": "{deg}°",
-                        "reference": "Ref"
-                    }
+                        "expansion": "Objectifs d'Expansion",
+                        "reference": "Ref",
+                        "retracement": "Objectifs de Retrait"
+                    },
+                    "subtitle": "Confluence Mathématique et Cycles",
+                    "title": "Vibrations de Gann"
                 },
                 "ready": "Tout est prêt",
                 "savingProfile": "Enregistrement du Profil...",
                 "startNow": "Commencer Maintenant",
-                "startingPlatform": "Démarrage de la Plateforme..."
+                "startingPlatform": "Lancement de la Plateforme...",
+                "syncingTerminal": "Synchronisation du Terminal",
+                "waitingSurvivorData": "Attente des données de Survivor Hub..."
             },
             "license": {
                 "activated": "Licence Activée !",
-                "description": "Si vous possédez une Licence TraderLog Pro, sélectionnez le fichier .lic maintenant.",
-                "import": "Importer la Licence",
-                "optional": "Optionnel : Vous pouvez ignorer cette étape pour utiliser la version Trial gratuite.",
+                "description": "Si vous possédez une licence Welcome to TraderLog Pro, sélectionnez maintenant le fichier .lic.",
+                "import": "Importer Licence",
+                "optional": "Optionnel: Vous pouvez ignorer cette étape pour utiliser la version Trial gratuite.",
                 "planDetected": "Plan détecté",
                 "selectFile": "Sélectionner Fichier .lic",
-                "title": "Activation de la Licence",
+                "title": "Activation de Licence",
                 "verifying": "Vérification..."
             },
             "nav": {
-                "back": "Retour",
-                "next": "Suivant",
-                "skipTrial": "Ignorer (Trial)"
+                "back": "Voltar",
+                "next": "Próximo",
+                "skipTrial": "Pular (Trial)"
             },
             "profile": {
-                "confirmPasswordLabel": "Confirmer le mot de passe",
+                "confirmPasswordLabel": "Confirmer le Mot de Passe",
                 "confirmPasswordPlaceholder": "Répétez le mot de passe",
-                "description": "Saisissez vos informations de profil de base.",
-                "emailHint": "Utilisé pour la récupération ou la liaison de licence spéciale.",
+                "description": "Entrez vos informations de base.",
+                "emailHint": "Utilisé pour la récupération ou le lien de licence spécial.",
                 "emailLabel": "E-mail ou Clé d'Accès",
-                "nameLabel": "Comment devons-nous vous appeler ?",
+                "nameLabel": "Nom",
                 "namePlaceholder": "Votre nom complet",
-                "passwordLabel": "Mot de passe d'accès à l'App",
-                "passwordPlaceholder": "Créez un mot de passe fort",
-                "testAccount": "Compte de test reconnu. Les données de démonstration seront injectées.",
-                "title": "Faisons connaissance"
+                "passwordLabel": "Mot de Passe d'Accès à l'App",
+                "passwordPlaceholder": "Créez um mot de passe fort",
+                "testAccount": "Compte de Test reconnu. Les données de démonstration seront injectées.",
+                "title": "Votre Profil"
             },
             "recovery": {
                 "clickToCopy": "Cliquez pour copier",
@@ -88,78 +143,23 @@
                 "description": "C'est le seul moyen de récupérer votre compte si vous oubliez votre mot de passe. L'application étant hors ligne, nous ne pouvons pas récupérer par e-mail.",
                 "keyLabel": "Clé de Sécurité",
                 "title": "Votre Clé de Récupération",
-                "warning": "Conservez cette clé dans un endroit très sûr. Si vous perdez votre mot de passe et cette clé, vos données seront définitivement inaccessibles."
+                "warning": "Gardez cette clé dans un endroit sûr. Si vous perdez le mot de passe et cette clé, vos données seront définitivement inaccessibles."
             },
             "step": "Étape",
             "style": {
-                "currency": "Devise",
-                "description": "Description",
-                "language": "Langue",
-                "theme": "Thème",
-                "title": "Title"
+                "currency": "Moeda Principal",
+                "description": "Ajuste a aparência e o idioma do seu painel.",
+                "language": "Idioma",
+                "theme": "Tema Visual",
+                "title": "Estilo e Preferências"
             },
             "welcome": {
-                "description": "Nous configurons votre espace de travail.",
-                "title": "Bienvenue sur TraderLog Pro",
-                "select_language": "CHOISISSEZ VOTRE LANGUE",
-                "select_theme": "CHOISISSEZ LE THÈME VISUAL",
-                "dark": "Dark (Nuit)",
-                "light": "Light (Jour)"
-            },
-            "common": {
-                "name": "Nom Complet",
-                "name_placeholder": "Votre nom",
-                "email": "E-mail",
-                "password": "Mot de passe d'accès",
-                "confirm_password": "Confirmer le mot de passe",
-                "recovery_key_title": "Clé de Récupération",
-                "recovery_key_desc": "Cette clé est le seul moyen de récupérer votre accès si vous oubliez votre mot de passe.",
-                "master_key": "CLÉ MAÎTRESSE",
-                "copy_to_clipboard": "Appuyez pour copier",
-                "never_share": "⚠️ NE JAMAIS partager cette clé. Conservez-la dans un endroit physique sûr.",
-                "activation_title": "Activation de la Licence",
-                "activation_desc": "Si vous avez déjà une licence, importez le fichier .lic ci-dessous.",
-                "active_license": "Licence Active !",
-                "plan": "Plan",
-                "import_lic": "IMPORTER LE FICHIER .LIC",
-                "no_license_title": "PAS DE LICENCE ?",
-                "no_license_desc": "En sautant, vous commencerez en mode TRIAL limité.",
-                "currency_title": "Devise de Base",
-                "currency_desc": "Choisissez la devise officielle pour la consolidation de tous vos profits et impôts.",
-                "markets_title": "Où tradez-vous ?",
-                "markets_desc": "Sélectionnez les marchés pour activer les outils appropriés.",
-                "asset_types_title": "Types d'Actifs",
-                "asset_types_desc": "Quels instruments financiers font partie de votre quotidien ?",
-                "rtd_title": "Connexion Real-Time (RTD)",
-                "rtd_desc": "Connectez TraderLog Pro à votre terminal de trading via Excel.",
-                "rtd_active_now": "Activer RTD maintenant",
-                "rtd_active_desc": "Détectez instantanément les Trades Profit/Tryd.",
-                "rtd_select_sheet": "SÉLECTIONNER LA FEUILLE",
-                "rtd_later_title": "Configurer plus tard",
-                "rtd_later_desc": "Vous pouvez activer le RTD dans le menu des paramètres à tout moment.",
-                "rtd_skip": "PASSER CETTE ÉTAPE",
-                "mission_ready": "Mission Prête !",
-                "mission_ready_desc": "Votre base d'Trades a été configurée avec succès. Bons trades !",
-                "start_journey": "DÉMARRER L'AVENTURE",
-                "configuring": "CONFIGURATION...",
-                "markets": {
-                    "M1": "B3 (Brésil)",
-                    "M2": "NYSE (États-Unis)",
-                    "M3": "NASDAQ (États-Unis)",
-                    "M4": "CME Group",
-                    "M5": "Forex",
-                    "M6": "Crypto"
-                },
-                "assets": {
-                    "T1": "Actions BR",
-                    "T2": "Options BR",
-                    "T3": "Futures BR",
-                    "T4": "FIIs",
-                    "T5": "Stocks US (NYSE)",
-                    "T5B": "Stocks US (NASDAQ)",
-                    "T6": "Paires Forex",
-                    "T7": "Cryptomonnaies"
-                }
+                "dark": "Dark (Noite)",
+                "description": "Configurando área de trabalho...",
+                "light": "Light (Dia)",
+                "select_language": "SELECIONE SEU IDIOMA",
+                "select_theme": "SELECIONE O TEMA VISUAL",
+                "title": "Bem-vindo ao TraderLog Pro"
             }
         }
     },
@@ -169,33 +169,161 @@
             "original": "Original"
         }
     },
+    "strategyCard": {
+        "totalResult": "Résultat Total",
+        "tradesSuffix": "trades",
+        "viewAnalysis": "Voir l'Analyse Complète"
+    },
+    "strategyDashboard": {
+        "charts": {
+            "drawdown": "Drawdown",
+            "drawdownStrategy": "Drawdown (Stratégie)",
+            "equity": "Capital Net",
+            "equityStrategy": "Capital (Stratégie)"
+        },
+        "checklist": {
+            "economicCalendar": "Calendrier Économique",
+            "items": {
+                "gap_analysis": "Gap d'Ouverture: Identifié si c'est um Gap de Débutant ou Professionnel ?",
+                "mindset": "Mental: Suis-je calme et concentré para trader ?",
+                "news": "Actualités: Ai-je vérifié le calendrier économique du jour ?",
+                "newsDetected": "⚠️ Actualités à Haut Impact Détectées:",
+                "newsNone": "Aucune nouvelle pertinente sur le calendrier aujourd'hui.",
+                "prior_levels": "Niveaux Clés: Marqué le plus haut et le plus bas d'hier ?",
+                "riskInput": "Limite de Perte Aujourd'hui ($):",
+                "risk_limit": "Risque: Ai-je défini mon Stop Loss maximum pour aujourd'hui ?",
+                "trend_200ma": "Territoire (200MA): Au-dessus (Hausse) ou Au-dessous (Baisse) ?",
+                "trend_20ma": "Tendance (20MA): Le prix respecte-t-il la moyenne de 20 ?"
+            },
+            "newsUpdateError": "Erreur lors da mise à jour du flux d'événements économiques.",
+            "newsUpdateSuccess": "Flux économique mis à jour avec succès.",
+            "ready": "PRÊT À TRADER",
+            "reset": "Réinitialiser",
+            "resetSuccess": "Statistiques du checklist réinitialisées.",
+            "start": "Démarrer la Session de Trading",
+            "subtitle": "Vérifiez les fondamentaux avant le premier clic.",
+            "success": "Checklist terminé. Prêt à trader.",
+            "title": "Check-in Pré-Marché (Oliver Velez)",
+            "verified": "vérifiés"
+        },
+        "heatmap": {
+            "days": {
+                "fri": "Ven",
+                "mon": "Lun",
+                "sat": "Sam",
+                "sun": "Dim",
+                "thu": "Jeu",
+                "tue": "Mar",
+                "wed": "Mer"
+            },
+            "legend": {
+                "breakeven": "Breakeven",
+                "loss": "Porte",
+                "profit": "Profit",
+                "strongLoss": "Perte Élevée",
+                "strongProfit": "Profit Élevé"
+            },
+            "noMarket": "Aucun marché lié",
+            "subtitle": "Performance cumulée par jour de la semaine et heure",
+            "title": "Carte de Chaleur (P&L)",
+            "tooltip": {
+                "loss": "Porte",
+                "neutral": "Neutre",
+                "profit": "Profit",
+                "status": "Statut"
+            }
+        },
+        "messages": {
+            "noTrades": "Aucun trade sur la période sélectionnée."
+        },
+        "stats": {
+            "averageLoss": "Perte Moyenne",
+            "averageWin": "Gain Moyen",
+            "avgDurationLoss": "Durée Moyenne (Perte)",
+            "avgDurationWin": "Duración Moyenne (Profit)",
+            "avgInterval": "Intervalle entre les Trades",
+            "avgTimeBetweenTrades": "Temps Moyen entre Trades",
+            "bestTrade": "Meilleur Trade",
+            "consecutiveLosses": "Pertes Consécutives",
+            "consecutiveWins": "Gains Consécutifs",
+            "mathExpectation": "Espérance Mathématique",
+            "maxDrawdown": "Max Drawdown",
+            "netResult": "Résultat Net",
+            "operations": "Trades",
+            "payoff": "Payoff",
+            "planAdherence": "Adhérence au Plan",
+            "profitFactor": "Profit Factor",
+            "recoveryFactor": "Facteur de Récupération",
+            "totalTrades": "Total de Trades",
+            "winRate": "Win Rate",
+            "winningTrades": "Trades Gagnants",
+            "worstTrade": "Pire Trade"
+        },
+        "subtitle": "Bienvenue dans votre centre de commandement.",
+        "summary": {
+            "chartPlaceholder": "Graphique de Performance (Bientôt)",
+            "noTrades": "Aucun trade effectué aujourd'hui.",
+            "title": "Résumé du Jour"
+        },
+        "tabs": {
+            "dashboard": "Dashboard",
+            "dossier": "Dossier de Stratégie"
+        },
+        "title": "Dashboard"
+    },
+    "strategyDossier": {
+        "all": "Tous",
+        "assetTypes": "Types d'Actifs",
+        "context": "Contexte Opérationnel",
+        "daysSuffix": "jours",
+        "entryTriggers": "Déclencheurs d'Entrée",
+        "exit": "Stop / Sortie",
+        "indicators": "Indicateurs",
+        "linkedMarkets": "Marchés Liés",
+        "management": "Gestion / Conduite",
+        "multi": "MULTI",
+        "noCriteria": "Aucun critère défini.",
+        "noImages": "Aucune image jointe.",
+        "noLinkedMarket": "Aucun marché spécifiquement lié (Horário Libre).",
+        "partials": "Sorties Partielles",
+        "specificAssets": "Actifs Spécifiques",
+        "timeframes": "Timeframes",
+        "visualExamples": "Exemples Visuels"
+    },
+    "strategyGann": {
+        "accuracy": "Acurácia",
+        "adherence": "Adhérence",
+        "alignment": "Alignement",
+        "alignmentDesc": "Entrées aux Niveaux SQ9",
+        "analyticalConfluence": "Confluence Analytique",
+        "angleScore": "Score d'Angle",
+        "confluenceDesc": "Comment cette stratégie réagit aux lois mathématiques de Gann",
+        "cycleWatch": "Vigilance des Cycles",
+        "cycleWatchDesc": "Win Rate sur les dates naturelles",
+        "geometricPrecision": "Précision Géométrique",
+        "geometryLaw": "Loi de la Géométrie",
+        "geometryLawDesc": "L'adhérence à l'angle representa l'équilibre entre prix e temps. Les stratégies que respeitem os ângulos geométricos (como 45°) são consideradas estáveis e sustentáveis ao longo de Ciclo Mestre.",
+        "mastery": "Gann Mastery",
+        "mathematicalConfluence": "Confluence Mathématique",
+        "success": "Succès",
+        "timeLaw": "Loi du Temps",
+        "timeLawDesc": "Le taux de réussite du cycle révèle si cette stratégie est \"saisonnière\". Gann croyait que le temps est le facteur le plus important; ce score indique si l'avantage de la stratégie est amplifié pendant os Mudanças de Estação.",
+        "vibrationLaw": "Loi de la Vibration",
+        "vibrationLawDesc": "L'alignement de la stratégie avec les vibrations du Carré de Neuf mesure la qualité de ses entrées. Un score élevé suggère que la stratégie trouve naturellement de la liquidité aux points d'expansion mathématique de Gann."
+    },
+    "strategyList": {
+        "description": "Suivez la performance statistique de vos setups opérationnels.",
+        "new": "Nouveau",
+        "notFound": {
+            "action": "Aller aux Paramètres",
+            "description": "Nous n'avons pas trouvé de setups avec os filtros atuais. Por que não criar um novo em Configurações?",
+            "title": "Aucune stratégie trouvée"
+        },
+        "searchPlaceholder": "Rechercher une stratégie...",
+        "title": "Stratégies"
+    },
+    "strategyNotFound": "Stratégie non trouvée",
     "strategy": {
-        "card": {
-            "totalResult": "Résultat Total",
-            "tradesSuffix": "trades",
-            "viewAnalysis": "Voir l'analyse complète"
-        },
-        "gann": {
-            "adherence": "Adhérence",
-            "accuracy": "Précision",
-            "alignment": "Alignement",
-            "alignmentDesc": "Entrées sur les Niveaux SQ9",
-            "angleScore": "Score d'Angle",
-            "analyticalConfluence": "Confluence Analytique",
-            "confluenceDesc": "Comment cette stratégie réagit aux lois mathématiques de Gann",
-            "cycleWatch": "Surveillance des Cycles",
-            "cycleWatchDesc": "Win Rate aux dates naturelles",
-            "geometricPrecision": "Précision Géométrique",
-            "geometryLaw": "Loi de la Géométrie",
-            "geometryLawDesc": "L'adhérence à l'angle représente l'équilibre entre le prix et le temps. Les stratégies qui respectent les angles géométriques (comme 45°) sont considérées comme stables et durables tout au long du Cycle Maître.",
-            "mastery": "Gann Mastery",
-            "mathematicalConfluence": "Confluence Mathématique",
-            "success": "Succès",
-            "timeLaw": "Loi du Temps",
-            "timeLawDesc": "Le taux de succès du cycle révèle si cette stratégie est \"saisonnière\". Gann pensait que le temps est le facteur le plus important ; ce score indique si l'avantage de la stratégie est amplifié lors des changements de saison.",
-            "vibrationLaw": "Loi de la Vibration",
-            "vibrationLawDesc": "L'alignement de la stratégie avec les vibrations du Carré de Neuf mesure la qualité de ses entrées. Un score élevé suggère que la stratégie trouve naturellement de la liquidité aux points d'expansion mathématique de Gann."
-        },
         "dashboard": {
             "charts": {
                 "drawdown": "Drawdown",
@@ -204,29 +332,29 @@
                 "equityStrategy": "Capital (Stratégie)"
             },
             "checklist": {
-                "economicCalendar": "Economic Calendar",
+                "economicCalendar": "Calendrier Économique",
                 "items": {
-                    "gap_analysis": "Gap d'Ouverture: Gap de Novice ou Professionnel ?",
-                    "mindset": "Mental: Suis-je calme et concentré ?",
-                    "news": "Infos: Calendrier Économique vérifié ?",
-                    "newsDetected": "Nouvelle Détectée",
-                    "newsNone": "Pas de Nouvelles",
-                    "prior_levels": "Niveaux Clés: Haut et Bas d'hier marqués ?",
-                    "riskInput": "Risque Calculé",
-                    "risk_limit": "Risque: Stop Loss maximum défini pour aujourd'hui ?",
-                    "trend_200ma": "Territoire (200MA): Au-dessus (Hausse) ou En-dessous (Drawdown) ?",
-                    "trend_20ma": "Tendance (20MA): Le prix respecte la moyenne de 20 ?"
+                    "gap_analysis": "Gap d'Ouverture: Identifié si c'est um Gap de Débutant ou Professionnel ?",
+                    "mindset": "Mental: Suis-je calme et concentré para trader ?",
+                    "news": "Actualités: Ai-je vérifié le calendrier économique du jour ?",
+                    "newsDetected": "⚠️ Actualités à Haut Impact Détectées:",
+                    "newsNone": "Aucune nouvelle pertinente sur le calendrier aujourd'hui.",
+                    "prior_levels": "Niveaux Clés: Marqué le plus haut et le plus bas d'hier ?",
+                    "riskInput": "Limite de Perte Aujourd'hui ($):",
+                    "risk_limit": "Risque: Ai-je défini mon Stop Loss maximum pour aujourd'hui ?",
+                    "trend_200ma": "Territoire (200MA): Au-dessus (Hausse) ou Au-dessous (Baisse) ?",
+                    "trend_20ma": "Tendance (20MA): Le prix respecte-t-il la moyenne de 20 ?"
                 },
+                "newsUpdateError": "Erreur lors da mise à jour du flux d'événements économiques.",
+                "newsUpdateSuccess": "Flux économique mis à jour avec succès.",
                 "ready": "PRÊT À TRADER",
                 "reset": "Réinitialiser",
-                "start": "Démarrer la Session",
+                "resetSuccess": "Statistiques du checklist réinitialisées.",
+                "start": "Démarrer la Session de Trading",
                 "subtitle": "Vérifiez les fondamentaux avant le premier clic.",
-                "success": "Excellent ! Vous êtes prêt. Bon trading !",
+                "success": "Checklist terminé. Prêt à trader.",
                 "title": "Check-in Pré-Marché (Oliver Velez)",
-                "verified": "vérifiés",
-                "newsUpdateError": "Erreur lors de la mise à jour du flux d'événements économiques.",
-                "newsUpdateSuccess": "Flux économique mis à jour avec succès.",
-                "resetSuccess": "Statistiques de la liste de contrôle réinitialisées."
+                "verified": "vérifiés"
             },
             "heatmap": {
                 "days": {
@@ -240,33 +368,33 @@
                 },
                 "legend": {
                     "breakeven": "Breakeven",
-                    "loss": "Loss",
-                    "profit": "Gain",
-                    "strongLoss": "Forte Loss",
-                    "strongProfit": "Fort Gain"
+                    "loss": "Porte",
+                    "profit": "Profit",
+                    "strongLoss": "Perte Élevée",
+                    "strongProfit": "Profit Élevé"
                 },
                 "noMarket": "Aucun marché lié",
-                "subtitle": "Performance cumulée par Jour et Heure",
-                "title": "Carte Thermique (P&L)",
+                "subtitle": "Performance cumulée par jour de la semaine et heure",
+                "title": "Carte de Chaleur (P&L)",
                 "tooltip": {
-                    "loss": "Loss",
+                    "loss": "Porte",
                     "neutral": "Neutre",
-                    "profit": "Gain",
+                    "profit": "Profit",
                     "status": "Statut"
                 }
             },
             "messages": {
-                "noTrades": "Aucune Trade sur la période sélectionnée."
+                "noTrades": "Aucun trade sur la période sélectionnée."
             },
             "stats": {
-                "averageLoss": "Loss Moyenne",
+                "averageLoss": "Perte Moyenne",
                 "averageWin": "Gain Moyen",
-                "avgDurationLoss": "Durée Moyenne (Loss)",
-                "avgDurationWin": "Durée Moyenne (Gains)",
-                "avgInterval": "Intervalle Moyen",
+                "avgDurationLoss": "Durée Moyenne (Perte)",
+                "avgDurationWin": "Duración Moyenne (Profit)",
+                "avgInterval": "Intervalle entre les Trades",
                 "avgTimeBetweenTrades": "Temps Moyen entre Trades",
                 "bestTrade": "Meilleur Trade",
-                "consecutiveLosses": "Losses Consécutives",
+                "consecutiveLosses": "Pertes Consécutives",
                 "consecutiveWins": "Gains Consécutifs",
                 "mathExpectation": "Espérance Mathématique",
                 "maxDrawdown": "Max Drawdown",
@@ -281,47 +409,36 @@
                 "winningTrades": "Trades Gagnants",
                 "worstTrade": "Pire Trade"
             },
-            "subtitle": "Bienvenue dans votre centre de commande.",
+            "subtitle": "Bienvenue dans votre centre de commandement.",
             "summary": {
                 "chartPlaceholder": "Graphique de Performance (Bientôt)",
                 "noTrades": "Aucun trade effectué aujourd'hui.",
                 "title": "Résumé du Jour"
             },
             "tabs": {
-                "dashboard": "Tableau de Bord",
+                "dashboard": "Dashboard",
                 "dossier": "Dossier de Stratégie"
             },
-            "title": "Tableau de bord"
+            "title": "Dashboard"
         },
         "dossier": {
             "all": "Tous",
             "assetTypes": "Types d'Actifs",
             "context": "Contexte Opérationnel",
             "daysSuffix": "jours",
-            "entryTriggers": "Signaux d'Entrée",
+            "entryTriggers": "Déclencheurs d'Entrée",
             "exit": "Stop / Sortie",
             "indicators": "Indicateurs",
             "linkedMarkets": "Marchés Liés",
-            "management": "Gestion",
+            "management": "Gestion / Conduite",
             "multi": "MULTI",
             "noCriteria": "Aucun critère défini.",
             "noImages": "Aucune image jointe.",
-            "noLinkedMarket": "Aucun marché lié spécifiquement (Horaire Libre).",
+            "noLinkedMarket": "Aucun marché spécifiquement lié (Horário Libre).",
             "partials": "Sorties Partielles",
             "specificAssets": "Actifs Spécifiques",
             "timeframes": "Timeframes",
             "visualExamples": "Exemples Visuels"
-        },
-        "list": {
-            "description": "Suivez la performance statistique de vos setups de trading.",
-            "new": "Nouvelle",
-            "notFound": {
-                "action": "Aller aux Paramètres",
-                "description": "Nous n'avons trouvé aucun setup avec les filtres actuels. Que diriez-vous d'en créer un nouveau dans les Paramètres ?",
-                "title": "Aucune stratégie trouvée"
-            },
-            "searchPlaceholder": "Rechercher une stratégie...",
-            "title": "Stratégies"
         },
         "notFound": "Stratégie non trouvée"
     }

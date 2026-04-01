@@ -1,13 +1,24 @@
 {
-    "journal": {
-        "empty": {
-            "description": "Start recording your mindset today.",
-            "title": "No notes yet"
-        },
-        "newNote": "New Note",
-        "title": "Trading Journal"
-    },
     "psychology": {
+        "journal_main": {
+            "empty": {
+                "description": "Start recording your mindset today.",
+                "title": "No notes yet"
+            },
+            "newNote": "New Note",
+            "title": "Trading Journal"
+        },
+        "ai": {
+            "analyze": "Analyze",
+            "behaviorAnalysis": "Behavioral Analysis",
+            "crossReference": "We cross-reference the mathematical findings with the Artificial Intelligence engine to generate instant tactical tips.",
+            "integrations": "Integrations",
+            "mapping": "Mapping...",
+            "mentor": "AI Mentor",
+            "noAiLinked": "No AI linked to your Psychology layer. Activate your key to unlock the interpretive analyzer from the mathematical base.",
+            "rediagnose": "Re-diagnose",
+            "updating": "Updating..."
+        },
         "analysis": {
             "emotionalCalc": "Emotional Calculation",
             "hierarchy": "Hierarchy",
@@ -16,30 +27,33 @@
         },
         "charts": {
             "correlation": "Correlation: Emotion x Result (Daily)",
+            "equityCurve": "Tactical Equity Curve for the Period",
+            "filterPeriod": "Filter a period with data",
             "pnlByEmotion": "Financial Result by Emotion",
             "resultTitle": "Result vs Emotional",
-            "winRate": "Efficiency %",
-            "winRateTitle": "Win Rate vs Emotional",
             "theMap": "The Map",
             "top5": "Top 5 Segments",
-            "equityCurve": "Tactical Equity Curve for the Period",
-            "filterPeriod": "Filter a period with data"
+            "winRate": "Efficiency %",
+            "winRateTitle": "Win Rate vs Emotional",
+            "impactRanking": "Impact Ranking",
+            "emotion": "Emotion",
+            "trades": "Trades"
         },
         "checkin": {
             "button": "New Record",
             "date": "Trade Date",
             "description": "Record how you were feeling at the time of this trade.",
             "intensity": "Intensity",
+            "intensityLabel": "Intensity Level",
             "intensity_label": "Intensity",
             "intensity_placeholder": "How intense (1-10)?",
             "notesLabel": "Additional Observations",
             "notesPlaceholder": "What triggered this? (Optional)",
             "save": "Save Check-in",
-            "success": "Record saved successfully!",
             "stateLabel": "Emotional State",
             "statePlaceholder": "Select predominant emotion",
-            "title": "Emotional Check-in",
-            "intensityLabel": "Intensity Level"
+            "success": "Record saved successfully!",
+            "title": "Emotional Check-in"
         },
         "deleteDialog": {
             "cancel": "Cancel",
@@ -50,6 +64,9 @@
         "description": "Understand how your emotions impact your financial result.",
         "filters": {
             "groupBy": "Group by"
+        },
+        "hierarchical": {
+            "sessionsStructure": "Sessions and Hierarchical Structure"
         },
         "insight": {
             "formulaTitle": "How did we get this score?",
@@ -83,6 +100,13 @@
             "unregisteredDescription": "Trades without check-in",
             "worstMindset": "Worst Mindset"
         },
+        "kpis": {
+            "bestPerformance": "Best Performance",
+            "negativeLosses": "Negative Losses",
+            "offender": "The Offender",
+            "psychoScore": "Psycho Score",
+            "score": "SCORE"
+        },
         "list": {
             "asset": "Asset",
             "date": "Date",
@@ -95,27 +119,6 @@
             "unknownBadge": "Unknown"
         },
         "syncWeights": "Sync Weights",
-        "title": "Psychological Analysis",
-        "kpis": {
-            "psychoScore": "Psycho Score",
-            "bestPerformance": "Best Performance",
-            "offender": "The Offender",
-            "negativeLosses": "Negative Losses",
-            "score": "SCORE"
-        },
-        "ai": {
-            "mentor": "AI Mentor",
-            "behaviorAnalysis": "Behavioral Analysis",
-            "noAiLinked": "No AI linked to your Psychology layer. Activate your key to unlock the interpretive analyzer from the mathematical base.",
-            "integrations": "Integrations",
-            "crossReference": "We cross-reference the mathematical findings with the Artificial Intelligence engine to generate instant tactical tips.",
-            "mapping": "Mapping...",
-            "analyze": "Analyze",
-            "updating": "Updating...",
-            "rediagnose": "Re-diagnose"
-        },
-        "hierarchical": {
-            "sessionsStructure": "Sessions and Hierarchical Structure"
-        }
+        "title": "Psychological Analysis"
     }
 }

@@ -102,13 +102,13 @@
     });
 
     const weekDayLabels = $derived([
-        $t("calendar.days.sun"),
-        $t("calendar.days.mon"),
-        $t("calendar.days.tue"),
-        $t("calendar.days.wed"),
-        $t("calendar.days.thu"),
-        $t("calendar.days.fri"),
-        $t("calendar.days.sat"),
+        $t("common.weekdays.short.sun"),
+        $t("common.weekdays.short.mon"),
+        $t("common.weekdays.short.tue"),
+        $t("common.weekdays.short.wed"),
+        $t("common.weekdays.short.thu"),
+        $t("common.weekdays.short.fri"),
+        $t("common.weekdays.short.sat"),
     ]);
     const dateLocale = $derived.by(() => {
         const currentLocale = $locale;
@@ -135,7 +135,7 @@
             >
                 {viewMode === "month"
                     ? format(currentDate, "MMMM yyyy", { locale: dateLocale })
-                    : `${$t("calendar.weekOf")} ${format(currentDate, "dd", { locale: dateLocale })} ${$t("calendar.of")} ${format(currentDate, "MMMM", { locale: dateLocale })}`}
+                    : `${$t("common.calendar.weekOf")} ${format(currentDate, "dd", { locale: dateLocale })} ${$t("common.calendar.of")} ${format(currentDate, "MMMM", { locale: dateLocale })}`}
             </span>
         </div>
         <div
@@ -150,7 +150,7 @@
                 )}
                 onclick={() => (viewMode = "month")}
             >
-                {compact ? $t("calendar.monthlyShort") : $t("calendar.monthly")}
+                {compact ? $t("common.calendar.monthlyShort") : $t("common.calendar.monthly")}
             </Button>
             <Button
                 variant={viewMode === "week" ? "secondary" : "ghost"}
@@ -161,7 +161,7 @@
                 )}
                 onclick={() => (viewMode = "week")}
             >
-                {compact ? $t("calendar.weeklyShort") : $t("calendar.weekly")}
+                {compact ? $t("common.calendar.weeklyShort") : $t("common.calendar.weekly")}
             </Button>
             <div class="w-px h-4 bg-border mx-1"></div>
             <Button

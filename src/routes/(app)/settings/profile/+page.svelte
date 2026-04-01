@@ -503,7 +503,7 @@
                                             {$t(
                                                 "settings.profile.preferences.langPT",
                                             )}
-                                        {:else if formData.language === "en"}
+                                        {:else if formData.language === "en-US"}
                                             {$t(
                                                 "settings.profile.preferences.langEN",
                                             )}
@@ -523,7 +523,7 @@
                                                 "settings.profile.preferences.langPT",
                                             )}</Select.Item
                                         >
-                                        <Select.Item value="en"
+                                        <Select.Item value="en-US"
                                             >{$t(
                                                 "settings.profile.preferences.langEN",
                                             )}</Select.Item

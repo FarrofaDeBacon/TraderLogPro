@@ -13,6 +13,61 @@
                 "standard_title": "Configuração Padrão",
                 "title": "Minhas Contas"
             },
+            "common": {
+                "activation_desc": "Se você já possui uma licença, importe o arquivo .lic abaixo.",
+                "activation_title": "Ativação de Licença",
+                "active_license": "Licença Ativa!",
+                "asset_types_desc": "Quais instrumentos financeiros fazem parte do seu dia a dia?",
+                "asset_types_title": "Tipos de Assets",
+                "assets": {
+                    "T1": "Ações BR",
+                    "T2": "Opções BR",
+                    "T3": "Futuros BR",
+                    "T4": "FIIs",
+                    "T5": "Stocks US (NYSE)",
+                    "T5B": "Stocks US (NASDAQ)",
+                    "T6": "Pares Forex",
+                    "T7": "Criptomoedas"
+                },
+                "configuring": "CONFIGURANDO...",
+                "confirm_password": "Confirmar Senha",
+                "copy_to_clipboard": "Toque para copiar",
+                "currency_desc": "Escolha a moeda oficial para a consolidação de todos os seus lucros e impostos.",
+                "currency_title": "Moeda Base",
+                "email": "E-mail",
+                "import_lic": "IMPORTAR ARQUIVO .LIC",
+                "markets": {
+                    "M1": "B3 (Brasil)",
+                    "M2": "NYSE (EUA)",
+                    "M3": "NASDAQ (EUA)",
+                    "M4": "CME Group",
+                    "M5": "Forex",
+                    "M6": "Cripto"
+                },
+                "markets_desc": "Selecione os mercados para habilitar as ferramentas corretas.",
+                "markets_title": "Onde você opera?",
+                "master_key": "MASTER KEY",
+                "mission_ready": "Missão Pronta!",
+                "mission_ready_desc": "Sua base de trades foi configurada com sucesso. Bons trades!",
+                "name": "Nome Completo",
+                "name_placeholder": "Seu nome",
+                "never_share": "⚠️ NUNCA compartilhe esta chave. Guarde-a em um local físico e seguro.",
+                "no_license_desc": "Ao pular, você iniciará no modo TRIAL limitado.",
+                "no_license_title": "NÃO TEM UMA LICENÇA?",
+                "password": "Senha de Acesso",
+                "plan": "Plano",
+                "recovery_key_desc": "Esta chave é a única forma de recuperar seu acesso caso esqueça a senha.",
+                "recovery_key_title": "Chave de Recuperação",
+                "rtd_active_desc": "Detecte trades do Profit/Tryd instantaneamente.",
+                "rtd_active_now": "Ativar RTD agora",
+                "rtd_desc": "Conecte o Bem-vindo ao TraderLog Pro ao seu terminal de negociação via Excel.",
+                "rtd_later_desc": "Você pode ativar o RTD no menu de configurações a qualquer momento.",
+                "rtd_later_title": "Configurar Depois",
+                "rtd_select_sheet": "SELECIONAR PLANILHA",
+                "rtd_skip": "PULAR ESTE PASSO",
+                "rtd_title": "Conexão Real-Time (RTD)",
+                "start_journey": "INICIAR JORNADA"
+            },
             "data": {
                 "custom": {
                     "desc": "Selecione manualmente o que deseja importar.",
@@ -28,31 +83,31 @@
             "finish": {
                 "configuringDb": "Configurando Banco de Dados...",
                 "description": "Clique no botão abaixo para concluir a inicialização.",
-                "syncingTerminal": "Sincronizando Terminal",
-                "waitingSurvivorData": "Aguardando dados do Survivor Hub...",
                 "gann": {
-                    "title": "Vibrações de Gann",
-                    "subtitle": "Confluência Matemática e Ciclos",
                     "kpis": {
-                        "nextCot": "Próxima Reversão (Janela)",
                         "cycleDay": "Dia do Ciclo",
-                        "vibration": "Vibração Atual",
-                        "masterCycle": "Ciclo Mestre",
                         "days": "dias",
                         "hot_window": "JANELA QUENTE",
-                        "neutral": "Neutro"
+                        "masterCycle": "Ciclo Mestre",
+                        "neutral": "Neutro",
+                        "nextCot": "Próxima Reversão (Janela)",
+                        "vibration": "Vibração Atual"
                     },
                     "sq9": {
-                        "expansion": "Alvos de Expansão",
-                        "retracement": "Alvos de Retração",
                         "degrees": "{deg}°",
-                        "reference": "Ref"
-                    }
+                        "expansion": "Alvos de Expansão",
+                        "reference": "Ref",
+                        "retracement": "Alvos de Retração"
+                    },
+                    "subtitle": "Confluência Matemática e Ciclos",
+                    "title": "Vibrações de Gann"
                 },
                 "ready": "Tudo pronto",
                 "savingProfile": "Salvando Perfil...",
                 "startNow": "Começar Agora",
-                "startingPlatform": "Iniciando Plataforma..."
+                "startingPlatform": "Iniciando Plataforma...",
+                "syncingTerminal": "Sincronizando Terminal",
+                "waitingSurvivorData": "Aguardando dados do Survivor Hub..."
             },
             "license": {
                 "activated": "Licença Ativada!",
@@ -99,67 +154,12 @@
                 "title": "Estilo e Preferências"
             },
             "welcome": {
+                "dark": "Dark (Noite)",
                 "description": "Configurando área de trabalho...",
-                "title": "Bem-vindo ao TraderLog Pro",
+                "light": "Light (Dia)",
                 "select_language": "SELECIONE SEU IDIOMA",
                 "select_theme": "SELECIONE O TEMA VISUAL",
-                "dark": "Dark (Noite)",
-                "light": "Light (Dia)"
-            },
-            "common": {
-                "name": "Nome Completo",
-                "name_placeholder": "Seu nome",
-                "email": "E-mail",
-                "password": "Senha de Acesso",
-                "confirm_password": "Confirmar Senha",
-                "recovery_key_title": "Chave de Recuperação",
-                "recovery_key_desc": "Esta chave é a única forma de recuperar seu acesso caso esqueça a senha.",
-                "master_key": "MASTER KEY",
-                "copy_to_clipboard": "Toque para copiar",
-                "never_share": "⚠️ NUNCA compartilhe esta chave. Guarde-a em um local físico e seguro.",
-                "activation_title": "Ativação de Licença",
-                "activation_desc": "Se você já possui uma licença, importe o arquivo .lic abaixo.",
-                "active_license": "Licença Ativa!",
-                "plan": "Plano",
-                "import_lic": "IMPORTAR ARQUIVO .LIC",
-                "no_license_title": "NÃO TEM UMA LICENÇA?",
-                "no_license_desc": "Ao pular, você iniciará no modo TRIAL limitado.",
-                "currency_title": "Moeda Base",
-                "currency_desc": "Escolha a moeda oficial para a consolidação de todos os seus lucros e impostos.",
-                "markets_title": "Onde você opera?",
-                "markets_desc": "Selecione os mercados para habilitar as ferramentas corretas.",
-                "asset_types_title": "Tipos de Assets",
-                "asset_types_desc": "Quais instrumentos financeiros fazem parte do seu dia a dia?",
-                "rtd_title": "Conexão Real-Time (RTD)",
-                "rtd_desc": "Conecte o Bem-vindo ao TraderLog Pro ao seu terminal de negociação via Excel.",
-                "rtd_active_now": "Ativar RTD agora",
-                "rtd_active_desc": "Detecte trades do Profit/Tryd instantaneamente.",
-                "rtd_select_sheet": "SELECIONAR PLANILHA",
-                "rtd_later_title": "Configurar Depois",
-                "rtd_later_desc": "Você pode ativar o RTD no menu de configurações a qualquer momento.",
-                "rtd_skip": "PULAR ESTE PASSO",
-                "mission_ready": "Missão Pronta!",
-                "mission_ready_desc": "Sua base de trades foi configurada com sucesso. Bons trades!",
-                "start_journey": "INICIAR JORNADA",
-                "configuring": "CONFIGURANDO...",
-                "markets": {
-                    "M1": "B3 (Brasil)",
-                    "M2": "NYSE (EUA)",
-                    "M3": "NASDAQ (EUA)",
-                    "M4": "CME Group",
-                    "M5": "Forex",
-                    "M6": "Cripto"
-                },
-                "assets": {
-                    "T1": "Ações BR",
-                    "T2": "Opções BR",
-                    "T3": "Futuros BR",
-                    "T4": "FIIs",
-                    "T5": "Stocks US (NYSE)",
-                    "T5B": "Stocks US (NASDAQ)",
-                    "T6": "Pares Forex",
-                    "T7": "Criptomoedas"
-                }
+                "title": "Bem-vindo ao TraderLog Pro"
             }
         }
     },
@@ -174,58 +174,12 @@
         "tradesSuffix": "trades",
         "viewAnalysis": "Ver Análise Completa"
     },
-    "strategyGann": {
-        "adherence": "Aderência",
-        "accuracy": "Acurácia",
-        "alignment": "Alinhamento",
-        "alignmentDesc": "Entradas em Níveis SQ9",
-        "angleScore": "Pontuação de Ângulo",
-        "analyticalConfluence": "Confluência Analítica",
-        "confluenceDesc": "Como esta estratégia reage às Leis Matemáticas de Gann",
-        "cycleWatch": "Vigilância de Ciclo",
-        "cycleWatchDesc": "Win Rate em Datas Naturais",
-        "geometricPrecision": "Precisão Geométrica",
-        "geometryLaw": "Lei da Geometria",
-        "geometryLawDesc": "A Aderência ao Ângulo representa o equilíbrio entre Preço e Tempo. Estratégias que respeitam os ângulos geométricos (como 45°) são consideradas estáveis e sustentáveis ao longo do Ciclo Mestre.",
-        "mastery": "Gann Mastery",
-        "mathematicalConfluence": "Confluência Matemática",
-        "success": "Sucesso",
-        "timeLaw": "Lei do Tempo",
-        "timeLawDesc": "A Taxa de Sucesso do Ciclo revela se esta estratégia é \"sazonal\". Gann acreditava que o tempo é o fator mais importante; esta pontuação indica se a borda da estratégia é amplificada durante as Mudanças de Estação.",
-        "vibrationLaw": "Lei da Vibração",
-        "vibrationLawDesc": "O alinhamento da estratégia com as vibrações do Quadrado de Nove mede a qualidade de suas entradas. Uma pontuação alta sugere que a estratégia encontra naturalmente liquidez nos pontos de expansão matemática de Gann."
-    },
     "strategyDashboard": {
         "charts": {
             "drawdown": "Drawdown",
             "drawdownStrategy": "Drawdown (Estratégia)",
             "equity": "Capital Líquido",
             "equityStrategy": "Capital (Estratégia)"
-        },
-        "checklist": {
-            "economicCalendar": "Economic Calendar",
-            "items": {
-                "gap_analysis": "Gap de Abertura: Identifiquei se é Gap de Novato ou Profissional?",
-                "mindset": "Mental: Estou calmo e focado para operar?",
-                "news": "Notícias: Verifiquei o Calendário Econômico do dia?",
-                "newsDetected": "⚠️ Notícias de Alto Impacto Detectadas:",
-                "newsNone": "Sem notícias relevantes no calendário hoje.",
-                "prior_levels": "Níveis Chave: Marquei Máxima e Mínima de ontem?",
-                "riskInput": "Limite de Prejuízo Hoje (R$):",
-                "risk_limit": "Risco: Defini meu Stop Loss máximo para hoje?",
-                "trend_200ma": "Território (200MA): Acima (Touro) ou Abaixo (Urso)?",
-                "trend_20ma": "Tendência (20MA): Preço está respeitando a média de 20?"
-            },
-            "ready": "PRONTO PARA OPERAR",
-            "reset": "Resetar",
-            "start": "Iniciar Sessão de Trading",
-            "subtitle": "Verifique os fundamentos antes do primeiro clique.",
-            "success": "Checklist concluído. Pronto para operar.",
-            "title": "Check-in Pré-Mercado (Oliver Velez)",
-            "verified": "verificados",
-            "newsUpdateError": "Erro ao atualizar feed de eventos econômicos.",
-            "newsUpdateSuccess": "Feed econômico atualizado com sucesso.",
-            "resetSuccess": "Estatísticas de checklist reiniciadas."
         },
         "heatmap": {
             "days": {
@@ -311,6 +265,27 @@
         "timeframes": "Timeframes",
         "visualExamples": "Exemplos Visuais"
     },
+    "strategyGann": {
+        "accuracy": "Acurácia",
+        "adherence": "Aderência",
+        "alignment": "Alinhamento",
+        "alignmentDesc": "Entradas em Níveis SQ9",
+        "analyticalConfluence": "Confluência Analítica",
+        "angleScore": "Pontuação de Ângulo",
+        "confluenceDesc": "Como esta estratégia reage às Leis Matemáticas de Gann",
+        "cycleWatch": "Vigilância de Ciclo",
+        "cycleWatchDesc": "Win Rate em Datas Naturais",
+        "geometricPrecision": "Precisão Geométrica",
+        "geometryLaw": "Lei da Geometria",
+        "geometryLawDesc": "A Aderência ao Ângulo representa o equilíbrio entre Preço e Tempo. Estratégias que respeitam os ângulos geométricos (como 45°) são consideradas estáveis e sustentáveis ao longo do Ciclo Mestre.",
+        "mastery": "Gann Mastery",
+        "mathematicalConfluence": "Confluência Matemática",
+        "success": "Sucesso",
+        "timeLaw": "Lei do Tempo",
+        "timeLawDesc": "A Taxa de Sucesso do Ciclo revela se esta estratégia é \"sazonal\". Gann acreditava que o tempo é o fator mais importante; esta pontuação indica se a borda da estratégia é amplificada durante as Mudanças de Estação.",
+        "vibrationLaw": "Lei da Vibração",
+        "vibrationLawDesc": "O alinhamento da estratégia com as vibrações do Quadrado de Nove mede a qualidade de suas entradas. Uma pontuação alta sugere que a estratégia encontra naturalmente liquidez nos pontos de expansão matemática de Gann."
+    },
     "strategyList": {
         "description": "Acompanhe o desempenho estatístico dos seus setups operacionais.",
         "new": "Nova",
@@ -322,5 +297,99 @@
         "searchPlaceholder": "Buscar estratégia...",
         "title": "Estratégias"
     },
-    "strategyNotFound": "Estratégia não encontrada"
+    "strategyNotFound": "Estratégia não encontrada",
+    "strategy": {
+        "dashboard": {
+            "charts": {
+                "drawdown": "Drawdown",
+                "drawdownStrategy": "Drawdown (Estratégia)",
+                "equity": "Capital Líquido",
+                "equityStrategy": "Capital (Estratégia)"
+            },
+            "heatmap": {
+                "days": {
+                    "fri": "Sex",
+                    "mon": "Seg",
+                    "sat": "Sáb",
+                    "sun": "Dom",
+                    "thu": "Qui",
+                    "tue": "Ter",
+                    "wed": "Qua"
+                },
+                "legend": {
+                    "breakeven": "Breakeven",
+                    "loss": "Prejuízo",
+                    "profit": "Lucro",
+                    "strongLoss": "Prejuízo Alto",
+                    "strongProfit": "Lucro Alto"
+                },
+                "noMarket": "Nenhum mercado vinculado",
+                "subtitle": "Desempenho acumulado por Dia da Semana e Hora",
+                "title": "Mapa de Calor (P&L)",
+                "tooltip": {
+                    "loss": "Prejuízo",
+                    "neutral": "Neutro",
+                    "profit": "Lucro",
+                    "status": "Status"
+                }
+            },
+            "messages": {
+                "noTrades": "Sem trades no período selecionado."
+            },
+            "stats": {
+                "averageLoss": "Média de Perda",
+                "averageWin": "Média de Ganho",
+                "avgDurationLoss": "Duração Média (Prejuízo)",
+                "avgDurationWin": "Duração Média (Lucro)",
+                "avgInterval": "Intervalo Entre Trades",
+                "avgTimeBetweenTrades": "Tempo Médio entre Trades",
+                "bestTrade": "Melhor Trade",
+                "consecutiveLosses": "Losses Consecutivos",
+                "consecutiveWins": "Wins Consecutivos",
+                "mathExpectation": "Expectativa Matemática",
+                "maxDrawdown": "Max Drawdown",
+                "netResult": "Resultado Líquido",
+                "operations": "Trades",
+                "payoff": "Payoff",
+                "planAdherence": "Aderência ao Plano",
+                "profitFactor": "Profit Factor",
+                "recoveryFactor": "Fator de Recuperação",
+                "totalTrades": "Total de Trades",
+                "winRate": "Win Rate",
+                "winningTrades": "Trades Vencedores",
+                "worstTrade": "Pior Trade"
+            },
+            "subtitle": "Bem-vindo ao seu centro de comando.",
+            "summary": {
+                "chartPlaceholder": "Gráfico de Performance (Em breve)",
+                "noTrades": "Nenhum trade realizado hoje.",
+                "title": "Resumo do Dia"
+            },
+            "tabs": {
+                "dashboard": "Dashboard",
+                "dossier": "Dossiê da Estratégia"
+            },
+            "title": "Dashboard"
+        },
+        "dossier": {
+            "all": "Todos",
+            "assetTypes": "Tipos de Ativo",
+            "context": "Contexto Operacional",
+            "daysSuffix": "dias",
+            "entryTriggers": "Gatilhos de Entrada",
+            "exit": "Stop / Saída",
+            "indicators": "Indicadores",
+            "linkedMarkets": "Mercados Vinculados",
+            "management": "Condução / Gestão",
+            "multi": "MULTI",
+            "noCriteria": "Nenhum critério definido.",
+            "noImages": "Nenhuma imagem anexada.",
+            "noLinkedMarket": "Nenhum mercado vinculado especificamente (Horário Livre).",
+            "partials": "Saídas Parciais",
+            "specificAssets": "Ativos Específicos",
+            "timeframes": "Timeframes",
+            "visualExamples": "Exemplos Visuais"
+        },
+        "notFound": "Estratégia não encontrada"
+    }
 }

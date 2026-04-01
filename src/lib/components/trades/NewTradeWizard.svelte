@@ -50,6 +50,8 @@
         Coins,
         ExternalLink,
         Maximize2,
+        Image as ImageIcon,
+        FileCheck,
     } from "lucide-svelte";
     import { ensureLocalOffset } from "$lib/utils";
 
@@ -174,12 +176,42 @@
         riskEngine.getProactiveWarnings(activeRiskProfile),
     );
 
+    const steps = [
+        {
+            id: 1,
+            label: $t("trades.wizard.steps.basic"),
+            icon: Target,
+        },
+        {
+            id: 2,
+            label: $t("trades.wizard.steps.conduction"),
+            icon: ShieldCheck,
+        },
+        {
+            id: 3,
+            label: $t("trades.wizard.steps.psychology"),
+            icon: Brain,
+        },
+        {
+            id: 4,
+            label: $t("trades.wizard.steps.media"),
+            icon: ImageIcon,
+        },
+        {
+            id: 5,
+            label: $t("trades.wizard.steps.review"),
+            icon: FileCheck,
+        },
+    ];
+
     // Auto-apply lot adjustment if user clicks
     function applyLotAdjustment() {
-        formData.quantity = Math.round(
-            formData.quantity * suggestedLotMultiplier,
-        );
-        toast.success($t("trades.wizard.risk.toast_lot_adjusted"));
+        if (suggestedLotMultiplier < 1.0) {
+            formData.quantity = Math.floor(
+                formData.quantity * suggestedLotMultiplier,
+            );
+            toast.success($t("trades.wizard.risk.toast_lot_adjusted"));
+        }
     }
 
     let priceHasFocus = $state(false);
@@ -296,10 +328,7 @@
                 const autoPrice =
                     parseFloat(currentTrade._autoPrice as any) ||
                     currentTrade.entry_price;
-                const autoType =
-                    currentTrade._autoType === "partial_entry"
-                        ? "entry"
-                        : "exit";
+                const rtdMode = currentTrade._autoType === "partial_entry" ? "addition" : "exit";
 
                 formData.partial_exits.push({
                     date: currentTrade.date
@@ -307,9 +336,9 @@
                         : getNowWithOffset(),
                     price: autoPrice,
                     quantity: 1,
-                    type: autoType,
+                    type: rtdMode === "addition" ? "entry" : "exit",
                     notes:
-                        autoType === "entry"
+                        rtdMode === "addition"
                             ? $t("trades.wizard.messages.rtd_position_addition")
                             : $t("trades.wizard.messages.rtd_partial_exit"),
                 });
@@ -391,18 +420,6 @@
             originalData = null;
         }
     });
-
-    const steps = [
-        {
-            id: 1,
-            label: $t("trades.wizard.steps.basic"),
-            icon: LayoutDashboard,
-        },
-        { id: 2, label: $t("trades.wizard.steps.conduction"), icon: Target },
-        { id: 3, label: $t("trades.wizard.steps.psychology"), icon: Brain },
-        { id: 4, label: $t("trades.wizard.steps.media"), icon: Camera },
-        { id: 5, label: $t("trades.wizard.steps.review"), icon: Save },
-    ];
 
     // --- STABILITY LAYER (Svelte 5) ---
     // We create local snapshots of settings data to avoid "reactive noise"
@@ -647,6 +664,11 @@
                 } else if (/^[A-Z]{4}\d/i.test(sym)) {
                     guessedTypeId = stockType || "rtd";
                 }
+
+                toast.info(
+                    `${$t("trades.wizard.messages.rtd_profit_asset_active")} (${sym})`,
+                    { position: "bottom-left" },
+                );
 
                 return {
                     id: `rtd:${sym}`,
@@ -1039,9 +1061,7 @@
 
                     if (profitIncrease > 10.0 && month < nowMonth) {
                         const confirmed = confirm(
-                            $t(
-                                "trades.wizard.messages.complementary_darf_warning",
-                            ),
+                            $t("fiscal.darf.complementary_warning"),
                         );
                         if (!confirmed) {
                             isSubmitting = false;
@@ -1056,7 +1076,7 @@
                     calculationResult.netCurrency > originalResult + 100
                 ) {
                     toast.error(
-                        $_("trades.wizard.messages.complementary_darf_warning"),
+                        $t("fiscal.darf.complementary_warning"),
                         {
                             duration: 6000,
                             position: "top-center",
@@ -1216,7 +1236,7 @@
                                     class="text-[10px] text-blue-800 dark:text-blue-200/80 leading-tight"
                                 >
                                     {$t(
-                                        "trades.wizard.messages.closure_exists_warning",
+                                        "wizard.messages.closure_exists_warning",
                                     )}
                                 </p>
                             </div>
@@ -1233,7 +1253,7 @@
                                     <span
                                         class="text-xs font-bold uppercase tracking-wider"
                                         >{$t(
-                                            "trades.wizard.risk.alerts_title",
+                                            "wizard.risk.alerts_title",
                                         )}</span
                                     >
                                 </div>
@@ -1255,7 +1275,7 @@
                                         onclick={applyLotAdjustment}
                                     >
                                         {$t(
-                                            "trades.wizard.risk.reduce_lot_button",
+                                            "wizard.risk.reduce_lot_button",
                                             {
                                                 percent: Math.round(
                                                     (1 -
@@ -1293,7 +1313,7 @@
                                             (a) => a.id === formData.account_id,
                                         )?.nickname ||
                                             $t(
-                                                "trades.wizard.placeholders.select",
+                                                "wizard.placeholders.select",
                                             )}
                                     </Select.Trigger>
                                     <Select.Content>
@@ -1310,7 +1330,7 @@
                                     for="strategy-select"
                                     class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
                                     >{$t(
-                                        "trades.wizard.fields.strategy",
+                                        "wizard.fields.strategy",
                                     )}</Label
                                 >
                                 <Select.Root
@@ -1326,7 +1346,7 @@
                                                 s.id === formData.strategy_id,
                                         )?.name ||
                                             $t(
-                                                "trades.wizard.placeholders.select",
+                                                "wizard.placeholders.select",
                                             )}
                                     </Select.Trigger>
                                     <Select.Content>
@@ -1343,7 +1363,7 @@
                                     for="timeframe-select"
                                     class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
                                     >{$t(
-                                        "trades.wizard.fields.timeframe",
+                                        "wizard.fields.timeframe",
                                     )}</Label
                                 >
                                 <Select.Root
@@ -1356,7 +1376,7 @@
                                     >
                                         {formData.timeframe ||
                                             $t(
-                                                "trades.wizard.placeholders.select",
+                                                "wizard.placeholders.select",
                                             )}
                                     </Select.Trigger>
                                     <Select.Content>
@@ -1367,7 +1387,7 @@
                                         {:else}
                                             <Select.Item value="5m"
                                                 >{$t(
-                                                    "trades.wizard.timeframe_options.5m",
+                                                    "wizard.timeframe_options.5m",
                                                 )}</Select.Item
                                             >
                                         {/each}
@@ -1379,7 +1399,7 @@
                                     for="volatility-select"
                                     class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
                                     >{$t(
-                                        "trades.wizard.fields.volatility",
+                                        "wizard.fields.volatility",
                                     )}</Label
                                 >
                                 <Select.Root
@@ -1392,28 +1412,28 @@
                                     >
                                         {formData.volatility ||
                                             $t(
-                                                "trades.wizard.placeholders.select",
+                                                "wizard.placeholders.select",
                                             )}
                                     </Select.Trigger>
                                     <Select.Content>
                                         <Select.Item value="baixa"
                                             >{$t(
-                                                "trades.wizard.volatility_options.low",
+                                                "wizard.volatility_options.low",
                                             )}</Select.Item
                                         >
                                         <Select.Item value="normal"
                                             >{$t(
-                                                "trades.wizard.volatility_options.normal",
+                                                "wizard.volatility_options.normal",
                                             )}</Select.Item
                                         >
                                         <Select.Item value="alta"
                                             >{$t(
-                                                "trades.wizard.volatility_options.high",
+                                                "wizard.volatility_options.high",
                                             )}</Select.Item
                                         >
                                         <Select.Item value="extrema"
                                             >{$t(
-                                                "trades.wizard.volatility_options.extreme",
+                                                "wizard.volatility_options.extreme",
                                             )}</Select.Item
                                         >
                                     </Select.Content>
@@ -1440,18 +1460,13 @@
                                                 class="text-xs font-bold text-orange-500 uppercase tracking-tight"
                                             >
                                                 {$t(
-                                                    "trades.wizard.messages.complementary_darf_warning",
+                                                    "fiscal.darf.complementary_warning",
                                                 )}
                                             </p>
                                             <p
                                                 class="text-[10px] text-muted-foreground leading-snug"
                                             >
-                                                O resultado aumentou {(
-                                                    calculationResult.netCurrency -
-                                                    originalResult
-                                                ).toFixed(2)}. Verifique se há
-                                                necessidade de emitir um DARF
-                                                complementar para evitar multas.
+                                                {$t("fiscal.darf.complementary_description", { values: { amount: (calculationResult.netCurrency - originalResult).toFixed(2) } })}
                                             </p>
                                         </div>
                                     </div>
@@ -1463,7 +1478,7 @@
                                             for="asset-type-select"
                                             class="text-[9px] uppercase font-bold text-muted-foreground tracking-tighter"
                                             >{$t(
-                                                "trades.wizard.fields.asset_type",
+                                                "wizard.fields.asset_type",
                                             )}</Label
                                         >
                                         <Select.Root
@@ -1487,13 +1502,13 @@
                                                         selectedAssetTypeId,
                                                 )?.name ||
                                                     $t(
-                                                        "trades.wizard.placeholders.all_types",
+                                                        "wizard.placeholders.all_types",
                                                     )}
                                             </Select.Trigger>
                                             <Select.Content>
                                                 <Select.Item value=""
                                                     >{$t(
-                                                        "trades.wizard.placeholders.all_types",
+                                                        "wizard.placeholders.all_types",
                                                     )}</Select.Item
                                                 >
                                                 {#each assetTypesList as type}
@@ -1544,7 +1559,7 @@
                                                         <span
                                                             class="text-muted-foreground"
                                                             >{$t(
-                                                                "trades.wizard.placeholders.select",
+                                                                "wizard.placeholders.select",
                                                             )}</span
                                                         >
                                                     {/if}
@@ -1625,7 +1640,7 @@
                                         <Label
                                             class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
                                             >{$t(
-                                                "trades.wizard.fields.date_time",
+                                                "wizard.fields.date_time",
                                             )}</Label
                                         >
                                         <div class="relative">
@@ -1643,7 +1658,7 @@
                                         <Label
                                             class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
                                             >{$t(
-                                                "trades.wizard.fields.entry_price",
+                                                "wizard.fields.entry_price",
                                             )}
                                             <span class="text-rose-500">*</span
                                             ></Label
@@ -1706,7 +1721,7 @@
 
                                                             toast.success(
                                                                 $t(
-                                                                    "trades.wizard.messages.rtd_sync_success",
+                                                                    "wizard.messages.rtd_sync_success",
                                                                     {
                                                                         values: {
                                                                             symbol: quote.symbol,
@@ -1718,7 +1733,7 @@
                                                         } else {
                                                             toast.error(
                                                                 $t(
-                                                                    "trades.wizard.messages.rtd_not_available",
+                                                                    "wizard.messages.rtd_not_available",
                                                                 ),
                                                             );
                                                         }
@@ -1774,7 +1789,7 @@
                                                 formData.entry_emotional_state_id,
                                         )?.name ||
                                             $t(
-                                                "trades.wizard.placeholders.select",
+                                                "wizard.placeholders.select",
                                             )}
                                     </Select.Trigger>
                                     <Select.Content>
@@ -1785,7 +1800,7 @@
                                         {:else}
                                             <Select.Item value="" disabled
                                                 >{$t(
-                                                    "trades.wizard.placeholders.no_states",
+                                                    "wizard.placeholders.no_states",
                                                 )}</Select.Item
                                             >
                                         {/each}
@@ -1798,7 +1813,7 @@
                                 <Label
                                     for="modality-select"
                                     class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
-                                    >{$t("trades.filters.modality")}</Label
+                                    >{$t("trades.wizard.fields.asset_type")}</Label
                                 >
                                 <Select.Root
                                     type="single"
@@ -1813,7 +1828,7 @@
                                                 m.id === formData.modality_id,
                                         )?.name ||
                                             $t(
-                                                "trades.wizard.placeholders.select",
+                                                "wizard.placeholders.select",
                                             )}
                                     </Select.Trigger>
                                     <Select.Content>
@@ -1830,7 +1845,7 @@
                                     for="stop-loss-input"
                                     class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
                                     >{$t(
-                                        "trades.wizard.fields.stop_loss",
+                                        "wizard.fields.stop_loss",
                                     )}</Label
                                 >
                                 <Input
@@ -1864,7 +1879,7 @@
                                     for="take-profit-input"
                                     class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
                                     >{$t(
-                                        "trades.wizard.fields.take_profit",
+                                        "wizard.fields.take_profit",
                                     )}</Label
                                 >
                                 <Input
@@ -1906,7 +1921,7 @@
                             class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
                         >
                             {$t(
-                                "trades.wizard.sections.partial_management.title",
+                                "wizard.sections.partial_management.title",
                             )}
                         </h3>
                         {#if true}
@@ -1964,7 +1979,7 @@
                                     'open'
                                         ? 'text-primary'
                                         : 'text-muted-foreground'}"
-                                    >{$t("trades.status.open")}</span
+                                    >{$t("trades.list.table.status_open")}</span
                                 >
                                 <button
                                     class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 transition-colors bg-muted/40 border border-border/40"
@@ -1999,7 +2014,7 @@
                                     'closed'
                                         ? 'text-emerald-500'
                                         : 'text-muted-foreground'}"
-                                    >{$t("trades.status.closed")}</span
+                                    >{$t("trades.list.table.status_closed")}</span
                                 >
                             </div>
                         </div>
@@ -2012,7 +2027,7 @@
                                     <Label
                                         class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
                                         >{$t(
-                                            "trades.wizard.fields.exit_price",
+                                            "wizard.fields.exit_price",
                                         )}</Label
                                     >
                                     <Input
@@ -2026,7 +2041,7 @@
                                     <Label
                                         class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
                                         >{$t(
-                                            "trades.wizard.fields.exit_date",
+                                            "wizard.fields.exit_date",
                                         )}</Label
                                     >
                                     <div class="relative">
@@ -2044,7 +2059,7 @@
                                     <Label
                                         class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
                                         >{$t(
-                                            "trades.wizard.fields.exit_reason",
+                                            "wizard.fields.exit_reason",
                                         )}</Label
                                     >
                                     <Select.Root
@@ -2056,33 +2071,33 @@
                                         >
                                             {formData.exit_reason ||
                                                 $t(
-                                                    "trades.wizard.placeholders.select",
+                                                    "wizard.placeholders.select",
                                                 )}
                                         </Select.Trigger>
                                         <Select.Content>
                                             <Select.Item value="Take Profit"
                                                 >{$t(
-                                                    "trades.wizard.exit_reasons.take_profit",
+                                                    "wizard.exit_reasons.take_profit",
                                                 )}</Select.Item
                                             >
                                             <Select.Item value="Stop Loss"
                                                 >{$t(
-                                                    "trades.wizard.exit_reasons.stop_loss",
+                                                    "wizard.exit_reasons.stop_loss",
                                                 )}</Select.Item
                                             >
                                             <Select.Item value="Manual"
                                                 >{$t(
-                                                    "trades.wizard.exit_reasons.manual",
+                                                    "wizard.exit_reasons.manual",
                                                 )}</Select.Item
                                             >
                                             <Select.Item value="Time"
                                                 >{$t(
-                                                    "trades.wizard.exit_reasons.time",
+                                                    "wizard.exit_reasons.time",
                                                 )}</Select.Item
                                             >
                                             <Select.Item value="Strategy"
                                                 >{$t(
-                                                    "trades.wizard.exit_reasons.strategy",
+                                                    "wizard.exit_reasons.strategy",
                                                 )}</Select.Item
                                             >
                                         </Select.Content>
@@ -2094,7 +2109,7 @@
                                     >
                                         <Brain class="w-3 h-3 text-pink-400" />
                                         {$t(
-                                            "trades.wizard.fields.emotional_state",
+                                            "wizard.fields.emotional_state",
                                         )}
                                     </Label>
                                     <Select.Root
@@ -2112,7 +2127,7 @@
                                                     formData.exit_emotional_state_id,
                                             )?.name ||
                                                 $t(
-                                                    "trades.wizard.placeholders.select",
+                                                    "wizard.placeholders.select",
                                                 )}
                                         </Select.Trigger>
                                         <Select.Content>
@@ -2123,7 +2138,7 @@
                                             {:else}
                                                 <Select.Item value="" disabled
                                                     >{$t(
-                                                        "trades.wizard.placeholders.no_states",
+                                                        "wizard.placeholders.no_states",
                                                     )}</Select.Item
                                                 >
                                             {/each}
@@ -2163,7 +2178,7 @@
                                             {formData.direction === "buy"
                                                 ? $t("trades.wizard.fields.buy")
                                                 : $t(
-                                                      "trades.wizard.fields.sell",
+                                                      "wizard.fields.sell",
                                                   )}
                                         </span>
                                     </div>
@@ -2180,12 +2195,12 @@
                                             class="text-primary font-mono font-bold"
                                             >{formData.quantity}
                                             {$t(
-                                                "trades.wizard.unit_labels.contracts",
+                                                "wizard.unit_labels.contracts",
                                             )}</span
                                         >
                                         {#if calculationResult.totalEntryQty > formData.quantity}
                                             <span class="ml-2 text-primary/60">
-                                                / {$t("trades.wizard.labels.average").toUpperCase()}: <span
+                                                / {$t("trades.wizard.fields.average").toUpperCase()}: <span
                                                     class="text-foreground font-mono font-bold"
                                                     >{(
                                                         formData.entry_price ||
@@ -2206,7 +2221,7 @@
                                 <p
                                     class="text-[9px] text-muted-foreground uppercase font-bold tracking-widest"
                                 >
-                                    {$t("trades.details.net_result")}
+                                    {$t("trades.wizard.summary.net_result")}
                                 </p>
                                 <h3
                                     class="text-2xl font-black {calculationResult.netCurrency >=
@@ -2252,7 +2267,7 @@
                         <Label
                             class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
                             >{$t(
-                                "trades.wizard.sections.psychology_analysis",
+                                "wizard.sections.psychology_analysis",
                             )}</Label
                         >
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2261,14 +2276,14 @@
                                     for="entry-rationale-text"
                                     class="text-xs"
                                     >{$t(
-                                        "trades.wizard.fields.entry_rationale",
+                                        "wizard.fields.entry_rationale",
                                     )}</Label
                                 >
                                 <Textarea
                                     id="entry-rationale-text"
                                     bind:value={formData.entry_rationale}
                                     placeholder={$t(
-                                        "trades.wizard.placeholders.rationale",
+                                        "wizard.placeholders.rationale",
                                     )}
                                     class="bg-muted/30 border-border/40 h-24 text-sm resize-none"
                                 />
@@ -2278,14 +2293,14 @@
                                     for="confirmation-signals-text"
                                     class="text-xs"
                                     >{$t(
-                                        "trades.wizard.fields.confirmation_signals",
+                                        "wizard.fields.confirmation_signals",
                                     )}</Label
                                 >
                                 <Textarea
                                     id="confirmation-signals-text"
                                     bind:value={formData.confirmation_signals}
                                     placeholder={$t(
-                                        "trades.wizard.placeholders.signals",
+                                        "wizard.placeholders.signals",
                                     )}
                                     class="bg-input/20 border-border/20 h-24 text-sm resize-none"
                                 />
@@ -2295,14 +2310,14 @@
                             <div class="space-y-2">
                                 <Label for="market-context-text" class="text-xs"
                                     >{$t(
-                                        "trades.wizard.fields.market_context",
+                                        "wizard.fields.market_context",
                                     )}</Label
                                 >
                                 <Textarea
                                     id="market-context-text"
                                     bind:value={formData.market_context}
                                     placeholder={$t(
-                                        "trades.wizard.placeholders.context",
+                                        "wizard.placeholders.context",
                                     )}
                                     class="bg-input/20 border-border/20 h-24 text-sm resize-none"
                                 />
@@ -2310,14 +2325,14 @@
                             <div class="space-y-2">
                                 <Label for="improvements-text" class="text-xs"
                                     >{$t(
-                                        "trades.wizard.fields.improvements",
+                                        "wizard.fields.improvements",
                                     )}</Label
                                 >
                                 <Textarea
                                     id="improvements-text"
                                     bind:value={formData.mistakes_improvements}
                                     placeholder={$t(
-                                        "trades.wizard.placeholders.improvements",
+                                        "wizard.placeholders.improvements",
                                     )}
                                     class="bg-muted/30 border-border/40 h-24 text-sm resize-none"
                                 />
@@ -2335,14 +2350,14 @@
                                             class="w-3.5 h-3.5 text-primary"
                                         />
                                         {$t(
-                                            "trades.wizard.emotions.intensity_label",
+                                            "wizard.emotions.intensity_label",
                                         )}
                                     </Label>
                                     <p
                                         class="text-[10px] text-muted-foreground uppercase"
                                     >
                                         {$t(
-                                            "trades.wizard.emotions.intensity_hint",
+                                            "wizard.emotions.intensity_hint",
                                         )}
                                     </p>
                                 </div>
@@ -2367,12 +2382,12 @@
                                 >
                                 <span
                                     >{$t(
-                                        "trades.wizard.emotions.moderate",
+                                        "wizard.emotions.moderate",
                                     )}</span
                                 >
                                 <span
                                     >{$t(
-                                        "trades.wizard.emotions.extreme",
+                                        "wizard.emotions.extreme",
                                     )}</span
                                 >
                             </div>
@@ -2422,7 +2437,7 @@
                                             class="w-4 h-4 text-primary"
                                         />
                                         {$t(
-                                            "trades.wizard.sections.final_summary",
+                                            "wizard.sections.final_summary",
                                         )}
                                     </h3>
                                     <div
@@ -2436,7 +2451,7 @@
                                             class="text-[9px] text-muted-foreground uppercase font-bold tracking-widest"
                                         >
                                             {$t(
-                                                "trades.wizard.fields.asset_direction",
+                                                "wizard.fields.asset_direction",
                                             )}
                                         </p>
                                         <div class="flex items-center gap-2">
@@ -2448,7 +2463,7 @@
                                                 <span
                                                     class="text-[10px] text-muted-foreground"
                                                 >
-                                                    ({$t("trades.wizard.labels.average")}: {(
+                                                    ({$t("trades.wizard.fields.average")}: {(
                                                         formData.entry_price ||
                                                         0
                                                     ).toLocaleString(
@@ -2467,10 +2482,10 @@
                                             >
                                                 {formData.direction === "buy"
                                                     ? $t(
-                                                          "trades.wizard.fields.buy",
+                                                          "wizard.fields.buy",
                                                       ).toUpperCase()
                                                     : $t(
-                                                          "trades.wizard.fields.sell",
+                                                          "wizard.fields.sell",
                                                       ).toUpperCase()}
                                             </span>
                                         </div>
@@ -2479,7 +2494,7 @@
                                         <p
                                             class="text-[9px] text-muted-foreground uppercase font-bold tracking-widest"
                                         >
-                                            {$t("trades.table.pl")}
+                                            {$t("trades.wizard.summary.net_result")}
                                         </p>
                                         <p
                                             class="text-xl font-black {calculationResult.netCurrency >=
@@ -2520,7 +2535,7 @@
                                         <p
                                             class="text-[9px] text-muted-foreground uppercase font-bold tracking-widest"
                                         >
-                                            {$t("trades.table.date")}
+                                            {$t("trades.wizard.fields.date_time")}
                                         </p>
                                         <p
                                             class="text-xs font-medium text-foreground/80"
@@ -2540,7 +2555,7 @@
                                         <p
                                             class="text-[9px] text-muted-foreground uppercase font-bold tracking-widest"
                                         >
-                                            {$t("trades.table.strategy")}
+                                            {$t("trades.wizard.fields.strategy")}
                                         </p>
                                         <p
                                             class="text-xs font-medium text-foreground/80 truncate"
@@ -2566,7 +2581,7 @@
                                             class="w-1 h-1 bg-primary rounded-full"
                                         ></div>
                                         {$t(
-                                            "trades.wizard.sections.calc_memory",
+                                            "wizard.sections.calc_memory",
                                         )}
                                     </h4>
 
@@ -2576,12 +2591,12 @@
                                         >
                                             <span
                                                 >{$t(
-                                                    "trades.wizard.fields.notes",
+                                                    "wizard.fields.notes",
                                                 )}</span
                                             >
                                             <span
                                                 >{$t(
-                                                    "settings.api.integrations.keys.table.usage",
+                                                    "wizard.sections.calc_memory",
                                                 )}</span
                                             >
                                         </div>
@@ -2598,14 +2613,14 @@
                                                             <span
                                                                 class="px-1 py-0.5 rounded-[4px] bg-emerald-500/10 text-emerald-400 text-[8px] font-black border border-emerald-500/20 uppercase tracking-tighter"
                                                                 >{$t(
-                                                                    "trades.table.entry",
+                                                                    "wizard.fields.entry",
                                                                 )}</span
                                                             >
                                                         {:else if item.type === "exit"}
                                                             <span
                                                                 class="px-1 py-0.5 rounded-[4px] bg-blue-500/10 text-blue-400 text-[8px] font-black border border-blue-500/20 uppercase tracking-tighter"
                                                                 >{$t(
-                                                                    "trades.table.exit",
+                                                                    "wizard.fields.exit_price",
                                                                 )}</span
                                                             >
                                                         {/if}
@@ -2658,7 +2673,7 @@
                                         >
                                             <span
                                                 >{$t(
-                                                    "trades.details.gross_result",
+                                                    "wizard.summary.gross_result",
                                                 )}</span
                                             >
                                             <span
@@ -2698,7 +2713,7 @@
                                         >
                                             <span
                                                 >{$t(
-                                                    "trades.details.fees",
+                                                    "wizard.summary.exchange_fees",
                                                 )}</span
                                             >
                                             <span
@@ -2729,7 +2744,7 @@
                                         <span
                                             class="text-[9px] text-muted-foreground uppercase font-bold"
                                             >{$t(
-                                                "trades.wizard.summary.images",
+                                                "wizard.summary.images",
                                             )}</span
                                         >
                                         <span
@@ -2743,7 +2758,7 @@
                                         <span
                                             class="text-[9px] text-muted-foreground uppercase font-bold"
                                             >{$t(
-                                                "trades.wizard.fields.followed_plan",
+                                                "wizard.fields.followed_plan",
                                             )}</span
                                         >
                                         <span
@@ -2766,7 +2781,7 @@
                                                 class="w-4 h-4 animate-spin"
                                             />
                                         {:else}
-                                            {$t("general.save").toUpperCase()}
+                                            {$t("trades.wizard.summary.finish").toUpperCase()}
                                             <Save
                                                 class="w-4 h-4 transition-transform group-hover:scale-110"
                                             />
@@ -2791,20 +2806,20 @@
             class="border-muted text-muted-foreground hover:bg-muted/10"
         >
             <X class="w-4 h-4 mr-2" />
-            {$t("general.cancel")}
+            {$t("common.cancel")}
         </Button>
 
         <div class="flex gap-3">
             {#if currentStep > 1}
                 <Button variant="ghost" onclick={handlePrev}>
                     <ChevronLeft class="w-4 h-4 mr-2" />
-                    {$t("general.back")}
+                    {$t("trades.wizard.summary.back")}
                 </Button>
             {/if}
 
             {#if currentStep < steps.length}
                 <Button onclick={handleNext} class="min-w-[120px]">
-                    {$t("general.next")}
+                    {$t("trades.wizard.summary.next")}
                     <ChevronRight class="w-4 h-4 ml-2" />
                 </Button>
             {:else}
@@ -2814,7 +2829,7 @@
                     class="bg-primary text-primary-foreground min-w-[150px] font-bold shadow-[0_0_20px_rgba(var(--primary),0.4)]"
                 >
                     <Save class="w-4 h-4 mr-2" />
-                    {isSubmitting ? $t("general.saving") : $t("general.finish")}
+                    {isSubmitting ? $t("common.saving") : $t("trades.wizard.summary.finish")}
                 </Button>
             {/if}
         </div>

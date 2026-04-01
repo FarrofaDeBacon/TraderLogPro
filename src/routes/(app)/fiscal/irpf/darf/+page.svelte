@@ -567,7 +567,7 @@
                                 <span
                                     class="text-[9px] font-bold text-muted-foreground uppercase opacity-70"
                                 >
-                                    Total Pago
+                                    {$t("fiscal.darf.totalPaid")}
                                 </span>
                                 <span
                                     class="text-[10px] font-mono font-bold text-green-400"

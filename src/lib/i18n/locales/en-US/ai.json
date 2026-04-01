@@ -1,39 +1,52 @@
 {
     "aiCockpit": {
-        "ctaBtn": "Analytical Cockpit",
-        "health": {
-            "title": "Algorithmic Health",
-            "status": "Status",
-            "currentRisk": "Current Risk",
-            "stability": "Stability (Drawdown / Volatility)"
-        },
-        "xray": {
-            "title": "Operational Context (X-Ray)",
-            "bestAsset": "Best Asset",
-            "worstAsset": "Worst Asset",
-            "bestTime": "Best Time",
-            "worstTime": "Worst Time",
-            "bestSide": "Dominant Direction"
-        },
         "ai": {
-            "title": "Tactical Recommendation",
-            "insufficientVolume": "Insufficient volume to point out edges. Follow your initial plan.",
-            "healthy": "System in perfect mechanical functioning. Zero failures.",
-            "desc": "Risk diagnostics, operational factors, and psychological calibration."
+            "desc": "We cross the mathematical findings on the left with the Artificial Intelligence engine to generate instant tactical tips.",
+            "healthy": "Stable execution. No flaws detected.",
+            "insufficientVolume": "Insufficient data for analysis. Maintain current plan.",
+            "title": "Tactical Recommendation (AI)"
         },
         "aiPsychology": {
-            "title": "Strategy vs Psychology",
             "dominantState": "Dominant State",
-            "netProfit": "Net Profit",
+            "history": "Your algorithmic behavioral history at the desk.",
             "loss": "Loss",
-            "history": "Your algorithmic history of desk behavior."
+            "netProfit": "Net Profit",
+            "title": "Strategy vs Psychology"
+        },
+        "ctaBtn": "Analytical Cockpit",
+        "health": {
+            "currentRisk": "Current Risk",
+            "stability": "Stability",
+            "status": "Status",
+            "title": "Algorithmic Health"
         },
         "psychology": {
-            "title": "Strategy vs Psychology",
             "dominantState": "Dominant State",
-            "netProfit": "Net Profit",
+            "history": "Your algorithmic behavioral history at the desk.",
             "loss": "Loss",
-            "history": "Your algorithmic history of desk behavior."
+            "netProfit": "Net Profit",
+            "title": "Strategy vs Psychology"
+        },
+        "values": {
+            "BUY": "BUY",
+            "COLD": "COLD",
+            "CRITICAL": "CRITICAL",
+            "HOT": "HOT",
+            "INSUFFICIENT_DATA": "INSUFFICIENT DATA",
+            "LOW": "LOW",
+            "NEUTRAL": "NEUTRAL",
+            "SELL": "SELL",
+            "STABLE": "STABLE",
+            "VOLATILE": "VOLATILE",
+            "winRateShort": "Win Rate"
+        },
+        "xray": {
+            "bestAsset": "Best Asset",
+            "bestSide": "Dominant Side",
+            "bestTime": "Best Time",
+            "title": "Operational Context (X-Ray)",
+            "worstAsset": "Worst Asset",
+            "worstTime": "Worst Time"
         }
     }
 }

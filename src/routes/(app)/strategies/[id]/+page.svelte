@@ -310,13 +310,13 @@
 
     // Heatmap - Dynamic based on market trading hours
     let dayNames = $derived([
-        $t("general.weekdays.sun"),
-        $t("general.weekdays.mon"),
-        $t("general.weekdays.tue"),
-        $t("general.weekdays.wed"),
-        $t("general.weekdays.thu"),
-        $t("general.weekdays.fri"),
-        $t("general.weekdays.sat"),
+        $t("common.weekdays.short.sun"),
+        $t("common.weekdays.short.mon"),
+        $t("common.weekdays.short.tue"),
+        $t("common.weekdays.short.wed"),
+        $t("common.weekdays.short.thu"),
+        $t("common.weekdays.short.fri"),
+        $t("common.weekdays.short.sat"),
     ]);
 
     // Get available markets for this strategy

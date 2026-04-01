@@ -14,10 +14,10 @@
     <div class="flex items-center justify-between">
         <div class="space-y-0.5">
             <h3 class="text-lg font-medium">
-                {$t("settings.fiscal.assignments.title")}
+                {$t("fiscal.settings.assignments.title")}
             </h3>
             <p class="text-sm text-muted-foreground">
-                {$t("settings.fiscal.assignments.description")}
+                {$t("fiscal.settings.assignments.description")}
             </p>
         </div>
         <Button
@@ -25,7 +25,7 @@
             variant="secondary"
         >
             <ExternalLink class="w-4 h-4 mr-2" />
-            {$t("settings.fiscal.assignments.goToAssetTypes")}
+            {$t("fiscal.settings.assignments.goToAssetTypes")}
         </Button>
     </div>
 
@@ -36,14 +36,14 @@
             <thead class="bg-muted text-muted-foreground border-b">
                 <tr>
                     <th class="text-left p-3 font-medium"
-                        >{$t("settings.fiscal.assignments.table.market")}</th
+                        >{$t("fiscal.settings.assignments.table.market")}</th
                     >
                     <th class="text-left p-3 font-medium"
-                        >{$t("settings.fiscal.assignments.table.assetType")}</th
+                        >{$t("fiscal.settings.assignments.table.assetType")}</th
                     >
                     <th class="text-left p-3 font-medium"
                         >{$t(
-                            "settings.fiscal.assignments.table.fiscalProfile",
+                            "fiscal.settings.assignments.table.fiscalProfile",
                         )}</th
                     >
                 </tr>
@@ -68,12 +68,12 @@
                                     (p) => p.id === at.tax_profile_id,
                                 )?.name ||
                                     $t(
-                                        "settings.fiscal.assignments.table.unknownProfile",
+                                        "fiscal.settings.assignments.table.unknownProfile",
                                     )}
                             {:else}
                                 <span class="text-muted-foreground italic"
                                     >{$t(
-                                        "settings.fiscal.assignments.table.defaultExempt",
+                                        "fiscal.settings.assignments.table.defaultExempt",
                                     )}</span
                                 >
                             {/if}
@@ -85,7 +85,7 @@
                             colspan="3"
                             class="p-6 text-center text-muted-foreground"
                         >
-                            {$t("settings.fiscal.assignments.table.empty")}
+                            {$t("fiscal.settings.assignments.table.empty")}
                         </td>
                     </tr>
                 {/each}
@@ -96,7 +96,8 @@
     <div
         class="p-4 bg-primary/5 border border-primary/20 rounded-lg text-sm text-primary/80"
     >
-        <strong>{$t("settings.fiscal.assignments.tip.title")}</strong>
-        {$t("settings.fiscal.assignments.tip.text")}
+        <strong>{$t("fiscal.settings.assignments.tip.title")}</strong>
+        {$t("fiscal.settings.assignments.tip.text")}
     </div>
 </div>
+

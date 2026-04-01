@@ -34,9 +34,9 @@
                 max_single_day_profit_share: 0,
                 mdr_mode: "none",
                 stages: [
-                    { id: 'margin_building', name: 'Construção de Margem', enabled: true, mdr_mode: 'none', rule_50_percent_enabled: false, consistency_enabled: false },
-                    { id: 'real_phase_1', name: 'Conta Real - Fase 1', enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: true, consistency_enabled: true },
-                    { id: 'real_final', name: 'Conta Real - Definitiva', enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: false, consistency_enabled: true }
+                    { id: 'margin_building', name: $t("risk.rules.desk.stages.margin_building"), enabled: true, mdr_mode: 'none', rule_50_percent_enabled: false, consistency_enabled: false },
+                    { id: 'real_phase_1', name: $t("risk.rules.desk.stages.real_phase_1"), enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: true, consistency_enabled: true },
+                    { id: 'real_final', name: $t("risk.rules.desk.stages.real_final"), enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: false, consistency_enabled: true }
                 ],
                 current_stage_index: 0
             };
@@ -54,9 +54,9 @@
         if (!config.mdr_mode) config.mdr_mode = "none";
         if (!config.stages || config.stages.length === 0) {
             config.stages = [
-                { id: 'margin_building', name: $t("risk.desk.stages.margin_building"), enabled: true, mdr_mode: 'none', rule_50_percent_enabled: false, consistency_enabled: false },
-                { id: 'real_phase_1', name: $t("risk.desk.stages.real_phase_1"), enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: true, consistency_enabled: true },
-                { id: 'real_final', name: $t("risk.desk.stages.real_final"), enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: false, consistency_enabled: true }
+                { id: 'margin_building', name: $t("risk.rules.desk.stages.margin_building"), enabled: true, mdr_mode: 'none', rule_50_percent_enabled: false, consistency_enabled: false },
+                { id: 'real_phase_1', name: $t("risk.rules.desk.stages.real_phase_1"), enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: true, consistency_enabled: true },
+                { id: 'real_final', name: $t("risk.rules.desk.stages.real_final"), enabled: true, mdr_mode: 'percent_of_margin', rule_50_percent_enabled: false, consistency_enabled: true }
             ];
         }
         if (config.current_stage_index === undefined) config.current_stage_index = 0;
@@ -86,8 +86,8 @@
 <div class="space-y-6">
     <div class="flex items-center justify-between p-4 rounded-lg border bg-background/50">
         <div class="space-y-0.5">
-            <Label class="text-base font-semibold">{$t("risk.desk.config")}</Label>
-            <p class="text-sm text-muted-foreground">{$t("risk.desk.enable")}</p>
+            <Label class="text-base font-semibold">{$t("risk.rules.desk.title")}</Label>
+            <p class="text-sm text-muted-foreground">{$t("risk.rules.desk.enable")}</p>
         </div>
         <Switch checked={config?.enabled ?? false} onCheckedChange={(c: boolean) => {
             if (c) {
@@ -103,9 +103,9 @@
         <div class="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 mb-6 flex gap-3 items-start">
             <Info class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
             <div class="space-y-1">
-                <p class="text-xs font-bold text-amber-600 dark:text-amber-400">{$t("risk.desk.title")}</p>
+                <p class="text-xs font-bold text-amber-600 dark:text-amber-400">{$t("risk.rules.desk.title")}</p>
                 <p class="text-[10px] text-muted-foreground leading-relaxed">
-                    {$t("risk.desk.desc")}
+                    {$t("risk.rules.desk.desc")}
                 </p>
             </div>
         </div>
@@ -114,30 +114,30 @@
             
                 <!-- Nome do Plano -->
                 <div class="space-y-2">
-                    <Label>{$t("risk.finance.planName")}</Label>
-                    <Input bind:value={config.plan_name} placeholder={$t("risk.finance.planNamePlaceholder") || "Ex: 5PI Book 4k"} />
+                    <Label>{$t("risk.rules.desk.planName")}</Label>
+                    <Input bind:value={config.plan_name} placeholder={$t("risk.rules.desk.planNamePlaceholder")} />
                 </div>
 
                 <!-- MDR Mode -->
                 <div class="space-y-2">
-                    <Label>{$t("risk.rules.builder.presets.maxDailyLoss")}</Label>
+                    <Label>{$t("risk.rules.targetType.max_daily_loss")}</Label>
                     <Select.Root
                         type="single"
                         bind:value={config.mdr_mode}
                     >
                         <Select.Trigger>
                             {#if config.mdr_mode === "fixed"}
-                                {$t("risk.growth.modes.accumulate")}
+                                {$t("risk.rules.desk.modes.fixed")}
                             {:else if config.mdr_mode === "percent_of_margin"}
-                                {$t("risk.growth.modes.recover")}
+                                {$t("risk.rules.desk.modes.percent_of_margin")}
                             {:else}
-                                {$t("risk.growth.none")}
+                                {$t("common.none")}
                             {/if}
                         </Select.Trigger>
                         <Select.Content>
-                            <Select.Item value="none">{$t("risk.growth.none")}</Select.Item>
-                            <Select.Item value="fixed">{$t("risk.growth.modes.accumulate")}</Select.Item>
-                            <Select.Item value="percent_of_margin">{$t("risk.growth.modes.recover")}</Select.Item>
+                            <Select.Item value="none">{$t("common.none")}</Select.Item>
+                            <Select.Item value="fixed">{$t("risk.rules.desk.modes.fixed")}</Select.Item>
+                            <Select.Item value="percent_of_margin">{$t("risk.rules.desk.modes.percent_of_margin")}</Select.Item>
                         </Select.Content>
                     </Select.Root>
                 </div>
@@ -145,7 +145,7 @@
                 <!-- Estágio Atual -->
                 {#if config.stages && config.stages.length > 0}
                     <div class="space-y-2 pt-4 border-t border-current/10">
-                        <Label>{$t("risk.desk.stages.currentStage")}</Label>
+                        <Label>{$t("risk.rules.desk.currentStage")}</Label>
                         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full">
                             <Select.Root
                                 type="single"
@@ -153,7 +153,7 @@
                                 onValueChange={(v: string) => { if(config) config.current_stage_index = parseInt(v); }}
                             >
                                 <Select.Trigger class="w-full md:w-[300px]">
-                                    {config.stages[config.current_stage_index ?? 0]?.name || $t("risk.plan.finance.selectAccount")}
+                                    {config.stages[config.current_stage_index ?? 0]?.name || $t("risk.cockpit.noProfile")}
                                 </Select.Trigger>
                                 <Select.Content>
                                     {#each config.stages as stage, i}
@@ -170,7 +170,7 @@
             {#if audit}
                 <div class="mt-8 space-y-4">
                     <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                        {$t("risk.desk.auditTitle")}
+                        {$t("risk.rules.desk.auditTitle")}
                     </h3>
                     
                     <div class={cn(
@@ -181,29 +181,29 @@
                     )}>
                         <div class="flex items-center gap-2 font-bold text-base">
                             {#if audit.status === 'passed'}
-                                <CheckCircle2 class="w-5 h-5" /> {$t("risk.desk.status.passed")}
+                                <CheckCircle2 class="w-5 h-5" /> {$t("risk.rules.desk.status.passed")}
                             {:else if audit.status === 'failed'}
-                                <XCircle class="w-5 h-5" /> {$t("risk.desk.status.failed")}
+                                <XCircle class="w-5 h-5" /> {$t("risk.rules.desk.status.failed")}
                             {:else}
-                                <Clock class="w-5 h-5" /> {$t("risk.desk.status.pending")}
+                                <Clock class="w-5 h-5" /> {$t("risk.rules.desk.status.pending")}
                             {/if}
                         </div>
 
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mt-2">
                             <div class="flex flex-col">
-                                <span class="opacity-80 text-xs">{$t("risk.desk.metrics.operatedDays")}</span>
+                                <span class="opacity-80 text-xs">{$t("risk.rules.desk.metrics.operatedDays")}</span>
                                 <span class="font-semibold">{audit.metrics.operated_days}</span>
                             </div>
                             <div class="flex flex-col">
-                                <span class="opacity-80 text-xs">{$t("risk.desk.metrics.positiveDays")}</span>
+                                <span class="opacity-80 text-xs">{$t("risk.rules.desk.metrics.positiveDays")}</span>
                                 <span class="font-semibold">{audit.metrics.positive_days}</span>
                             </div>
                             <div class="flex flex-col">
-                                <span class="opacity-80 text-xs">{$t("risk.desk.metrics.bestDayShare")}</span>
+                                <span class="opacity-80 text-xs">{$t("risk.rules.desk.metrics.bestDayShare")}</span>
                                 <span class="font-semibold">{audit.metrics.best_day_share_percent.toFixed(1)}%</span>
                             </div>
                             <div class="flex flex-col">
-                                <span class="opacity-80 text-xs">{$t("risk.desk.metrics.totalProfit")}</span>
+                                <span class="opacity-80 text-xs">{$t("risk.rules.desk.metrics.totalProfit")}</span>
                                 <span class="font-semibold">{audit.metrics.total_net_profit.toFixed(2)}</span>
                             </div>
                         </div>
@@ -226,18 +226,18 @@
                 <div class="mt-4 p-4 rounded-lg border bg-background/50 space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div class="space-y-0.5">
-                            <h4 class="font-semibold text-sm">{$t("risk.desk.progression.title")}</h4>
+                            <h4 class="font-semibold text-sm">{$t("risk.rules.desk.progression.title")}</h4>
                             <p class="text-xs text-muted-foreground uppercase tracking-widest">
-                                {$t("risk.desk.progression.current")}: <span class="font-mono font-bold text-primary">{$t(`risk.desk.stages.${progression.currentPhaseId.toLowerCase()}`) || config.stages.find((s: any) => s.id.toLowerCase() === progression.currentPhaseId.toLowerCase())?.name || progression.currentPhaseId}</span>
+                                {$t("risk.rules.desk.progression.current")}: <span class="font-mono font-bold text-primary">{$t(`risk.rules.desk.stages.${progression.currentPhaseId.toLowerCase()}`) || config.stages.find((s: any) => s.id.toLowerCase() === progression.currentPhaseId.toLowerCase())?.name || progression.currentPhaseId}</span>
                             </p>
                         </div>
                         {#if progression.canPromote}
                             <Badge variant="default" class="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">
-                                {$t("risk.desk.progression.can_advance")}
+                                {$t("risk.rules.desk.progression.can_advance")}
                             </Badge>
                         {:else}
                             <Badge variant="secondary" class="text-muted-foreground">
-                                {$t("risk.desk.progression.should_remain")}
+                                {$t("risk.rules.desk.progression.should_remain")}
                             </Badge>
                         {/if}
                     </div>

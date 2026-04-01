@@ -1,297 +1,398 @@
 {
-    "riskContext": {
-        "title": "Composición Activa",
-        "asset": "Activo Operativo",
-        "unlinked": "Sin Perfil Vinculado",
-        "riskProfile": "Perfil de Riesgo",
-        "growthSource": "Fuente de Crecimiento",
-        "globalPlan": "Plan Global",
-        "overridePlan": "Específico (Anulación)",
-        "currentPhase": "Fase Actual",
-        "noPhase": "Ninguna / Manual",
-        "sizing": "Tamaño Permitido",
-        "contracts": "Contratos Medidos",
-        "blocked": "Bloqueado / Inválido",
-        "reasons": "Motivo del Bloqueo:"
-    },
     "risk": {
-        "title": "Gestión de Riesgos",
-        "description": "Defina sus parámetros, límites y reglas de protección para operar con seguridad.",
-        "new": "Nuevo Perfil",
-        "edit": "Editar Perfil",
-        "capitalSource": "Fondo",
-        "accountTypes": {
-            "All": "Todas las Cuentas",
-            "Prop": "Empresa de Fondeo",
-            "Real": "Cuenta Real",
-            "Demo": "Cuenta Demo",
-            "Specific": "Cuentas Específicas"
-        },
-        "profiles": {
-            "active": "Activo",
-            "dailyLoss": "Pérdida Diaria",
-            "dailyTarget": "Meta Diaria",
-            "activate": "Activar Perfil"
-        },
-        "growthPlan": {
-            "title": "Plan de Crecimiento",
-            "phases": "Fases del Plan",
-            "addPhase": "Nueva Fase",
-            "maxLots": "Lotes Máximos",
-            "progression": "Criterios de Avance",
-            "regression": "Criterios de Regresión",
-            "requirements": {
-                "profit": "Meta de Ganancia",
-                "days": "Sesiones Positivas",
-                "winRate": "Tasa de Acierto (%)",
-                "consistency": "Consistencia (Días)",
-                "drawdown": "Drawdown Máximo",
-                "dailyLoss": "Pérdida Diaria",
-                "lossStreak": "Racha de Pérdidas"
-            },
-            "noPhases": "Ninguna fase configurada",
-            "actions": {
-                "promote": "Promover Fase",
-                "restart": "Reiniciar Plan"
-            },
-            "none": "Ninguno (Lotes Fijos)",
-            "enable": "Activar Plan de Crecimiento",
-            "enableDesc": "Habilita la progresión automática basada en reglas de fase.",
-            "bindDesc": "Vincular perfil estructurado de escala de lotes basado en metas",
-            "howToUseTitle": "¿Cómo usar este Plan?",
-            "howToUseDesc": "Este es solo el motor. Para que esta progresión de lotes funcione en su cuenta real, debe crear (o editar) un Perfil de Riesgo en la pestaña Riesgos y vincular este Plan allí.",
-            "planName": "Nombre del Plan",
-            "planNamePlaceholder": "Ej: Fase de Prueba, Plan Principal...",
-            "calculationModes": "Modos de Cálculo y Riesgo",
-            "dailyLossMode": "Cálculo de Pérdida Diaria",
-            "phaseDrawdownMode": "Cálculo de Drawdown de la Fase",
-            "phaseTargetMode": "Meta de Fase en la Evolución",
-            "modes": {
-                "recover": "Recuperar (Neto)",
-                "accumulate": "Acumular (Bruto/Histórico)",
-                "cumulative": "Acumulativo (Suma de Fases)",
-                "reset": "Reiniciar (Meta por Fase)"
-            },
-            "helpers": {
-                "dailyLossRecover": "Las ganancias realizadas durante el día abren espacio en el límite de pérdida diaria (PnL Neto).",
-                "dailyLossAccumulate": "La pérdida diaria consumida solo suma las pérdidas. Las ganancias no recuperan el límite del día.",
-                "drawdownRecover": "El Drawdown es la distancia entre el pico de patrimonio de la fase y el saldo actual.",
-                "drawdownAccumulate": "El Drawdown se calcula sumando todas las pérdidas desde el inicio de la fase.",
-                "targetCumulative": "La meta se basa en el beneficio total desde el inicio del plan (varias fases).",
-                "targetReset": "Al cambiar de fase, el recuento de beneficios se reinicia. Debe alcanzar la meta específica de la fase."
-            },
-            "targetsTitle": "Metas para Avance",
-            "allMetMessage": "¡Todas las metas alcanzadas! Está listo para la siguiente etapa.",
-            "dangerZones": "Zonas de Peligro",
-            "currentDailyLoss": "Pérdida Diaria Actual",
-            "totalDrawdown": "Drawdown Total (MDR)",
-            "behavioralRestrictions": "Restricciones de Comportamiento",
-            "goalsProgress": "Progreso de Metas",
-            "maxLotsLabel": "Máx Lotes",
-            "phaseNameLabel": "Nombre Fase",
-            "optional": "Opcional",
-            "manualAdvanceOnly": "Solo avance manual.",
-            "noRegressionRules": "Sin reglas de drawdown.",
-            "addPhaseOverride": "Agregue al menos 1 fase para override.",
-            "metrics": {
-                "profit": "Ganancia ($/pts)",
-                "days": "Sesiones O.K",
-                "winRate": "Win Rate %",
-                "consistency": "Consistencia",
-                "drawdown": "Drawdown ($/pts)",
-                "dailyLoss": "Pérdida Diaria ($/pts)",
-                "lossStreak": "Días de Loss Seguidos"
-            }
-        },
         "cockpit": {
-            "title": "Cockpit de Riesgo",
-            "subtitle": "Monitoreo en tiempo real de límites y parámetros operativos",
-            "selectAsset": "Seleccione un Activo",
-            "noProfile": "Sin Perfil Activo",
-            "noProfileDesc": "Vincule un Perfil de Riesgo para activar el monitoreo.",
-            "activeMarket": "Mercado Activo",
-            "assetsInScope": "Activos en el Alcance",
+            "title": "Control de Riesgos",
+            "subtitle": "Monitoreo en tiempo real",
             "group": "Grupo",
             "globalMode": "Modo Global",
+            "assetsInScope": "Activos en el Alcance",
+            "selectAsset": "Seleccionar Activo",
+            "activeMarket": "Mercado Activo",
+            "noProfile": "Ningún Perfil Activo",
+            "noProfileDesc": "Active un perfil de riesgo para el monitoreo",
             "sections": {
-                "ruinRisk": "Riesgo de Ruina (Daily Drawdown)",
-                "approvalTrail": "Trayectoria de Aprobación y Metas",
-                "pendingMissions": "Misiones Pendientes para Evolución",
-                "emotionalSupervisor": "Supervisor Emocional IA",
-                "registeredViolations": "Violaciones Registradas"
+                "ruinRisk": "Riesgo de Ruina (Downside)",
+                "registeredViolations": "Violaciones Registradas",
+                "pendingMissions": "Misiones Pendientes",
+                "emotionalSupervisor": "Supervisor Emocional"
+            },
+            "stats": {
+                "globalLimit": "Límite Global",
+                "stageLimit": "Límite de Etapa",
+                "drawdownProgression": "Progresión de Drawdown",
+                "consumed": "Consumido",
+                "remaining": "Disponible",
+                "allowedSizing": "Lotes Permitidos",
+                "availableOperational": "Operativo Habilitado",
+                "blockedStatus": "Bloqueado por el Motor",
+                "currentPhase": "Fase Actual",
+                "goal": "Meta",
+                "nextPhase": "Próxima Fase"
             },
             "status": {
                 "systemLocked": "Sistema Bloqueado",
                 "orangeAlert": "Alerta Naranja",
-                "clearTrack": "Pista Libre",
+                "clearTrack": "Vía Libre",
                 "terminalStatus": "Estado del Terminal",
-                "onPlanSlogan": "ESTÁ DENTRO DEL PLAN. MANTENGA LA DISCIPLINA MECÁNICA.",
+                "onPlanSlogan": "Gestión Dentro del Plan",
                 "clearPath": "Camino Libre",
-                "realTimeMonitor": "Monitoreo en Tiempo Real",
-                "maintenanceMode": "Modo Mantenimiento"
-            },
-            "stats": {
-                "globalLimit": "Límite Diario Global",
-                "stageLimit": "Límite de la Etapa Actual",
-                "allowedSizing": "Tamaño Máximo Permitido",
-                "availableOperational": "Disp. Operativo",
-                "blockedStatus": "OPERATIVO BLOQUEADO",
-                "consumed": "Consumido",
-                "remaining": "Restante",
-                "drawdownProgression": "Progresión del Drawdown",
-                "goal": "Meta",
-                "currentPhase": "Fase Actual",
-                "nextPhase": "Siguiente Fase"
-            },
-            "engine": {
-                "max_daily_loss": "Límite de Pérdida Diaria Alcanzado",
-                "profit_target": "Meta de Ganancia del Perfil Alcanzada",
-                "max_trades_per_day": "Límite de Operaciones Diarias",
-                "day_trade_only": "Regla: Solo Day Trade",
-                "close_before_close": "Cierre Obligatorio",
-                "sum_contracts": "Límite de Exposición (Contratos)",
-                "max_loss_limit": "Límite de Pérdida Máxima (MDR)",
-                "daily_drawdown_limit": "Límite de Drawdown Diario",
-                "forbidden_asset": "Activo no autorizado",
-                "consistency": "Incumplimiento de Consistencia",
-                "rule_50_percent": "Violación Regla del 50%",
-                "min_trading_days": "Días Mínimos de Negociación",
-                "days_positive": "Días Positivos Necesarios",
-                "max_daily_loss_streak": "Máx Días Pérdida Seguida"
+                "realTimeMonitor": "Monitor In-Memory",
+                "maintenanceMode": "Modo Mantenimiento",
+                "maintenanceSlogan": "Protegiendo las Ganancias"
             },
             "supervisor": {
-                "stable": "Estado operativo y emocional estable.",
-                "caution": "Atención a los límites de drawdown y parámetros actuales.",
-                "blocked": "La gestión de riesgos ha bloqueado nuevas operaciones para este perfil.",
-                "targetHigh": "Meta cercana. Considere proteger las ganancias."
+                "blocked": "Operaciones Suspendidas",
+                "caution": "Atención Plena Requerida",
+                "targetHigh": "Meta Cercana - Modo Defensivo",
+                "stable": "Control Estable"
+            },
+            "engine": {
+                "min_trading_days": "Mín. Días de Trading",
+                "max_daily_loss": "Drawdown Diario Alcanzado",
+                "profit_target": "Meta de Ganancia Alcanzada",
+                "max_drawdown": "Drawdown Global Alcanzado",
+                "max_trades": "Límite de Operaciones Alcanzado",
+                "time_lock": "Bloqueo de Horario Activo"
             }
+        },
+        "accountTypes": {
+            "All": "All Accounts",
+            "Demo": "Simulated",
+            "Prop": "Prop Firm",
+            "Real": "Real Account",
+            "Specific": "Specific Account"
         },
         "plan": {
-            "name": "Nombre del Perfil",
-            "namePlaceholder": "Ej: Conservador, Agresivo...",
-            "hierarchy": {
-                "title": "Jerarquía de Ejecución (¿Qué reglas?)",
-                "global": "1. Plan Global (Base)",
-                "asset": "2. Límites por Activo",
-                "growth": "3. Plan de Crecimiento",
-                "rules": "4. Reglas del Plan"
+            "name": "Profile Name",
+            "namePlaceholder": "Ex: Conservative, Institutional...",
+            "sections": {
+                "downside": "Protección de Capital (Downside)",
+                "upside": "Objetivos de Evolución (Upside)",
+                "discipline": "Disciplina y Bloqueos",
+                "hierarchy": "Jerarquía de Ejecución"
             },
-            "finance": {
-                "title": "Capital y Escala",
-                "money": "Dinero",
-                "points": "Puntos",
-                "contracts": "Contratos",
-                "capitalBase": "Capital Base",
-                "baseStrategy": "Estrategia Base",
-                "fixedValue": "Valor Fijo",
-                "linkAccount": "Vincular Cuenta",
-                "referenceAccount": "Cuenta de Referencia",
-                "selectAccount": "Seleccione una cuenta",
-                "baseTemplate": "Plantilla Base",
-                "templateDesc": "Carga configuraciones principales de un perfil existente.",
-                "startBlank": "Iniciar en Blanco",
-                "copyOf": "Copia de"
-            },
-            "applicability": {
-                "all": "Todas las Cuentas",
-                "prop": "Empresa de Fondeo",
-                "real": "Cuenta Real",
-                "demo": "Cuenta Demo",
-                "specific": "Cuentas Específicas"
+            "labels": {
+                "dailyLossLimit": "Daily Loss Limit",
+                "maxRiskPerTrade": "Risk/Trade",
+                "dailyGoal": "Daily Profit Goal",
+                "minRiskReward": "Min R/R",
+                "maxTradesDay": "Max Trades/Day",
+                "platformLock": "Auto Loss Lock",
+                "lockWarning": "Platform will be locked upon reaching the limit."
             },
             "tabs": {
-                "protection": "Protección",
-                "evolution": "Evolución",
-                "adaptation": "Adaptación",
-                "scope": "Alcance"
+                "protection": "Protection",
+                "evolution": "Evolution",
+                "adaptation": "Adaptation",
+                "scope": "Scope"
+            },
+            "finance": {
+                "title": "Capital and Scale",
+                "money": "Capital",
+                "points": "Points/Ticks",
+                "linkAccount": "Link Account",
+                "fixedValue": "Fixed Value",
+                "capitalBase": "Capital Base",
+                "referenceAccount": "Reference Account",
+                "selectAccount": "Select Account",
+                "baseStrategy": "Risk Strategy",
+                "baseTemplate": "Base Template",
+                "startBlank": "Start Blank",
+                "copyOf": "Copy of",
+                "templateDesc": "Use an existing profile as a starting point.",
+                "contracts": "Contratos",
+                "fixed_capital": "Fixed Capital",
+                "linked_account_id": "Linked Account ID"
+            },
+            "hierarchy": {
+                "title": "Execution Hierarchy (Rule Priority)",
+                "global": "1. GLOBAL PLAN (BASE)",
+                "asset": "2. ASSET LIMITS (OVERRIDES)",
+                "growth": "3. GROWTH PLAN (LOT SCALING)",
+                "rules": "4. DYNAMIC RULES"
             },
             "actions": {
-                "save": "Guardar Perfil",
-                "cancel": "Cancelar"
+                "cancel": "Cancel",
+                "save": "Save Data",
+                "restart": "Restart Evolution"
             }
         },
-        "rules": {
-            "advancedRules": "Modo Avanzado (Reglas Dinámicas)",
-            "advancedRulesDesc": "Cuando está activo, los campos de Stop/Target base arriba serán ignorados a favor del motor de reglas especializado.",
-            "disciplineTitle": "Disciplina y Bloqueos de Seguridad",
-            "lockOnLoss": "Bloquear Plataforma (Pérdida Diaria)",
-            "lockOnLossWarn": "La plataforma se bloqueará inmediatamente al alcanzar el límite de pérdida.",
-            "builder": {
-                "title": "Reglas de Protección Dinámica",
-                "addRule": "Nueva Regla",
-                "ruleName": "Nombre de la Regra",
-                "operator": "Condición (Operador)",
-                "value": "Valor"
+        "scope": {
+            "accounts": "Apply this profile only to selected accounts.",
+            "applicability": "APPLICABILITY",
+            "assets": "ASSETS IN SCOPE",
+            "assetsTitle": "Activos Vinculados",
+            "accountsTitle": "LINKED ACCOUNTS"
+        },
+        "evolution": {
+            "growthPlan": "Growth Plan",
+            "bindDesc": "BIND LOT SCALING PLAN"
+        },
+        "desk": {
+            "title": "Cockpit de Mesa Propietaria",
+            "config": "Configuración de Mesa",
+            "enable": "Activar reglas específicas de Mesa Propietaria",
+            "desc": "Este modo activa el seguimiento de drawdown relativo, consistencia y reglas de reparto.",
+            "auditTitle": "Auditoría Histórica de la Etapa",
+            "audit": {
+                "summary": "Resumen de la Auditoría"
             },
+            "status": {
+                "passed": "Auditoría Aprobada",
+                "failed": "Auditoría Reprobada",
+                "pending": "Auditoría Pendiente"
+            },
+            "metrics": {
+                "operatedDays": "Días Operados",
+                "positiveDays": "Sesiones Positivas",
+                "bestDayShare": "Share del Mejor Día",
+                "totalProfit": "Beneficio Total Neto"
+            },
+            "progression": {
+                "title": "Hoja de Ruta de Progresión Estratégica",
+                "current": "Nivel Operativo Actual",
+                "can_advance": "Aprobado para Avanzar",
+                "should_remain": "Esperando Margen (Mantenimiento)"
+            },
+            "stages": {
+                "currentStage": "Etapa Actual del Viaje",
+                "margin_building": "Construcción de Margen",
+                "real_phase_1": "Cuenta Real - Fase 1",
+                "real_final": "Cuenta Real - Definitiva",
+                "default": "Etapa Inicial",
+                "training": "Fase de Evaluación",
+                "junior": "Trader Júnior",
+                "senior": "Trader Sénior",
+                "master": "Trader Master",
+                "professional": "Gestión Institucional"
+            }
+        },
+        "growthPlan": {
+            "title": "Lot Scaling",
+            "enable": "Enable Auto Progression",
+            "enableDesc": "Habilita la progresión automática basada en las reglas de la fase.",
+            "planName": "Plan Identification",
+            "planNamePlaceholder": "Ej: Minimanis 5k, Plan Scalper...",
+            "howToUseTitle": "Growth Rules",
+            "howToUseDesc": "Configure profit and drawdown targets to level up.",
+            "calculationModes": "Modos de Cálculo",
+            "dailyLossMode": "Perda Diária",
+            "phaseDrawdownMode": "Drawdown da Fase",
+            "phaseTargetMode": "Meta da Fase",
+            "phases": "Fases del Plan",
+            "addPhase": "Añadir Nueva Fase",
+            "addPhaseOverride": "Añada fases para configurar la escala de lotes.",
+            "maxLotsLabel": "Max Lots in Phase",
+            "phaseNameLabel": "Nombre de la Fase",
+            "optional": "Opcional",
+            "progression": "Criterios de Avance",
+            "regression": "Criterios de Regresión",
+            "manualAdvanceOnly": "Avance exclusivamente manual.",
+            "noRegressionRules": "Sin reglas de rebaja automáticas.",
+            "targetsTitle": "Objetivos para Avanzar",
+            "dangerZones": "Zonas de Peligro y Límites",
+            "allMetMessage": "¡Todos los objetivos alcanzados! Estás listo para la siguiente etapa.",
+            "currentDailyLoss": "Exposición Diaria Actual",
+            "totalDrawdown": "Drawdown Total Acumulado",
+            "behavioralRestrictions": "Restricciones de Comportamiento",
+            "goalsProgress": "Progreso de los Objetivos",
+            "activeStatus": "Plan Activo",
+            "none": "Ninguno (Lotes Fijos)",
+            "modes": {
+                "accumulate": "Acumular (Bruto)",
+                "recover": "Recuperar (Neto)",
+                "cumulative": "Cumulativo (Total)",
+                "reset": "Reinicio por Fase"
+            },
+            "metrics": {
+                "profit": "Ganancia ($/pts)",
+                "days": "Días O.K",
+                "winRate": "Tasa de Acierto %",
+                "consistency": "Consistencia",
+                "drawdown": "Drawdown Max",
+                "dailyLoss": "Pérdida Diaria",
+                "lossStreak": "Días de Pérdida Seguida"
+            },
+            "requirements": {
+                "profit": "Ganancia Retenida",
+                "winRate": "Tasa de Acierto",
+                "days": "Sesiones Positivas",
+                "consistency": "Días de Consistencia",
+                "drawdown": "Drawdown Máximo Permitido",
+                "dailyLoss": "Límite de Drawdown Diario",
+                "lossStreak": "Racha Máx. de Pérdidas"
+            },
+            "helpers": {
+                "dailyLossAccumulate": "Apenas perdas somam no limite (Bruto).",
+                "dailyLossRecover": "Ganhos abatem a perda do dia (Líquido).",
+                "drawdownAccumulate": "Drawdown é baseado no pico (High-Water Mark).",
+                "drawdownRecover": "PnL positivo recupera o drawdown da fase.",
+                "targetCumulative": "A meta é acumulada desde o início do plano.",
+                "targetReset": "A meta reseta a cada nova fase alcançada."
+            },
+            "actions": {
+                "restart": "Restart Plan",
+                "restartConfirm": "Deseja realmente reiniciar o plano para a Fase 1?",
+                "promote": "Promover Fase"
+            }
+        },
+        "ruleBuilder": {
+            "title": "Reglas de Protección Dinámica",
+            "addRule": "Añadir Nueva Regla",
+            "editRule": "Editar Regla Dinámica",
+            "ruleName": "Nombre de la Regla",
+            "scope": {
+                "label": "Ámbito de Aplicación",
+                "global": "Global",
+                "asset": "Por Activo",
+                "combined": "Combinado",
+                "asset_desc": "Se aplica a cada activo individualmente",
+                "global_desc": "Se aplica al saldo total de la cuenta"
+            },
+            "targetType": {
+                "label": "Métrica Objetivo de la Regla",
+                "max_daily_loss": "Pérdida Diaria Máxima",
+                "profit_target": "Objetivo de Beneficio Diario",
+                "sum_contracts": "Límite de Contratos (Exposición)",
+                "day_trade_only": "Regla: Solo Day Trade",
+                "close_before_close": "Cierre Anticipado",
+                "consistency": "Regla de Consistência",
+                "rule_50_percent": "Regla del 50% (Mesa)",
+                "max_trades_per_day": "Límite de Órdenes Diarias"
+            },
+            "helpers": {
+                "max_daily_loss": "Bloquea nuevas órdenes si la pérdida del día alcanza este valor.",
+                "profit_target": "Sugiere o bloquea órdenes después de alcanzar el objetivo.",
+                "sum_contracts": "Suma de todos los contratos abiertos simultáneamente.",
+                "day_trade_only": "Impide órdenes de Swing Trade (mantenidas para el día siguiente).",
+                "close_before_close": "Cierra posiciones automáticamente X minutos antes del cierre.",
+                "consistency": "Exige que el beneficio se distribuya en X días.",
+                "rule_50_percent": "Ningún día puede representar más del 50% del beneficio total.",
+                "max_trades_per_day": "Evita o 'Overtrading' limitando o número total de trades."
+            },
+            "operator": {
+                "label": "Condición",
+                "lte": "Menor o igual a",
+                "gte": "Mayor o igual a",
+                "eq": "Igual a",
+                "lt": "Menor que",
+                "gt": "Mayor que",
+                "between": "Entre"
+            },
+            "value": "Valor de Referencia",
+            "valueSecondary": "Valor Final (Intervalo)",
+            "linkedProfiles": "Perfiles de Activo Vinculados",
+            "enabled": "Regla Activa",
+            "save": "Guardar Regla",
+            "cancel": "Cancelar"
+        },
+        "management": {
+            "capitalSource": "Cuenta de Referencia",
+            "activePlan": "Active Plan",
+            "phase": "Phase",
+            "maxTrades": "Trades/Day",
+            "lockOnLoss": "Loss Lock",
+            "duplicate": "Duplicate",
+            "linkedAssetProfilesDesc": "Apply global rules to specific asset profiles.",
+            "assetProfileSelector": "Select Asset Profile...",
+            "noLinkedAssetProfiles": "No links.",
+            "removeAssetProfile": "Remove"
+        },
+        "profiles": {
+            "active": "Active",
+            "activate": "Activate Profile",
+            "dailyLoss": "Max Daily Loss",
+            "dailyTarget": "Daily Profit Goal",
+            "activate_btn": "Activate"
+        },
+        "rules": {
+            "advancedRules": "Advanced Rules",
+            "advancedRulesDesc": "Enable granular protections and auto-adaptation engines.",
+            "disciplineTitle": "Discipline and Locks",
             "adaptation": {
                 "psychological": {
                     "title": "Acoplamiento Psicológico",
-                    "desc": "Detecta patrones de 'tilt' o euforia basados en el historial reciente.",
-                    "strategy": "Estrategia de Búsqueda",
-                    "strategyStrict": "Estricta (Z-Score)",
-                    "strategySequence": "Secuencial (Racha de Pérdidas)",
-                    "lookback": "Ventana de Historial",
-                    "threshold": "Límite de Desviación",
-                    "multiplier": "Factor de Reducción"
+                    "desc": "Detecta patrones de euforia ou tilt basado no histórico recente.",
+                    "multiplier": "Fator de Redução (Sizing)",
+                    "strategy": "Estratégia de Detecção",
+                    "strategyStrict": "Estrita (Z-Score)",
+                    "strategySequence": "Sequencial (Loss Streak)",
+                    "lookback": "Janela de Análise",
+                    "threshold": "Limite de Desvio"
                 },
                 "outliers": {
-                    "title": "Regresión de Valores Atípicos",
-                    "desc": "Reducción automática al detectar desviaciones estadísticas negativas.",
-                    "lookback": "Ventana de Historial"
+                    "title": "Regresión de Outliers",
+                    "desc": "Reducción de manos al detectar varianzas negativas anormales.",
+                    "lookback": "Histórico de Muestreo"
                 },
                 "sniper": {
-                    "title": "Modo Francotirador",
-                    "desc": "Aumenta el rigor de entrada después de rachas de pérdidas.",
-                    "selectivity": "Grado de Selectividad"
+                    "title": "Modo Sniper",
+                    "desc": "Aumenta el rigor de la selectividad de entrada después de las pérdidas.",
+                    "selectivity": "Grado de Filtro"
                 }
+            },
+            "engine": {
+                "max_daily_loss": "MAX DAILY LOSS"
+            },
+            "desk": {
+                "stages": {
+                    "margin_building": "Construção de Margem",
+                    "real_phase_1": "Fase 1 (Real)",
+                    "real_final": "Conta Profissional"
+                }
+            },
+            "targetType": {
+                "max_daily_loss": "Tipo de Limite Diário"
             }
         },
         "states": {
-            "violation": "Violación de Riesgo (Regresión)",
-            "regression": "Regresión de Etapa",
-            "maintenance": "Modo Mantenimiento",
-            "phaseMaxReached": "Fase Máxima Alcanzada",
-            "stable": "Estable",
-            "caution": "Atención a los Límites",
-            "blocked": "Operativo Bloqueado",
+            "evolutionRequirements": "Requisitos Pendientes para Evolución",
             "allowed": "Operativo Permitido",
-            "passed": "Auditoría Aprobada",
-            "failed": "Auditoría Reprobada",
-            "pending": "Auditoria Pendiente",
-            "systemLocked": "Sistema Bloqueado",
-            "orangeAlert": "Alerta Naranja",
-            "clearTrack": "Pista Libre",
-            "clearPath": "Camino Libre",
+            "blocked": "Operativo Bloqueado",
+            "caution": "Atención a los Límites",
+            "stable": "Estado Estable",
+            "systemLocked": "Mecanismo Bloqueado",
             "terminalStatus": "Estado del Terminal",
-            "aiEngineStatus": "MOTOR COGNITIVO V4.2 ACTIVADO · ANÁLISIS DE RIESGO NEURONAL EN TIEMPO REAL",
+            "phaseMaxReached": "Techo del Plan Alcanzado",
+            "violation": "Violación de Regla",
             "continuousAudit": "Auditoría Continua",
-            "evolutionRequirements": "Requisitos de Evolución",
-            "reason": "Motivo"
+            "reason": "Motivo",
+            "aiEngineStatus": "Estado del Motor de IA"
         },
         "messages": {
-            "promote": "Evolución aprobada. Nueva fase: {name}.",
-            "demote": "Atención: Ha regresado a la fase: {name}",
-            "restartSuccess": "¡Plan de Crecimiento reiniciado con éxito! Buena suerte en el nuevo ciclo.",
-            "restartConfirm": "¿Está seguro de que desea reiniciar todo el Plan de Crecimiento? Su progreso volverá a la Fase 1 y se borrará el historial de beneficios de la fase.",
-            "saveSuccess": "Configuración de riesgos guardada con éxito.",
-            "deleteDesc": "¿Está seguro de que desea eliminar este alcance de riesgo? Esta acción no se puede deshacer.",
-            "deskAdvanceSuccess": "¡Felicidades! ¡Etapa de Mesa avanzada con éxito!"
+            "saveSuccess": "Configuración de riesgo guardada con éxito.",
+            "deskAdvanceSuccess": "¡Enhorabuena! Etapa de Mesa avanzada con éxito.",
+            "restartConfirm": "¿Seguro que quieres reiniciar el progreso?",
+            "deleteDesc": "Esta acción eliminará de forma permanente el perfil de riesgo."
         },
-        "desk": {
-            "title": "Cockpit de Empresa de Fondeo",
-            "progression": {
-                "current": "Nivel Operativo Actual",
-                "can_advance": "Aprobado para Avanzar",
-                "should_remain": "Esperando Margen (Mantenimiento)",
-                "title": "Roadmap de Progresión Estratégica"
+        "form": {
+            "active": "Activa",
+            "inactive": "Inactiva",
+            "and": "y",
+            "assetProfileSelector": "Seleccione perfiles de activos...",
+            "accountsTitle": "Cuentas de Referencia"
+        },
+        "title": "Risk Management",
+        "description": "Define your parameters, limits and protection rules to trade safely.",
+        "new": "New Profile",
+        "edit": "Edit Profile",
+        "growth": {
+            "requirements": {
+                "profit": "Retained Profit",
+                "winRate": "Win Rate",
+                "days": "Positive Sessions",
+                "consistency": "Consistency",
+                "drawdown": "Max Drawdown",
+                "dailyLoss": "Daily Loss",
+                "lossStreak": "Max Loss Streak"
             },
-            "stages": {
-                "default": "Etapa Inicial",
-                "training": "Fase de Evaluación",
-                "junior": "Trader Junior",
-                "senior": "Trader Senior",
-                "master": "Trader Master",
-                "professional": "Gestión Institucional"
+            "targetsTitle": "Evolution Targets",
+            "dangerZones": "Danger Zones",
+            "currentDailyLoss": "Daily Loss",
+            "totalDrawdown": "Total Drawdown",
+            "actions": {
+                "promote": "PROMOTE TO NEXT PHASE",
+                "demote": "DEMOTE PHASE"
             }
         }
     }

@@ -65,7 +65,7 @@
     <div class="flex items-center justify-between">
         <div class="space-y-1">
             <span class="text-[10px] text-muted-foreground uppercase font-black tracking-widest opacity-60">
-                {$t("trades.table.asset")} & {$t("trades.table.date")}
+                {$t("trades.list.table.asset")} & {$t("trades.list.table.date")}
             </span>
             <div class="flex items-center gap-3">
                 <div class={`p-1.5 rounded-lg ${trade.direction?.toLowerCase() === "buy" ? "bg-green-500/10 text-green-500" : "bg-rose-500/10 text-rose-500"}`}>
@@ -90,11 +90,11 @@
             </div>
             <div class="flex gap-2">
                 <Badge variant="outline" class="uppercase px-2 h-4 text-[9px] font-bold border-muted-foreground/20 text-muted-foreground tracking-widest">
-                    {trade.direction?.toLowerCase() === "buy" ? $t("trades.table.buy") : $t("trades.table.sell")}
+                    {trade.direction?.toLowerCase() === "buy" ? $t("trades.list.table.buy") : $t("trades.list.table.sell")}
                 </Badge>
                 {#if trade.status === "closed"}
                     <Badge variant="outline" class="bg-blue-500/10 text-blue-400 border-blue-500/20 px-2 h-4 text-[9px] font-black uppercase tracking-widest">
-                        FECHADA
+                        {$t("trades.list.table.status_closed")}
                     </Badge>
                 {/if}
             </div>
@@ -129,7 +129,7 @@
             </div>
             <div class="space-y-1">
                 <span class="text-[9px] text-muted-foreground uppercase font-bold tracking-wider opacity-70">
-                    {$t("trades.table.quantity")}
+                    {$t("trades.list.table.quantity")}
                 </span>
                 <p class="text-sm font-black font-mono text-foreground">
                     {trade.quantity}
@@ -145,7 +145,7 @@
             </div>
             <div class="space-y-1">
                 <span class="text-[9px] text-muted-foreground uppercase font-bold tracking-wider opacity-70">
-                    CONTA
+                    {$t("trades.filters.account")}
                 </span>
                 <p class="text-sm font-black truncate text-foreground/80 lowercase first-letter:uppercase">
                     {account?.nickname || "-"}
@@ -153,7 +153,7 @@
             </div>
             <div class="space-y-1">
                 <span class="text-[9px] text-muted-foreground uppercase font-bold tracking-wider opacity-70">
-                    ESTRATÉGIA
+                    {$t("trades.filters.strategy")}
                 </span>
                 <p class="text-[11px] font-bold text-blue-400 truncate uppercase mt-0.5">
                     {strategy?.name || "N/A"}
@@ -170,13 +170,13 @@
         </h4>
         <div class="grid grid-cols-2 gap-3">
             <div class="flex items-center justify-between p-3 bg-muted/20 border border-border/30 rounded-lg">
-                <span class="text-[10px] text-muted-foreground uppercase font-bold opacity-70">Entrada</span>
+                <span class="text-[10px] text-muted-foreground uppercase font-bold opacity-70">{$t("trades.details.emotional_entry")}</span>
                 <Badge class={`px-2 h-5 text-[10px] font-bold ${entryEmotion?.impact === "Positive" ? "bg-green-500/10 text-green-500 border-green-500/20" : "bg-rose-500/10 text-rose-500 border-rose-500/20"}`} variant="outline">
                     {entryEmotion?.name || "-"}
                 </Badge>
             </div>
             <div class="flex items-center justify-between p-3 bg-muted/20 border border-border/30 rounded-lg">
-                <span class="text-[10px] text-muted-foreground uppercase font-bold opacity-70">Saída</span>
+                <span class="text-[10px] text-muted-foreground uppercase font-bold opacity-70">{$t("trades.details.emotional_exit")}</span>
                 <Badge class={`px-2 h-5 text-[10px] font-bold ${exitEmotion?.impact === "Positive" ? "bg-green-500/10 text-green-500 border-green-500/20" : "bg-rose-500/10 text-rose-500 border-rose-500/20"}`} variant="outline">
                     {exitEmotion?.name || "-"}
                 </Badge>
@@ -193,20 +193,20 @@
                     {$t("trades.details.partial_exits")}
                 </h4>
                 <Badge variant="outline" class="text-[8px] font-bold border-blue-500/20 text-blue-400 tracking-wider bg-blue-500/5 h-4">
-                    MÉDIO DINÂMICO
+                    {$t("trades.details.dynamic_average", { default: "MÉDIO DINÂMICO" })}
                 </Badge>
             </div>
             <div class="border border-border/30 rounded-xl overflow-hidden bg-muted/10">
                 <table class="w-full text-xs">
                     <thead>
                         <tr class="text-left text-muted-foreground/60 border-b border-border/20 bg-muted/20">
-                            <th class="py-2.5 px-4 font-black uppercase text-[9px] tracking-wider">TIPO</th>
-                            <th class="py-2.5 px-4 font-black uppercase text-[9px] tracking-wider border-l border-border/5">DATA</th>
-                            <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider border-l border-border/5">PREÇO</th>
-                            <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider text-blue-400 border-l border-border/5">MÉDIO</th>
-                            <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider border-l border-border/5">QTY</th>
-                            <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider border-l border-border/5">RESULTADO</th>
-                            <th class="py-2.5 px-4 font-black uppercase text-[9px] tracking-wider border-l border-border/5">OBS</th>
+                            <th class="py-2.5 px-4 font-black uppercase text-[9px] tracking-wider">{$t("trades.kpi.type")}</th>
+                            <th class="py-2.5 px-4 font-black uppercase text-[9px] tracking-wider border-l border-border/5">{$t("trades.details.partial_date")}</th>
+                            <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider border-l border-border/5">{$t("trades.details.partial_price")}</th>
+                            <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider text-blue-400 border-l border-border/5">{$t("trades.details.dynamic_average", { default: "MÉDIO" })}</th>
+                            <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider border-l border-border/5">{$t("trades.list.table.quantity")}</th>
+                            <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider border-l border-border/5">{$t("trades.list.table.pl")}</th>
+                            <th class="py-2.5 px-4 font-black uppercase text-[9px] tracking-wider border-l border-border/5">{$t("trades.details.partial_notes")}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border/10">
@@ -255,7 +255,7 @@
                             <tr class="hover:bg-muted/10 transition-colors">
                                 <td class="py-2 px-4 border-r border-border/5">
                                     <Badge variant="outline" class={`h-4 px-1.5 text-[8px] font-black uppercase tracking-tighter ${partial.isAddition ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-blue-500/10 text-blue-400 border-blue-500/20"}`}>
-                                        {partial.isAddition ? "ADIÇÃO" : "SAÍDA"}
+                                        {partial.isAddition ? $t("trades.details.addition", { default: "ADIÇÃO" }) : $t("trades.wizard.summary.exit")}
                                     </Badge>
                                 </td>
                                 <td class="py-2 px-4 font-mono text-[10px] text-muted-foreground/60 border-r border-border/5">
@@ -272,12 +272,12 @@
                                 </td>
                                 <td class={`py-2 px-4 text-right font-mono font-black border-r border-border/5 ${(partial.calculatedResult || 0) >= 0 ? "text-green-500" : "text-rose-500"}`}>
                                     {#if partial.isAddition}
-                                        <span class="text-muted-foreground/30 italic text-[9px]">Aporte</span>
+                                        <span class="text-muted-foreground/30 italic text-[9px]">{$t("trades.details.contribution", { default: "Aporte" })}</span>
                                     {:else}
                                         <div class="flex flex-col items-end">
                                             <span>{formatCurrency(partial.calculatedResult || 0, account?.currency || "BRL", $locale || "pt-BR")}</span>
                                             <span class="text-[8px] opacity-40 -mt-1 font-bold">
-                                                {partial.calculatedPoints >= 0 ? "+" : ""}{partial.calculatedPoints.toLocaleString($locale || "pt-BR", { maximumFractionDigits: 2 })} pts
+                                                {partial.calculatedPoints >= 0 ? "+" : ""}{partial.calculatedPoints.toLocaleString($locale || "pt-BR", { maximumFractionDigits: 2 })} {$t("trades.details.points_abbr", { default: "pts" })}
                                             </span>
                                         </div>
                                     {/if}
@@ -297,7 +297,7 @@
     <div class="space-y-4">
         <h4 class="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
             <FileText class="w-3.5 h-3.5" />
-            ANOTAÇÕES & MÍDIA
+            {$t("trades.details.media")}
         </h4>
         
         <div class="space-y-4 bg-muted/10 p-4 rounded-xl border border-border/30">
@@ -329,7 +329,7 @@
                 <div class="flex flex-col items-center justify-center py-6 text-muted-foreground/30">
                     <Camera class="w-8 h-8 mb-2 opacity-20" />
                     <p class="text-[9px] font-black uppercase tracking-widest">
-                        Sem anotações ou mídia
+                        {$t("trades.details.no_media")}
                     </p>
                 </div>
             {/if}

@@ -1,77 +1,130 @@
 {
     "dashboard": {
-        "mindset": {
-            "title": "Estado Psicológico",
-            "impact_detected": "Impacto {impact} detectado",
-            "empty": "Sem registros recentes",
-            "placeholder": "Comece seu dia registrando seu mindset no diário para uma análise completa.",
-            "followed_plan": "Seguiu o Plano",
-            "deviated_plan": "Desviou o Plano"
-        },
-        "market_context": {
-            "win": "Índice (WIN)",
-            "wdo": "Dólar (WDO)",
-            "selic": "SELIC EA.",
-            "selic_desc": "Meta Banco Central",
-            "di": "Taxa DI (CDI)",
-            "di_desc": "Referencial Juros",
-            "ptax": "PTAX (Oficial)",
-            "ptax_desc": "Média Dólar BCB"
-        },
         "account": {
-            "balance": "Saldo"
+            "balance": "Solde"
+        },
+        "actions": {
+            "detailedRegister": "ENREGISTREMENT DÉTAILLÉ",
+            "evolutionJournal": "JOURNAL D'ÉVOLUTION",
+            "finishTrading": "Terminer la Séance",
+            "newTrade": "NOUVEL ORDRE",
+            "reviewDone": "Révision Terminée",
+            "riskControlShort": "C.R"
         },
         "charts": {
-            "consistency": "Consistency",
-            "equity": "Equity",
-            "equitySubtitle": "Equity Subtitle",
-            "losses": "DÉFAITES",
-            "wins": "Gains"
+            "consistency": "CONSISTANCE",
+            "equity": "Évolution du Patrimoine",
+            "equitySubtitle": "Évolution graphique",
+            "losses": "PERTES",
+            "wins": "GAINS"
         },
         "dailyDetail": {
-            "asset": "Asset",
-            "buy": "Buy",
+            "asset": "Actif",
+            "buy": "Achat",
             "buyShort": "A",
             "direction": "Direction",
-            "efficiency": "Efficiency",
-            "noTrades": "No Trades",
-            "operationsList": "Operations List",
-            "result": "Result",
-            "sell": "Sell",
+            "efficiency": "Efficacité",
+            "noTrades": "Aucun trade",
+            "operationsList": "Liste des Trades",
+            "result": "Résultat",
+            "sell": "Vente",
             "sellShort": "V",
-            "subtitle": "Subtitle",
-            "summary": "Summary",
-            "title": "Title",
-            "tradeQty": "Trade Qty"
+            "subtitle": "Vue détaillée de la journée",
+            "summary": "Résumé",
+            "title": "Détail Quotidien",
+            "tradeQty": "Total de Trades"
+        },
+        "gann": {
+            "kpis": {
+                "avgInterval": "Intervalle Entre Trades",
+                "cycleDay": "Jour du Cycle",
+                "days": "Jours",
+                "hot_window": "Fenêtre Chaude (Réversion Imminente)",
+                "masterCycle": "Cycle Maître",
+                "neutral": "Zone Neutre",
+                "nextCot": "Prochaine Réversion (Fenêtre)",
+                "outOfDays": "Hors Cycle",
+                "vibration": "Vibration Actuelle"
+            },
+            "sq9": {
+                "degrees": "{deg}°",
+                "expansion": "Objectifs d'Expansion",
+                "reference": "Ref",
+                "retracement": "Objectifs de Retrait"
+            },
+            "subtitle": "Confluence Mathématique et Cycles",
+            "title": "Vibrations de Gann"
         },
         "kpis": {
+            "avgInterval": "Intervalle Entre Trades",
             "discipline": "Discipline",
             "maxDrawdown": "Drawdown Maximum",
             "netResult": "Résultat Net",
             "payoff": "Payoff",
             "profitFactor": "Facteur de Profit",
-            "winRate": "Win Rate",
-            "avgInterval": "Intervalle Entre Trades"
+            "winRate": "Win Rate"
         },
-        "newTrade": "New Trade",
+        "market_context": {
+            "di": "Taux DI (CDI)",
+            "di_desc": "Indice de Référence",
+            "ptax": "PTAX (Officiel)",
+            "ptax_desc": "Moyenne Dollar BCB",
+            "selic": "SELIC AN.",
+            "selic_desc": "Cible Banque Centrale",
+            "wdo": "Dollar (WDO)",
+            "win": "Indice (WIN)"
+        },
+        "mindset": {
+            "deviated_plan": "A dévié du Plan",
+            "empty": "Aucun enregistrement récent",
+            "followed_plan": "A suivi le Plan",
+            "impact_detected": "Impact {impact} détecté",
+            "placeholder": "Enregistrez l'état émotionnel pour activer l'analyse.",
+            "title": "État Psychologique"
+        },
+        "newTrade": "Nouveau Trade",
         "quant": {
             "dollar": "Dollar",
-            "index": "Index",
+            "index": "Indice",
             "intention": "Intention",
-            "ranking": "Ranking",
-            "subtitle": "Subtitle",
-            "title": "Title",
+            "ranking": "Classement",
+            "subtitle": "Sous-titre",
+            "title": "Titre",
             "waitingData": "En attente de données"
         },
         "schedule": {
             "afternoon": "Après-midi",
-            "basedOn": "Basé sur les {count} derniers jours ouvrables",
+            "basedOn": "Basé sur les {count} últimos jours ouvrables",
             "morning": "Matin",
             "title": "Horaires de Trading"
         },
-        "subtitle": "Aperçu du compte opérationnel.",
+        "sections": {
+            "allClear": "Tout Propre (Lots Normaux)",
+            "assistantLabel": "ASSISTANT",
+            "behavioralRadar": "Radar Comportemental (IA Heuristique)",
+            "behavioralRadarLabel": "RADAR COMPORTEMENTAL",
+            "evolutionStreaks": "Évolution et Séquences",
+            "noAnomalies": "Aucune anomalie détectée",
+            "systemStatus": "STATUT DU SYSTÈME",
+            "traderAssistant": "Assistant du Trader"
+        },
+        "stats": {
+            "emotionalControl": "Contrôle Émotionnel",
+            "gainLabel": "GAIN",
+            "greenDays": "Jours de Profit",
+            "lossLabel": "PERTE",
+            "rollingScore": "Score (30T)",
+            "streaks": "SÉQUENCES",
+            "todayPnL": "P&L du Jour",
+            "todayPnLShort": "P&L AUJOURD'HUI",
+            "tradeFrequency": "Fréquence (Trades)",
+            "unbreakableDiscipline": "Discipline Inébranlable",
+            "weekPnL": "P&L de la Semaine",
+            "weekPnLShort": "HEBDOMADAIRE"
+        },
+        "subtitle": "Résumé du compte opérationnel.",
         "survivor": {
-            "activePlan": "Plan Actif:",
+            "activePlan": "Plan Actif :",
             "avgRFactor": "Facteur R Moyen",
             "consistency": "Consist.",
             "currentPhase": "Phase Actuelle",
@@ -82,45 +135,24 @@
             "operateTrade": "OPÉRER 2% TRADE",
             "operationalStatus": "Statut Opérationnel",
             "pnl": "PnL",
-            "riskMonth": "Risque Survivor (Mois)",
-            "roadmapProgress": "Progression de la Feuille de Route",
+            "riskMonth": "Survivor Risk (Mois)",
+            "roadmapProgress": "Progression du Roadmap",
             "select": "Sélectionner",
             "statusAlpha": "Opérationnel Alpha",
-            "statusBlocked": "Bloqué (Loss Max)",
+            "statusBlocked": "Bloqué (Perte Max)",
             "statusRisk": "Alerte de Risque",
-            "target": "Cible: ",
+            "target": "Cible : ",
             "title": "Survivor Hub & Surveillance",
             "tradesUsage": "Utilisation des Trades"
         },
-        "terminalHub": "Terminal Hub",
-        "title": "Tableau de Bord",
-        "gann": {
-            "title": "Vibrations de Gann",
-            "subtitle": "Confluence Mathématique et Cycles",
-            "kpis": {
-                "nextCot": "Prochain Renversement (Fenêtre)",
-                "cycleDay": "Jour du Cycle",
-                "vibration": "Vibration Actuelle",
-                "masterCycle": "Cycle Maître (Annuel)",
-                "avgInterval": "Intervalo Entre Trades",
-                "days": "Jours",
-                "hot_window": "Fenêtre Chaude (Inversion Imminente)",
-                "neutral": "Zone Neutre",
-                "outOfDays": "Hors Cycle"
-            },
-            "sq9": {
-                "expansion": "Objectifs d'Expansion",
-                "retracement": "Objectifs de Retrait",
-                "degrees": "{deg}° Degrés",
-                "reference": "Ref"
-            }
-        },
         "syncingTerminal": "Synchronisation du Terminal...",
-        "waitingSurvivorData": "En attente de la matrice de données Survivor Hub"
+        "terminalHub": "Terminal Hub",
+        "title": "Dashboard",
+        "waitingSurvivorData": "Attente de la matrice de données du Survivor Hub"
     },
     "home": {
         "newTrade": "Nouveau Trade",
         "subtitle": "L'évolution de votre journal de trading.",
-        "viewDashboard": "Voir Tableau de Bord"
+        "viewDashboard": "Voir Dashboard"
     }
 }

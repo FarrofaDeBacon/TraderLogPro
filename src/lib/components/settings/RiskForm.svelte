@@ -15,10 +15,12 @@
         Plus,
         Trash2,
         Zap,
-        Brain,
         Target as TargetIcon,
         Link,
         ChevronRight,
+        ShieldCheck,
+        Grid3X3,
+        Brain,
     } from "lucide-svelte";
     import { t, locale } from "svelte-i18n";
     import type { RiskProfile } from "$lib/types";
@@ -159,7 +161,7 @@
     ]);
 
     const growthPlanOptions = $derived([
-        { value: "none", label: $t("risk.growth.none") },
+        { value: "none", label: $t("risk.growthPlan.none") },
         ...riskSettingsStore.growthPlans.map(p => ({ value: p.id, label: p.name }))
     ]);
 
@@ -316,7 +318,7 @@
                     </h3>
                     <div class="flex items-center gap-2">
                         <UI_Badge variant="outline" class="border-emerald-500/30 text-emerald-500 bg-emerald-500/5">
-                            {$t("risk.cockpit.stats.allowedSizing")}
+                            {$t("risk.growthPlan.maxLotsLabel")}
                         </UI_Badge>
                     </div>
                 </div>
@@ -421,7 +423,7 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-2.5">
                                 <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.rules.engine.max_daily_loss")} ({formData.target_type === 'Financial' ? '$' : 'pts'})
+                                    {$t("risk.plan.labels.dailyLossLimit")} ({formData.target_type === 'Financial' ? '$' : 'pts'})
                                 </Label>
                                 <Input
                                     type="number"
@@ -431,7 +433,7 @@
                             </div>
                             <div class="space-y-2.5">
                                 <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.rules.adaptation.multiplier")} (%)
+                                    {$t("risk.rules.adaptation.psychological.multiplier")} (%)
                                 </Label>
                                 <Input
                                     type="number"
@@ -445,13 +447,13 @@
 
                     <div class="space-y-5 p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 shadow-sm">
                         <h3 class="flex items-center gap-2 font-bold text-emerald-500">
-                            <Target class="w-4 h-4" />
-                            {$t("risk.rules.engine.profit_target")}
+                            <TargetIcon class="w-4 h-4" />
+                            {$t("risk.plan.labels.dailyGoal")}
                         </h3>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-2.5">
                                 <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.rules.engine.profit_target")} ({formData.target_type === 'Financial' ? '$' : 'pts'})
+                                    {$t("risk.plan.labels.dailyGoal")} ({formData.target_type === 'Financial' ? '$' : 'pts'})
                                 </Label>
                                 <Input
                                     type="number"
@@ -461,7 +463,7 @@
                             </div>
                             <div class="space-y-2.5">
                                 <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.cockpit.criteria.win_rate")}
+                                    {$t("risk.plan.labels.minRiskReward")}
                                 </Label>
                                 <Input
                                     type="number"
@@ -538,13 +540,13 @@
                             id="lock-mode"
                             bind:checked={formData.lock_on_loss}
                         />
-                        <Label for="lock-mode">{$t("risk.protection.lockOnLoss")}</Label>
+                        <Label for="lock-mode">{$t("risk.plan.labels.platformLock")}</Label>
                     </div>
                 </div>
                 {#if formData.lock_on_loss}
                     <p class="text-xs text-rose-400 flex items-center gap-1">
                         <AlertTriangle class="w-3 h-3" />
-                        {$t("risk.rules.lockOnLossWarn")}
+                        {$t("risk.plan.labels.lockWarning")}
                     </p>
                 {/if}
             </div>
@@ -556,162 +558,72 @@
         <Tabs.Content value="adaptation" class="space-y-4 pt-2">
             {#if activeTab === "adaptation"}
                 <div class="space-y-4">
-                    <!-- Psychological Coupling -->
-                    <div class="space-y-5 p-5 rounded-xl border border-cyan-500/20 bg-cyan-500/5 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="p-2 rounded-lg bg-cyan-500/10"><Brain class="w-5 h-5 text-cyan-400" /></div>
-                                <div class="space-y-1">
-                                    <h4 class="font-bold text-cyan-400 text-sm">
-                                        {$t("risk.adaptation.psychological.title")}
-                                    </h4>
-                                    <p class="text-[10px] text-muted-foreground/80 uppercase tracking-widest font-semibold">
-                                        {$t("risk.adaptation.psychological.desc")}
-                                    </p>
-                                </div>
-                            </div>
-                            <Switch
-                                bind:checked={formData.psychological_coupling_enabled}
-                            />
+                    <section class="space-y-4 p-4 rounded-xl border bg-background/30">
+                        <div class="flex items-center gap-2 text-primary">
+                            <Brain class="w-4 h-4" />
+                            <h4 class="text-xs font-bold uppercase tracking-widest">
+                                {$t("risk.rules.adaptation.psychological.title")}
+                            </h4>
                         </div>
-                        {#if formData.psychological_coupling_enabled}
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-3 border-t border-cyan-500/10">
-                                <div class="space-y-2.5">
-                                    <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                        {$t("risk.adaptation.psychological.strategy")}
-                                    </Label>
-                                    <Select.Root
-                                        type="single"
-                                        bind:value={
-                                            formData.psychological_search_strategy
-                                        }
-                                    >
-                                        <Select.Trigger class="h-8 text-xs">
-                                            {formData.psychological_search_strategy ===
-                                            "Strict"
-                                                ? $t(
-                                                      "risk.adaptation.psychological.strategyStrict",
-                                                  )
-                                                : $t(
-                                                      "risk.adaptation.psychological.strategySequence",
-                                                  )}
-                                        </Select.Trigger>
-                                        <Select.Content>
-                                            <Select.Item value="Strict" class="text-xs"
-                                                >{$t(
-                                                    "risk.adaptation.psychological.strategyStrict",
-                                                )}</Select.Item
-                                            >
-                                            <Select.Item
-                                                value="Sequence"
-                                                class="text-xs"
-                                                >{$t(
-                                                    "risk.adaptation.psychological.strategySequence",
-                                                )}</Select.Item
-                                            >
-                                        </Select.Content>
-                                    </Select.Root>
-                                </div>
-                                <div class="space-y-2.5">
-                                    <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                        {$t("risk.adaptation.psychological.lookback")}
-                                    </Label>
-                                    <Input
-                                        type="number"
-                                        bind:value={
-                                            formData.psychological_lookback_count
-                                        }
-                                        class="h-8 text-xs"
-                                    />
-                                </div>
-                                <div class="space-y-2.5">
-                                    <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                        {$t("risk.adaptation.psychological.threshold")}
-                                    </Label>
-                                    <Input
-                                        type="number"
-                                        bind:value={formData.psychological_threshold}
-                                        class="h-8 text-xs"
-                                    />
-                                </div>
-                                <div class="space-y-2.5">
-                                    <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                        {$t("risk.adaptation.psychological.multiplier")}
-                                    </Label>
-                                    <Input
-                                        type="number"
-                                        step="0.1"
-                                        bind:value={formData.lot_reduction_multiplier}
-                                        class="h-8 text-xs"
-                                    />
-                                </div>
+                        <p class="text-[10px] text-muted-foreground leading-relaxed">
+                            {$t("risk.rules.adaptation.psychological.desc")}
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.psychological.strategy")}</Label>
+                                <Select.Root type="single" value="strict">
+                                    <Select.Trigger class="h-8 text-xs">
+                                        {$t("risk.rules.adaptation.psychological.strategyStrict")}
+                                    </Select.Trigger>
+                                </Select.Root>
                             </div>
-                        {/if}
-                    </div>
+                            <div class="space-y-2">
+                                <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.psychological.lookback")}</Label>
+                                <Input type="number" class="h-8 text-xs" value={20} />
+                            </div>
+                            <div class="space-y-2">
+                                <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.psychological.threshold")}</Label>
+                                <Input type="number" step="0.1" class="h-8 text-xs" value={1.5} />
+                            </div>
+                            <div class="space-y-2">
+                                <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.psychological.multiplier")}</Label>
+                                <Input type="number" step="0.1" class="h-8 text-xs" value={0.5} />
+                            </div>
+                        </div>
+                    </section>
 
-                    <!-- Outlier Regression -->
-                    <div class="space-y-5 p-5 rounded-xl border border-amber-500/20 bg-amber-500/5 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="p-2 rounded-lg bg-amber-500/10"><AlertTriangle class="w-5 h-5 text-amber-500" /></div>
-                                <div class="space-y-1">
-                                    <h4 class="font-bold text-amber-500 text-sm">
-                                        {$t("risk.adaptation.outliers.title")}
-                                    </h4>
-                                    <p class="text-[10px] text-muted-foreground/80 uppercase tracking-widest font-semibold">
-                                        {$t("risk.adaptation.outliers.desc")}
-                                    </p>
-                                </div>
-                            </div>
-                            <Switch
-                                bind:checked={formData.outlier_regression_enabled}
-                            />
+                    <section class="space-y-4 p-4 rounded-xl border bg-background/30">
+                        <div class="flex items-center gap-2 text-primary">
+                            <Zap class="w-4 h-4" />
+                            <h4 class="text-xs font-bold uppercase tracking-widest">
+                                {$t("risk.rules.adaptation.outliers.title")}
+                            </h4>
                         </div>
-                        {#if formData.outlier_regression_enabled}
-                            <div class="pt-3 border-t border-amber-500/10 space-y-2.5">
-                                <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.adaptation.outliers.lookback")}
-                                </Label>
-                                <Input
-                                    type="number"
-                                    bind:value={formData.outlier_lookback_count}
-                                    class="h-8 text-xs w-24"
-                                />
-                            </div>
-                        {/if}
-                    </div>
+                        <p class="text-[10px] text-muted-foreground leading-relaxed">
+                            {$t("risk.rules.adaptation.outliers.desc")}
+                        </p>
+                        <div class="space-y-2">
+                            <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.outliers.lookback")}</Label>
+                            <Input type="number" class="h-8 text-xs" value={50} />
+                        </div>
+                    </section>
 
-                    <!-- Sniper Mode -->
-                    <div class="space-y-5 p-5 rounded-xl border border-blue-500/20 bg-blue-500/5 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="p-2 rounded-lg bg-blue-500/10"><Zap class="w-5 h-5 text-blue-400" /></div>
-                                <div class="space-y-1">
-                                    <h4 class="font-bold text-blue-400 text-sm">
-                                        {$t("risk.adaptation.sniper.title")}
-                                    </h4>
-                                    <p class="text-[10px] text-muted-foreground/80 uppercase tracking-widest font-semibold">
-                                        {$t("risk.adaptation.sniper.desc")}
-                                    </p>
-                                </div>
-                            </div>
-                            <Switch bind:checked={formData.sniper_mode_enabled} />
+                    <section class="space-y-4 p-4 rounded-xl border bg-background/30">
+                        <div class="flex items-center gap-2 text-primary">
+                            <Target class="w-4 h-4" />
+                            <h4 class="text-xs font-bold uppercase tracking-widest">
+                                {$t("risk.rules.adaptation.sniper.title")}
+                            </h4>
                         </div>
-                        {#if formData.sniper_mode_enabled}
-                            <div class="pt-3 border-t border-blue-500/10 space-y-2.5">
-                                <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.adaptation.sniper.selectivity")}
-                                </Label>
-                                <Input
-                                    type="number"
-                                    min="1"
-                                    max="5"
-                                    bind:value={formData.sniper_mode_selectivity}
-                                    class="h-8 text-xs w-24"
-                                />
-                            </div>
-                        {/if}
-                    </div>
+                        <p class="text-[10px] text-muted-foreground leading-relaxed">
+                            {$t("risk.rules.adaptation.sniper.desc")}
+                        </p>
+                        <div class="space-y-2">
+                            <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.sniper.selectivity")}</Label>
+                            <Input type="number" step="0.1" class="h-8 text-xs" value={2.0} />
+                        </div>
+                    </section>
                 </div>
             {/if}
         </Tabs.Content>
@@ -723,78 +635,26 @@
             {#if activeTab === "scope"}
                 <!-- Applicability (Accounts) -->
                 <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
-                    <h3 class="flex items-center gap-2 font-bold text-muted-foreground">
-                        <Link class="w-4 h-4" />
-                        {$t("risk.scope.accounts")}
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div class="space-y-2.5">
-                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.scope.applicability")}</Label>
-                            <Select.Root
-                                type="single"
-                                bind:value={formData.account_type_applicability}
-                            >
-                                <Select.Trigger>
-                                    {accountTypes.find(
-                                        (t) =>
-                                            t.value ===
-                                            formData.account_type_applicability,
-                                    )?.label ?? formData.account_type_applicability}
-                                </Select.Trigger>
-                                <Select.Content>
-                                    {#each accountTypes as type}
-                                        <Select.Item value={type.value}
-                                            >{type.label}</Select.Item
-                                        >
-                                    {/each}
-                                </Select.Content>
-                            </Select.Root>
-                        </div>
-                    </div>
-
-                    {#if formData.account_type_applicability === "Specific"}
-                        <div
-                            class="space-y-2 pt-2 border-t animate-in fade-in slide-in-from-top-1"
-                        >
-                            <Label class="text-xs font-semibold"
-                                >{$t("risk.form.accountsTitle")}</Label
-                            >
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                {#each accountsStore.accounts as account}
-                                    <div
-                                        class="flex items-center space-x-2 p-2 rounded border bg-background/50"
-                                    >
-                                        <Switch
-                                            id="acc-{account.id}"
-                                            checked={formData.account_ids.includes(
-                                                account.id,
-                                            )}
-                                            onCheckedChange={(checked: boolean) => {
-                                                if (checked) {
-                                                    formData.account_ids = [
-                                                        ...formData.account_ids,
-                                                        account.id,
-                                                    ];
-                                                } else {
-                                                    formData.account_ids =
-                                                        formData.account_ids.filter(
-                                                            (id) =>
-                                                                id !== account.id,
-                                                        );
-                                                }
-                                            }}
-                                        />
-                                        <Label
-                                            for="acc-{account.id}"
-                                            class="text-xs cursor-pointer truncate"
-                                        >
-                                            {account.nickname}
-                                        </Label>
-                                    </div>
-                                {/each}
+                    <div class="space-y-6">
+                        <section class="space-y-4">
+                            <h4 class="text-sm font-bold flex items-center gap-2 text-primary uppercase tracking-wider">
+                                <ShieldCheck class="w-4 h-4" />
+                                {$t("risk.scope.accountsTitle")}
+                            </h4>
+                            <div class="p-4 rounded-lg border bg-background/50">
+                                <p class="text-xs text-muted-foreground">{$t("risk.scope.accounts")}</p>
                             </div>
-                        </div>
-                    {/if}
+                        </section>
+                        <section class="space-y-4">
+                            <h4 class="text-sm font-bold flex items-center gap-2 text-primary uppercase tracking-wider">
+                                <Grid3X3 class="w-4 h-4" />
+                                {$t("risk.scope.applicability")}
+                            </h4>
+                            <div class="p-4 rounded-lg border bg-background/50">
+                                <p class="text-xs text-muted-foreground">{$t("risk.accountTypes.All")}</p>
+                            </div>
+                        </section>
+                    </div>
                 </div>
 
                 <!-- Asset Profiles Links -->

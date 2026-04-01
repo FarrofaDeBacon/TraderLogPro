@@ -60,7 +60,7 @@
 
     const LANGUAGES = [
         { value: "pt-BR", label: "🇧🇷 Português (BR)" },
-        { value: "en", label: "🇺🇸 English" },
+        { value: "en-US", label: "🇺🇸 English" },
         { value: "es-ES", label: "🇪🇸 Español" },
         { value: "fr-FR", label: "🇫🇷 Français" },
     ];

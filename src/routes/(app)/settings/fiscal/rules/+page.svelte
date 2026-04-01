@@ -64,7 +64,7 @@ import type { TaxRule } from "$lib/types";
 
     async function saveRule() {
         if (!formData.name) {
-            toast.error($t("settings.fiscal.rules.form.nameRequired"));
+            toast.error($t("fiscal.settings.rules.form.nameRequired"));
             return;
         }
 
@@ -79,10 +79,10 @@ import type { TaxRule } from "$lib/types";
             }
             // FECHAR modal
             isDialogOpen = false;
-            toast.success($t("settings.fiscal.rules.form.successSave"));
+            toast.success($t("fiscal.settings.rules.form.successSave"));
         } catch (e) {
             console.error("Erro ao salvar regra:", e);
-            toast.error($t("settings.fiscal.rules.form.errorSave"));
+            toast.error($t("fiscal.settings.rules.form.errorSave"));
         } finally {
             isSubmittingRule = false;
         }
@@ -111,15 +111,15 @@ import type { TaxRule } from "$lib/types";
     <div class="flex items-center justify-between">
         <div class="space-y-0.5">
             <h3 class="text-lg font-medium">
-                {$t("settings.fiscal.rules.title")}
+                {$t("fiscal.settings.rules.title")}
             </h3>
             <p class="text-sm text-muted-foreground">
-                {$t("settings.fiscal.rules.description")}
+                {$t("fiscal.settings.rules.description")}
             </p>
         </div>
         <Button onclick={openNew}>
             <Plus class="w-4 h-4 mr-2" />
-            {$t("settings.fiscal.rules.new")}
+            {$t("fiscal.settings.rules.new")}
         </Button>
     </div>
 
@@ -143,10 +143,10 @@ import type { TaxRule } from "$lib/types";
                             >
                                 {rule.basis === "NetProfit"
                                     ? $t(
-                                          "settings.fiscal.rules.form.basisOptions.netProfit",
+                                          "fiscal.settings.rules.form.basisOptions.netProfit",
                                       )
                                     : $t(
-                                          "settings.fiscal.rules.form.basisOptions.saleAmount",
+                                          "fiscal.settings.rules.form.basisOptions.saleAmount",
                                       )}
                             </span>
                         </div>
@@ -157,7 +157,7 @@ import type { TaxRule } from "$lib/types";
                 <div class="space-y-2 mb-4 flex-1">
                     <div class="flex justify-between items-center text-sm">
                         <span class="text-muted-foreground"
-                            >{$t("settings.fiscal.rules.form.rate")}:</span
+                            >{$t("fiscal.settings.rules.form.rate")}:</span
                         >
                         <span class="font-mono font-bold">{rule.tax_rate}%</span
                         >
@@ -165,19 +165,19 @@ import type { TaxRule } from "$lib/types";
                     <div class="flex justify-between items-center text-sm">
                         <span class="text-muted-foreground"
                             >{$t(
-                                "settings.fiscal.rules.form.withholding",
+                                "fiscal.settings.rules.form.withholding",
                             )}:</span
                         >
                         <span class="font-mono">{rule.withholding_rate}%</span>
                     </div>
                     <div class="flex justify-between items-center text-[10px] italic -mt-1 mb-2">
                         <span class="text-muted-foreground"
-                            >{$t("settings.fiscal.rules.form.withholdingBasis")}:</span
+                            >{$t("fiscal.settings.rules.form.withholdingBasis")}:</span
                         >
                         <span class="text-primary/70">
                             {rule.withholding_basis === "Profit"
-                                ? $t("settings.fiscal.rules.form.withholdingBasisOptions.profit")
-                                : $t("settings.fiscal.rules.form.withholdingBasisOptions.sales")}
+                                ? $t("fiscal.settings.rules.form.withholdingBasisOptions.profit")
+                                : $t("fiscal.settings.rules.form.withholdingBasisOptions.sales")}
                         </span>
                     </div>
                     {#if rule.exemption_threshold > 0}
@@ -186,7 +186,7 @@ import type { TaxRule } from "$lib/types";
                         >
                             <span
                                 >{$t(
-                                    "settings.fiscal.rules.form.exemption",
+                                    "fiscal.settings.rules.form.exemption",
                                 )}:</span
                             >
                             <span class="font-mono"
@@ -197,7 +197,7 @@ import type { TaxRule } from "$lib/types";
                     <div class="flex justify-between items-center text-sm">
                         <span class="text-muted-foreground"
                             >{$t(
-                                "settings.fiscal.rules.form.cumulative",
+                                "fiscal.settings.rules.form.cumulative",
                             )}:</span
                         >
                         <span
@@ -213,7 +213,7 @@ import type { TaxRule } from "$lib/types";
                     {#if rule.revenue_code}
                         <div class="flex justify-between items-center text-sm pt-2 border-t border-dashed mt-2">
                             <span class="text-muted-foreground"
-                                >{$t("settings.fiscal.rules.form.revenueCode")}:</span
+                                >{$t("fiscal.settings.rules.form.revenueCode")}:</span
                             >
                             <span class="font-mono font-bold bg-primary/5 px-1.5 rounded">{rule.revenue_code}</span>
                         </div>
@@ -249,9 +249,9 @@ import type { TaxRule } from "$lib/types";
                 class="col-span-full flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg text-muted-foreground h-[200px]"
             >
                 <Scale class="w-8 h-8 mb-2 opacity-20" />
-                <span>{$t("settings.fiscal.rules.empty")}</span>
+                <span>{$t("fiscal.settings.rules.empty")}</span>
                 <Button variant="link" onclick={openNew}
-                    >{$t("settings.fiscal.rules.new")}</Button
+                    >{$t("fiscal.settings.rules.new")}</Button
                 >
             </div>
         {/each}
@@ -264,25 +264,25 @@ import type { TaxRule } from "$lib/types";
         <Dialog.Header>
             <Dialog.Title
                 >{editingId
-                    ? $t("settings.fiscal.rules.form.titleEdit")
-                    : $t("settings.fiscal.rules.form.titleNew")}</Dialog.Title
+                    ? $t("fiscal.settings.rules.form.titleEdit")
+                    : $t("fiscal.settings.rules.form.titleNew")}</Dialog.Title
             >
         </Dialog.Header>
 
         <div class="grid gap-4 py-4">
             <div class="space-y-2">
-                <Label>{$t("settings.fiscal.rules.form.name")}</Label>
+                <Label>{$t("fiscal.settings.rules.form.name")}</Label>
                 <Input
                     bind:value={formData.name}
                     placeholder={$t(
-                        "settings.fiscal.rules.form.namePlaceholder",
+                        "fiscal.settings.rules.form.namePlaceholder",
                     )}
                 />
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <Label>{$t("settings.fiscal.rules.form.rate")}</Label>
+                    <Label>{$t("fiscal.settings.rules.form.rate")}</Label>
                     <div class="relative">
                         <Input
                             type="number"
@@ -295,11 +295,11 @@ import type { TaxRule } from "$lib/types";
                         >
                     </div>
                     <p class="text-[10px] text-muted-foreground">
-                        {$t("settings.fiscal.rules.form.rateHint")}
+                        {$t("fiscal.settings.rules.form.rateHint")}
                     </p>
                 </div>
                 <div class="space-y-2">
-                    <Label>{$t("settings.fiscal.rules.form.withholding")}</Label
+                    <Label>{$t("fiscal.settings.rules.form.withholding")}</Label
                     >
                     <div class="relative">
                         <Input
@@ -313,65 +313,65 @@ import type { TaxRule } from "$lib/types";
                         >
                     </div>
                     <p class="text-[10px] text-muted-foreground">
-                        {$t("settings.fiscal.rules.form.withholdingHint")}
+                        {$t("fiscal.settings.rules.form.withholdingHint")}
                     </p>
                 </div>
             </div>
 
             {#if formData.withholding_rate > 0}
                 <div class="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                    <Label>{$t("settings.fiscal.rules.form.withholdingBasis")}</Label>
+                    <Label>{$t("fiscal.settings.rules.form.withholdingBasis")}</Label>
                     <Select.Root type="single" bind:value={formData.withholding_basis}>
                         <Select.Trigger>
                             {formData.withholding_basis === "Profit"
-                                ? $t("settings.fiscal.rules.form.withholdingBasisOptions.profit")
-                                : $t("settings.fiscal.rules.form.withholdingBasisOptions.sales")}
+                                ? $t("fiscal.settings.rules.form.withholdingBasisOptions.profit")
+                                : $t("fiscal.settings.rules.form.withholdingBasisOptions.sales")}
                         </Select.Trigger>
                         <Select.Content>
                             <Select.Item value="Profit"
-                                >{$t("settings.fiscal.rules.form.withholdingBasisOptions.profit")}</Select.Item>
+                                >{$t("fiscal.settings.rules.form.withholdingBasisOptions.profit")}</Select.Item>
                             <Select.Item value="SalesVolume"
-                                >{$t("settings.fiscal.rules.form.withholdingBasisOptions.sales")}</Select.Item>
+                                >{$t("fiscal.settings.rules.form.withholdingBasisOptions.sales")}</Select.Item>
                         </Select.Content>
                     </Select.Root>
                     <p class="text-[10px] text-muted-foreground">
-                        {$t("settings.fiscal.rules.form.withholdingBasisHint")}
+                        {$t("fiscal.settings.rules.form.withholdingBasisHint")}
                     </p>
                 </div>
             {/if}
 
             <div class="space-y-2">
-                <Label>{$t("settings.fiscal.rules.form.basis")}</Label>
+                <Label>{$t("fiscal.settings.rules.form.basis")}</Label>
                 <Select.Root type="single" bind:value={formData.basis}>
                     <Select.Trigger>
                         {formData.basis === "NetProfit"
                             ? $t(
-                                  "settings.fiscal.rules.form.basisOptions.netProfit",
+                                  "fiscal.settings.rules.form.basisOptions.netProfit",
                               )
                             : $t(
-                                  "settings.fiscal.rules.form.basisOptions.saleAmount",
+                                  "fiscal.settings.rules.form.basisOptions.saleAmount",
                               )}
                     </Select.Trigger>
                     <Select.Content>
                         <Select.Item value="NetProfit"
                             >{$t(
-                                "settings.fiscal.rules.form.basisOptions.netProfit",
+                                "fiscal.settings.rules.form.basisOptions.netProfit",
                             )}</Select.Item
                         >
                         <Select.Item value="GrossProfit"
                             >{$t(
-                                "settings.fiscal.rules.form.basisOptions.saleAmount",
+                                "fiscal.settings.rules.form.basisOptions.saleAmount",
                             )}</Select.Item
                         >
                     </Select.Content>
                 </Select.Root>
                 <p class="text-[10px] text-muted-foreground">
-                    {$t("settings.fiscal.rules.form.basisHint")}
+                    {$t("fiscal.settings.rules.form.basisHint")}
                 </p>
             </div>
 
             <div class="space-y-2">
-                <Label>{$t("settings.fiscal.rules.form.exemption")}</Label>
+                <Label>{$t("fiscal.settings.rules.form.exemption")}</Label>
                 <div class="relative">
                     <span
                         class="absolute left-3 top-2.5 text-xs text-muted-foreground"
@@ -385,7 +385,7 @@ import type { TaxRule } from "$lib/types";
                     />
                 </div>
                 <p class="text-[10px] text-muted-foreground">
-                    {$t("settings.fiscal.rules.form.exemptionHint")}
+                    {$t("fiscal.settings.rules.form.exemptionHint")}
                 </p>
             </div>
 
@@ -403,13 +403,13 @@ import type { TaxRule } from "$lib/types";
             </div>
 
             <div class="space-y-2">
-                <Label>{$t("settings.fiscal.rules.form.revenueCode")}</Label>
+                <Label>{$t("fiscal.settings.rules.form.revenueCode")}</Label>
                 <Input
                     bind:value={formData.revenue_code}
-                    placeholder={$t("settings.fiscal.rules.form.revenueCodePlaceholder")}
+                    placeholder={$t("fiscal.settings.rules.form.revenueCodePlaceholder")}
                 />
                 <p class="text-[10px] text-muted-foreground">
-                    {$t("settings.fiscal.rules.form.revenueCodeHint")}
+                    {$t("fiscal.settings.rules.form.revenueCodeHint")}
                 </p>
             </div>
 
@@ -418,10 +418,10 @@ import type { TaxRule } from "$lib/types";
             >
                 <div class="space-y-0.5">
                     <Label class="text-base"
-                        >{$t("settings.fiscal.rules.form.cumulative")}</Label
+                        >{$t("fiscal.settings.rules.form.cumulative")}</Label
                     >
                     <p class="text-[10px] text-muted-foreground">
-                        {$t("settings.fiscal.rules.form.cumulativeHint")}
+                        {$t("fiscal.settings.rules.form.cumulativeHint")}
                     </p>
                 </div>
                 <Switch bind:checked={formData.cumulative_losses} />
@@ -434,7 +434,7 @@ import type { TaxRule } from "$lib/types";
                     <span class="loading loading-spinner loading-xs"></span>
                     {$t("general.saving")}
                 {:else}
-                    {$t("settings.fiscal.rules.form.save")}
+                    {$t("fiscal.settings.rules.form.save")}
                 {/if}
             </Button>
         </Dialog.Footer>
@@ -442,3 +442,4 @@ import type { TaxRule } from "$lib/types";
 </Dialog.Root>
 
 <DeleteConfirmationModal bind:open={isDeleteOpen} onConfirm={confirmDelete} />
+

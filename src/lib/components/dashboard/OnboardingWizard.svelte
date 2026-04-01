@@ -26,8 +26,8 @@
 <div class="w-full max-w-2xl mx-auto mt-4 md:mt-12 mb-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
    <SystemCard status="primary" class="p-4 mb-10 bg-primary/5">
       <SystemHeader 
-         title="Prepare seu Cockpit"
-         subtitle="Siga os 4 passos absolutos para blindar seu capital e destrancar os Radares Analíticos da sua Home."
+         title={$t("dashboard.onboarding_wizard.title")}
+         subtitle={$t("dashboard.onboarding_wizard.subtitle")}
          icon={Lightbulb}
          variant="page"
          class="mb-0"
@@ -51,15 +51,15 @@
                </div>
                <div class="flex-1">
                   <SystemHeader 
-                     title="1. Crie sua Conta de Trading"
-                     subtitle="Conecte o capital base (BRL ou USD) para rastrearmos o lucro."
+                     title={$t("dashboard.onboarding_wizard.step1.title")}
+                     subtitle={$t("dashboard.onboarding_wizard.step1.subtitle")}
                      variant="compact"
                      class="mb-0"
                   />
                </div>
                {#if currentStep === 1}
                   <Button href="/settings" size="sm" class="shrink-0 group bg-primary font-black uppercase tracking-widest text-[10px] h-8 px-4">
-                     Avançar <ArrowRight class="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
+                     {$t("dashboard.onboarding_wizard.step1.action")} <ArrowRight class="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                {/if}
             </div>
@@ -82,15 +82,15 @@
                </div>
                <div class="flex-1">
                   <SystemHeader 
-                     title="2. Determine seu Risco Máximo"
-                     subtitle="Configure Limites Diários de Perda para ligar a Trava Comportamental."
+                     title={$t("dashboard.onboarding_wizard.step2.title")}
+                     subtitle={$t("dashboard.onboarding_wizard.step2.subtitle")}
                      variant="compact"
                      class="mb-0"
                   />
                </div>
                {#if currentStep === 2}
                   <Button href="/settings/risk" size="sm" class="shrink-0 bg-rose-600 hover:bg-rose-700 font-black uppercase tracking-widest text-[10px] h-8 px-4 group">
-                     Defender Capital <ArrowRight class="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
+                     {$t("dashboard.onboarding_wizard.step2.action")} <ArrowRight class="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                {/if}
             </div>
@@ -113,15 +113,15 @@
                </div>
                <div class="flex-1">
                   <SystemHeader 
-                     title="3. Estruture seu Plano de Alavancagem"
-                     subtitle="Crie as Fases de Crescimento para aumentar os Lotes matematicamente."
+                     title={$t("dashboard.onboarding_wizard.step3.title")}
+                     subtitle={$t("dashboard.onboarding_wizard.step3.subtitle")}
                      variant="compact"
                      class="mb-0"
                   />
                </div>
                {#if currentStep === 3}
                   <Button href="/settings/risk/growth-plans" size="sm" class="shrink-0 bg-indigo-600 hover:bg-indigo-700 font-black uppercase tracking-widest text-[10px] h-8 px-4 group">
-                     Montar Plano <ArrowRight class="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
+                     {$t("dashboard.onboarding_wizard.step3.action")} <ArrowRight class="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                {/if}
             </div>
@@ -140,8 +140,8 @@
                </div>
                <div class="flex-1">
                   <SystemHeader 
-                     title="4. Registre seu Primeiro Trade"
-                     subtitle="Você está 100% blindado. Utilize o QuickLog para dar vida às estatísticas."
+                     title={$t("dashboard.onboarding_wizard.step4.title")}
+                     subtitle={$t("dashboard.onboarding_wizard.step4.subtitle")}
                      variant="compact"
                      class="mb-0"
                   />

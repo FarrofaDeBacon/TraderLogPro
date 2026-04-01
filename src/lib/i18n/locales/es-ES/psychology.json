@@ -1,45 +1,59 @@
 {
-    "journal": {
-        "empty": {
-            "description": "Comienza a registrar tu mindset hoy.",
-            "title": "Sin notas aún"
-        },
-        "newNote": "Nueva Nota",
-        "title": "Diario de Trading"
-    },
     "psychology": {
+        "journal_main": {
+            "empty": {
+                "description": "Comienza a registrar tu mindset hoy.",
+                "title": "Sin notas aún"
+            },
+            "newNote": "Nueva Nota",
+            "title": "Diario de Trading"
+        },
+        "ai": {
+            "analyze": "Analizar",
+            "behaviorAnalysis": "Análisis del Comportamiento",
+            "crossReference": "Cruzamos los hallazgos matemáticos con el motor de Inteligencia Artificial para generar consejos tácticos instantáneos.",
+            "integrations": "Integraciones",
+            "mapping": "Mapeando...",
+            "mentor": "Mentor IA",
+            "noAiLinked": "No hay IA vinculada a su capa de Psicología. Active su clave para desbloquear el analizador interpretativo de la base matemática.",
+            "rediagnose": "Rediagnosticar",
+            "updating": "Actualizando..."
+        },
         "analysis": {
             "emotionalCalc": "Cálculo Emocional",
-            "hierarchy": "Hierarchy",
-            "title": "Title",
+            "hierarchy": "Sessões e Estrutura",
+            "title": "Cartografía del Comportamiento",
             "totalWeight": "Peso Total"
         },
         "charts": {
-            "correlation": "Correlation",
-            "pnlByEmotion": "Pnl By Emotion",
-            "resultTitle": "Resultado Financiero por Emoción",
-            "winRate": "Win Rate",
-            "winRateTitle": "Win Rate por Emoción (%)",
+            "correlation": "Correlación: Emoción x Resultado (Diario)",
+            "equityCurve": "Curva de Capital Táctica en el Período",
+            "filterPeriod": "Filtre un período con datos",
+            "pnlByEmotion": "Resultado Financiero por Emoción",
+            "resultTitle": "Resultado vs Emocional",
             "theMap": "El Mapa",
             "top5": "Top 5 Segmentados",
-            "equityCurve": "Curva de Capital Táctica en el Período",
-            "filterPeriod": "Filtre un período con datos"
+            "winRate": "Eficiencia %",
+            "winRateTitle": "Win Rate vs Emocional",
+            "impactRanking": "Ranking de Impacto",
+            "emotion": "Emoción",
+            "trades": "Trades"
         },
         "checkin": {
             "button": "Nuevo Registro",
             "date": "Fecha",
             "description": "Siga su estado mental independientemente de los trades.",
             "intensity": "Intensidad",
-            "intensity_label": "Intensidade",
+            "intensityLabel": "Nivel de Intensidad",
+            "intensity_label": "Intensidad",
             "intensity_placeholder": "Qual a intensidade (1-10)?",
             "notesLabel": "Notas / Diario",
             "notesPlaceholder": "Escriba sobre su día...",
             "save": "Salvar Check-in",
-            "success": "¡Registro guardado con éxito!",
             "stateLabel": "¿Cómo se siente?",
             "statePlaceholder": "Seleccione...",
-            "title": "Registro Emocional Diario",
-            "intensityLabel": "Nivel de Intensidad"
+            "success": "¡Registro guardado con éxito!",
+            "title": "Registro Emocional Diario"
         },
         "deleteDialog": {
             "cancel": "Cancelar",
@@ -47,21 +61,24 @@
             "description": "¿Está seguro de que desea eliminar este registro emocional? Esta acción no se puede deshacer.",
             "title": "Confirmar Eliminación"
         },
-        "description": "Entienda cómo sus emociones impactan su resultado financiero.",
+        "description": "Entenda como suas emoções impactam seu resultado financeiro.",
         "filters": {
             "groupBy": "Agrupar por"
         },
+        "hierarchical": {
+            "sessionsStructure": "Sesiones y Estructura Hierárquica"
+        },
         "insight": {
-            "formulaTitle": "Formula Title",
-            "opScore": "Op Score",
-            "title": "Title"
+            "formulaTitle": "¿Cómo llegamos a este puntuación?",
+            "opScore": "Nota",
+            "title": "Detalle del cálculo e impacto"
         },
         "journal": {
-            "entryStateShort": "Entry State Short",
-            "exitStateShort": "Exit State Short",
-            "intensityShort": "Intensity Short",
-            "score": "Score",
-            "title": "Title"
+            "entryStateShort": "ESTADO INT. (CORTO)",
+            "exitStateShort": "ESTADO EXT. (CORTO)",
+            "intensityShort": "INTENSIDAD",
+            "score": "Puntuación (0-10)",
+            "title": "Registros y Trades Directos"
         },
         "journalList": {
             "date": "Fecha",
@@ -72,22 +89,29 @@
             "title": "Diario Emocional"
         },
         "kpi": {
-            "accumulatedLoss": "Accumulated Loss",
+            "accumulatedLoss": "Pérdida Acumulada",
             "bestMindset": "Mejor Mentalidad",
-            "consolidated": "Consolidated",
-            "records": "Records",
-            "recordsDescription": "Records Description",
+            "consolidated": "Consolidado",
+            "records": "Registros de Diario",
+            "recordsDescription": "Evaluaciones completadas en la plataforma",
             "tiltCost": "Costo del Descontrol",
-            "tiltDescription": "En {count} trades con emociones negativas",
+            "tiltDescription": "La suma total de las pérdidas operando fuera de la zona de control es {value}",
             "unregistered": "Trades no Registrados",
             "unregisteredDescription": "Operaciones sin estado emocional",
             "worstMindset": "Peor Mentalidad"
+        },
+        "kpis": {
+            "bestPerformance": "Mejor Rendimiento",
+            "negativeLosses": "Losses Negativas",
+            "offender": "El Ofensor",
+            "psychoScore": "Psycho Score",
+            "score": "SCORE"
         },
         "list": {
             "asset": "Activo",
             "date": "Fecha",
             "entryState": "Estado (Entrada)",
-            "exitState": "Estado (Salida)",
+            "exitState": "Estado (Saída)",
             "noTrades": "Ningún trade registrado.",
             "result": "Resultado",
             "title": "Últimos Trades Registrados",
@@ -95,27 +119,6 @@
             "unknownBadge": "Desconocido"
         },
         "syncWeights": "Sincronizar Pesos",
-        "title": "Análisis Psicológico",
-        "kpis": {
-            "psychoScore": "Psycho Score",
-            "bestPerformance": "Mejor Rendimiento",
-            "offender": "El Ofensor",
-            "negativeLosses": "Losses Negativas",
-            "score": "SCORE"
-        },
-        "ai": {
-            "mentor": "Mentor IA",
-            "behaviorAnalysis": "Análisis del Comportamiento",
-            "noAiLinked": "No hay IA vinculada a su capa de Psicología. Active su clave para desbloquear el analizador interpretativo de la base matemática.",
-            "integrations": "Integraciones",
-            "crossReference": "Cruzamos los hallazgos matemáticos con el motor de Inteligencia Artificial para generar consejos tácticos instantáneos.",
-            "mapping": "Mapeando...",
-            "analyze": "Analizar",
-            "updating": "Actualizando...",
-            "rediagnose": "Rediagnosticar"
-        },
-        "hierarchical": {
-            "sessionsStructure": "Sesiones y Estructura Jerárquica"
-        }
+        "title": "Análisis Psicológico"
     }
 }

@@ -61,7 +61,7 @@
                         class="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/20"
                     >
                         <TrendingUp class="w-3 h-3 mr-1" />
-                        {$t("risk.growth.activeStatus") || $t("risk.status.allowed")}
+                        {$t("risk.growthPlan.activeStatus") || $t("risk.status.allowed")}
                     </Badge>
                 {/if}
             </div>
@@ -207,7 +207,7 @@
                             {phase.name}
                         </div>
                         <div class="text-muted-foreground">
-                            {$t("risk.growth.maxLotsLabel") || $t("risk.cockpit.stats.allowedSizing")}
+                            {$t("risk.growthPlan.maxLotsLabel") || $t("risk.cockpit.stats.allowedSizing")}
                             <span class="font-mono text-foreground"
                                 >{phase.lot_size}</span
                             >

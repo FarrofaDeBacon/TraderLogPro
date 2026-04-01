@@ -1,48 +1,15 @@
 {
-    "calendar": {
-        "days": {
-            "fri": "Fri",
-            "mon": "Mon",
-            "sat": "Sat",
-            "sun": "Sun",
-            "thu": "Thu",
-            "tue": "Tue",
-            "wed": "Wed"
-        },
-        "monthly": "Monthly",
-        "monthlyShort": "M",
-        "of": "of",
-        "weekOf": "Week of",
-        "weekly": "Weekly",
-        "weeklyShort": "W",
-        "next": "Next"
-    },
-    "filters": {
-        "date": {
-            "all": "All Time",
-            "custom": "Custom",
-            "last_month": "Last Month",
-            "last_week": "Last Week",
-            "last_year": "Last Year",
-            "select": "Select Period",
-            "this_month": "This Month",
-            "this_week": "This Week",
-            "this_year": "This Year",
-            "today": "Today",
-            "yesterday": "Yesterday"
-        }
-    },
     "common": {
         "actions": "Actions",
-        "operator": "Operator",
-        "save": "Save",
+        "add": "Add New",
         "all": "All",
         "asset": "Asset",
         "back": "Back",
         "balance": "Balance",
         "cancel": "Cancel",
         "close": "Close",
-        "confirmDeleteDescription": "This action cannot be undone.",
+        "confirmDelete": "Are you sure you want to delete?",
+        "confirmDeleteDescription": "This action is irreversible.",
         "confirmDeleteTitle": "Are you sure?",
         "currency": "Currency",
         "custom": "Custom",
@@ -55,10 +22,15 @@
         "destination": "Destination",
         "details": "Details",
         "edit": "Edit",
-        "empty": "No assessment in",
+        "empty": "No calculation in",
         "error": "Error",
         "finish": "Finish",
-        "progress": "Progress",
+        "form": {
+            "assetRequired": "Asset is required.",
+            "invaildContracts": "Invalid number of contracts.",
+            "invalidPoints": "Invalid points.",
+            "nameRequired": "Name is required."
+        },
         "from": "From",
         "intensity_short": "int.",
         "items": "Items",
@@ -68,16 +40,21 @@
         "next": "Next",
         "no": "No",
         "noData": "No Data",
-        "of": "Of",
+        "none": "None",
+        "of": "of",
+        "operator": "Operator",
         "optional": "Optional",
         "origin": "Origin",
+        "progress": "Progress",
         "quantity": "Qty",
         "reload": "Reload",
         "result": "Result",
+        "save": "Save",
+        "saveSuccess": "Saved successfully!",
         "saving": "Saving...",
         "show": "Show",
         "status": "Status",
-        "success": "Operation successful!",
+        "success": "Trade performed successfully!",
         "time": {
             "month": "month",
             "months": "months",
@@ -86,84 +63,113 @@
         },
         "to": "To",
         "type": "Type",
+        "unknown": "Unknown",
         "value": "Value",
         "week": "Week",
         "weekdays": {
-            "fri": "Fri",
-            "mon": "Mon",
-            "sat": "Sat",
-            "sun": "Sun",
-            "thu": "Thu",
-            "tue": "Tue",
-            "wed": "Wed"
+            "mon": "Monday",
+            "tue": "Tuesday",
+            "wed": "Wednesday",
+            "thu": "Thursday",
+            "fri": "Friday",
+            "sat": "Saturday",
+            "sun": "Sunday",
+            "short": {
+                "mon": "Mon",
+                "tue": "Tue",
+                "wed": "Wed",
+                "thu": "Thu",
+                "fri": "Fri",
+                "sat": "Sat",
+                "sun": "Sun"
+            }
+        },
+        "months": {
+            "january": "January",
+            "february": "February",
+            "march": "March",
+            "april": "April",
+            "may": "May",
+            "june": "June",
+            "july": "July",
+            "august": "August",
+            "september": "September",
+            "october": "October",
+            "november": "November",
+            "december": "December"
+        },
+        "calendar": {
+            "monthly": "Monthly",
+            "monthlyShort": "M",
+            "next": "Next",
+            "of": "of",
+            "weekOf": "Week of",
+            "weekly": "Weekly",
+            "weeklyShort": "W"
         },
         "weeks_upper": "WEEKS",
         "weight": "weight",
-        "yes": "Yes",
-        "add": "Add New",
-        "confirmDelete": "Are you sure you want to delete?",
+        "yes": "Yes"
+    },
+    "filters": {
+        "date": {
+            "all": "All Period",
+            "custom": "Custom",
+            "last_month": "Last Month",
+            "last_week": "Last Week",
+            "last_year": "Last Year",
+            "select": "Select Period",
+            "this_month": "This Month",
+            "this_week": "This Week",
+            "this_year": "This Year",
+            "today": "Today",
+            "yesterday": "Yesterday"
+        }
+    },
+    "general": {
+        "add": "Add",
+        "back": "Back",
+        "cancel": "Cancel",
+        "confirmDeleteDescription": "Are you sure you want to delete? This action cannot be undone.",
+        "confirmDeleteTitle": "Confirm Deletion",
+        "custom": "Custom",
+        "delete": "Delete",
+        "deleteSuccess": "Deleted successfully!",
+        "edit": "Edit",
+        "error": "Error",
         "form": {
             "assetRequired": "Asset is required.",
             "invaildContracts": "Invalid number of contracts.",
-            "invalidPoints": "Invalid points.",
+            "invalidPoints": "Invalid score.",
             "nameRequired": "Name is required."
         },
-        "none": "None",
-        "saveSuccess": "Saved successfully!",
-        "unknown": "Unknown"
-    },
-    "general": {
-        "cancel": "Cancel",
-        "delete": "Delete",
-        "confirmDeleteTitle": "Confirm Delete",
-        "confirmDeleteDescription": "Are you sure? This action cannot be undone.",
-        "save": "Save",
-        "add": "Add",
-        "back": "Back",
-        "error": "Error",
-        "success": "Success",
         "loading": "Loading...",
-        "saveSuccess": "Saved successfully!",
-        "deleteSuccess": "Deleted successfully!",
+        "no": "No",
         "none": "None",
+        "save": "Save",
+        "saveSuccess": "Saved successfully!",
+        "success": "Success",
         "unknown": "Unknown",
-        "custom": "Custom",
-        "form": {
-            "nameRequired": "Name is required.",
-            "assetRequired": "Asset is required.",
-            "invalidPoints": "Invalid points.",
-            "invaildContracts": "Invalid contracts number."
-        },
-        "weekdays": {
-            "sun": "Sun",
-            "mon": "Mon",
-            "tue": "Tue",
-            "wed": "Wed",
-            "thu": "Thu",
-            "fri": "Fri",
-            "sat": "Sat"
-        }
+        "yes": "Yes",
+        "operator": "Operator"
     },
     "help": {
-        "title": "Help Center",
-        "subtitle": "Find answers and learn how to use all the features of TraderLog Pro.",
-        "searchHint": "Search the manual (e.g. DARF, RTD, Strategies)...",
-        "topics": "Topics",
         "emptyState": "No results found",
-        "emptyStateDescription": "Try searching for different terms or browse the topics on the side."
+        "emptyStateDescription": "No results. Change your search or use the sidebar.",
+        "searchHint": "Search in manual (e.g., DARF, RTD, Strategy)...",
+        "subtitle": "Find answers and learn how to use all features of Welcome to TraderLog Pro.",
+        "title": "Help Center",
+        "topics": "Topics"
     },
-    "months": {
-        "april": "April",
-        "august": "August",
-        "december": "December",
-        "february": "February",
-        "january": "January",
-        "july": "July",
-        "june": "June",
-        "march": "March",
-        "may": "May",
-        "november": "November",
-        "october": "October",
-        "september": "September"
+    "LIST": {
+        "TABLE": {
+            "ASSET": "Asset",
+            "DIRECTION": "Direction",
+            "ENTRY": "Entry",
+            "EXIT": "Exit",
+            "PL": "Result",
+            "QUANTITY": "Qty",
+            "STRATEGY": "Strategy"
+        }
     }
 }

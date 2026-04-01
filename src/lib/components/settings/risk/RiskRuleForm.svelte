@@ -53,7 +53,7 @@
         }
     });
 
-    const prefix = "risk.ruleBuilder";
+    const prefix = "risk.rules";
 
     const allTargetTypes: RiskRuleTargetType[] = [
         "sum_contracts",
@@ -160,10 +160,10 @@
         if (!nameManuallyEdited && !isEditing) {
             const typeLabel = $t(`${prefix}.targetType.${formData.target_type}`);
             if (isBooleanRule) {
-                formData.name = `${typeLabel} (${formData.value ? $t("risk.form.active") : $t("risk.form.inactive")})`;
+                formData.name = `${typeLabel} (${formData.value ? $t("risk.plan.active") : $t("common.no")})`;
             } else {
                 const opLabel = getOperatorSymbol(formData.operator);
-                const andLabel = $t("risk.form.and") || "e";
+                const andLabel = " & ";
                 const val2 = showSecondaryValue && formData.value_secondary !== undefined ? ` ${andLabel} ${formData.value_secondary}` : '';
                 formData.name = `${typeLabel} ${opLabel} ${formData.value}${val2}`;
             }
@@ -184,7 +184,7 @@
         <Input 
             value={formData.name} 
             oninput={(e) => { formData.name = e.currentTarget.value; nameManuallyEdited = true; }} 
-            placeholder="Ex: Perda Máxima Diária" 
+            placeholder={$t('risk.rules.ruleNamePlaceholder')} 
         />
     </div>
 
@@ -229,7 +229,7 @@
                 </Select.Content>
             </Select.Root>
             <p class="text-[10px] text-muted-foreground/80 pt-0.5 px-0.5 italic">
-                {$t(`${prefix}.helpers.${formData.target_type}`)}
+                {$t(`risk.tooltips.${formData.target_type}`)}
             </p>
         </div>
     </div>
@@ -238,7 +238,7 @@
     {#if showAssetSelector}
         <div class="space-y-2 animate-in fade-in slide-in-from-top-1">
             <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {$t(`${prefix}.linkedProfiles`)}
+                {$t('risk.plan.scope.assets')}
             </Label>
 
             <!-- Selected profiles as badges -->
@@ -268,7 +268,7 @@
                     onValueChange={(v: string) => { if (v) addAssetProfile(v); }}
                 >
                     <Select.Trigger class="w-full">
-                        {$t("risk.form.assetProfileSelector")}
+                        {$t("risk.cockpit.selectAsset")}
                     </Select.Trigger>
                     <Select.Content>
                         {#each availableProfiles as profile}
@@ -305,7 +305,7 @@
 
             <div class="space-y-1.5">
                 <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {$t(`${prefix}.value`)}
+                    {$t("common.value")}
                 </Label>
                 <Input
                     type="number"
@@ -317,7 +317,7 @@
             {#if showSecondaryValue}
                 <div class="space-y-1.5 animate-in fade-in slide-in-from-left-1">
                     <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        {$t(`${prefix}.valueSecondary`)}
+                        {$t("common.value")} (2)
                     </Label>
                     <Input
                         type="number"
@@ -333,7 +333,7 @@
                 checked={formData.value === true}
                 onCheckedChange={(v: boolean) => formData.value = v}
             />
-            <Label class="text-sm">{$t(`${prefix}.enabled`)}</Label>
+            <Label class="text-sm">{$t("risk.rules.active")}</Label>
         </div>
     {/if}
 
@@ -341,14 +341,14 @@
     <div class="flex items-center justify-between pt-2 border-t border-border/10">
         <div class="flex items-center gap-2">
             <Switch bind:checked={formData.enabled} />
-            <span class="text-xs text-muted-foreground">{$t(`${prefix}.enabled`)}</span>
+            <span class="text-xs text-muted-foreground">{$t("risk.rules.active")}</span>
         </div>
         <div class="flex gap-2">
             <Button variant="ghost" size="sm" onclick={onCancel}>
-                {$t(`${prefix}.cancel`)}
+                {$t("common.cancel")}
             </Button>
             <Button size="sm" onclick={handleSave} disabled={!formData.name.trim()}>
-                {$t(`${prefix}.save`)}
+                {$t("common.save")}
             </Button>
         </div>
     </div>

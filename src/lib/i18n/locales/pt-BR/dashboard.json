@@ -1,25 +1,44 @@
 {
     "dashboard": {
-        "mindset": {
-            "title": "Estado Psicológico",
-            "impact_detected": "Impacto {impact} detectado",
-            "empty": "Sem registros recentes",
-            "placeholder": "Registre o estado emocional para ativar análise.",
-            "followed_plan": "Seguiu o Plano",
-            "deviated_plan": "Desviou o Plano"
-        },
-        "market_context": {
-            "win": "Índice (WIN)",
-            "wdo": "Dólar (WDO)",
-            "selic": "SELIC EA.",
-            "selic_desc": "Meta Banco Central",
-            "di": "Taxa DI (CDI)",
-            "di_desc": "Referencial Juros",
-            "ptax": "PTAX (Oficial)",
-            "ptax_desc": "Média Dólar BCB"
-        },
         "account": {
             "balance": "Saldo"
+        },
+        "actions": {
+            "detailedRegister": "REGISTRO DETALHADO",
+            "evolutionJournal": "DIÁRIO DE EVOLUÇÃO",
+            "finishTrading": "Finalizar Pregão",
+            "newTrade": "NOVA ORDEM",
+            "reviewDone": "Revisão Concluída",
+            "riskControlShort": "C.R"
+        },
+        "preparation": {
+            "economicCalendar": "Calendário Econômico",
+            "items": {
+                "gap_analysis": "Gap de Abertura: Identifiquei se é Gap de Novato ou Profissional?",
+                "mindset": "Mental: Estou calmo e focado para operar?",
+                "news": "Notícias: Verifiquei o Calendário Econômico do dia?",
+                "newsDetected": "⚠️ Notícias de Alto Impacto Detectadas:",
+                "newsNone": "Sem notícias relevantes no calendário hoje.",
+                "prior_levels": "Níveis Chave: Marquei Máxima e Mínima de ontem?",
+                "riskInput": "Limite de Prejuízo Hoje (R$):",
+                "risk_limit": "Risco: Defini meu Stop Loss máximo para hoje?",
+                "trend_200ma": "Território (200MA): Acima (Touro) ou Abaixo (Urso)?",
+                "trend_20ma": "Tendência (20MA): Preço está respeitando a média de 20?"
+            },
+            "newsUpdate": "Atualizar Feed",
+            "newsUpdateError": "Erro ao atualizar feed de eventos econômicos.",
+            "newsUpdateSuccess": "Feed econômico atualizado com sucesso.",
+            "ready": "PRONTO PARA OPERAR",
+            "reset": "Resetar",
+            "resetSuccess": "Estatísticas de checklist reiniciadas.",
+            "start": "Iniciar Sessão de Trading",
+            "subtitle": "Verifique os fundamentos antes do primeiro clique.",
+            "success": "Checklist concluído. Pronto para operar.",
+            "title": "Check-in Pré-Mercado (Oliver Velez)",
+            "verified": "verificados",
+            "volatilityAlert": "ALERTA DE VOLATILIDADE",
+            "scrollMore": "Role para ver mais",
+            "calendarTitle": "Calendário Econômico Global"
         },
         "charts": {
             "consistency": "CONSISTÊNCIA",
@@ -44,16 +63,83 @@
             "title": "Detalhe Diário",
             "tradeQty": "Total de Trades"
         },
+        "gann": {
+            "kpis": {
+                "avgInterval": "Intervalo Entre Trades",
+                "cycleDay": "Dia do Ciclo",
+                "days": "Dias",
+                "hot_window": "Janela Quente (Reversão Iminente)",
+                "masterCycle": "Ciclo Mestre",
+                "neutral": "Zona Neutra",
+                "nextCot": "Próxima Reversão (Janela)",
+                "outOfDays": "Fora de Ciclo",
+                "vibration": "Vibração Atual"
+            },
+            "sq9": {
+                "degrees": "{deg}°",
+                "expansion": "Alvos de Expansão",
+                "reference": "Ref",
+                "retracement": "Alvos de Retração"
+            },
+            "subtitle": "Confluência Matemática e Ciclos",
+            "title": "Vibrações de Gann"
+        },
         "kpis": {
+            "avgInterval": "Intervalo Entre Trades",
             "discipline": "Disciplina",
             "maxDrawdown": "Drawdown Máximo",
             "netResult": "Resultado Líquido",
             "payoff": "Payoff",
             "profitFactor": "Fator de Lucro",
-            "winRate": "Win Rate",
-            "avgInterval": "Intervalo Entre Trades"
+            "winRate": "Win Rate"
+        },
+        "market_context": {
+            "di": "Taxa DI (CDI)",
+            "di_desc": "Referencial Juros",
+            "ptax": "PTAX (Oficial)",
+            "ptax_desc": "Média Dólar BCB",
+            "selic": "SELIC EA.",
+            "selic_desc": "Meta Banco Central",
+            "wdo": "Dólar (WDO)",
+            "win": "Índice (WIN)"
+        },
+        "mindset": {
+            "deviated_plan": "Desviou o Plano",
+            "empty": "Sem registros recentes",
+            "followed_plan": "Seguiu o Plano",
+            "impact_detected": "Impacto {impact} detectado",
+            "impacts": {
+                "Negative": "Negativo",
+                "Neutral": "Neutro",
+                "Positive": "Positivo"
+            },
+            "placeholder": "Registre o estado emocional para ativar análise.",
+            "title": "Estado Psicológico"
         },
         "newTrade": "Novo Trade",
+        "onboarding_wizard": {
+            "title": "Prepare seu Cockpit",
+            "subtitle": "Siga os 4 passos absolutos para blindar seu capital e destravar os Radares Analíticos da sua Home.",
+            "step1": {
+                "title": "1. Crie sua Conta de Trading",
+                "subtitle": "Conecte o capital base (BRL ou USD) para rastrearmos o lucro.",
+                "action": "Avançar"
+            },
+            "step2": {
+                "title": "2. Determine seu Risco Máximo",
+                "subtitle": "Configure Limites Diários de Perda para ligar a Trava Comportamental.",
+                "action": "Defender Capital"
+            },
+            "step3": {
+                "title": "3. Estruture seu Plano de Alavancagem",
+                "subtitle": "Crie as Fases de Crescimento para aumentar os Lotes matematicamente.",
+                "action": "Montar Plano"
+            },
+            "step4": {
+                "title": "4. Registre seu Primeiro Trade",
+                "subtitle": "Você está 100% blindado. Utilize o QuickLog para dar vida às estatísticas."
+            }
+        },
         "quant": {
             "dollar": "Dollar",
             "index": "Index",
@@ -68,6 +154,30 @@
             "basedOn": "Baseado nos últimos {count} dias úteis",
             "morning": "Manhã",
             "title": "Horários de Trade"
+        },
+        "sections": {
+            "allClear": "Tudo Limpo (Lotes Normais)",
+            "assistantLabel": "ASSISTENTE",
+            "behavioralRadar": "Radar Comportamental (IA Heurística)",
+            "behavioralRadarLabel": "RADAR COMPORTAMENTAL",
+            "evolutionStreaks": "Evolução e Sequências",
+            "noAnomalies": "Sem anomalias detectadas",
+            "systemStatus": "STATUS DO SISTEMA",
+            "traderAssistant": "Assistente do Trader"
+        },
+        "stats": {
+            "emotionalControl": "Controle Emocional",
+            "gainLabel": "GANHO",
+            "greenDays": "Dias de Lucro",
+            "lossLabel": "PERDA",
+            "rollingScore": "Pontuação (30T)",
+            "streaks": "SEQUÊNCIAS",
+            "todayPnL": "P&L de Hoje",
+            "todayPnLShort": "P&L HOJE",
+            "tradeFrequency": "Frequência (Trades)",
+            "unbreakableDiscipline": "Disciplina Inquebrável",
+            "weekPnL": "P&L da Semana",
+            "weekPnLShort": "SEMANAL"
         },
         "subtitle": "Resumo da conta operacional.",
         "survivor": {
@@ -92,63 +202,10 @@
             "title": "Survivor Hub & Monitoramento",
             "tradesUsage": "Uso de Trades"
         },
+        "syncingTerminal": "Sincronizando Terminal...",
         "terminalHub": "Terminal Hub",
         "title": "Dashboard",
-        "gann": {
-            "title": "Vibrações de Gann",
-            "subtitle": "Confluência Matemática e Ciclos",
-            "kpis": {
-                "nextCot": "Próxima Reversão (Janela)",
-                "cycleDay": "Dia do Ciclo",
-                "vibration": "Vibração Atual",
-                "masterCycle": "Ciclo Mestre",
-                "avgInterval": "Intervalo Entre Trades",
-                "days": "Dias",
-                "hot_window": "Janela Quente (Reversão Iminente)",
-                "neutral": "Zona Neutra",
-                "outOfDays": "Fora de Ciclo"
-            },
-            "sq9": {
-                "expansion": "Alvos de Expansão",
-                "retracement": "Alvos de Retração",
-                "degrees": "{deg}°",
-                "reference": "Ref"
-            }
-        },
-        "syncingTerminal": "Sincronizando Terminal...",
-        "waitingSurvivorData": "Aguardando matriz de dados do Survivor Hub",
-        "actions": {
-            "detailedRegister": "REGISTRO DETALHADO",
-            "evolutionJournal": "DIÁRIO DE EVOLUÇÃO",
-            "riskControlShort": "C.R",
-            "newTrade": "NOVA ORDEM",
-            "reviewDone": "Revisão Concluída",
-            "finishTrading": "Finalizar Pregão"
-        },
-        "sections": {
-            "traderAssistant": "Assistente do Trader",
-            "behavioralRadar": "Radar Comportamental (IA Heurística)",
-            "behavioralRadarLabel": "RADAR COMPORTAMENTAL",
-            "evolutionStreaks": "Evolução e Sequências",
-            "assistantLabel": "ASSISTENTE",
-            "systemStatus": "STATUS DO SISTEMA",
-            "allClear": "Tudo Limpo (Lotes Normais)",
-            "noAnomalies": "Sem anomalias detectadas"
-        },
-        "stats": {
-            "todayPnL": "P&L de Hoje",
-            "todayPnLShort": "P&L HOJE",
-            "tradeFrequency": "Frequência (Trades)",
-            "weekPnL": "P&L da Semana",
-            "weekPnLShort": "SEMANAL",
-            "gainLabel": "GANHO",
-            "lossLabel": "PERDA",
-            "rollingScore": "Pontuação (30T)",
-            "emotionalControl": "Controle Emocional",
-            "unbreakableDiscipline": "Disciplina Inquebrável",
-            "greenDays": "Dias de Lucro",
-            "streaks": "SEQUÊNCIAS"
-        }
+        "waitingSurvivorData": "Aguardando matriz de dados do Survivor Hub"
     },
     "home": {
         "newTrade": "Novo Trade",

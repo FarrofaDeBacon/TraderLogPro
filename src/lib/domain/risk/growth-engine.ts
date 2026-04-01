@@ -183,14 +183,14 @@ export function calculateGrowthMetrics(
 function getMetricLabelKey(metric: string): string {
     const canonical = getCanonicalMetric(metric);
     const keys: Record<string, string> = {
-        'net_pnl': 'risk.cockpit.criteria.profit_target',
+        'net_pnl': 'risk.growth.requirements.profit',
         'trade_count': 'risk.cockpit.engine.min_trading_days',
-        'win_rate': 'risk.cockpit.criteria.win_rate',
-        'positive_sessions': 'risk.cockpit.criteria.positive_sessions',
-        'consistency_days': 'risk.cockpit.criteria.consistency_days',
-        'max_drawdown': 'risk.cockpit.criteria.max_drawdown',
-        'max_daily_loss': 'risk.cockpit.criteria.daily_loss',
-        'loss_streak': 'risk.cockpit.criteria.loss_streak'
+        'win_rate': 'risk.growth.requirements.winRate',
+        'positive_sessions': 'risk.growth.requirements.days',
+        'consistency_days': 'risk.growth.requirements.consistency',
+        'max_drawdown': 'risk.growth.requirements.drawdown',
+        'max_daily_loss': 'risk.growth.requirements.dailyLoss',
+        'loss_streak': 'risk.growth.requirements.lossStreak'
     };
     return keys[canonical] || `risk.cockpit.engine.${canonical}`;
 }

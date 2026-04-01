@@ -36,11 +36,11 @@
 <div class="mt-4 space-y-3">
     <div class="flex items-center justify-between">
         <h5 class={simpleMode ? "text-xs font-bold uppercase tracking-widest text-muted-foreground" : "text-sm font-medium"}>
-            {simpleMode ? ($t("risk.assetProfiles.overridePhases") || "Fases Específicas") : ($t("risk.growthPlan.phases") + ` (${phases?.length || 0})`)}
+            {simpleMode ? $t("risk.growth.phases") : ($t("risk.growth.phases") + ` (${phases?.length || 0})`)}
         </h5>
         <Button variant="outline" size="sm" class="gap-2" onclick={addPhase}>
             <Plus class="w-4 h-4" />
-            {$t("risk.growthPlan.addPhase") || (simpleMode ? "Adicionar Fase" : "Nova Fase")}
+            {simpleMode ? $t("risk.growth.addPhase") : $t("common.add")}
         </Button>
     </div>
 
@@ -54,12 +54,12 @@
                         </div>
                         <div class="flex-1 grid grid-cols-2 gap-2">
                             <div class="flex items-center gap-2">
-                                <Label class="text-[10px] uppercase text-muted-foreground shrink-0">{$t("risk.growthPlan.maxLotsLabel")}</Label>
+                                <Label class="text-[10px] uppercase text-muted-foreground shrink-0">{$t("risk.growth.maxLotsLabel")}</Label>
                                 <Input type="number" step="0.01" class="h-8" bind:value={phase.lot_size} />
                             </div>
                             <div class="flex items-center gap-2">
-                                <Label class="text-[10px] uppercase text-muted-foreground shrink-0">{$t("risk.growthPlan.phaseNameLabel")}</Label>
-                                <Input class="h-8" bind:value={phase.name} placeholder={$t("risk.growthPlan.optional")} />
+                                <Label class="text-[10px] uppercase text-muted-foreground shrink-0">{$t("risk.growth.phaseNameLabel")}</Label>
+                                <Input class="h-8" bind:value={phase.name} placeholder={$t("risk.growth.optional")} />
                             </div>
                         </div>
                         <Button variant="ghost" size="icon" class="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0" onclick={() => removePhase(index)}>
@@ -72,7 +72,7 @@
                             variant="ghost"
                             size="icon"
                             class="absolute top-2 right-2 h-7 w-7 text-muted-foreground/50 hover:text-destructive transition-colors shrink-0 z-10"
-                            title="Remover Fase"
+                            title={$t("risk.messages.removePhase")}
                             onclick={() => removePhase(index)}
                         >
                             <Trash2 class="w-3.5 h-3.5" />
@@ -83,11 +83,11 @@
                                 <div class="w-7 h-7 rounded bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
                                     {index + 1}
                                 </div>
-                                <Input class="h-7 text-sm font-semibold border-0 px-2 focus-visible:ring-0 bg-transparent shadow-none" placeholder="Nome da Fase (Opcional)" bind:value={phase.name} />
+                                <Input class="h-7 text-sm font-semibold border-0 px-2 focus-visible:ring-0 bg-transparent shadow-none" placeholder={$t("risk.growth.phaseNamePlaceholder")} bind:value={phase.name} />
                             </div>
 
                             <div class="flex items-center gap-2 bg-muted/30 p-1 rounded-lg border border-border/10 focus-within:border-primary/30 transition-colors">
-                                <Label class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground shrink-0 pl-2">{$t("risk.growthPlan.maxLotsLabel")}</Label>
+                                <Label class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground shrink-0 pl-2">{$t("risk.growth.maxLotsLabel")}</Label>
                                 <Input type="number" step="0.01" min="0.01" class="h-7 text-sm font-bold w-full border-0 focus-visible:ring-0 bg-transparent shadow-none text-right pr-2" bind:value={phase.lot_size} />
                             </div>
                         </div>
@@ -98,10 +98,10 @@
                                 <div class="flex items-center justify-between">
                                     <Label class="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 uppercase flex items-center gap-1.5 tracking-wider">
                                         <TrendingUp class="w-3.5 h-3.5" />
-                                        {$t("risk.growthPlan.progression")}
+                                        {$t("risk.growth.progression")}
                                     </Label>
                                     <Button variant="ghost" size="sm" class="h-6 px-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-500 hover:bg-emerald-500/10" onclick={() => phase.conditions_to_advance.push({metric: 'profit', operator: '>=', value: 0})}>
-                                        <Plus class="w-3 h-3 mr-1" /> {$t("general.add") || "Add"}
+                                        <Plus class="w-3 h-3 mr-1" /> {$t("common.add")}
                                     </Button>
                                 </div>
 
@@ -110,13 +110,13 @@
                                         <div class="flex flex-wrap items-center gap-1.5 animate-in fade-in slide-in-from-top-1 bg-background p-1 rounded border border-emerald-500/20 shadow-sm">
                                             <Select.Root type="single" bind:value={rule.metric}>
                                                 <Select.Trigger class="h-7 text-xs flex-1 border-0 bg-transparent shadow-none px-2">
-                                                    <Select.Value placeholder={$t("risk.growthPlan.metrics.profit")} />
+                                                    <Select.Value placeholder={$t("risk.growth.metrics.profit")} />
                                                 </Select.Trigger>
                                                 <Select.Content>
-                                                    <Select.Item value="profit">{$t("risk.growthPlan.metrics.profit")}</Select.Item>
-                                                    <Select.Item value="days">{$t("risk.growthPlan.metrics.days")}</Select.Item>
-                                                    <Select.Item value="winRate">{$t("risk.growthPlan.metrics.winRate")}</Select.Item>
-                                                    <Select.Item value="consistency">{$t("risk.growthPlan.metrics.consistency")}</Select.Item>
+                                                    <Select.Item value="profit">{$t("risk.growth.metrics.profit")}</Select.Item>
+                                                    <Select.Item value="days">{$t("risk.growth.metrics.days")}</Select.Item>
+                                                    <Select.Item value="winRate">{$t("risk.growth.metrics.winRate")}</Select.Item>
+                                                    <Select.Item value="consistency">{$t("risk.growth.metrics.consistency")}</Select.Item>
                                                 </Select.Content>
                                             </Select.Root>
 
@@ -142,7 +142,7 @@
 
                                     {#if phase.conditions_to_advance.length === 0}
                                         <div class="text-[10px] font-medium text-emerald-600/60 dark:text-emerald-400/50 p-2 border border-dashed border-emerald-500/20 rounded-md bg-transparent text-center">
-                                            {$t("risk.growthPlan.manualAdvanceOnly")}
+                                            {$t("risk.growth.manualAdvanceOnly")}
                                         </div>
                                     {/if}
                                 </div>
@@ -153,10 +153,10 @@
                                 <div class="flex items-center justify-between">
                                     <Label class="text-[10px] font-bold text-rose-600 dark:text-rose-500 uppercase flex items-center gap-1.5 tracking-wider">
                                         <TrendingUp class="w-3.5 h-3.5 rotate-180" />
-                                        {$t("risk.growthPlan.regression")}
+                                        {$t("risk.growth.regression")}
                                     </Label>
                                     <Button variant="ghost" size="sm" class="h-6 px-2 text-[10px] font-bold text-rose-600 dark:text-rose-500 hover:bg-rose-500/10" onclick={() => phase.conditions_to_demote.push({metric: 'drawdown', operator: '<=', value: 0})}>
-                                        <Plus class="w-3 h-3 mr-1" /> {$t("general.add") || "Add"}
+                                        <Plus class="w-3 h-3 mr-1" /> {$t("common.add")}
                                     </Button>
                                 </div>
 
@@ -165,12 +165,12 @@
                                         <div class="flex flex-wrap items-center gap-1.5 animate-in fade-in slide-in-from-top-1 bg-background p-1 rounded border border-rose-500/20 shadow-sm">
                                             <Select.Root type="single" bind:value={rule.metric}>
                                                 <Select.Trigger class="h-7 text-xs flex-1 border-0 bg-transparent shadow-none px-2">
-                                                    <Select.Value placeholder={$t("risk.growthPlan.metrics.drawdown")} />
+                                                    <Select.Value placeholder={$t("risk.growth.metrics.drawdown")} />
                                                 </Select.Trigger>
                                                 <Select.Content>
-                                                    <Select.Item value="drawdown">{$t("risk.growthPlan.metrics.drawdown")}</Select.Item>
-                                                    <Select.Item value="dailyLoss">{$t("risk.growthPlan.metrics.dailyLoss")}</Select.Item>
-                                                    <Select.Item value="lossStreak">{$t("risk.growthPlan.metrics.lossStreak")}</Select.Item>
+                                                    <Select.Item value="drawdown">{$t("risk.growth.metrics.drawdown")}</Select.Item>
+                                                    <Select.Item value="dailyLoss">{$t("risk.growth.metrics.dailyLoss")}</Select.Item>
+                                                    <Select.Item value="lossStreak">{$t("risk.growth.metrics.lossStreak")}</Select.Item>
                                                 </Select.Content>
                                             </Select.Root>
 
@@ -196,7 +196,7 @@
 
                                     {#if phase.conditions_to_demote.length === 0}
                                         <div class="text-[10px] font-medium text-rose-600/60 dark:text-rose-400/50 p-2 border border-dashed border-rose-500/20 rounded-md bg-transparent text-center">
-                                            {$t("risk.growthPlan.noRegressionRules")}
+                                            {$t("risk.growth.noRegressionRules")}
                                         </div>
                                     {/if}
                                 </div>
@@ -208,7 +208,7 @@
         </div>
     {:else}
         <div class="p-8 text-center border-2 border-dashed rounded-xl bg-muted/20">
-            <p class="text-sm text-muted-foreground">{$t("risk.growthPlan.addPhaseOverride")}</p>
+            <p class="text-sm text-muted-foreground">{$t("risk.growth.addPhaseOverride")}</p>
         </div>
     {/if}
 </div>

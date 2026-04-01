@@ -56,6 +56,7 @@
             "grossResult": "Resultado Bruto",
             "interest": "Juros",
             "loading": "Carregando DARF e Apuração...",
+            "operations": "Trades Vinculados",
             "paidAt": "Pago Em",
             "period": "Período",
             "principalValue": "Valor Principal",
@@ -68,8 +69,7 @@
             "unpayAction": "Desfazer Pagamento",
             "unpayCancel": "Cancelar",
             "unpayConfirm": "Confirmar",
-            "unpayTitle": "Desfazer",
-            "operations": "Trades Vinculados"
+            "unpayTitle": "Desfazer"
         },
         "description": "Gestão centralizada de caixa, extratos e fechamentos.",
         "details": {
@@ -101,8 +101,13 @@
             "account": "Conta",
             "allAccounts": "Todas as Contas",
             "allCurrencies": "Todas as Moedas",
-            "monthlyResult": "Resultado Mensal",
-            "result": "Resultado",
+            "categories": {
+                "adjustment": "AJUSTE",
+                "tax_payment": "IMPOSTO",
+                "tax_refund": "ESTORNO",
+                "trading": "FECHAMENTO",
+                "transfer": "TRANSF."
+            },
             "columns": {
                 "account": "CONTA",
                 "amount": "VALOR",
@@ -115,8 +120,10 @@
                 "deleteError": "Delete Error",
                 "systemLinked": "Esta transação foi gerada pelo sistema e só pode ser alterada no módulo de origem (ex: IRPF)."
             },
+            "monthlyResult": "Resultado Mensal",
             "noNumber": "No Number",
             "noTransactions": "Nenhuma transação encontrada no período.",
+            "result": "Resultado",
             "searchPlaceholder": "Buscar na descrição ou valor...",
             "summary": {
                 "netResult": "Resultado Líquido",
@@ -132,13 +139,6 @@
                 "result": "RESULTADO",
                 "transfer": "Transferência",
                 "withdraw": "Retirada"
-            },
-            "categories": {
-                "tax_payment": "IMPOSTO",
-                "trading": "FECHAMENTO",
-                "transfer": "TRANSF.",
-                "tax_refund": "ESTORNO",
-                "adjustment": "AJUSTE"
             }
         },
         "title": "Hub Financeiro",
@@ -212,120 +212,6 @@
         }
     },
     "settings": {
-        "fiscal": {
-            "assignments": {
-                "description": "Atribua perfis fiscais aos tipos de ativos para automatizar o cálculo de impostos.",
-                "goToAssetTypes": "Ir para Tipos de Ativo",
-                "table": {
-                    "assetType": "Tipo de Ativo",
-                    "empty": "Nenhuma atribuição encontrada.",
-                    "market": "Mercado",
-                    "fiscalProfile": "Perfil Fiscal",
-                    "unknownProfile": "Perfil Desconhecido",
-                    "defaultExempt": "Padrão / Isento"
-                },
-                "tip": {
-                    "text": "As atribuições são baseadas nos Tipos de Ativo. Você pode alterar o perfil fiscal editando o Tipo de Ativo correspondente.",
-                    "title": "Dica:"
-                },
-                "title": "Atribuições Fiscais"
-            },
-            "description": "Configure as alíquotas de imposto (IRPF) para cada tipo de ativo e modalidade.",
-            "mappings": {
-                "assetType": "Tipo de Ativo",
-                "description": "Associe cada Tipo de Ativo e Modalidade a uma Regra Fiscal.",
-                "modality": "Modalidade",
-                "noRule": "Sem Regra (Isento/Ignorado)",
-                "rule": "Regra Aplicável"
-            },
-            "profiles": {
-                "create": "Criar Perfil",
-                "description": "Perfis fiscais consolidam várias regras.",
-                "empty": "Nenhum perfil fiscal encontrado.",
-                "error": {
-                    "duplicateModality": "Esta modalidade já está configurada.",
-                    "errorAddEntry": "Erro ao adicionar entrada",
-                    "nameRequired": "Nome é obrigatório",
-                    "saveError": "Erro ao salvar perfil",
-                    "selectRequired": "Seleção obrigatória"
-                },
-                "form": {
-                    "addModalityHint": "Clique em + para adicionar uma regra a uma modalidade.",
-                    "description": "Descrição do perfil",
-                    "descriptionLabel": "Descrição",
-                    "descriptionPlaceholder": "Descrição do perfil...",
-                    "emptyRules": "Nenhuma regra adicionada.",
-                    "modality": "Modalidade",
-                    "name": "Nome",
-                    "namePlaceholder": "Ex: Perfil de Ações",
-                    "rule": "Regra Fiscal",
-                    "rulesByModality": "Regras por Modalidade",
-                    "save": "Salvar",
-                    "saving": "Salvando...",
-                    "select": "Selecionar...",
-                    "titleEdit": "Editar Perfil",
-                    "titleNew": "Novo Perfil",
-                    "update": "Atualizar"
-                },
-                "linkedRules": "Regras Vinculadas",
-                "new": "Novo Perfil",
-                "noLinkedRules": "Nenhuma regra vinculada.",
-                "success": {
-                    "create": "Perfil criado com sucesso.",
-                    "ruleAdded": "Regra adicionada com sucesso.",
-                    "ruleAddedDraft": "Regra adicionada como rascunho.",
-                    "ruleRemoved": "Regra removida com sucesso.",
-                    "ruleRemovedDraft": "Regra removida do rascunho.",
-                    "update": "Perfil atualizado com sucesso."
-                },
-                "title": "Perfis Fiscais"
-            },
-            "rules": {
-                "description": "Regras fiscais individuais.",
-                "empty": "Nenhuma regra fiscal configurada.",
-                "form": {
-                    "basis": "Base de Cálculo",
-                    "basisHint": "Basis Hint",
-                    "basisOptions": {
-                        "netProfit": "Lucro Líquido",
-                        "saleAmount": "Valor da Venda"
-                    },
-                    "cumulative": "Compensa Prejuízos",
-                    "cumulativeHint": "Cumulative Hint",
-                    "revenueCode": "Código da Receita",
-                    "revenueCodePlaceholder": "Ex: 6015",
-                    "revenueCodeHint": "Código DARF para o recolhimento (Ex: 6015, 3317).",
-                    "save": "Salvar Regra",
-                    "successSave": "Regra salva com sucesso!",
-                    "titleEdit": "Editar Regra Fiscal",
-                    "titleNew": "Nova Regra Fiscal",
-                    "withholding": "IRRF (Dedo-duro)",
-                    "withholdingHint": "Percentual retido na fonte que pode ser abatido.",
-                    "withholdingBasis": "Base do Dedo-duro",
-                    "withholdingBasisHint": "Define se o IRRF é calculado sobre o lucro ou sobre a venda.",
-                    "withholdingBasisOptions": {
-                        "profit": "Sobre o Lucro",
-                        "sales": "Sobre o Valor da Venda"
-                    },
-                    "name": "Nome",
-                    "namePlaceholder": "Ex: Regra de Day Trade",
-                    "rate": "Alíquota",
-                    "rateHint": "Percentual do imposto devido",
-                    "exemption": "Isenção",
-                    "exemptionHint": "Valor isento de imposto",
-                    "modality": "Modalidade",
-                    "errorSave": "Erro ao salvar a regra fiscal.",
-                    "nameRequired": "Nome da regra é obrigatório."
-                },
-                "new": "Nova Regra",
-                "title": "Regras de Imposto"
-            },
-            "tabs": {
-                "mappings": "Atribuições",
-                "rules": "Regras de Imposto"
-            },
-            "title": "Regras Fiscais"
-        },
         "accounts": {
             "balance": "SALDO",
             "confirmDeduplicate": "Deseja realmente remover configurações duplicadas?",
@@ -529,9 +415,12 @@
             "form": {
                 "brokerageProfile": "Perfil de Corretagem",
                 "fiscalProfile": "Perfil Fiscal",
+                "isRoot": "Ativo Raiz",
                 "name": "Nome",
                 "namePlaceholder": "Mini Índice",
                 "pointValue": "Valor do Ponto",
+                "rootAsset": "Vincular à Raiz",
+                "rootAssetPlaceholder": "Selecione um ativo raiz",
                 "save": "Salvar",
                 "specificFee": "Taxa Específica",
                 "specificFeePlaceholder": "Usar do Tipo de Ativo",
@@ -539,27 +428,24 @@
                 "symbolPlaceholder": "WIN",
                 "type": "Tipo",
                 "typePlaceholder": "Selecione",
-                "useTypeDefault": "Usar do Tipo de Ativo",
-                "isRoot": "Ativo Raiz",
-                "rootAsset": "Vincular à Raiz",
-                "rootAssetPlaceholder": "Selecione um ativo raiz"
+                "useTypeDefault": "Usar do Tipo de Ativo"
             },
             "groups": {
                 "others": "Others"
             },
             "importDialog": {
+                "alreadyRegistered": "Já Cadastrado",
                 "description": "Selecione os ativos detectados no seu arquivo do Profit para adicionar ao cadastro.",
                 "excelRequirement": "O Excel deve estar aberto com as abas DADOS e BOOK configuradas.",
                 "fileSelected": "Arquivo selecionado: {path}",
                 "importSelected": "Importar Selecionados ({count})",
                 "noAssets": "Nenhum ativo novo detectado no RTD.",
                 "selectExcel": "Selecionar Arquivo Excel",
+                "success": "{count} ativos importados com sucesso!",
                 "suggestedName": "Nome Sugerido",
                 "symbol": "Símbolo",
                 "title": "Importar Ativos do Profit RTD",
-                "type": "Tipo",
-                "alreadyRegistered": "Já Cadastrado",
-                "success": "{count} ativos importados com sucesso!"
+                "type": "Tipo"
             },
             "importRTD": "Importar do RTD",
             "labels": {
@@ -767,6 +653,7 @@
             "new": "Novo Perfil",
             "title": "Taxas e Custos Operacionais"
         },
+
         "general": {
             "checkUpdates": "Verificar Atualizações",
             "description": "Informações do sistema e preferências globais.",
@@ -899,6 +786,8 @@
         },
         "nav": {
             "accounts": "Contas",
+            "asset-profiles": "Perfis de Ativo",
+            "assetProfiles": "Perfis de Ativo",
             "assetTypes": "Tipos de Ativo",
             "assets": "Ativos",
             "chartTypes": "Tipos de Gráfico",
@@ -906,6 +795,7 @@
             "database": "Banco de Dados",
             "descriptions": {
                 "accounts": "Gerencie suas contas e corretoras",
+                "asset-profiles": "Perfis específicos por ativo.",
                 "assetTypes": "Organize as categorias de ativos",
                 "assets": "Configure os símbolos que você opera",
                 "chartTypes": "Defina as representações gráficas",
@@ -919,6 +809,7 @@
                     "rules": "Regras de alíquotas e impostos"
                 },
                 "general": "Configurações globais e sistema",
+                "growth-plans": "Planos de crescimento automatizado.",
                 "indicators": "Gerencie indicadores favoritos",
                 "integrations": "Configure integrações e APIs",
                 "license": "Gerencie o licenciamento vitalício",
@@ -926,12 +817,10 @@
                 "modalities": "Configure estilos operacionais",
                 "profile": "Gerencie seu perfil e preferênccias",
                 "risk": "Configure limites e proteções",
+                "risk-management": "Gerenciamento de risco global.",
                 "strategies": "Documente seus setups e regras",
                 "tags": "Etiquetas personalizadas para trades",
-                "timeframes": "Configure intervalos operacionais",
-                "asset-profiles": "Perfis específicos por ativo.",
-                "risk-management": "Gerenciamento de risco global.",
-                "growth-plans": "Planos de crescimento automatizado."
+                "timeframes": "Configure intervalos operacionais"
             },
             "emotionalStates": "Estados Emocionais",
             "fees": "Taxas",
@@ -941,6 +830,8 @@
                 "rules": "Regras"
             },
             "general": "Geral",
+            "growth-plans": "Planos de Growth",
+            "growthPlans": "Planos de Growth",
             "indicators": "Indicadores",
             "integrations": "Integrações",
             "license": "Licença",
@@ -948,6 +839,8 @@
             "modalities": "Modalidades",
             "profile": "Meu Perfil",
             "risk": "Risco",
+            "risk-management": "Gestão de Risco",
+            "riskManagement": "Gestão de Risco",
             "sections": {
                 "analysis": "Análise",
                 "fiscal": "Fiscal",
@@ -959,13 +852,7 @@
             },
             "strategies": "Estratégias",
             "tags": "Tags",
-            "timeframes": "Timeframes",
-            "asset-profiles": "Perfis de Ativo",
-            "assetProfiles": "Perfis de Ativo",
-            "risk-management": "Gestão de Risco",
-            "riskManagement": "Gestão de Risco",
-            "growth-plans": "Planos de Growth",
-            "growthPlans": "Planos de Growth"
+            "timeframes": "Timeframes"
         },
         "profile": {
             "description": "Gerencie suas informações pessoais e preferências do sistema.",
@@ -1050,14 +937,6 @@
             "title": "Meu Perfil"
         },
         "risk": {
-            "hierarchy": {
-                "title": "Hierarquia de Execução (O que manda?)",
-                "subtitle": "Entenda como os limites são priorizados no sistema",
-                "global": "1. Plano Global (Base): Limites gerais da conta",
-                "asset": "2. Limites por Ativo: Sobrescrevem o global para o ativo específico",
-                "growth": "3. Plano de Crescimento: Gerencia a mão (lotes) automaticamente",
-                "rules": "4. Regras do Plano: Prioridade máxima (Ex: Trava Prop Firm)"
-            },
             "accountTypes": {
                 "All": "Todas as Contas",
                 "Demo": "Conta Demo",
@@ -1066,6 +945,26 @@
                 "Specific": "Contas Específicas"
             },
             "applicability": "Aplicabilidade",
+            "assetProfiles": {
+                "asset": "Ativo Vinculado",
+                "defaultStop": "Stop Padrão (Pontos/Ticks)",
+                "delete": "Excluir Perfil",
+                "description": "Atribua perfis de risco únicos para diferentes classes de ativos.",
+                "edit": "Editar Perfil",
+                "empty": "Nenhum Perfil de Risco de Ativo encontrado",
+                "enableGrowthOverride": "Ativar Sobrescrita",
+                "growthOverride": "Sobrescrita de Crescimento",
+                "growthOverrideDesc": "Define regras de crescimento exclusivas para este ativo, ignorando o plano global.",
+                "maxContracts": "Máximo de Contratos",
+                "minContracts": "Mínimo de Contratos",
+                "name": "Nome",
+                "new": "Novo Perfil do Ativo",
+                "noOverridePhases": "Nenhuma fase de growth foi sobreposta.",
+                "notes": "Notas (Opcional)",
+                "overridePhases": "Fases Específicas",
+                "search": "Buscar perfil...",
+                "title": "Perfis de Risco do Ativo"
+            },
             "dailyGoal": "Meta de Lucro Diária",
             "dailyGoalShort": "Meta Diária",
             "dailyLossLimit": "Limite de Prejuízo Diária",
@@ -1108,78 +1007,86 @@
                     "moderate": "Moderado",
                     "title": "Predefinições de Perfil"
                 },
-                "tabs": {
-                    "base": "Base",
-                    "assetProfiles": "Perfis de Ativo",
-                    "rules": "Regras",
-                    "motors": "Motores"
-                },
                 "ruleBuilder": {
-                    "title": "Regras do Plano",
                     "addRule": "Nova Regra",
-                    "editRule": "Editar Regra",
-                    "deleteRule": "Excluir Regra",
-                    "noRules": "Nenhuma regra configurada",
-                    "ruleName": "Nome da Regra",
-                    "scope": {
-                        "label": "Escopo",
-                        "global": "Global",
-                        "asset": "Ativo",
-                        "combined": "Combinada"
-                    },
-                    "targetType": {
-                        "label": "Tipo de Regra",
-                        "sum_contracts": "Soma de Contratos",
-                        "max_daily_loss": "Perda Máxima Diária",
-                        "profit_target": "Meta de Lucro",
-                        "day_trade_only": "Day Trade Apenas",
-                        "close_before_close": "Fechar Antes do Fechamento",
-                        "consistency": "Consistência",
-                        "rule_50_percent": "Regra dos 50%",
-                        "max_trades_per_day": "Máx. Trades por Dia"
-                    },
-                    "operator": {
-                        "label": "Operador",
-                        "lte": "Menor ou igual (≤)",
-                        "gte": "Maior ou igual (≥)",
-                        "eq": "Igual a (=)",
-                        "lt": "Menor que (<)",
-                        "gt": "Maior que (>)",
-                        "between": "Entre"
-                    },
-                    "value": "Valor",
-                    "valueSecondary": "Valor Máximo",
-                    "linkedProfiles": "Perfis de Ativo",
-                    "enabled": "Ativa",
-                    "save": "Salvar Regra",
                     "cancel": "Cancelar",
                     "confirmDelete": "Tem certeza que deseja excluir esta regra?",
+                    "deleteRule": "Excluir Regra",
+                    "editRule": "Editar Regra",
+                    "enabled": "Ativa",
+                    "groups": {
+                        "asset": "Regras de Ativos Específicos",
+                        "combined": "Combinações de Ativos",
+                        "global": "Regras Globais"
+                    },
+                    "helpers": {
+                        "close_before_close": "Encerra todas as ordens minutos antes do fechamento do mercado.",
+                        "consistency": "Regra típica de Mesas: o lucro de um único dia não pode exceder 30-50% do lucro total do teste.",
+                        "day_trade_only": "Garante que nenhuma posição fique aberta para o dia seguinte (Swing).",
+                        "max_daily_loss": "Bloqueia novas entradas se o limite for atingido. Prioritário sobre o limite global.",
+                        "max_trades_per_day": "Evita o overtrading limitando a quantidade de execuções durante o pregão.",
+                        "profit_target": "Protege sua meta financeira. Ao atingir, o sistema bloqueia novas ordens para preservar o ganho.",
+                        "rule_50_percent": "Trava de proteção que impede devolver 50% do lucro máximo atingido no dia (Trailing Stop Diário).",
+                        "sum_contracts": "Limite máximo de contratos abertos (posição total) somando os ativos selecionados."
+                    },
+                    "linkedProfiles": "Perfis de Ativo",
+                    "noRules": "Nenhuma regra configurada",
+                    "operator": {
+                        "between": "Entre",
+                        "eq": "Igual a (=)",
+                        "gt": "Maior que (>)",
+                        "gte": "Maior ou igual (≥)",
+                        "label": "Operador",
+                        "lt": "Menor que (<)",
+                        "lte": "Menor ou igual (≤)"
+                    },
                     "presets": {
-                        "maxDailyLoss": "Perda Máxima Diária",
-                        "profitTarget": "Meta Financeira",
-                        "maxTrades": "Limite de Trades",
-                        "dayTradeOnly": "Apenas Day Trade",
                         "closeBeforeClose": "Horário Limite",
                         "consistency": "Consistência",
+                        "dayTradeOnly": "Apenas Day Trade",
+                        "maxDailyLoss": "Perda Máxima Diária",
+                        "maxTrades": "Limite de Trades",
+                        "profitTarget": "Meta Financeira",
                         "rule50": "Regra dos 50%",
                         "sumContracts": "Limite de Contratos"
                     },
-                    "groups": {
-                        "global": "Regras Globais",
-                        "asset": "Regras de Ativos Específicos",
-                        "combined": "Combinações de Ativos"
+                    "ruleName": "Nome da Regra",
+                    "save": "Salvar Regra",
+                    "scope": {
+                        "asset": "Ativo",
+                        "combined": "Combinada",
+                        "global": "Global",
+                        "label": "Escopo"
                     },
-                    "helpers": {
-                        "max_daily_loss": "Bloqueia novas entradas se o limite for atingido. Prioritário sobre o limite global.",
-                        "profit_target": "Protege sua meta financeira. Ao atingir, o sistema bloqueia novas ordens para preservar o ganho.",
-                        "sum_contracts": "Limite máximo de contratos abertos (posição total) somando os ativos selecionados.",
-                        "day_trade_only": "Garante que nenhuma posição fique aberta para o dia seguinte (Swing).",
-                        "close_before_close": "Encerra todas as ordens minutos antes do fechamento do mercado.",
-                        "consistency": "Regra típica de Mesas: o lucro de um único dia não pode exceder 30-50% do lucro total do teste.",
-                        "rule_50_percent": "Trava de proteção que impede devolver 50% do lucro máximo atingido no dia (Trailing Stop Diário).",
-                        "max_trades_per_day": "Evita o overtrading limitando a quantidade de execuções durante o pregão."
-                    }
+                    "targetType": {
+                        "close_before_close": "Fechar Antes do Fechamento",
+                        "consistency": "Consistência",
+                        "day_trade_only": "Day Trade Apenas",
+                        "label": "Tipo de Regra",
+                        "max_daily_loss": "Perda Máxima Diária",
+                        "max_trades_per_day": "Máx. Trades por Dia",
+                        "profit_target": "Meta de Lucro",
+                        "rule_50_percent": "Regra dos 50%",
+                        "sum_contracts": "Soma de Contratos"
+                    },
+                    "title": "Regras do Plano",
+                    "value": "Valor",
+                    "valueSecondary": "Valor Máximo"
+                },
+                "tabs": {
+                    "assetProfiles": "Perfis de Ativo",
+                    "base": "Base",
+                    "motors": "Motores",
+                    "rules": "Regras"
                 }
+            },
+            "growth": {
+                "consecutiveLossDays": "Dias de Loss Seguidos",
+                "noProfileLinked": "Sem perfil compatível.",
+                "noProfileLinkedDesc": "O ativo selecionado não possui um Perfil de Ativo vinculado a este Perfil de Risco. As regras de Crescimento não se aplicam.",
+                "selectAssetToView": "Selecione um Ativo no topo para visualizar as regras do Plano de Crescimento.",
+                "sourceAsset": "Específico do Ativo",
+                "sourceGlobal": "Plano Global"
             },
             "growthPlan": {
                 "actions": {
@@ -1228,9 +1135,32 @@
                 },
                 "tradingSessions": "Sessões"
             },
+            "hierarchy": {
+                "asset": "2. Limites por Ativo: Sobrescrevem o global para o ativo específico",
+                "global": "1. Plano Global (Base): Limites gerais da conta",
+                "growth": "3. Plano de Crescimento: Gerencia a mão (lotes) automaticamente",
+                "rules": "4. Regras do Plano: Prioridade máxima (Ex: Trava Prop Firm)",
+                "subtitle": "Entenda como os limites são priorizados no sistema",
+                "title": "Hierarquia de Execução (O que manda?)"
+            },
             "lockOnLoss": "Bloquear Plataforma ao Atingir Loss",
             "lockOnLossShort": "Bloqueia Plataforma (Loss)",
             "lockWarning": "O usuário não poderá abrir novas ordens até o dia seguinte.",
+            "management": {
+                "addAssetProfile": "Adicionar Vínculo",
+                "assetProfileSelector": "Selecione um Perfil de Ativo...",
+                "baseTemplate": "Modelo Base",
+                "copyOf": "Cópia de",
+                "createFromTemplate": "Criar a partir de Modelo",
+                "duplicate": "Duplicar Perfil",
+                "linkedAssetProfiles": "Perfis de Ativo Vinculados",
+                "linkedAssetProfilesDesc": "Aplica as regras globais de risco a perfis de negociação específicos de um ativo.",
+                "linkedProfile": "Perfil Vinculado",
+                "noLinkedAssetProfileForThisAsset": "Nenhum Perfil de Ativo vinculado para este ativo.",
+                "noLinkedAssetProfiles": "Nenhum perfil de ativo vinculado.",
+                "removeAssetProfile": "Remover",
+                "startBlank": "Criar em Branco"
+            },
             "maxRiskPerTrade": "Risco Máx por Trade",
             "maxRiskPerTradeShort": "Risco/Trade",
             "maxTradesDay": "Máximo de Trades/Dia",
@@ -1246,50 +1176,7 @@
                 "dailyTarget": "Meta Diária"
             },
             "title": "Gerenciamento de Risco",
-            "upside": "Objetivos (Upside)",
-            "assetProfiles": {
-                "title": "Perfis de Risco do Ativo",
-                "new": "Novo Perfil do Ativo",
-                "edit": "Editar Perfil",
-                "delete": "Excluir Perfil",
-                "name": "Nome",
-                "asset": "Ativo Vinculado",
-                "defaultStop": "Stop Padrão (Pontos/Ticks)",
-                "minContracts": "Mínimo de Contratos",
-                "maxContracts": "Máximo de Contratos",
-                "notes": "Notas (Opcional)",
-                "empty": "Nenhum Perfil de Risco de Ativo encontrado",
-                "search": "Buscar perfil...",
-                "growthOverride": "Sobrescrita de Crescimento",
-                "growthOverrideDesc": "Define regras de crescimento exclusivas para este ativo, ignorando o plano global.",
-                "enableGrowthOverride": "Ativar Sobrescrita",
-                "overridePhases": "Fases Específicas",
-                "description": "Atribua perfis de risco únicos para diferentes classes de ativos.",
-                "noOverridePhases": "Nenhuma fase de growth foi sobreposta."
-            },
-            "management": {
-                "linkedAssetProfiles": "Perfis de Ativo Vinculados",
-                "linkedAssetProfilesDesc": "Aplica as regras globais de risco a perfis de negociação específicos de um ativo.",
-                "addAssetProfile": "Adicionar Vínculo",
-                "removeAssetProfile": "Remover",
-                "noLinkedAssetProfiles": "Nenhum perfil de ativo vinculado.",
-                "assetProfileSelector": "Selecione um Perfil de Ativo...",
-                "noLinkedAssetProfileForThisAsset": "Nenhum Perfil de Ativo vinculado para este ativo.",
-                "linkedProfile": "Perfil Vinculado",
-                "duplicate": "Duplicar Perfil",
-                "createFromTemplate": "Criar a partir de Modelo",
-                "copyOf": "Cópia de",
-                "startBlank": "Criar em Branco",
-                "baseTemplate": "Modelo Base"
-            },
-            "growth": {
-                "selectAssetToView": "Selecione um Ativo no topo para visualizar as regras do Plano de Crescimento.",
-                "noProfileLinked": "Sem perfil compatível.",
-                "noProfileLinkedDesc": "O ativo selecionado não possui um Perfil de Ativo vinculado a este Perfil de Risco. As regras de Crescimento não se aplicam.",
-                "sourceGlobal": "Plano Global",
-                "sourceAsset": "Específico do Ativo",
-                "consecutiveLossDays": "Dias de Loss Seguidos"
-            }
+            "upside": "Objetivos (Upside)"
         },
         "strategies": {
             "description": "Documente seus setups, regras de entrada, saída e gestão.",

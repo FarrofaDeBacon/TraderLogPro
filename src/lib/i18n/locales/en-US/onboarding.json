@@ -69,14 +69,14 @@
             }
         },
         "wizard_extra": {
-            "setup_engine": "Setup Engine v1.0",
-            "select_theme": "SELECT VISUAL THEME",
-            "email": "E-mail",
-            "email_placeholder": "your@email.com",
             "confirm_password": "Confirm Password",
             "copied": "Copied!",
+            "copyright": "© 2026 TRADERLOG PRO · JOURNAL ENGINE",
+            "email": "E-mail",
+            "email_placeholder": "your@email.com",
             "logo_alt": "Logo",
-            "copyright": "© 2026 TRADERLOG PRO · JOURNAL ENGINE"
+            "select_theme": "SELECT VISUAL THEME",
+            "setup_engine": "Setup Engine v1.0"
         }
     }
-}
+}

@@ -1,25 +1,44 @@
 {
     "dashboard": {
-        "mindset": {
-            "title": "Psychological State",
-            "impact_detected": "{impact} impact detected",
-            "empty": "No recent records",
-            "placeholder": "Start your day by recording your mindset in the journal for a full analysis.",
-            "followed_plan": "Followed Plan",
-            "deviated_plan": "Deviated Plan"
-        },
-        "market_context": {
-            "win": "Index (WIN)",
-            "wdo": "Dollar (WDO)",
-            "selic": "SELIC EA.",
-            "selic_desc": "Central Bank Target",
-            "di": "DI Rate (CDI)",
-            "di_desc": "Interest Benchmark",
-            "ptax": "PTAX (Official)",
-            "ptax_desc": "BCB Average Dollar"
-        },
         "account": {
             "balance": "Balance"
+        },
+        "actions": {
+            "detailedRegister": "DETAILED REGISTER",
+            "evolutionJournal": "EVOLUTION JOURNAL",
+            "finishTrading": "Finish Trading",
+            "newTrade": "NEW ORDER",
+            "reviewDone": "Review Done",
+            "riskControlShort": "R.C"
+        },
+        "preparation": {
+            "economicCalendar": "Economic Calendar",
+            "items": {
+                "gap_analysis": "Opening Gap: Identified if it's Novice or Professional Gap?",
+                "mindset": "Mindset: Am I calm and focused to trade?",
+                "news": "News: Checked the Economic Calendar for the day?",
+                "newsDetected": "⚠️ High Impact News Detected:",
+                "newsNone": "No relevant news on the calendar today.",
+                "prior_levels": "Key Levels: Marked yesterday's High and Low?",
+                "riskInput": "Loss Limit Today ($):",
+                "risk_limit": "Risk: Defined my maximum Stop Loss for today?",
+                "trend_200ma": "Territory (200MA): Above (Bull) or Below (Bear)?",
+                "trend_20ma": "Trend (20MA): Is the price respecting the 20-period average?"
+            },
+            "newsUpdate": "Update Feed",
+            "newsUpdateError": "Error updating economic events feed.",
+            "newsUpdateSuccess": "Economic feed updated successfully.",
+            "ready": "READY TO TRADE",
+            "reset": "Reset",
+            "resetSuccess": "Checklist statistics reset.",
+            "start": "Start Trading Session",
+            "subtitle": "Check the fundamentals before the first click.",
+            "success": "Checklist completed. Ready to trade.",
+            "title": "Pre-Market Check-in (Oliver Velez)",
+            "verified": "verified",
+            "volatilityAlert": "VOLATILITY ALERT",
+            "scrollMore": "Scroll for more",
+            "calendarTitle": "Global Economic Calendar"
         },
         "charts": {
             "consistency": "CONSISTENCY",
@@ -35,25 +54,92 @@
             "direction": "Direction",
             "efficiency": "Efficiency",
             "noTrades": "No trades",
-            "operationsList": "Operations List",
+            "operationsList": "Trades List",
             "result": "Result",
             "sell": "Sell",
             "sellShort": "S",
-            "subtitle": "Detailed day view",
+            "subtitle": "Daily detailed view",
             "summary": "Summary",
             "title": "Daily Detail",
-            "tradeQty": "Total Operations"
+            "tradeQty": "Total Trades"
+        },
+        "gann": {
+            "kpis": {
+                "avgInterval": "Interval Between Trades",
+                "cycleDay": "Cycle Day",
+                "days": "Days",
+                "hot_window": "Hot Window (Imminent Reversal)",
+                "masterCycle": "Master Cycle",
+                "neutral": "Neutral Zone",
+                "nextCot": "Next Reversal (Window)",
+                "outOfDays": "Out of Cycle",
+                "vibration": "Current Vibration"
+            },
+            "sq9": {
+                "degrees": "{deg}°",
+                "expansion": "Expansion Targets",
+                "reference": "Ref",
+                "retracement": "Retracement Targets"
+            },
+            "subtitle": "Mathematical Confluence and Cycles",
+            "title": "Gann Vibrations"
         },
         "kpis": {
+            "avgInterval": "Interval Between Trades",
             "discipline": "Discipline",
-            "maxDrawdown": "Max Drawdown",
+            "maxDrawdown": "Maximum Drawdown",
             "netResult": "Net Result",
             "payoff": "Payoff",
             "profitFactor": "Profit Factor",
-            "winRate": "Win Rate",
-            "avgInterval": "Average Interval"
+            "winRate": "Win Rate"
+        },
+        "market_context": {
+            "di": "DI Rate (CDI)",
+            "di_desc": "Interest Benchmark",
+            "ptax": "PTAX (Official)",
+            "ptax_desc": "BCB Dollar Average",
+            "selic": "SELIC PY.",
+            "selic_desc": "Central Bank Target",
+            "wdo": "Dollar (WDO)",
+            "win": "Index (WIN)"
+        },
+        "mindset": {
+            "deviated_plan": "Deviated from Plan",
+            "empty": "No recent records",
+            "followed_plan": "Followed Plan",
+            "impact_detected": "{impact} impact detected",
+            "impacts": {
+                "Negative": "Negative",
+                "Neutral": "Neutral",
+                "Positive": "Positive"
+            },
+            "placeholder": "Record emotional state to enable analysis.",
+            "title": "Psychological State"
         },
         "newTrade": "New Trade",
+        "onboarding_wizard": {
+            "title": "Prepare your Cockpit",
+            "subtitle": "Follow the 4 absolute steps to shield your capital and unlock the Analytical Radars on your Home.",
+            "step1": {
+                "title": "1. Create your Trading Account",
+                "subtitle": "Connect the base capital (BRL or USD) to track profits.",
+                "action": "Next"
+            },
+            "step2": {
+                "title": "2. Determine your Maximum Risk",
+                "subtitle": "Configure Daily Loss Limits to enable the Behavioral Lock.",
+                "action": "Shield Capital"
+            },
+            "step3": {
+                "title": "3. Structure your Leverage Plan",
+                "subtitle": "Create growth phases to increase lot sizes mathematically.",
+                "action": "Build Plan"
+            },
+            "step4": {
+                "title": "4. Log your First Trade",
+                "subtitle": "You are 100% shielded. Use QuickLog to bring your stats to life."
+            }
+        },
         "quant": {
             "dollar": "Dollar",
             "index": "Index",
@@ -65,14 +151,38 @@
         },
         "schedule": {
             "afternoon": "Afternoon",
-            "basedOn": "Based on last {count} business days",
+            "basedOn": "Based on the last {count} business days",
             "morning": "Morning",
-            "title": "Trading Hours"
+            "title": "Trading Times"
+        },
+        "sections": {
+            "allClear": "All Clear (Normal Lots)",
+            "assistantLabel": "ASSISTANT",
+            "behavioralRadar": "Behavioral Radar (Heuristic AI)",
+            "behavioralRadarLabel": "BEHAVIORAL RADAR",
+            "evolutionStreaks": "Evolution and Streaks",
+            "noAnomalies": "No anomalies detected",
+            "systemStatus": "SYSTEM STATUS",
+            "traderAssistant": "Trader Assistant"
+        },
+        "stats": {
+            "emotionalControl": "Emotional Control",
+            "gainLabel": "GAIN",
+            "greenDays": "Profit Days",
+            "lossLabel": "LOSS",
+            "rollingScore": "Score (30T)",
+            "streaks": "STREAKS",
+            "todayPnL": "Today's P&L",
+            "todayPnLShort": "TODAY P&L",
+            "tradeFrequency": "Frequency (Trades)",
+            "unbreakableDiscipline": "Unbreakable Discipline",
+            "weekPnL": "Week P&L",
+            "weekPnLShort": "WEEKLY"
         },
         "subtitle": "Trading account summary.",
         "survivor": {
             "activePlan": "Active Plan:",
-            "avgRFactor": "Avg R Factor",
+            "avgRFactor": "Avg R-Factor",
             "consistency": "Consist.",
             "currentPhase": "Current Phase",
             "dailyEvolution": "Daily Evolution",
@@ -92,63 +202,10 @@
             "title": "Survivor Hub & Monitoring",
             "tradesUsage": "Trades Usage"
         },
+        "syncingTerminal": "Syncing Terminal...",
         "terminalHub": "Terminal Hub",
         "title": "Dashboard",
-        "gann": {
-            "title": "Gann Vibrations",
-            "subtitle": "Mathematical Confluence and Cycles",
-            "kpis": {
-                "nextCot": "Next Reversal (Window)",
-                "cycleDay": "Cycle Day",
-                "vibration": "Current Vibration",
-                "masterCycle": "Master Cycle",
-                "avgInterval": "Avg Interval Between Trades",
-                "days": "Days",
-                "hot_window": "Hot Window (Imminent Reversal)",
-                "neutral": "Neutral Zone",
-                "outOfDays": "Out of Cycle"
-            },
-            "sq9": {
-                "expansion": "Expansion Targets",
-                "retracement": "Retracement Targets",
-                "degrees": "{deg}°",
-                "reference": "Ref"
-            }
-        },
-        "syncingTerminal": "Syncing Terminal...",
-        "waitingSurvivorData": "Waiting for Survivor Hub data matrix",
-        "actions": {
-            "detailedRegister": "DETAILED REGISTER",
-            "evolutionJournal": "EVOLUTION JOURNAL",
-            "riskControlShort": "R.C",
-            "newTrade": "NEW ORDER",
-            "reviewDone": "Review Completed",
-            "finishTrading": "Finish Trading Session"
-        },
-        "sections": {
-            "traderAssistant": "Trader Assistant",
-            "behavioralRadar": "Behavioral Radar (Heuristic AI)",
-            "behavioralRadarLabel": "BEHAVIORAL RADAR",
-            "evolutionStreaks": "Evolution & Streaks",
-            "assistantLabel": "ASSISTANT",
-            "systemStatus": "SYSTEM STATUS",
-            "allClear": "All Clear (Normal Sizing)",
-            "noAnomalies": "No anomalies detected"
-        },
-        "stats": {
-            "todayPnL": "Today's P&L",
-            "todayPnLShort": "DAILY P&L",
-            "tradeFrequency": "Trade Frequency",
-            "weekPnL": "Week's P&L",
-            "weekPnLShort": "WEEKLY",
-            "gainLabel": "GAIN",
-            "lossLabel": "LOSS",
-            "rollingScore": "Rolling Score (30T)",
-            "emotionalControl": "Emotional Control",
-            "unbreakableDiscipline": "Unbreakable Discipline",
-            "greenDays": "Green Days",
-            "streaks": "STREAKS"
-        }
+        "waitingSurvivorData": "Waiting for Survivor Hub data matrix"
     },
     "home": {
         "newTrade": "New Trade",

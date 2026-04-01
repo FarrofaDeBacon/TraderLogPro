@@ -1,52 +1,52 @@
 {
     "aiCockpit": {
-        "ctaBtn": "Cockpit Analítico",
-        "health": {
-            "title": "Saúde Algorítmica",
-            "status": "Status",
-            "currentRisk": "Risco Atual",
-            "stability": "Estabilidade"
-        },
-        "xray": {
-            "title": "Contexto Operacional (X-Ray)",
-            "bestAsset": "Melhor Ativo",
-            "worstAsset": "Pior Ativo",
-            "bestTime": "Melhor Horário",
-            "worstTime": "Pior Horário",
-            "bestSide": "Direção Dominante"
-        },
         "ai": {
-            "title": "Recomendação Tática (IA)",
-            "insufficientVolume": "Dados insuficientes para análise. Manter plano atual.",
+            "desc": "Cruzamos as descobertas matemáticas da esquerda com o motor da Inteligência Artificial para gerar dicas táticas instantâneas.",
             "healthy": "Execução estável. Nenhuma falha detectada.",
-            "desc": "Cruzamos as descobertas matemáticas da esquerda com o motor da Inteligência Artificial para gerar dicas táticas instantâneas."
+            "insufficientVolume": "Dados insuficientes para análise. Manter plano atual.",
+            "title": "Recomendação Tática (IA)"
         },
         "aiPsychology": {
-            "title": "Estratégia vs Psicologia",
             "dominantState": "Estado Dominante",
-            "netProfit": "Lucro Líquido",
+            "history": "Seu histórico algorítmico de comportamento na mesa.",
             "loss": "Prejuízo",
-            "history": "Seu histórico algorítmico de comportamento na mesa."
+            "netProfit": "Lucro Líquido",
+            "title": "Estratégia vs Psicologia"
+        },
+        "ctaBtn": "Cockpit Analítico",
+        "health": {
+            "currentRisk": "Risco Atual",
+            "stability": "Estabilidade",
+            "status": "Status",
+            "title": "Saúde Algorítmica"
         },
         "psychology": {
-            "title": "Estratégia vs Psicologia",
             "dominantState": "Estado Dominante",
-            "netProfit": "Lucro Líquido",
+            "history": "Seu histórico algorítmico de comportamento na mesa.",
             "loss": "Prejuízo",
-            "history": "Seu histórico algorítmico de comportamento na mesa."
+            "netProfit": "Lucro Líquido",
+            "title": "Estratégia vs Psicologia"
         },
         "values": {
-            "HOT": "QUENTE",
+            "BUY": "COMPRA",
             "COLD": "FRIO",
-            "NEUTRAL": "NEUTRO",
-            "LOW": "BAIXO",
             "CRITICAL": "CRÍTICO",
+            "HOT": "QUENTE",
+            "INSUFFICIENT_DATA": "DADOS INSUFICIENTES",
+            "LOW": "BAIXO",
+            "NEUTRAL": "NEUTRO",
+            "SELL": "VENDA",
             "STABLE": "ESTÁVEL",
             "VOLATILE": "VOLÁTIL",
-            "BUY": "COMPRA",
-            "SELL": "VENDA",
-            "winRateShort": "Tx Vit",
-            "INSUFFICIENT_DATA": "DADOS INSUFICIENTES"
+            "winRateShort": "Tx Vit"
+        },
+        "xray": {
+            "bestAsset": "Melhor Ativo",
+            "bestSide": "Direção Dominante",
+            "bestTime": "Melhor Horário",
+            "title": "Contexto Operacional (X-Ray)",
+            "worstAsset": "Pior Ativo",
+            "worstTime": "Pior Horário"
         }
     }
 }

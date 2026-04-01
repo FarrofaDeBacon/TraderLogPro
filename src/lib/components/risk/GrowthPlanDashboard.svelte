@@ -59,12 +59,12 @@
                     <div class="space-y-2">
                         <div class="flex items-center gap-2">
                             <TrendingUp class="w-5 h-5 text-primary" />
-                            <h2 class="text-xl font-bold tracking-tight">{$t("risk.desk.title")}</h2>
+                            <h2 class="text-xl font-bold tracking-tight">{$t("risk.rules.desk.title")}</h2>
                         </div>
                         <p class="text-sm text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                            {$t("risk.desk.progression.current")}: 
+                            {$t("risk.rules.desk.currentLevel")}: 
                             <Badge variant="outline" class="font-bold text-foreground bg-background border-primary/30 uppercase">
-                                {$t(`risk.desk.stages.${(deskProgression.currentPhaseId || 'default').toLowerCase()}`)}
+                                {$t(`risk.rules.desk.stages.${(deskProgression.currentPhaseId || 'default').toLowerCase()}`)}
                             </Badge>
                         </p>
                     </div>
@@ -73,12 +73,12 @@
                         {#if deskProgression.canPromote}
                             <Badge class="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 text-sm py-1.5 px-4 outline outline-1 outline-emerald-500/30">
                                 <CheckCircle class="w-4 h-4 mr-2 inline" />
-                                {$t("risk.desk.progression.can_advance")}
+                                {$t("risk.rules.desk.canAdvance")}
                             </Badge>
                         {:else}
                             <Badge variant="default" class="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20 text-sm py-1.5 px-4 outline outline-1 outline-primary/30">
                                 <Clock class="w-4 h-4 mr-2 inline" />
-                                {$t("risk.desk.progression.should_remain")}
+                                {$t("risk.rules.desk.maintenance")}
                             </Badge>
                         {/if}
                     </div>
@@ -94,7 +94,7 @@
                     <div class="p-1.5 rounded-md bg-emerald-500/10">
                         <Target class="w-5 h-5 text-emerald-500" />
                     </div>
-                    <h3 class="font-semibold text-base">{$t("risk.growthPlan.targetsTitle")}</h3>
+                    <h3 class="font-semibold text-base">{$t("risk.growth.targetsTitle")}</h3>
                 </div>
 
                 {#if deskProgression.advanceConditions.every(c => c.isMet) && deskProgression.canPromote}
@@ -103,13 +103,13 @@
                             <CheckCircle2 class="w-6 h-6 text-emerald-500" />
                         </div>
                         <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                            {$t("risk.growthPlan.allMetMessage")}
+                            {$t("risk.growth.allMetMessage")}
                         </p>
                         <Button 
                             onclick={advanceDeskStage}
                             class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 shadow-lg shadow-emerald-500/20"
                         >
-                            {$t("risk.growthPlan.actions.promote")}
+                            {$t("risk.growth.actions.promote")}
                             <ArrowRight class="w-4 h-4 ml-2" />
                         </Button>
                     </div>
@@ -154,7 +154,7 @@
                     <div class="p-1.5 rounded-md bg-rose-500/10">
                         <AlertOctagon class="w-5 h-5 text-rose-500" />
                     </div>
-                    <h3 class="font-semibold text-base">{$t("risk.growthPlan.dangerZones")}</h3>
+                    <h3 class="font-semibold text-base">{$t("risk.growth.dangerZones")}</h3>
                 </div>
 
                 <div class="space-y-6">
@@ -165,7 +165,7 @@
                         {@const lossPercent = lossLimit > 0 ? Math.min((currentLoss / Math.max(lossLimit, 0.01)) * 100, 100) : 0}
                         <div class="space-y-2.5">
                             <div class="flex justify-between text-sm items-end">
-                                <span class="font-medium text-muted-foreground">{$t("risk.growthPlan.currentDailyLoss")}</span>
+                                <span class="font-medium text-muted-foreground">{$t("risk.growth.currentDailyLoss")}</span>
                                 <div class="text-right">
                                     <span class="font-mono font-bold {lossPercent > 85 ? 'text-rose-500' : 'text-foreground'}">{formatValue(currentLoss)}</span>
                                     <span class="font-mono text-muted-foreground text-xs"> / {formatValue(lossLimit)}</span>
@@ -191,7 +191,7 @@
                         {#if mddLimit > 0}
                             <div class="space-y-2.5">
                                 <div class="flex justify-between text-sm items-end">
-                                    <span class="font-medium text-muted-foreground">{$t("risk.growthPlan.totalDrawdown")}</span>
+                                    <span class="font-medium text-muted-foreground">{$t("risk.growth.totalDrawdown")}</span>
                                     <div class="text-right">
                                         <span class="font-mono font-bold {mddPercent > 85 ? 'text-rose-500' : 'text-foreground'}">{formatValue(currentDrawdown)}</span>
                                         <span class="font-mono text-muted-foreground text-xs"> / {formatValue(mddLimit)}</span>
@@ -210,7 +210,7 @@
 
                 {#if deskProgression.regressionConditions.length > 0}
                     <div class="mt-6 p-3.5 rounded-lg bg-secondary/30 border border-border/50 space-y-2">
-                        <h5 class="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">{$t("risk.growthPlan.behavioralRestrictions")}</h5>
+                        <h5 class="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">{$t("risk.growth.behavioralRestrictions")}</h5>
                         {#each deskProgression.regressionConditions as sug}
                             <div class="flex items-start gap-2 text-xs text-muted-foreground">
                                 <Info class="w-3.5 h-3.5 mt-0.5 shrink-0 opacity-70" />
@@ -230,7 +230,7 @@
                 <div class="space-y-1">
                     <Card.Title class="flex items-center gap-2">
                         <TrendingUp class="w-5 h-5 text-primary" />
-                        {$t("risk.growthPlan.title")}
+                        {$t("risk.growth.title")}
                     </Card.Title>
                 </div>
             </div>
@@ -240,26 +240,26 @@
                 <div class="space-y-3">
                     <div class="flex items-center gap-1.5 border-b border-border/50 pb-1">
                         <Target class="w-4 h-4 text-emerald-500" />
-                        <span class="text-xs font-semibold text-emerald-600">{$t("risk.growthPlan.goalsProgress")}</span>
+                        <span class="text-xs font-semibold text-emerald-600">{$t("risk.growth.goalsProgress")}</span>
                     </div>
                     <div class="flex justify-between text-sm py-1">
-                        <span class="text-muted-foreground">{$t("risk.desk.metrics.totalProfit")}</span>
+                        <span class="text-muted-foreground">{$t("risk.rules.desk.metrics.totalProfit")}</span>
                         <span class="font-mono font-bold text-emerald-600">{formatValue(cockpit.growthEvaluation.metrics.netPnL)}</span>
                     </div>
                 </div>
                 <div class="space-y-3">
                     <div class="flex items-center gap-1.5 border-b border-border/50 pb-1">
                         <AlertOctagon class="w-4 h-4 text-rose-500" />
-                        <span class="text-xs font-semibold text-rose-600">{$t("risk.growthPlan.dangerZones")}</span>
+                        <span class="text-xs font-semibold text-rose-600">{$t("risk.growth.dangerZones")}</span>
                     </div>
                     <div class="flex justify-between text-sm py-1">
-                        <span class="text-muted-foreground">{$t("risk.growthPlan.totalDrawdown")}</span>
+                        <span class="text-muted-foreground">{$t("risk.growth.totalDrawdown")}</span>
                         <span class="font-mono font-bold {cockpit.growthEvaluation.metrics.drawdownPercent > 80 ? 'text-rose-500' : 'text-foreground'}">
                             {cockpit.growthEvaluation.metrics.drawdownPercent.toFixed(2)}%
                         </span>
                     </div>
                     <div class="flex justify-between text-sm py-1">
-                        <span class="text-muted-foreground">{$t("risk.growthPlan.currentDailyLoss")}</span>
+                        <span class="text-muted-foreground">{$t("risk.growth.currentDailyLoss")}</span>
                         <span class="font-mono font-bold">{formatValue(Math.min(cockpit.dailyRiskStatus.dailyPnL, 0) * -1)} <span class="text-xs text-muted-foreground font-normal">/ {formatValue(activeProfile?.max_daily_loss || 0)}</span></span>
                     </div>
                 </div>

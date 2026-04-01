@@ -94,7 +94,7 @@
     }>({
         type: "global",
         key: null,
-        label: $t("trades.messages.all_period") || "Todo o Período",
+        label: $t("trades.messages.all_period", { default: "Todo o Período" }),
     });
 
     const allTrades = $derived(tradesStore.trades);
@@ -144,7 +144,7 @@
                         year: "numeric",
                     }),
                 formatWeek: (dateStr: string) =>
-                    ($t("trades.dashboard.weekOf", {
+                    ($t("trades.list.dashboard.weekOf", {
                         values: {
                             date: new Date(dateStr + "T12:00:00").toLocaleDateString(
                                 $locale || "pt-BR",
@@ -195,10 +195,6 @@
             });
         }
     });
-
-    // activeContext is already defined above...
-    // Redundant togglers removed since HierarchicalList handles it now via bindable props and mutualExclusion.
-
 
     function getDayResult(trades: any[]) {
         if (currencyMode === "main") {
@@ -474,13 +470,9 @@
         );
 
         if (linkedClosure) {
-            deleteModalDescription =
-                $t("trades.delete.confirmation_with_closure") ||
-                "Esta operação faz parte de um Fechamento Diário. O extrato será recalculado automaticamente pós-exclusão. Tem certeza?";
+            deleteModalDescription = $t("trades.delete.confirmation_with_closure");
         } else {
-            deleteModalDescription =
-                $t("trades.delete.confirmation") ||
-                "Tem certeza que deseja excluir esta operação? Esta ação não pode ser desfeita.";
+            deleteModalDescription = $t("trades.delete.confirmation");
         }
 
         isDeleteOpen = true;
@@ -494,7 +486,7 @@
                 count: day.trades.length,
                 date: day.date
             }
-        }) || `Tem certeza que deseja excluir todas as ${day.trades.length} operações do dia ${day.date}? Esta ação não pode ser desfeita.`;
+        });
         isDeleteOpen = true;
     }
 
@@ -502,31 +494,19 @@
         if (tradeToDelete) {
             const result = await tradesStore.removeTrade(tradeToDelete);
             if (result.success) {
-                toast.success(
-                    $t("trades.messages.delete_success") ||
-                        "Operação excluída com sucesso.",
-                );
+                toast.success($t("trades.messages.delete_success"));
                 appStore.loadData();
             } else {
-                toast.error(
-                    $t("trades.messages.delete_error") ||
-                        "Erro ao excluir. Tente novamente.",
-                );
+                toast.error($t("trades.messages.delete_error"));
             }
         } else if (dayToDelete) {
             const ids = dayToDelete.trades.map((t: any) => t.id);
             const result = await tradesStore.removeTrades(ids);
             if (result.success) {
-                toast.success(
-                    $t("trades.messages.delete_success") ||
-                        "Operações excluídas com sucesso.",
-                );
+                toast.success($t("messages.delete_success"));
                 appStore.loadData();
             } else {
-                toast.error(
-                    $t("trades.messages.delete_error") ||
-                        "Erro ao excluir. Tente novamente.",
-                );
+                toast.error($t("messages.delete_error"));
             }
         }
         isDeleteOpen = false;
@@ -545,7 +525,7 @@
 
     async function handleImportProfit() {
         if (accountsStore.accounts.length === 0) {
-            toast.error($t("trades.messages.no_accounts") || "Nenhuma conta cadastrada.");
+            toast.error($t("trades.messages.no_accounts"));
             return;
         }
 
@@ -569,7 +549,7 @@
                     accountId: targetAccount.id
                 }),
                 {
-                    loading: $t("trades.messages.importing") || "Importando trades...",
+                    loading: $t("trades.messages.importing"),
                     success: (data: any) => {
                         tradesStore.loadTrades();
                         appStore.loadData();
@@ -580,7 +560,7 @@
             );
         } catch (err) {
             console.error("Import failed:", err);
-            toast.error("Falha ao abrir seletor de arquivos.");
+            toast.error($t("trades.list.actions.import_fail"));
         }
     }
 </script>
@@ -593,7 +573,7 @@
             <div class="flex gap-2 items-center">
                 <div class="relative hidden sm:block">
                     <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input bind:ref={searchInputRef} bind:value={searchQuery} placeholder="Buscar ativo/nota... (Ctrl+K)" class="pl-8 h-8 w-[180px] lg:w-[220px] bg-background/50 border-border/50 text-[10px] shadow-none font-medium" />
+                    <Input bind:ref={searchInputRef} bind:value={searchQuery} placeholder={$t("trades.filters.search_placeholder")} class="pl-8 h-8 w-[180px] lg:w-[220px] bg-background/50 border-border/50 text-[10px] shadow-none font-medium" />
                 </div>
                 
                 <Button
@@ -603,7 +583,7 @@
                     onclick={() => (showFilters = !showFilters)}
                 >
                     <Filter class="w-3.5 h-3.5 mr-2" />
-                    {$t("trades.filters.title") || "Filtrar"}
+                    {$t("trades.filters.title")}
                     {#if filterStatus !== "all" || filterAccount !== "all" || filterStrategy !== "all" || filterAssetType !== "all"}
                         <Badge
                             class="ml-2 h-3.5 w-3.5 p-0 flex items-center justify-center bg-primary text-primary-foreground text-[10px]"
@@ -622,7 +602,7 @@
                     }}
                 >
                     <Plus class="w-3.5 h-3.5 mr-1" />
-                    {$t("trades.actions.new_trade") || "Novo Trade"}
+                    {$t("trades.list.actions.new_trade")}
                 </Button>
                 
                 <Button
@@ -632,7 +612,7 @@
                     onclick={handleImportProfit}
                 >
                     <ArrowRightLeft class="w-3.5 h-3.5 mr-2 opacity-60" />
-                    {$t("trades.actions.import_profit") || "Importar"}
+                    {$t("trades.list.actions.import_profit")}
                 </Button>
             </div>
         {/snippet}
@@ -655,7 +635,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-2">
             <SystemCard status={kpis.profitTotal >= 0 ? 'success' : 'danger'} class="p-3">
                 <SystemMetric 
-                    label={$t("trades.quickStats.totalBalance")}
+                    label={$t("trades.kpi.totalBalance")}
                     value={formatCurrency(kpis.consolidatedTotal, kpis.mainCurrency)}
                     status={kpis.consolidatedTotal >= 0 ? 'success' : 'danger'}
                     weight="black"
@@ -664,11 +644,11 @@
 
             <SystemCard status="info" class="p-3">
                 <SystemMetric 
-                    label={$t("trades.quickStats.winRate")}
+                    label={$t("trades.kpi.winRate")}
                     value={kpis.winRate + "%"}
                     status={Number(kpis.winRate) >= 50 ? 'success' : 'danger'}
                     weight="black"
-                    subvalue={$t("trades.quickStats.winRateDesc", {
+                    subvalue={$t("trades.kpi.winRateDesc", {
                         values: { winners: kpis.winners, total: kpis.total }
                     })}
                 />
@@ -676,7 +656,7 @@
 
             <SystemCard status="info" class="p-3">
                 <SystemMetric 
-                    label={$t("trades.quickStats.profitFactor")}
+                    label={$t("trades.kpi.profitFactor")}
                     value={kpis.profitFactor}
                     status={Number(kpis.profitFactor) >= 1.2 ? 'success' : Number(kpis.profitFactor) >= 1.0 ? 'warning' : 'danger'}
                     weight="black"
@@ -685,7 +665,7 @@
 
             <SystemCard status="warning" class="p-3">
                 <SystemMetric 
-                    label={$t("trades.quickStats.openTrades")}
+                    label={$t("trades.kpi.openTrades")}
                     value={kpis.openCount}
                     status={kpis.openCount > 0 ? 'warning' : 'none'}
                     weight="bold"
@@ -694,7 +674,7 @@
 
             <SystemCard status="info" class="p-3">
                 <SystemMetric 
-                    label={$t("trades.quickStats.avgInterval")}
+                    label={$t("trades.kpi.avgInterval")}
                     value={formatDuration(kpis.avgInterval)}
                     weight="bold"
                 />
@@ -716,27 +696,24 @@
                                 class="bg-background/50 h-9"
                             >
                                 {#if filterStatus === "all"}
-                                    {$t("common.all") || "Todos"}
+                                    {$t("common.all")}
                                 {:else if filterStatus === "open"}
-                                    {$t("trades.table.status_open") || "Aberto"}
+                                    {$t("trades.list.table.status_open")}
                                 {:else if filterStatus === "closed"}
-                                    {$t("trades.table.status_closed") ||
-                                        "Fechado"}
+                                    {$t("trades.list.table.status_closed")}
                                 {:else}
                                     {filterStatus}
                                 {/if}
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Item value="all"
-                                    >{$t("common.all") || "Todos"}</Select.Item
+                                    >{$t("common.all")}</Select.Item
                                 >
                                 <Select.Item value="open"
-                                    >{$t("trades.table.status_open") ||
-                                        "Aberto"}</Select.Item
+                                    >{$t("trades.list.table.status_open")}</Select.Item
                                 >
                                 <Select.Item value="closed"
-                                    >{$t("trades.table.status_closed") ||
-                                        "Fechado"}</Select.Item
+                                    >{$t("trades.list.table.status_closed")}</Select.Item
                                 >
                             </Select.Content>
                         </Select.Root>
@@ -755,13 +732,11 @@
                             >
                                 {accountsStore.accounts.find(
                                     (a) => a.id === filterAccount,
-                                )?.nickname ||
-                                    $t("common.all") ||
-                                    "Todas"}
+                                )?.nickname || $t("common.all")}
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Item value="all"
-                                    >{$t("common.all") || "Todas"}</Select.Item
+                                    >{$t("common.all")}</Select.Item
                                 >
                                 {#each accountsStore.accounts as acc}
                                     <Select.Item value={acc.id}
@@ -785,13 +760,11 @@
                             >
                                 {workspaceStore.strategies.find(
                                     (s) => s.id === filterStrategy,
-                                )?.name ||
-                                    $t("common.all") ||
-                                    "Todas"}
+                                )?.name || $t("common.all")}
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Item value="all"
-                                    >{$t("common.all") || "Todas"}</Select.Item
+                                    >{$t("common.all")}</Select.Item
                                 >
                                 {#each workspaceStore.strategies as strat}
                                     <Select.Item value={strat.id}
@@ -815,13 +788,11 @@
                             >
                                 {assetTypesStore.assetTypes.find(
                                     (at) => at.id === filterAssetType,
-                                )?.name ||
-                                    $t("common.all") ||
-                                    "Todos"}
+                                )?.name || $t("common.all")}
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Item value="all"
-                                    >{$t("common.all") || "Todos"}</Select.Item
+                                    >{$t("common.all")}</Select.Item
                                 >
                                 {#each assetTypesStore.assetTypes as type}
                                     <Select.Item value={type.id}
@@ -837,7 +808,7 @@
                             for="filter-currency"
                             class="text-[10px] font-bold uppercase text-muted-foreground"
                         >
-                            {$t("trades.filters.currency") || "Moeda"}
+                            {$t("trades.filters.currency")}
                         </label>
                         <Select.Root type="single" bind:value={filterCurrency}>
                             <Select.Trigger
@@ -845,12 +816,12 @@
                                 class="bg-background/50 h-9"
                             >
                                 {filterCurrency === "all"
-                                    ? $t("common.all") || "Todas"
+                                    ? $t("common.all")
                                     : filterCurrency}
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Item value="all"
-                                    >{$t("common.all") || "Todas"}</Select.Item
+                                    >{$t("common.all")}</Select.Item
                                 >
                                 {#each [...new Set(accountsStore.accounts.map((a) => a.currency))] as curr}
                                     <Select.Item value={curr}
@@ -869,7 +840,7 @@
                             onclick={clearFilters}
                         >
                             <X class="w-3 h-3 mr-1" />
-                            {$t("trades.actions.clear_filters")}
+                            {$t("trades.list.actions.clear_filters")}
                         </Button>
                     </div>
                 </Card.Content>
@@ -892,12 +863,12 @@
                             />
                         </div>
                         <h3 class="text-xl font-bold tracking-tight">
-                            {$t("trades.empty.title")}
+                            {$t("trades.list.empty.title")}
                         </h3>
                         <p
                             class="text-sm text-muted-foreground max-w-xs mx-auto mt-2"
                         >
-                            {$t("trades.empty.description")}
+                            {$t("trades.list.empty.description")}
                         </p>
                         <Button
                             class="mt-8 h-11 px-8 rounded-full shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
@@ -906,7 +877,7 @@
                                 isEditOpen = true;
                             }}
                         >
-                            {$t("trades.actions.new_trade")}
+                            {$t("trades.list.actions.new_trade")}
                         </Button>
                     </div>
                 {:else}
@@ -972,7 +943,7 @@
                                 class="text-[9px] px-1.5 h-4 bg-muted/50 border-border/50 font-bold uppercase"
                             >
                                 {month.trades.length}
-                                {$t("trades.messages.trades_count")}
+                                {$t("messages.trades_count")}
                             </Badge>
                             <div class="flex gap-2">
                                 {#each month.pnlEntries ?? [] as entry}
@@ -1036,7 +1007,7 @@
                         {#snippet dayRight(day)}
                             <button
                                 class="p-1.5 rounded-md hover:bg-rose-500/20 text-muted-foreground hover:text-rose-500 transition-all duration-200 cursor-pointer border-none bg-transparent group/del-day"
-                                title={$t("trades.actions.delete_day") || "Excluir Dia"}
+                                title={$t("trades.list.actions.delete_day")}
                                 onclick={(e) => {
                                     e.stopPropagation();
                                     requestDeleteDay(day);
@@ -1053,37 +1024,27 @@
                                     >
                                         <Table.Head
                                             class="h-8 text-[9px] font-black uppercase text-muted-foreground"
-                                            >{$t(
-                                                "trades.table.asset",
-                                            )}</Table.Head
+                                            >{$t("trades.list.table.asset")}</Table.Head
                                         >
                                         <Table.Head
                                             class="h-8 text-[9px] font-black uppercase text-muted-foreground"
-                                            >{$t(
-                                                "trades.table.direction",
-                                            )}</Table.Head
+                                            >{$t("trades.list.table.direction")}</Table.Head
                                         >
                                         <Table.Head
                                             class="h-8 text-[9px] font-black uppercase text-muted-foreground"
-                                            >{$t(
-                                                "trades.table.entry",
-                                            )}</Table.Head
+                                            >{$t("trades.list.table.entry")}</Table.Head
                                         >
                                         <Table.Head
                                             class="h-8 text-[9px] font-black uppercase text-muted-foreground"
-                                            >{$t(
-                                                "trades.table.exit",
-                                            )}</Table.Head
+                                            >{$t("trades.list.table.exit")}</Table.Head
                                         >
                                         <Table.Head
                                             class="h-8 text-[9px] font-black uppercase text-muted-foreground text-right"
-                                            >{$t("trades.table.pl")}</Table.Head
+                                            >{$t("trades.list.table.pl")}</Table.Head
                                         >
                                         <Table.Head
                                             class="h-8 text-[9px] font-black uppercase text-muted-foreground text-right"
-                                            >{$t(
-                                                "trades.table.actions",
-                                            )}</Table.Head
+                                            >{$t("trades.list.table.actions")}</Table.Head
                                         >
                                     </Table.Row>
                                 </Table.Header>
@@ -1112,9 +1073,7 @@
                                                 </div>
                                             </Table.Cell>
                                             <Table.Cell class="py-2">
-                                                <div
-                                                    class="flex flex-col gap-1 items-start"
-                                                >
+                                                <div class="flex flex-col gap-1 items-start">
                                                     <Badge
                                                         variant="secondary"
                                                         class="text-[9px] font-black uppercase h-5 {trade.exit_price ||
@@ -1124,14 +1083,10 @@
                                                     >
                                                         {trade.exit_price ||
                                                         trade.exit_date
-                                                            ? $t(
-                                                                  "trades.table.status_closed",
-                                                              ) || "Fechado"
-                                                            : $t(
-                                                                  "trades.table.status_open",
-                                                              ) || "Aberto"}
+                                                            ? $t("list.table.status_closed")
+                                                            : $t("list.table.status_open")}
                                                     </Badge>
-                                                    <Badge
+                                                     <Badge
                                                         variant="outline"
                                                         class="text-[8px] font-black px-1.5 h-4 border-none {trade.direction ===
                                                         'Buy'
@@ -1140,12 +1095,8 @@
                                                     >
                                                         {trade.direction ===
                                                         "Buy"
-                                                            ? $t(
-                                                                  "trades.table.buy",
-                                                              )
-                                                            : $t(
-                                                                  "trades.table.sell",
-                                                              )}
+                                                            ? $t("trades.list.table.buy")
+                                                            : $t("trades.list.table.sell")}
                                                     </Badge>
                                                 </div>
                                             </Table.Cell>
@@ -1229,9 +1180,7 @@
                                                     </Button>
                                                     <button
                                                         class="p-1 px-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer border-none bg-transparent"
-                                                        title={$t(
-                                                            "trades.table.actions_delete",
-                                                        ) || "Excluir"}
+                                                        title={$t("trades.list.table.actions_delete")}
                                                         onclick={(e) => {
                                                             e.stopPropagation();
                                                             requestDelete(
@@ -1261,7 +1210,7 @@
                         class="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-2"
                     >
                         <BarChart2 class="w-4 h-4" />
-                        {$t("trades.sidebar.summary")}
+                        {$t("trades.kpi.summary")}
                     </h3>
                     <div class="flex items-center gap-2">
                         <Badge
@@ -1279,9 +1228,7 @@
                                     (activeContext = {
                                         type: "global",
                                         key: null,
-                                        label:
-                                            $t("trades.messages.all_period") ||
-                                            "Todo o Período",
+                                        label: $t("trades.messages.all_period"),
                                     })}
                             >
                                 <X class="w-3 h-3" />
@@ -1321,7 +1268,7 @@
                             <div class="space-y-1">
                                 <span
                                     class="text-[9px] font-bold text-muted-foreground uppercase"
-                                    >Resultado</span
+                                    >{$t("trades.kpi.result")}</span
                                 >
                                 <div
                                     class="text-xl font-black {activeContext
@@ -1342,7 +1289,7 @@
                             <div class="space-y-1 text-right">
                                 <span
                                     class="text-[9px] font-bold text-muted-foreground uppercase"
-                                    >Tipo</span
+                                    >{$t("trades.kpi.type")}</span
                                 >
                                 <div
                                     class="text-xs font-bold uppercase tracking-widest"
@@ -1364,7 +1311,7 @@
                         >
                             <span
                                 class="text-[10px] font-black uppercase tracking-tighter text-muted-foreground"
-                                >{$t("trades.sidebar.performance")}</span
+                                >{$t("trades.kpi.performance")}</span
                             >
                             <TrendingUp
                                 class="w-3 h-3 text-emerald-500 opacity-50"
@@ -1376,7 +1323,7 @@
                                     <div class="space-y-0.5">
                                         <span
                                             class="text-[8px] font-black text-muted-foreground uppercase opacity-50"
-                                            >Profit Factor</span
+                                            >{$t("trades.kpi.profit_factor")}</span
                                         >
                                         <div
                                             class="text-sm font-mono font-bold tracking-tighter text-teal-400"
@@ -1387,7 +1334,7 @@
                                     <div class="space-y-0.5 text-right">
                                         <span
                                             class="text-[8px] font-black text-rose-500 uppercase opacity-80"
-                                            >Drawdown</span
+                                            >{$t("trades.kpi.drawdown")}</span
                                         >
                                         <div
                                             class="text-[11px] font-mono font-bold text-rose-500 tracking-tighter"
@@ -1407,7 +1354,7 @@
                                     <div class="space-y-0.5">
                                         <span
                                             class="text-[8px] font-black text-muted-foreground uppercase opacity-50"
-                                            >Win Rate</span
+                                            >{$t("trades.kpi.win_rate")}</span
                                         >
                                         <div
                                             class="text-sm font-mono font-bold tracking-tighter"
@@ -1418,7 +1365,7 @@
                                     <div class="space-y-0.5 text-right">
                                         <span
                                             class="text-[8px] font-black text-muted-foreground uppercase opacity-50"
-                                            >Risco:Retorno</span
+                                            >{$t("trades.kpi.risk_reward")}</span
                                         >
                                         <div
                                             class="text-[11px] font-mono font-bold tracking-tighter {parseFloat(
@@ -1442,12 +1389,12 @@
                         >
                             <span
                                 class="text-[10px] font-black uppercase tracking-tighter text-muted-foreground"
-                                >{$t("trades.sidebar.distribution")}</span
+                                >{$t("trades.kpi.distribution")}</span
                             >
                             <div
                                 class="text-[9px] font-mono font-bold opacity-30 uppercase"
                             >
-                                {activeContextStats.total} Trades
+                                {activeContextStats.total} {$t("trades.kpi.trades_label")}
                             </div>
                         </Card.Header>
                         <Card.Content class="p-2 pb-0">
@@ -1467,7 +1414,7 @@
                     >
                         <span
                             class="text-[10px] font-black uppercase tracking-tighter text-muted-foreground"
-                            >{$t("trades.sidebar.equityCurve")}</span
+                            >{$t("trades.kpi.equityCurve")}</span
                         >
                     </Card.Header>
                     <Card.Content class="p-2">

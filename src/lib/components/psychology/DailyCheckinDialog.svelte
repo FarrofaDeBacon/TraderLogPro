@@ -217,7 +217,7 @@
 
         <Dialog.Footer>
             <Button variant="outline" onclick={() => (open = false)}
-                >{$t("general.cancel")}</Button
+                >{$t("common.cancel")}</Button
             >
             <Button onclick={save} disabled={isSaving}>
                 {#if isSaving}

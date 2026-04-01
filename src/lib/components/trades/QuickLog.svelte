@@ -53,13 +53,13 @@
 
     async function handleQuickSubmit() {
         if (!asset || !resultInput) {
-            toast.error($t("trades.wizard.errors.required") || "Preencha ativo e resultado.");
+            toast.error($t("wizard.errors.required"));
             return;
         }
 
         const rawResult = parseFloat(resultInput.replace(",", "."));
         if (isNaN(rawResult)) {
-            toast.error("Resultado financeiro inválido.");
+            toast.error($t("messages.invalid_result"));
             return;
         }
 
@@ -102,7 +102,7 @@
                 exit_price: 0,
                 exit_date: today,
                 fee_total: 0,
-                notes: "Quick Log Generation",
+                notes: $t("messages.quick_log_note"),
                 timeframe: "1m",
                 volatility: "",
                 entry_emotional_state_id: null,
@@ -126,7 +126,7 @@
             if (res.success) {
                 const signal = rawResult >= 0 ? '+' : '';
                 const style = rawResult >= 0 ? 'success' : 'error';
-                inlineFeedback = { message: `Registrado: ${upperAsset} ${signal}${rawResult.toFixed(2)}`, type: style };
+                inlineFeedback = { message: `${$t("messages.registered")}: ${upperAsset} ${signal}${rawResult.toFixed(2)}`, type: style };
                 setTimeout(() => inlineFeedback = null, 4000);
 
                 localStorage.setItem("quicklog_last_asset", upperAsset);
@@ -137,11 +137,11 @@
                 // Keep asset populated and jump focal point to result again
                 setTimeout(() => { if (resultInputRef) resultInputRef.focus(); }, 50);
             } else {
-                inlineFeedback = { message: `Erro: ${res.error}`, type: 'error' };
+                inlineFeedback = { message: `${$t("common.error")}: ${res.error}`, type: 'error' };
                 setTimeout(() => inlineFeedback = null, 5000);
             }
         } catch (e) {
-            inlineFeedback = { message: "Falha na submissão.", type: 'error' };
+            inlineFeedback = { message: $t("messages.submission_fail"), type: 'error' };
             setTimeout(() => inlineFeedback = null, 5000);
         } finally {
             isSubmitting = false;
@@ -177,7 +177,7 @@
     <div class="flex flex-col md:flex-row items-center gap-3 p-3 bg-zinc-950/40 border-y md:border border-border/10 md:rounded-xl shadow-inner w-full">
     <div class="flex items-center gap-1.5 pr-3 border-r border-border/10 justify-center min-w-max hidden md:flex">
         <Zap class="w-3.5 h-3.5 text-emerald-500 fill-emerald-500/20" />
-        <span class="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">Log</span>
+        <span class="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">{$t("common.log", { default: "Log" })}</span>
     </div>
 
     <!-- Active Grid -->
@@ -185,11 +185,11 @@
         
         <!-- Asset -->
         <div class="col-span-2 md:col-span-1 md:w-24 relative">
-            <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Ativo</span>
+            <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{$t("list.table.asset")}</span>
             <Input 
                 bind:ref={assetInputRef}
                 bind:value={asset}
-                placeholder="Ex: WINJ24"
+                placeholder={$t("placeholders.quick_asset")}
                 class="uppercase bg-transparent border-dashed border-border/30 h-10 text-xs font-bold font-mono px-3"
                 onkeydown={handleKeydown}
             />
@@ -202,20 +202,20 @@
                 class="flex-1 flex items-center justify-center gap-1 h-8 px-2 rounded-md transition-all {direction === 'Buy' ? 'bg-emerald-500/10 text-emerald-500 shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
             >
                 <TrendingUp class="w-3 h-3" />
-                <span class="text-[10px] font-black uppercase">C</span>
+                <span class="text-[10px] font-black uppercase">{$t("list.table.buy").charAt(0)}</span>
             </button>
             <button 
                 onclick={() => direction = "Sell"}
                 class="flex-1 flex items-center justify-center gap-1 h-8 px-2 rounded-md transition-all {direction === 'Sell' ? 'bg-rose-500/10 text-rose-500 shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
             >
                 <TrendingDown class="w-3 h-3" />
-                <span class="text-[10px] font-black uppercase">V</span>
+                <span class="text-[10px] font-black uppercase">{$t("list.table.sell").charAt(0)}</span>
             </button>
         </div>
 
         <!-- Quantity -->
         <div class="col-span-2 md:col-span-1 md:w-16 relative">
-            <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Lotes</span>
+            <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{$t("wizard.fields.quantity")}</span>
             <Input 
                 type="number"
                 bind:value={quantityInput}
@@ -227,11 +227,13 @@
 
         <!-- Result -->
         <div class="col-span-2 md:w-28 relative flex-1 md:flex-none">
-            <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Resultado (R$)</span>
+            <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                {$t("list.table.pl")} ({accountsStore.accounts.find(a => a.id === (accountsStore.accounts[0]?.id))?.currency || "R$"})
+            </span>
             <Input 
                 bind:ref={resultInputRef}
                 bind:value={resultInput}
-                placeholder="Ex: 150.50 ou -50"
+                placeholder={$t("placeholders.quick_result")}
                 class="bg-transparent border-solid border-border/20 h-10 text-sm font-black tabular-nums {resultInput.startsWith('-') ? 'text-rose-400 focus-visible:ring-rose-500' : 'text-emerald-400 focus-visible:ring-emerald-500'}"
                 onkeydown={handleKeydown}
             />

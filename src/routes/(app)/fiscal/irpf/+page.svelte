@@ -55,18 +55,18 @@
 
     // Define months *before* using in derived stores
     const months = [
-        { val: 1, key: "months.january" },
-        { val: 2, key: "months.february" },
-        { val: 3, key: "months.march" },
-        { val: 4, key: "months.april" },
-        { val: 5, key: "months.may" },
-        { val: 6, key: "months.june" },
-        { val: 7, key: "months.july" },
-        { val: 8, key: "months.august" },
-        { val: 9, key: "months.september" },
-        { val: 10, key: "months.october" },
-        { val: 11, key: "months.november" },
-        { val: 12, key: "months.december" },
+        { val: 1, key: "common.months.january" },
+        { val: 2, key: "common.months.february" },
+        { val: 3, key: "common.months.march" },
+        { val: 4, key: "common.months.april" },
+        { val: 5, key: "common.months.may" },
+        { val: 6, key: "common.months.june" },
+        { val: 7, key: "common.months.july" },
+        { val: 8, key: "common.months.august" },
+        { val: 9, key: "common.months.september" },
+        { val: 10, key: "common.months.october" },
+        { val: 11, key: "common.months.november" },
+        { val: 12, key: "common.months.december" },
     ];
 
     let taxEvolutionData = $derived.by(() => {

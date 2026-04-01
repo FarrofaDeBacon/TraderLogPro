@@ -1,47 +1,14 @@
 {
-    "calendar": {
-        "days": {
-            "fri": "Sex",
-            "mon": "Seg",
-            "sat": "Sáb",
-            "sun": "Dom",
-            "thu": "Qui",
-            "tue": "Ter",
-            "wed": "Qua"
-        },
-        "monthly": "Mensal",
-        "monthlyShort": "M",
-        "of": "de",
-        "weekOf": "Semana de",
-        "weekly": "Semanal",
-        "weeklyShort": "S",
-        "next": "Próximo"
-    },
-    "filters": {
-        "date": {
-            "all": "Todo o Período",
-            "custom": "Personalizado",
-            "last_month": "Mês Passado",
-            "last_week": "Semana Passada",
-            "last_year": "Ano Passado",
-            "select": "Selecionar Período",
-            "this_month": "Este Mês",
-            "this_week": "Esta Semana",
-            "this_year": "Este Ano",
-            "today": "Hoje",
-            "yesterday": "Ontem"
-        }
-    },
     "common": {
         "actions": "Ações",
-        "operator": "Operador",
-        "save": "Salvar",
+        "add": "Adicionar Novo",
         "all": "Todos",
         "asset": "Ativo",
         "back": "Voltar",
         "balance": "Saldo",
         "cancel": "Cancelar",
         "close": "Fechar",
+        "confirmDelete": "Tem certeza que deseja excluir?",
         "confirmDeleteDescription": "Essa ação é irreversível.",
         "confirmDeleteTitle": "Tem certeza?",
         "currency": "Currency",
@@ -58,7 +25,12 @@
         "empty": "Nenhuma apuração em",
         "error": "Erro",
         "finish": "Finalizar",
-        "progress": "Progresso",
+        "form": {
+            "assetRequired": "Ativo é obrigatório.",
+            "invaildContracts": "Número de contratos inválido.",
+            "invalidPoints": "Pontuação inválida.",
+            "nameRequired": "O nome é obrigatório."
+        },
         "from": "De",
         "intensity_short": "int.",
         "items": "Itens",
@@ -68,12 +40,17 @@
         "next": "Próximo",
         "no": "Não",
         "noData": "Sem Dados",
+        "none": "Nenhum",
         "of": "de",
+        "operator": "Operador",
         "optional": "Opcional",
         "origin": "Origem",
+        "progress": "Progresso",
         "quantity": "Qtd",
         "reload": "Reload",
         "result": "Resultado",
+        "save": "Salvar",
+        "saveSuccess": "Salvo com sucesso!",
         "saving": "Salvando...",
         "show": "Mostrar",
         "status": "Status",
@@ -86,87 +63,113 @@
         },
         "to": "Para",
         "type": "Tipo",
+        "unknown": "Desconhecido",
         "value": "Valor",
         "week": "Semana",
         "weekdays": {
-            "fri": "Sex",
-            "mon": "Seg",
-            "sat": "Sáb",
-            "sun": "Dom",
-            "thu": "Qui",
-            "tue": "Ter",
-            "wed": "Qua"
+            "mon": "Segunda-feira",
+            "tue": "Terça-feira",
+            "wed": "Quarta-feira",
+            "thu": "Quinta-feira",
+            "fri": "Sexta-feira",
+            "sat": "Sábado",
+            "sun": "Domingo",
+            "short": {
+                "mon": "Seg",
+                "tue": "Ter",
+                "wed": "Qua",
+                "thu": "Qui",
+                "fri": "Sex",
+                "sat": "Sáb",
+                "sun": "Dom"
+            }
+        },
+        "months": {
+            "january": "Janeiro",
+            "february": "Fevereiro",
+            "march": "Março",
+            "april": "Abril",
+            "may": "Maio",
+            "june": "Junho",
+            "july": "Julho",
+            "august": "Agosto",
+            "september": "Setembro",
+            "october": "Outubro",
+            "november": "Novembro",
+            "december": "Dezembro"
+        },
+        "calendar": {
+            "monthly": "Mensal",
+            "monthlyShort": "M",
+            "next": "Próximo",
+            "of": "de",
+            "weekOf": "Semana de",
+            "weekly": "Semanal",
+            "weeklyShort": "S"
         },
         "weeks_upper": "SEMANAS",
         "weight": "peso",
-        "yes": "Sim",
-        "add": "Adicionar Novo",
-        "confirmDelete": "Tem certeza que deseja excluir?",
+        "yes": "Sim"
+    },
+    "filters": {
+        "date": {
+            "all": "Todo o Período",
+            "custom": "Personalizado",
+            "last_month": "Mês Passado",
+            "last_week": "Semana Passada",
+            "last_year": "Ano Passado",
+            "select": "Selecionar Período",
+            "this_month": "Este Mês",
+            "this_week": "Esta Semana",
+            "this_year": "Este Ano",
+            "today": "Hoje",
+            "yesterday": "Ontem"
+        }
+    },
+    "general": {
+        "add": "Adicionar",
+        "back": "Voltar",
+        "cancel": "Cancelar",
+        "confirmDeleteDescription": "Tem certeza que deseja excluir? Esta ação não pode ser desfeita.",
+        "confirmDeleteTitle": "Confirmar Exclusão",
+        "custom": "Personalizado",
+        "delete": "Excluir",
+        "deleteSuccess": "Excluído com sucesso!",
+        "edit": "Editar",
+        "error": "Erro",
         "form": {
-            "assetRequired": "Ativo é obrigatório.",
+            "assetRequired": "O ativo é obrigatório.",
             "invaildContracts": "Número de contratos inválido.",
             "invalidPoints": "Pontuação inválida.",
             "nameRequired": "O nome é obrigatório."
         },
-        "none": "Nenhum",
-        "saveSuccess": "Salvo com sucesso!",
-        "unknown": "Desconhecido"
-    },
-    "general": {
-        "yes": "Sim",
-        "no": "Não",
-        "cancel": "Cancelar",
-        "delete": "Excluir",
-        "confirmDeleteTitle": "Confirmar Exclusão",
-        "confirmDeleteDescription": "Tem certeza que deseja excluir? Esta ação não pode ser desfeita.",
-        "save": "Salvar",
-        "edit": "Editar",
-        "add": "Adicionar",
-        "back": "Voltar",
-        "error": "Erro",
-        "success": "Sucesso",
         "loading": "Carregando...",
-        "saveSuccess": "Salvo com sucesso!",
-        "deleteSuccess": "Excluído com sucesso!",
+        "no": "Não",
         "none": "Nenhum",
+        "save": "Salvar",
+        "saveSuccess": "Salvo com sucesso!",
+        "success": "Sucesso",
         "unknown": "Desconhecido",
-        "custom": "Personalizado",
-        "form": {
-            "nameRequired": "O nome é obrigatório.",
-            "assetRequired": "O ativo é obrigatório.",
-            "invalidPoints": "Pontuação inválida.",
-            "invaildContracts": "Número de contratos inválido."
-        },
-        "weekdays": {
-            "sun": "Dom",
-            "mon": "Seg",
-            "tue": "Ter",
-            "wed": "Qua",
-            "thu": "Qui",
-            "fri": "Sex",
-            "sat": "Sáb"
-        }
+        "yes": "Sim",
+        "operator": "Operador"
     },
     "help": {
-        "title": "Central de Ajuda",
-        "subtitle": "Encontre respostas e aprenda a usar todas as funcionalidades do Bem-vindo ao TraderLog Pro.",
-        "searchHint": "Pesquisar no manual (ex: DARF, RTD, Estratégias)...",
-        "topics": "Tópicos",
         "emptyState": "Nenhum resultado encontrado",
-        "emptyStateDescription": "Nenhum resultado. Altere a busca ou use o menu lateral."
+        "emptyStateDescription": "Nenhum resultado. Altere a busca ou use o menu lateral.",
+        "searchHint": "Pesquisar no manual (ex: DARF, RTD, Estratégias)...",
+        "subtitle": "Encontre respostas e aprenda a usar todas as funcionalidades do Bem-vindo ao TraderLog Pro.",
+        "title": "Central de Ajuda",
+        "topics": "Tópicos"
     },
-    "months": {
-        "april": "Abril",
-        "august": "Agosto",
-        "december": "Dezembro",
-        "february": "Fevereiro",
-        "january": "Janeiro",
-        "july": "Julho",
-        "june": "Junho",
-        "march": "Março",
-        "may": "Maio",
-        "november": "Novembro",
-        "october": "Outubro",
-        "september": "Setembro"
+    "LIST": {
+        "TABLE": {
+            "ASSET": "Ativo",
+            "DIRECTION": "Direção",
+            "ENTRY": "Entrada",
+            "EXIT": "Saída",
+            "PL": "Resultado",
+            "QUANTITY": "Qtd",
+            "STRATEGY": "Estratégia"
+        }
     }
 }

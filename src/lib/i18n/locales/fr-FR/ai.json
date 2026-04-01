@@ -1,32 +1,52 @@
 {
-    "cockpit": {
+    "aiCockpit": {
+        "ai": {
+            "desc": "Nous croisons les résultats mathématiques de gauche avec le moteur d'Intelligence Artificielle pour générer des conseils tactiques instantanés.",
+            "healthy": "Exécution stable. Aucune faille détectée.",
+            "insufficientVolume": "Données insuffisantes pour l'analyse. Maintenir le plan actuel.",
+            "title": "Recommandation Tactique (IA)"
+        },
+        "aiPsychology": {
+            "dominantState": "État Dominant",
+            "history": "Votre historique comportemental algorithmique au pupitre.",
+            "loss": "Pertes",
+            "netProfit": "Bénéfice Net",
+            "title": "Stratégie vs Psychologie"
+        },
         "ctaBtn": "Cockpit Analytique",
         "health": {
-            "title": "Santé Algorithmique",
-            "status": "Statut",
             "currentRisk": "Risque Actuel",
-            "stability": "Stabilité (Drawdown / Volatilité)"
-        },
-        "xray": {
-            "title": "Contexte Opérationnel (Rayon X)",
-            "bestAsset": "Meilleur Actif",
-            "worstAsset": "Pire Actif",
-            "bestTime": "Meilleure Heure",
-            "worstTime": "Pire Heure",
-            "bestSide": "Direction Dominante"
-        },
-        "ai": {
-            "title": "Recommandation Tactique",
-            "insufficientVolume": "Volume insuffisant pour dégager des avantages. Suivez votre plan initial.",
-            "healthy": "Système en parfait fonctionnement mécanique. Zéro défaillance.",
-            "desc": "Diagnostic des risques, facteurs opérationnels et calibration psychologique."
+            "stability": "Stabilité",
+            "status": "Statut",
+            "title": "Santé Algorithmique"
         },
         "psychology": {
-            "title": "Stratégie vs Psychologie",
             "dominantState": "État Dominant",
+            "history": "Votre historique comportemental algorithmique au pupitre.",
+            "loss": "Pertes",
             "netProfit": "Bénéfice Net",
-            "loss": "Loss",
-            "history": "Votre historique algorithmique de comportement à la table."
+            "title": "Stratégie vs Psychologie"
+        },
+        "values": {
+            "BUY": "ACHAT",
+            "COLD": "FROID",
+            "CRITICAL": "CRITIQUE",
+            "HOT": "CHAUD",
+            "INSUFFICIENT_DATA": "DONNÉES INSUFFISANTES",
+            "LOW": "BAS",
+            "NEUTRAL": "NEUTRE",
+            "SELL": "VENTE",
+            "STABLE": "STABLE",
+            "VOLATILE": "VOLATILE",
+            "winRateShort": "Tx Vit"
+        },
+        "xray": {
+            "bestAsset": "Meilleur Actif",
+            "bestSide": "Direction Dominante",
+            "bestTime": "Meilleur Horaire",
+            "title": "Contexte Opérationnel (X-Ray)",
+            "worstAsset": "Pire Actif",
+            "worstTime": "Pire Horaire"
         }
     }
 }

@@ -9,6 +9,18 @@
             "support": "Support"
         }
     },
+    "nav": {
+        "dashboard": "Dashboard",
+        "finance": "Finance",
+        "fiscal": {
+            "irpf": "Income Tax"
+        },
+        "help": "Help",
+        "psychology": "Psychology",
+        "risk": "Risk Control",
+        "settings": "Settings",
+        "trades": "Trades"
+    },
     "sidebar": {
         "categories": {
             "analysis": "Analysis",
@@ -24,17 +36,5 @@
         "settings": "Settings",
         "strategies": "Strategies",
         "trades": "Trades"
-    },
-    "nav": {
-        "dashboard": "Dashboard",
-        "trades": "Trades",
-        "finance": "Finance",
-        "psychology": "Psychology",
-        "help": "Help",
-        "settings": "Settings",
-        "fiscal": {
-            "irpf": "Income Tax"
-        },
-        "risk": "Risk Control"
     }
 }
