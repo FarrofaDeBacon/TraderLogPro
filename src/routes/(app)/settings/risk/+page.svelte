@@ -71,7 +71,40 @@ import type { RiskProfile } from "$lib/types";
     function getEffectiveLimits(profile: RiskProfile) {
         let dailyLoss = profile.max_daily_loss;
         let dailyTarget = profile.daily_target;
+        let targetUnit = '$';
+        let lossUnit = '$';
 
+        // 1. Prioridade: Plano de Crescimento Ativo
+        if (profile.growth_plan_id && profile.growth_plan_id !== 'none') {
+            const plan = riskSettingsStore.growthPlans.find(p => p.id === profile.growth_plan_id);
+            if (plan && plan.enabled) {
+                const phase = plan.phases[plan.current_phase_index];
+                if (phase) {
+                    const normalize = (s: string) => (s || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
+
+                    const targetCond = phase.conditions_to_advance?.find(c => {
+                        const m = normalize(c.metric);
+                        return ['profit', 'netpnl', 'profittarget', 'metadelucro', 'meta', 'pnl'].includes(m);
+                    });
+                    if (targetCond) {
+                        dailyTarget = targetCond.value;
+                        targetUnit = plan.target_unit === 'points' ? 'pts' : '$';
+                    }
+
+                    const lossCond = phase.conditions_to_demote?.find(c => {
+                        const m = normalize(c.metric);
+                        return ['dailyloss', 'maxdailyloss', 'perdadiaria', 'lossdiario', 'drawdown'].includes(m);
+                    });
+                    if (lossCond) {
+                        dailyLoss = lossCond.value;
+                        lossUnit = plan.drawdown_unit === 'points' ? 'pts' : '$';
+                    }
+                }
+                return { dailyLoss, dailyTarget, targetUnit, lossUnit };
+            }
+        }
+
+        // 2. Fallback: Regras Avançadas
         if (profile.use_advanced_rules && profile.risk_rules) {
             const lossRule = profile.risk_rules.find(r => r.enabled && r.target_type === 'max_daily_loss');
             if (lossRule) dailyLoss = Number(lossRule.value);
@@ -80,7 +113,7 @@ import type { RiskProfile } from "$lib/types";
             if (targetRule) dailyTarget = Number(targetRule.value);
         }
         
-        return { dailyLoss, dailyTarget };
+        return { dailyLoss, dailyTarget, targetUnit, lossUnit };
     }
 
     function getRiskValue(p: RiskProfile) {
@@ -177,11 +210,15 @@ import type { RiskProfile } from "$lib/types";
 
                     <div class="flex justify-between items-center text-red-400">
                         <span>{$t("risk.profiles.dailyLoss")}:</span>
-                        <span class="font-bold">R$ {limits.dailyLoss}</span>
+                        <span class="font-bold">
+                            {limits.lossUnit === '$' ? 'R$ ' : ''}{limits.dailyLoss.toLocaleString('pt-BR', { minimumFractionDigits: limits.lossUnit === '$' ? 2 : 0 })}{limits.lossUnit === 'pts' ? ' pts' : ''}
+                        </span>
                     </div>
                     <div class="flex justify-between items-center text-green-400">
                         <span>{$t("risk.profiles.dailyTarget")}:</span>
-                        <span class="font-bold">R$ {limits.dailyTarget}</span>
+                        <span class="font-bold">
+                            {limits.targetUnit === '$' ? 'R$ ' : ''}{limits.dailyTarget.toLocaleString('pt-BR', { minimumFractionDigits: limits.targetUnit === '$' ? 2 : 0 })}{limits.targetUnit === 'pts' ? ' pts' : ''}
+                        </span>
                     </div>
                     
                     <Separator class="my-2" />
@@ -286,7 +323,7 @@ import type { RiskProfile } from "$lib/types";
 
 <!-- Edit/New Modal -->
 <Dialog.Root bind:open={isDialogOpen}>
-    <Dialog.Content class="max-w-4xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden">
+    <Dialog.Content class="max-w-4xl w-[95vw] max-h-[95vh] overflow-y-auto no-scrollbar p-0 bg-background/95 backdrop-blur-xl border-white/10 shadow-2xl">
         <Dialog.Header>
             <Dialog.Title>
                 {editingItem
@@ -305,22 +342,30 @@ import type { RiskProfile } from "$lib/types";
 
 <!-- Details Modal -->
 <Dialog.Root bind:open={isDetailsOpen}>
-    <Dialog.Content class="max-w-4xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden">
+    <Dialog.Content class="max-w-xl w-[95vw] max-h-[95vh] flex flex-col p-4 bg-background/95 backdrop-blur-xl border-white/10 shadow-2xl">
         {#if viewingItem}
-            <RiskProfileDetails profile={viewingItem} />
-            <div class="flex justify-end gap-2">
+            <div class="flex-1 overflow-y-auto no-scrollbar pr-1">
+                <RiskProfileDetails profile={viewingItem} />
+            </div>
+            
+            <div class="flex justify-end gap-2 pt-3 border-t border-white/5 mt-2">
                 <Button
-                    variant="outline"
+                    variant="ghost"
+                    size="sm"
+                    class="h-8 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-white/5"
                     onclick={() => (isDetailsOpen = false)}
-                    >{$t("general.back")}</Button
                 >
+                    {$t("general.back")}
+                </Button>
                 <Button
+                    size="sm"
+                    class="h-8 text-[10px] font-black uppercase tracking-widest px-4"
                     onclick={() => {
                         openEdit(viewingItem!);
                         isDetailsOpen = false;
                     }}
                 >
-                    <Pencil class="w-4 h-4 mr-2" />
+                    <Pencil class="w-3 h-3 mr-2" />
                     {$t("risk.edit")}
                 </Button>
             </div>

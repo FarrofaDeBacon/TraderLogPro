@@ -43,7 +43,8 @@ export const setupI18n = async () => {
             import('./locales/pt-BR/settings.json'),
             import('./locales/pt-BR/onboarding.json'),
             import('./locales/pt-BR/ai.json'),
-            import('./locales/pt-BR/evolution.json')
+            import('./locales/pt-BR/evolution.json'),
+            import('./locales/pt-BR/fiscal.json')
         ]);
         return safeMerge('pt-BR', ...modules);
     });
@@ -62,7 +63,8 @@ export const setupI18n = async () => {
             import('./locales/en-US/settings.json'),
             import('./locales/en-US/onboarding.json'),
             import('./locales/en-US/ai.json'),
-            import('./locales/en-US/evolution.json')
+            import('./locales/en-US/evolution.json'),
+            import('./locales/en-US/fiscal.json')
         ]);
         return safeMerge('en-US', ...modules);
     });
@@ -81,7 +83,8 @@ export const setupI18n = async () => {
             import('./locales/es-ES/settings.json'),
             import('./locales/es-ES/onboarding.json'),
             import('./locales/es-ES/ai.json'),
-            import('./locales/es-ES/evolution.json')
+            import('./locales/es-ES/evolution.json'),
+            import('./locales/es-ES/fiscal.json')
         ]);
         return safeMerge('es-ES', ...modules);
     });
@@ -100,15 +103,19 @@ export const setupI18n = async () => {
             import('./locales/fr-FR/settings.json'),
             import('./locales/fr-FR/onboarding.json'),
             import('./locales/fr-FR/ai.json'),
-            import('./locales/fr-FR/evolution.json')
+            import('./locales/fr-FR/evolution.json'),
+            import('./locales/fr-FR/fiscal.json')
         ]);
         return safeMerge('fr-FR', ...modules);
     });
 
     const browser = typeof window !== 'undefined';
-    const initialLocale = browser
+    const rawLocale = browser
         ? window.localStorage.getItem('locale') || getLocaleFromNavigator() || 'pt-BR'
         : 'pt-BR';
+    
+    // Compatibility Fix: map old 'en' to 'en-US'
+    const initialLocale = rawLocale === 'en' ? 'en-US' : rawLocale;
 
     init({
         fallbackLocale: 'pt-BR',

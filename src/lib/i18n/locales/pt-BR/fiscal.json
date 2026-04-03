@@ -8,8 +8,21 @@
                 "calculationBasis": "Base de Cálculo",
                 "taxDue": "Imposto Devido",
                 "compensatedLosses": "Prejuízo Compensado",
-                "netProfit": "Lucro Líquido"
+                "netProfit": "Lucro Líquido",
+                "totalDue": "Total Devido",
+                "dueYearHint": "Expectativa de pagamento no ano",
+                "totalPaid": "Total Pago",
+                "paidYearHint": "DARFs liquidadas no período",
+                "pending": "Pendente Atual",
+                "pendingHint": "{count} Guias Pendentes",
+                "losses": "Prejuízos Acumulados"
             },
+            "manageDarfs": "Gerenciar DARFs",
+            "newAppraisal": "Nova Apuração",
+            "evolution": "Evolução Fiscal",
+            "periodFilter": "Filtro de Período",
+            "saveBeforeDarf": "Salve a apuração antes de gerar a DARF.",
+            "complementary": "Complementar",
             "table": {
                 "month": "Mês",
                 "netProfit": "Result. Bruto",
@@ -18,11 +31,24 @@
                 "status": "Status",
                 "paid": "Pago",
                 "pending": "Pendente",
-                "late": "Atrasado"
+                "late": "Atrasado",
+                "ok": "OK",
+                "toPay": "Total a Pagar",
+                "compensated": "Compensado",
+                "operation": "Tipo de Operação",
+                "actions": "Ações",
+                "shortNet": "Líquido"
             },
             "messages": {
                 "loading": "Carregando apuração fiscal...",
                 "noData": "Nenhuma apuração encontrada para o ano de {year}."
+            },
+            "calculate": "Calcular",
+            "modal": {
+                "title": "Nova Apuração Mensal",
+                "description": "Selecione o mês e o ano para calcular a apuração de IRPF.",
+                "month": "Mês de Referência",
+                "year": "Ano de Referência"
             }
         },
         "darf": {

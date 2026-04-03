@@ -1,5 +1,11 @@
 {
     "risk": {
+        "actions": {
+            "cancel": "Cancel",
+            "save": "Save Data",
+            "new": "New Profile",
+            "restart": "Restart Evolution"
+        },
         "cockpit": {
             "title": "Risk Control",
             "subtitle": "Real-time Monitoring",
@@ -14,7 +20,24 @@
                 "ruinRisk": "Ruin Risk (Reverse)",
                 "registeredViolations": "Registered Violations",
                 "pendingMissions": "Pending Missions",
-                "emotionalSupervisor": "Emotional Supervisor"
+                "emotionalSupervisor": "Emotional Supervisor",
+                "survivalRules": "Survival Rules",
+                "operationalRules": "Operational Rules",
+                "dailyLoss": "Daily Loss",
+                "drawdown": "Drawdown"
+            },
+            "criteria": {
+                "win_rate": "Target Win Rate"
+            },
+            "engine": {
+                "days": "Traded Days",
+                "consistency": "Profit Consistency",
+                "winrate": "Win Rate",
+                "consecutive_loss_days": "Max. Consecutive Loss Days",
+                "loss_streak": "Loss Streak",
+                "best_day_share": "Best Day (%)",
+                "min_trading_days": "Min. Trading Days",
+                "unknown": "Criterion"
             },
             "stats": {
                 "globalLimit": "Global Limit",
@@ -145,6 +168,7 @@
                 "fixedValue": "Fixed Value",
                 "capitalBase": "Capital Base",
                 "contracts": "Contracts",
+                "maxDailyLoss": "Max Daily Loss",
                 "referenceAccount": "Reference Account",
                 "selectAccount": "Select Account",
                 "baseStrategy": "Risk Strategy",
@@ -177,11 +201,6 @@
                 "Prop": "Prop Firm",
                 "Real": "Real Account",
                 "Specific": "Specific Accounts"
-            },
-            "actions": {
-                "cancel": "Cancel",
-                "save": "Save Data",
-                "restart": "Restart Evolution"
             }
         },
         "rules": {
@@ -228,7 +247,7 @@
             },
             "targetType": {
                 "label": "Rule Target Metric",
-                "max_daily_loss": "Tipo de Limite Diário",
+                "max_daily_loss": "Daily Loss Limit",
                 "profit_target": "Daily Profit Goal",
                 "sum_contracts": "Contract Limit (Exposure)",
                 "day_trade_only": "Rule: Day Trade Only",
@@ -271,9 +290,9 @@
                 "maintenance": "Awaiting Margin (Maintenance)",
                 "stages": {
                     "current": "Current Journey Stage",
-                    "margin_building": "Construção de Margem",
-                    "real_phase_1": "Fase 1 (Real)",
-                    "real_final": "Conta Profissional",
+                    "margin_building": "Margin Building",
+                    "real_phase_1": "Phase 1 (Real)",
+                    "real_final": "Professional Account",
                     "default": "Initial Stage",
                     "training": "Evaluation Phase",
                     "junior": "Junior Trader",
@@ -327,12 +346,16 @@
             "deskAdvanceSuccess": "Congratulations! Prop stage advanced successfully!",
             "restartConfirm": "Are you sure you want to restart progress?",
             "restartSuccess": "Plan restarted successfully.",
+            "restartError": "Failed to restart plan.",
             "deleteDesc": "This action will permanently delete the risk profile.",
             "phaseAdvance": "Congratulations! You have advanced to phase: {name}",
             "phaseRestart": "Growth plan restarted.",
             "confirmRestart": "Do you want to restart the plan? Your progress will return to Phase 1.",
             "removePhase": "Remove Phase",
-            "nextPhaseFallback": "Next Phase"
+            "nextPhaseFallback": "Next Phase",
+            "promote": "Promoted to Phase {name}!",
+            "demote": "Demoted to Phase {name}.",
+            "promoteCriteriaNotMet": "Promotion criteria not met."
         },
         "tooltips": {
             "dailyLossLimit": "Blocks new orders if the day's loss reaches this value.",
@@ -402,17 +425,80 @@
                 "restart": "Restart Plan",
                 "restartConfirm": "Deseja realmente reiniciar o plano para a Fase 1?"
             },
-            "calculationModes": "Modos de Cálculo",
-            "dailyLossMode": "Perda Diária",
-            "phaseDrawdownMode": "Drawdown da Fase",
-            "phaseTargetMode": "Meta da Fase",
+            "calculationModes": "Calculation Modes",
+            "dailyLossMode": "Daily Loss",
+            "phaseDrawdownMode": "Phase Drawdown",
+            "phaseTargetMode": "Phase Target",
+            "targetUnit": "Progression (Profit Target)",
+            "drawdownUnit": "Risk (Loss and Drawdown)",
+            "financial": "Financial ($)",
+            "points": "Points (pts)",
             "helpers": {
-                "dailyLossRecover": "Ganhos abatem a perda do dia (Líquido).",
-                "dailyLossAccumulate": "Apenas perdas somam no limite (Bruto).",
-                "drawdownRecover": "PnL positivo recupera o drawdown da fase.",
-                "drawdownAccumulate": "Drawdown é baseado no pico (High-Water Mark).",
-                "targetReset": "A meta reseta a cada nova fase alcançada.",
-                "targetCumulative": "A meta é acumulada desde o início do plano."
+                "dailyLossRecover": "Gains offset the day's loss (Net).",
+                "dailyLossAccumulate": "Only losses add to the limit (Gross).",
+                "drawdownRecover": "Positive PnL recovers the phase drawdown.",
+                "drawdownAccumulate": "Drawdown is based on the peak (High-Water Mark).",
+                "targetReset": "The target resets with each new phase reached.",
+                "targetCumulative": "The target is accumulated since the plan's start."
+            }
+        },
+        "ruleBuilder": {
+            "title": "Additional Rules",
+            "addRule": "Create New Additional Rule",
+            "presets": {
+                "maxDailyLoss": "Maximum Daily Loss",
+                "profitTarget": "Profit Target",
+                "sumContracts": "Contract Limit (Exposure)",
+                "maxTrades": "Maximum Daily Trades",
+                "dayTradeOnly": "Allow Only Day Trade",
+                "closeBeforeClose": "Liquidate Before Close",
+                "consistency": "Consistency Rule",
+                "rule50": "50% Profit Rule"
+            },
+            "groups": {
+                "global": "Global Rules",
+                "asset": "Asset Level Rules"
+            }
+        },
+        "form": {
+            "sections": {
+                "foundation": "Foundation",
+                "operational": "Operational",
+                "intelligence": "Intelligence",
+                "ecosystem": "Ecosystem",
+                "status": "General Status"
+            },
+            "sidebar": {
+                "incomplete": "Incomplete",
+                "valid": "Validated",
+                "warning": "Warning"
+            },
+            "labels": {
+                "profileName": "Profile Name",
+                "capitalBase": "Base Capital",
+                "riskPerTrade": "Risk/Trade",
+                "dailyLoss": "Daily Loss",
+                "dailyTarget": "Daily Target",
+                "groupAssets": "Group: {name}",
+                "linkedAssets": "Assets",
+                "sharedLimit": "Shared Limit",
+                "sharedDrawdown": "Shared Drawdown"
+            }
+        },
+        "validation": {
+            "error": {
+                "name_empty": "Risk profile name cannot be empty.",
+                "capital_undefined": "Fixed capital must be greater than zero.",
+                "account_not_linked": "Select an account to link capital source.",
+                "no_assets_linked": "Add at least one asset profile to the scope.",
+                "growth_plan_not_found": "The selected growth plan does not exist.",
+                "orphan_asset_reference": "References to deleted assets detected."
+            },
+            "warning": {
+                "high_risk": "Daily risk is above 10% of capital. Consider reducing.",
+                "meta_disproportionate": "Profit target is too high relative to stop. Consistency will be harder.",
+                "no_psych_filters": "Psychological filters disabled. Risk of emotional escalation.",
+                "no_blocking_rules": "No advanced blocking rules defined."
             }
         }
     }

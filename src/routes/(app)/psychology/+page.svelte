@@ -946,7 +946,7 @@
             <!-- Left: Hierarchical Analysis -->
             <div class="lg:col-span-8 space-y-4">
                 <SystemHeader 
-                    title="Sessões e Estrutura Hierárquica"
+                    title={$t("psychology.hierarchical.sessionsStructure")}
                     icon={Layers}
                     class="mb-2"
                 />
@@ -1016,7 +1016,7 @@
                                 class="text-[9px] px-1.5 h-4 bg-muted border-border font-bold uppercase"
                             >
                                 {month.weeks.length}
-                                {$t("general.weeks_upper")}
+                                {$t("common.weeks_upper")}
                             </Badge>
                             <div class="flex gap-1.5 opacity-60">
                                 {#each Object.entries(month.totalPnlByCurrency ?? {}) as [curr, total]}
@@ -1136,7 +1136,7 @@
                                             <tr>
                                                 <th
                                                     class="px-3 text-[8px] font-black text-muted-foreground uppercase"
-                                                    >{$t("general.asset")}</th
+                                                    >{$t("common.asset")}</th
                                                 >
                                                 <th
                                                     class="px-3 text-[8px] font-black text-muted-foreground uppercase"
@@ -1181,7 +1181,7 @@
                                                                 >
                                                                     ({st?.weight}
                                                                     {$t(
-                                                                        "general.weight",
+                                                                        "common.weight",
                                                                     )} x {(
                                                                         trade.intensity ||
                                                                         5
@@ -1189,7 +1189,7 @@
                                                                         1,
                                                                     )}
                                                                     {$t(
-                                                                        "general.intensity_short",
+                                                                        "common.intensity_short",
                                                                     )})
                                                                 </span>
                                                             </div>
@@ -1240,7 +1240,7 @@
                                 <tr class="h-8">
                                     <th
                                         class="px-3 text-[9px] font-black text-muted-foreground uppercase"
-                                        >{$t("general.date")}</th
+                                        >{$t("common.date")}</th
                                     >
                                     <th
                                         class="px-3 text-[9px] font-black text-muted-foreground uppercase w-32"
@@ -1266,7 +1266,7 @@
                                     >
                                     <th
                                         class="px-3 text-[9px] font-black text-muted-foreground uppercase text-right"
-                                        >{$t("general.actions")}</th
+                                        >{$t("common.actions")}</th
                                     >
                                 </tr>
                             </thead>
@@ -1428,7 +1428,7 @@
                         <tr class="h-8 border-b border-border/40">
                             <th
                                 class="px-3 text-[9px] font-black text-muted-foreground uppercase"
-                                >{$t("general.origin")}</th
+                                >{$t("common.origin")}</th
                             >
                             <th
                                 class="px-3 text-[9px] font-black text-muted-foreground uppercase w-32"

@@ -1083,8 +1083,8 @@
                                                     >
                                                         {trade.exit_price ||
                                                         trade.exit_date
-                                                            ? $t("list.table.status_closed")
-                                                            : $t("list.table.status_open")}
+                                                            ? $t("trades.list.table.status_closed")
+                                                            : $t("trades.list.table.status_open")}
                                                     </Badge>
                                                      <Badge
                                                         variant="outline"

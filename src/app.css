@@ -29,16 +29,16 @@
   --accent-foreground: oklch(0.4 0.15 250);
   /* Darkened for better readability as text */
   --destructive: oklch(0.55 0.22 25);
-  --border: oklch(0.9 0.02 250 / 50%);
-  --input: oklch(0.9 0.02 250);
-  --ring: oklch(0.6 0.18 250 / 40%);
+  --border: oklch(0.85 0.03 260 / 75%);
+  --input: oklch(0.88 0.02 250);
+  --ring: oklch(0.55 0.18 250 / 35%);
 
   /* Premium Elevation & Glass */
-  --shadow-premium: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -5px rgba(0, 0, 0, 0.02);
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.4);
+  --shadow-premium: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.07), 0 16px 40px rgba(0,0,0,0.05);
+  --glass-bg: rgba(255, 255, 255, 0.88);
+  --glass-border: rgba(200, 210, 230, 0.6);
   --glass-blur: 40px;
-  --glass-saturate: 180%;
+  --glass-saturate: 160%;
 
   /* Status Tokens (Canonical) */
   --status-success: oklch(0.7 0.2 150); /* emerald-500 equivalent */
@@ -183,25 +183,97 @@
     @apply font-heading tracking-tight;
   }
 
-  /* Global Glassmorphism for Cards */
+  /* ============================================================
+   * GLASSMORPHISM — Dark (default)
+   * ============================================================ */
   .card-glass {
     @apply bg-card rounded-[var(--radius)] antialiased relative overflow-hidden;
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    border: 1px solid oklch(1 0 0 / 20%);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid oklch(1 0 0 / 10%);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
-  /* Light mode improvement for glass contrast */
-  :root:not(.dark) .card-glass {
-    border-color: oklch(0.25 0.05 260 / 10%);
-    background: oklch(1 0 0 / 75%);
+  /* ============================================================
+   * LIGHT MODE — Global Overrides
+   * Corrige: cinzas planos, sombras invisíveis, bordas brancas
+   * ============================================================ */
+  :root:not(.dark) {
+
+    /* Card Glass — branco real com elevação visível */
+    .card-glass {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid oklch(0.88 0.02 260 / 70%);
+      box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.06),
+        0 4px 16px rgba(0, 0, 0, 0.07),
+        0 12px 32px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Cards internos do cockpit (bg-background/20, bg-black/40) */
+    [class*="bg-background/"],
+    [class*="bg-black/"] {
+      background-color: rgba(248, 249, 252, 0.85) !important;
+    }
+
+    /* Bordas "brancas" viram bordas sutis e visíveis */
+    [class*="border-white/"] {
+      border-color: oklch(0.85 0.02 260 / 80%) !important;
+    }
+
+    /* Sombra de elevação para botões */
+    .btn-light-shadow,
+    button:not([disabled]):not([class*="ghost"]):not([class*="link"]):not([class*="outline"]) {
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.08),
+        0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* QuickLog bar — fundo definido, não transparente */
+    [class*="bg-secondary/"] {
+      background-color: rgba(241, 243, 248, 0.95) !important;
+    }
+
+    /* Inputs com borda visível */
+    input, select, textarea {
+      border-color: oklch(0.82 0.03 250) !important;
+    }
+
+    /* Progress bar track — cinza visível, não invisível */
+    [class*="bg-white/5"],
+    [class*="bg-white/10"] {
+      background-color: oklch(0.90 0.02 250 / 80%) !important;
+    }
+
+    /* Badges e chips — garantir contraste */
+    [class*="bg-primary/5"],
+    [class*="bg-primary/10"] {
+      background-color: oklch(0.55 0.18 250 / 12%) !important;
+    }
+
+    /* Texto muted — mais escuro para legibilidade */
+    .text-muted-foreground {
+      color: oklch(0.45 0.05 260) !important;
+    }
   }
 
+  /* ============================================================
+   * HOVER — light e dark
+   * ============================================================ */
   .card-glass:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
-    border-color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.1),
+      0 16px 48px rgba(0, 0, 0, 0.08);
+    border-color: oklch(from var(--primary) l c h / 40%);
+  }
+
+  :root:not(.dark) .card-glass:hover {
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      0 8px 24px rgba(0, 0, 0, 0.10),
+      0 20px 48px rgba(0, 0, 0, 0.07);
+    border-color: oklch(0.55 0.18 250 / 50%);
   }
 }

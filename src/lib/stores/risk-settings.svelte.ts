@@ -47,6 +47,7 @@ export class RiskSettingsStore {
                 await safeInvoke("save_risk_profile", { profile: $state.snapshot(profile) });
             } catch (e) {
                 console.error("[RiskSettingsStore] Error saving risk profile:", e);
+                toast.error("Erro ao salvar perfil de risco");
             }
         }
     }
@@ -57,6 +58,7 @@ export class RiskSettingsStore {
                 await safeInvoke("save_asset_risk_profile", { profile: $state.snapshot(profile) });
             } catch (e) {
                 console.error("[RiskSettingsStore] Error saving asset risk profile:", e);
+                toast.error("Erro ao salvar perfil por ativo");
             }
         }
     }
@@ -67,8 +69,10 @@ export class RiskSettingsStore {
                 await safeInvoke("save_growth_plan", { plan: $state.snapshot(plan) });
             } catch (e) {
                 console.error("[RiskSettingsStore] Error saving growth plan:", e);
+                toast.error("Erro ao salvar plano de crescimento");
             }
         }
+        // toast.success("Sincronizado com sucesso");
     }
 
     // --- Risk Profiles CRUD ---
@@ -202,16 +206,13 @@ export class RiskSettingsStore {
     }
 
     updateGrowthPlan(id: string, item: Partial<GrowthPlan>) {
-        console.log(`[RiskSettings] Updating GrowthPlan ${id}`, item);
         this.growthPlans = this.growthPlans.map(p => {
             if (p.id === id) {
-                // Proteção de índice: garante que não ultrapasse o número de fases
-                let newIndex = item.current_phase_index;
                 const phasesCount = item.phases?.length ?? p.phases?.length ?? 0;
-
-                console.log(`[RiskSettings] Plan ${p.name}: current_index=${p.current_phase_index}, requested_index=${newIndex}, phasesCount=${phasesCount}`);
+                let newIndex = item.current_phase_index;
 
                 if (newIndex !== undefined && phasesCount > 0) {
+                    // Proteção Férrea: Trava entre 0 e a última fase (Modo Manutenção)
                     newIndex = Math.max(0, Math.min(newIndex, phasesCount - 1));
                 }
 
@@ -225,7 +226,7 @@ export class RiskSettingsStore {
                 };
 
                 if (phaseChanged) {
-                    console.log(`[RiskSettings] Phase changed to ${updated.current_phase_index}. StartedAt: ${updated.currentPhaseStartedAt}`);
+                    console.log(`[RiskSettings] GrowthPlan Phase changed to index ${updated.current_phase_index}. StartedAt: ${updated.currentPhaseStartedAt}`);
                 }
 
                 return updated;
@@ -487,6 +488,89 @@ export class RiskSettingsStore {
             console.log(`[RiskSettingsStore] Asset Scope migration: Migrated ${migratedCount} profiles to hierarchical structure.`);
             await this.saveAssetRiskProfiles();
         }
+    }
+
+    /**
+     * Motor de Validação em Tempo Real para Perfis de Risco
+     */
+    createRiskValidationState(formData: Omit<RiskProfile, "id">) {
+        const self = this;
+        return {
+            get errors(): { message: string, section: string }[] {
+                const errs: { message: string, section: string }[] = [];
+                if (!formData.name?.trim()) errs.push({ message: "risk.validation.error.name_empty", section: "foundation" });
+                
+                if (formData.capital_source === "Fixed" && (formData.fixed_capital || 0) <= 0) {
+                    errs.push({ message: "risk.validation.error.capital_undefined", section: "foundation" });
+                }
+                
+                if (formData.capital_source === "LinkedAccount" && !formData.linked_account_id) {
+                    errs.push({ message: "risk.validation.error.account_not_linked", section: "foundation" });
+                }
+                
+                // Operacional
+                if (formData.max_daily_loss <= 0) errs.push({ message: "Perda máxima diária deve ser maior que zero.", section: "operational" });
+                if (formData.daily_target <= 0) errs.push({ message: "Meta de lucro diária deve ser maior que zero.", section: "operational" });
+
+                // Ecossistema
+                if (!formData.linked_asset_risk_profile_ids || formData.linked_asset_risk_profile_ids.length === 0) {
+                    errs.push({ message: "risk.validation.error.no_assets_linked", section: "ecosystem" });
+                }
+
+                if (formData.growth_plan_id) {
+                    const plan = self.growthPlans.find(p => p.id === formData.growth_plan_id);
+                    if (!plan) errs.push({ message: "risk.validation.error.growth_plan_not_found", section: "ecosystem" });
+                }
+
+                if (formData.linked_asset_risk_profile_ids) {
+                    const exists = formData.linked_asset_risk_profile_ids.every(id => 
+                        self.assetRiskProfiles.some(ap => ap.id === id)
+                    );
+                    if (!exists) errs.push({ message: "risk.validation.error.orphan_asset_reference", section: "ecosystem" });
+                }
+                
+                return errs;
+            },
+            get warnings(): { message: string, section: string }[] {
+                const warns: { message: string, section: string }[] = [];
+                
+                // Risco alto (>10% do capital fixo)
+                if (formData.capital_source === "Fixed" && formData.max_daily_loss > (formData.fixed_capital * 0.1)) {
+                    warns.push({ message: "risk.validation.warning.high_risk", section: "operational" });
+                }
+                
+                // Meta desproporcional (>5x o risco)
+                if (formData.max_daily_loss > 0 && formData.daily_target > (formData.max_daily_loss * 5)) {
+                    warns.push({ message: "risk.validation.warning.meta_disproportionate", section: "operational" });
+                }
+                
+                if (!formData.psychological_coupling_enabled) {
+                    warns.push({ message: "risk.validation.warning.no_psych_filters", section: "intelligence" });
+                }
+                
+                if (!formData.use_advanced_rules || (formData.risk_rules?.length === 0)) {
+                    warns.push({ message: "risk.validation.warning.no_blocking_rules", section: "intelligence" });
+                }
+                
+                return warns;
+            },
+            get isValid(): boolean {
+                return this.errors.length === 0;
+            },
+            get sectionStatus() {
+                const sections = ["foundation", "operational", "intelligence", "ecosystem"];
+                const status: Record<string, { errors: number, warnings: number }> = {};
+                
+                sections.forEach(s => {
+                    status[s] = {
+                        errors: this.errors.filter(e => e.section === s).length,
+                        warnings: this.warnings.filter(w => w.section === s).length
+                    };
+                });
+                
+                return status;
+            }
+        };
     }
 }
 

@@ -75,19 +75,17 @@
             },
             tooltip: {
                 trigger: "axis",
-                backgroundColor: "#18181b",
-                borderColor: "#27272a",
-                textStyle: { color: "#fff", fontSize: 12 },
+                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                borderColor: "rgba(255, 255, 255, 0.1)",
+                textStyle: { color: "#fff", fontSize: 10 },
                 formatter: (params: any) => {
-                    const capitalLabel = $t(
-                        "trades.wizard.charts.equity.capital",
-                    );
-                    const ddLabel = $t("trades.wizard.charts.equity.drawdown");
+                    const capitalLabel = $t("trades.charts.equity.capital");
+                    const ddLabel = $t("trades.charts.equity.drawdown");
                     const equity = params.find(
-                        (p: any) => p.seriesName === "Capital",
+                        (p: any) => p.seriesName === capitalLabel,
                     )?.data;
                     const dd = params.find(
-                        (p: any) => p.seriesName === "Drawdown",
+                        (p: any) => p.seriesName === ddLabel,
                     )?.data;
                     if (!equity) return "";
 
@@ -147,11 +145,11 @@
                             userProfileStore.userProfile?.main_currency || "BRL",
                         ).replace(/[^\d.,+-]/g, ""),
                 },
-                splitLine: { lineStyle: { color: "#27272a", type: "dashed" } },
+                splitLine: { lineStyle: { color: "rgba(128, 128, 128, 0.1)", type: "dashed" } },
             },
             series: [
                 {
-                    name: "Capital",
+                    name: $t("trades.charts.equity.capital"),
                     type: "line",
                     smooth: true,
                     showSymbol: true,
@@ -186,7 +184,7 @@
                     },
                 },
                 {
-                    name: "Drawdown",
+                    name: $t("trades.charts.equity.drawdown"),
                     type: "line",
                     smooth: true,
                     showSymbol: false,
@@ -194,7 +192,7 @@
                     data: drawdownData,
                     lineStyle: { opacity: 0 },
                     areaStyle: {
-                        color: "rgba(244, 63, 94, 0.23)",
+                        color: "rgba(244, 63, 94, 0.15)",
                     },
                 },
             ],
@@ -212,7 +210,7 @@
         <div
             class="absolute inset-0 flex items-center justify-center text-muted-foreground italic text-xs"
         >
-            {$t("trades.wizard.charts.equity.empty")}
+            {$t("trades.charts.equity.empty")}
         </div>
     {/if}
 </div>

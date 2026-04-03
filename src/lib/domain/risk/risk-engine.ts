@@ -4,6 +4,7 @@ import type {
     DailyRiskStatus,
     GrowthPhase
 } from './types';
+import { toLocalDateStr } from './risk-utils';
 
 /**
  * Calcula o status diário de risco com base nas trades do dia atual e no perfil configurado.
@@ -18,12 +19,10 @@ export function calculateDailyRiskStatus(
     trades: TradeRiskSnapshot[],
     growthPhase?: GrowthPhase
 ): DailyRiskStatus {
-    const now = new Date();
-    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const todayStr = toLocalDateStr(new Date());
     
     const todayTrades = trades.filter((t) => {
-        const tDate = typeof t.date === 'string' ? t.date : t.date.toISOString();
-        return tDate.substring(0, 10) === todayStr;
+        return toLocalDateStr(t.date) === todayStr;
     });
 
     let dailyPnL = 0;

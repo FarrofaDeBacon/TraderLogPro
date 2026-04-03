@@ -101,10 +101,10 @@
             "worstMindset": "Pior Estado Mental"
         },
         "kpis": {
-            "bestPerformance": "Melhor Performance",
-            "negativeLosses": "Losses Negativos",
-            "offender": "O Ofensor",
-            "psychoScore": "Psycho Score",
+            "bestPerformance": "Estado de Pico",
+            "negativeLosses": "Dreno Emocional",
+            "offender": "Vulnerabilidade Crítica",
+            "psychoScore": "Índice Psicológico",
             "score": "SCORE"
         },
         "list": {

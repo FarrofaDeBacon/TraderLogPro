@@ -345,6 +345,8 @@ export type GrowthPlan = {
     daily_loss_mode?: 'accumulate' | 'recover';
     phase_drawdown_mode?: 'accumulate' | 'recover';
     phase_target_mode?: 'cumulative' | 'reset_each_phase';
+    target_unit: 'financial' | 'points';
+    drawdown_unit: 'financial' | 'points';
 };
 
 export type RiskProfile = {

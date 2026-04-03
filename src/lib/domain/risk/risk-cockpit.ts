@@ -10,7 +10,7 @@ import type {
 import { calculateDailyRiskStatus } from './risk-engine';
 import { evaluateGrowthPhase } from './growth-engine';
 import { evaluateDiscipline } from './discipline-engine';
-import { parseSafeDate } from '../../utils';
+import { toLocalDateStr } from './risk-utils';
 
 /**
  * Representa o estado agregado de todo o Cockpit de Risco.
@@ -48,10 +48,18 @@ export function buildRiskCockpitState(
     modes: { 
         daily_loss_mode?: 'accumulate' | 'recover', 
         phase_drawdown_mode?: 'accumulate' | 'recover',
-        phase_target_mode?: 'cumulative' | 'reset_each_phase'
+        phase_target_mode?: 'cumulative' | 'reset_each_phase',
+        target_unit?: 'financial' | 'points',
+        drawdown_unit?: 'financial' | 'points'
     } = {}
 ): RiskCockpitState {
-    const { daily_loss_mode = 'accumulate', phase_drawdown_mode = 'accumulate', phase_target_mode = 'cumulative' } = modes;
+    const { 
+        daily_loss_mode = 'accumulate', 
+        phase_drawdown_mode = 'accumulate', 
+        phase_target_mode = 'cumulative',
+        target_unit = 'financial',
+        drawdown_unit = 'financial'
+    } = modes;
     // 1. Motor Financeiro Diário (Usa TODOS os trades pra filtrar por HOJE)
     const dailyRiskStatus = calculateDailyRiskStatus(
         profile, 
@@ -74,16 +82,13 @@ export function buildRiskCockpitState(
         // Se o modo for reset_each_phase, filtramos trades apenas da fase atual.
         // Se for cumulative, usamos todos os trades do contexto (plano todo).
         if (phase_target_mode === 'reset_each_phase' && phaseStartedAt) {
-            const phaseDateObj = parseSafeDate(phaseStartedAt);
-            const phaseStartDateStr = phaseDateObj.toISOString().split('T')[0];
-            const phaseStartTime = new Date(`${phaseStartDateStr}T00:00:00Z`).getTime();
+            const phaseStartDateStr = toLocalDateStr(phaseStartedAt);
             
             phaseTrades = allTrades.filter(t => {
-                const tradeDateObj = parseSafeDate(t.date);
-                const tradeDateStr = tradeDateObj.toISOString().split('T')[0];
-                return new Date(`${tradeDateStr}T00:00:00Z`).getTime() >= phaseStartTime;
+                const tradeDateStr = toLocalDateStr(t.date);
+                return tradeDateStr >= phaseStartDateStr;
             });
-            console.log(`[Cockpit Engine] RESET_EACH_PHASE mode: Retained ${phaseTrades.length} trades since ${phaseStartedAt}.`);
+            console.log(`[Cockpit Engine] RESET_EACH_PHASE mode: Retained ${phaseTrades.length} trades since ${phaseStartDateStr}.`);
         } else {
             console.log(`[Cockpit Engine] CUMULATIVE mode: Using all ${phaseTrades.length} trades.`);
         }
@@ -95,7 +100,9 @@ export function buildRiskCockpitState(
             phaseIndex,
             totalPhases,
             daily_loss_mode,
-            phase_drawdown_mode
+            phase_drawdown_mode,
+            target_unit,
+            drawdown_unit
         );
     }
 

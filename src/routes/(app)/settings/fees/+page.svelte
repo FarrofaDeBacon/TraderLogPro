@@ -290,7 +290,7 @@ import type { FeeProfile } from "$lib/types";
 <DeleteConfirmationModal bind:open={isDeleteOpen} onConfirm={confirmDelete} />
 
 <Dialog.Root bind:open={isDialogOpen}>
-    <Dialog.Content class="sm:max-w-[600px]">
+<Dialog.Content class="sm:max-w-[800px] max-h-[90vh] flex flex-col overflow-hidden">
         <Dialog.Header>
             <Dialog.Title
                 >{editingId
@@ -302,7 +302,7 @@ import type { FeeProfile } from "$lib/types";
             >
         </Dialog.Header>
 
-        <div class="grid gap-6 py-4">
+        <div class="overflow-y-auto flex-1 grid gap-4 py-3 pr-1">
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
                     <Label>{$t("settings.fees.form.name")}</Label>
@@ -330,8 +330,6 @@ import type { FeeProfile } from "$lib/types";
 
             <Separator />
 
-            <Separator />
-
             <div class="space-y-4">
                 <div class="flex items-center gap-2">
                     <Calculator class="w-4 h-4" />
@@ -340,7 +338,7 @@ import type { FeeProfile } from "$lib/types";
                     </h4>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-3 gap-3">
                     <div class="space-y-2">
                         <Label>{$t("settings.fees.form.fixedFee")}</Label>
                         <Input
@@ -592,9 +590,10 @@ import type { FeeProfile } from "$lib/types";
                 </div>
             </div>
 
-            <Dialog.Footer>
-                <Button onclick={save}>{$t("settings.fees.form.save")}</Button>
-            </Dialog.Footer>
-        </div></Dialog.Content
-    >
+            <Dialog.Footer />
+        </div>
+        <div class="pt-3 border-t border-border/40">
+            <Button onclick={save} class="w-full">{$t("settings.fees.form.save")}</Button>
+        </div>
+    </Dialog.Content>
 </Dialog.Root>

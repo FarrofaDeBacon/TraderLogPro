@@ -239,11 +239,10 @@
     </div>
 </div>
 
-<DeleteConfirmationModal bind:open={isDeleteOpen} onConfirm={confirmDelete} />
 
-<!-- Edit/New Modal -->
 <Dialog.Root bind:open={isDialogOpen}>
-    <Dialog.Content class="max-w-3xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden">
+    <Dialog.Content class="max-w-4xl w-[95vw] max-h-[95vh] overflow-y-auto no-scrollbar p-0 bg-background/95 backdrop-blur-xl border-white/10 shadow-2xl">
+        <div class="flex flex-col">
         <Dialog.Header>
             <Dialog.Title>
                 {editingItem ? "Editar Plano de Crescimento" : "Novo Plano de Crescimento"}
@@ -255,5 +254,6 @@
             onSave={save}
             onCancel={() => (isDialogOpen = false)}
         />
+        </div>
     </Dialog.Content>
 </Dialog.Root>

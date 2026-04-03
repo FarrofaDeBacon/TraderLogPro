@@ -128,6 +128,7 @@
     },
     "general": {
         "add": "Add",
+        "all": "General",
         "back": "Back",
         "cancel": "Cancel",
         "confirmDeleteDescription": "Are you sure you want to delete? This action cannot be undone.",

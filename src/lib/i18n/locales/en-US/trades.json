@@ -42,21 +42,47 @@
             "currency": "Currency",
             "search_placeholder": "Search asset/note... (Ctrl+K)"
         },
+        "quick_edit": {
+            "title": "Quick Edit",
+            "description": "Adjust the core elements of your trade.",
+            "date_time": "Date & Time",
+            "asset": "Asset",
+            "bias": "Direction (Bias)",
+            "result": "Financial Result (PnL)",
+            "full_mode": "Full Edit Mode",
+            "save": "Save Changes"
+        },
         "kpi": {
             "totalBalance": "Total Balance",
             "winRate": "Win Rate",
+            "win_rate": "Win Rate",
             "winRateDesc": "{winners} of {total} Trades",
             "profitFactor": "Profit Factor",
+            "profit_factor": "Profit Factor",
             "openTrades": "Open",
-            "avgInterval": "Interval Between Trades",
+            "avgInterval": "Avg Interval",
             "performance": "Performance",
             "drawdown": "Drawdown",
-            "riskReward": "Risk:Reward",
+            "riskReward": "Risk/Reward",
+            "risk_reward": "Risk/Reward",
             "distribution": "Distribution",
             "equityCurve": "Equity Curve - Drawdown",
             "trades_label": "Trades",
             "result": "Result",
-            "type": "Type"
+            "type": "Type",
+            "summary": "Performance Summary"
+        },
+        "charts": {
+            "outcome": {
+                "trades_label": "{count} Trades",
+                "gain": "Gain",
+                "loss": "Loss"
+            },
+            "equity": {
+                "capital": "Accumulated Capital",
+                "drawdown": "Drawdown",
+                "empty": "No evolution history"
+            }
         },
         "details": {
             "title": "Trade Details",

@@ -23,6 +23,13 @@
             "messages": {
                 "loading": "Loading fiscal data...",
                 "noData": "No tax records found for the year {year}."
+            },
+            "calculate": "Calculate",
+            "modal": {
+                "title": "New Monthly Calculation",
+                "description": "Select the month and year to calculate the IRPF tax report.",
+                "month": "Reference Month",
+                "year": "Reference Year"
             }
         },
         "darf": {

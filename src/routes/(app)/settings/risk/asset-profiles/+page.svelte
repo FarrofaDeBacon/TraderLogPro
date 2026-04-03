@@ -51,7 +51,7 @@
       .filter((p) => {
         const search = searchQuery.toLowerCase();
         const assetTypeName = assetTypesStore.getAssetTypeName(p.asset_type_id || "").toLowerCase();
-        const hasMatchingAsset = p.asset_ids.some(aid => 
+        const hasMatchingAsset = (p.asset_ids || []).some(aid => 
           assetsStore.assets.find(a => a.id === aid)?.symbol.toLowerCase().includes(search)
         );
         return (
@@ -127,7 +127,7 @@
     }
 
     const otherScope = riskSettingsStore.assetRiskProfiles.find(p => 
-      p.id !== editingId && p.asset_ids.includes(selectedAssetId)
+      p.id !== editingId && selectedAssetId && (p.asset_ids || []).includes(selectedAssetId)
     );
 
     if (otherScope) {
@@ -220,16 +220,16 @@
                 <Badge variant="outline" class="text-[9px] h-4 py-0 font-black uppercase tracking-widest bg-emerald-500/5 text-emerald-500 border-emerald-500/20">
                   {assetTypesStore.getAssetTypeName(profile.asset_type_id || "")}
                 </Badge>
-                {#if profile.asset_ids.length > 1}
+                {#if (profile.asset_ids?.length || 0) > 1}
                   <Badge variant="secondary" class="text-[9px] h-4 py-0 font-black">
-                    +{profile.asset_ids.length} ATIVOS
+                    +{(profile.asset_ids?.length || 0)} ATIVOS
                   </Badge>
                 {/if}
               </p>
               <p class="text-xs text-muted-foreground flex gap-2 mt-0.5">
                 <span class="flex items-center gap-1">
                   <Activity class="w-3 h-3 text-emerald-500/50" />
-                  {profile.asset_ids.map(aid => assetsStore.assets.find(a => a.id === aid)?.symbol).filter(Boolean).join(", ")}
+                  {(profile.asset_ids || []).map(aid => assetsStore.assets.find(a => a.id === aid)?.symbol).filter(Boolean).join(", ")}
                 </span>
                 <span class="text-muted-foreground/30">•</span>
                 <span>Stop: {profile.default_stop_points}</span>
@@ -299,7 +299,7 @@
               </Select.Trigger>
               <Select.Content>
                 {#each availableAssetsForCategory as asset}
-                  {@const otherScope = riskSettingsStore.assetRiskProfiles.find(p => p.id !== editingId && p.asset_ids.includes(asset.id))}
+                  {@const otherScope = riskSettingsStore.assetRiskProfiles.find(p => p.id !== editingId && (p.asset_ids || []).includes(asset.id))}
                   <Select.Item value={asset.id} disabled={!!otherScope}>
                     <div class="flex flex-col">
                       <span class={cn(otherScope && "text-muted-foreground line-through")}>{asset.symbol} - {asset.name}</span>
@@ -320,7 +320,7 @@
             {#if formData.asset_ids.length === 0}
               <p class="text-[10px] text-muted-foreground uppercase font-medium italic">Nenhum ativo adicionado ao grupo</p>
             {:else}
-              {#each formData.asset_ids as aid}
+              {#each (formData.asset_ids || []) as aid}
                 {@const asset = assetsStore.assets.find(a => a.id === aid)}
                 <Badge variant="secondary" class="gap-1 pr-1 pl-2 py-1 bg-background border-primary/10">
                   {asset?.symbol}

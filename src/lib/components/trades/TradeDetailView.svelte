@@ -193,7 +193,7 @@
                     {$t("trades.details.partial_exits")}
                 </h4>
                 <Badge variant="outline" class="text-[8px] font-bold border-blue-500/20 text-blue-400 tracking-wider bg-blue-500/5 h-4">
-                    {$t("trades.details.dynamic_average", { default: "MÉDIO DINÂMICO" })}
+                    {$t("trades.wizard.fields.average")}
                 </Badge>
             </div>
             <div class="border border-border/30 rounded-xl overflow-hidden bg-muted/10">
@@ -203,7 +203,7 @@
                             <th class="py-2.5 px-4 font-black uppercase text-[9px] tracking-wider">{$t("trades.kpi.type")}</th>
                             <th class="py-2.5 px-4 font-black uppercase text-[9px] tracking-wider border-l border-border/5">{$t("trades.details.partial_date")}</th>
                             <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider border-l border-border/5">{$t("trades.details.partial_price")}</th>
-                            <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider text-blue-400 border-l border-border/5">{$t("trades.details.dynamic_average", { default: "MÉDIO" })}</th>
+                            <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider text-blue-400 border-l border-border/5">{$t("trades.wizard.fields.average")}</th>
                             <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider border-l border-border/5">{$t("trades.list.table.quantity")}</th>
                             <th class="py-2.5 px-4 font-black text-right uppercase text-[9px] tracking-wider border-l border-border/5">{$t("trades.list.table.pl")}</th>
                             <th class="py-2.5 px-4 font-black uppercase text-[9px] tracking-wider border-l border-border/5">{$t("trades.details.partial_notes")}</th>
@@ -255,7 +255,7 @@
                             <tr class="hover:bg-muted/10 transition-colors">
                                 <td class="py-2 px-4 border-r border-border/5">
                                     <Badge variant="outline" class={`h-4 px-1.5 text-[8px] font-black uppercase tracking-tighter ${partial.isAddition ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-blue-500/10 text-blue-400 border-blue-500/20"}`}>
-                                        {partial.isAddition ? $t("trades.details.addition", { default: "ADIÇÃO" }) : $t("trades.wizard.summary.exit")}
+                                        {partial.isAddition ? $t("trades.wizard.summary.addition") : $t("trades.wizard.summary.partial_exit")}
                                     </Badge>
                                 </td>
                                 <td class="py-2 px-4 font-mono text-[10px] text-muted-foreground/60 border-r border-border/5">
@@ -272,12 +272,12 @@
                                 </td>
                                 <td class={`py-2 px-4 text-right font-mono font-black border-r border-border/5 ${(partial.calculatedResult || 0) >= 0 ? "text-green-500" : "text-rose-500"}`}>
                                     {#if partial.isAddition}
-                                        <span class="text-muted-foreground/30 italic text-[9px]">{$t("trades.details.contribution", { default: "Aporte" })}</span>
+                                        <span class="text-muted-foreground/30 italic text-[9px]">{$t("trades.details.contribution")}</span>
                                     {:else}
                                         <div class="flex flex-col items-end">
                                             <span>{formatCurrency(partial.calculatedResult || 0, account?.currency || "BRL", $locale || "pt-BR")}</span>
                                             <span class="text-[8px] opacity-40 -mt-1 font-bold">
-                                                {partial.calculatedPoints >= 0 ? "+" : ""}{partial.calculatedPoints.toLocaleString($locale || "pt-BR", { maximumFractionDigits: 2 })} {$t("trades.details.points_abbr", { default: "pts" })}
+                                                {partial.calculatedPoints >= 0 ? "+" : ""}{partial.calculatedPoints.toLocaleString($locale || "pt-BR", { maximumFractionDigits: 2 })} {$t("trades.wizard.units.points")}
                                             </span>
                                         </div>
                                     {/if}

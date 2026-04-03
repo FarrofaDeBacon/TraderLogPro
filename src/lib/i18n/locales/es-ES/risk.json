@@ -1,5 +1,11 @@
 {
     "risk": {
+        "actions": {
+            "cancel": "Cancelar",
+            "save": "Guardar Datos",
+            "new": "Nuevo Perfil",
+            "restart": "Reiniciar Evolución"
+        },
         "cockpit": {
             "title": "Control de Riesgos",
             "subtitle": "Monitoreo en tiempo real",
@@ -110,11 +116,6 @@
                 "asset": "2. ASSET LIMITS (OVERRIDES)",
                 "growth": "3. GROWTH PLAN (LOT SCALING)",
                 "rules": "4. DYNAMIC RULES"
-            },
-            "actions": {
-                "cancel": "Cancel",
-                "save": "Save Data",
-                "restart": "Restart Evolution"
             }
         },
         "scope": {
@@ -178,7 +179,11 @@
             "calculationModes": "Modos de Cálculo",
             "dailyLossMode": "Perda Diária",
             "phaseDrawdownMode": "Drawdown da Fase",
-            "phaseTargetMode": "Meta da Fase",
+            "phaseTargetMode": "Meta de Fase",
+            "targetUnit": "Progresión (Meta de Ganancia)",
+            "drawdownUnit": "Riesgo (Pérdida y Drawdown)",
+            "financial": "Financiero ($)",
+            "points": "Puntos (pts)",
             "phases": "Fases del Plan",
             "addPhase": "Añadir Nueva Fase",
             "addPhaseOverride": "Añada fases para configurar la escala de lotes.",

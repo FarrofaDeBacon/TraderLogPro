@@ -1,12 +1,14 @@
 // --- RISK STORE (Position Sizing Enabled) ---
 // This file serves as the reactive bindings for the pure risk domains.
 
+import { get } from "svelte/store";
+import { t } from "svelte-i18n";
+
 import { assetsStore } from "$lib/stores/assets.svelte";
 import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
 import { accountsStore } from "$lib/stores/accounts.svelte";
 import { appStore } from "./app.svelte";
 import { tradesStore } from './trades.svelte';
-import { parseSafeDate } from "$lib/utils";
 import { 
     buildRiskCockpitState, 
     type RiskCockpitState,
@@ -22,7 +24,8 @@ import {
     evaluateDeskStageProgression,
     generateDeskProgressFeedback,
     type GrowthEvaluationResult,
-    evaluateGrowthPhase
+    evaluateGrowthPhase,
+    toLocalDateStr
 } from '$lib/domain/risk';
 import { 
     adaptSettingsProfileToDomain, 
@@ -100,7 +103,7 @@ export class RiskStore {
 
         const domainTrades = filteredTrades
             .map(adaptTradeToDomain)
-            .sort((a, b) => parseSafeDate(a.date as string).getTime() - parseSafeDate(b.date as string).getTime());
+            .sort((a, b) => new Date(a.date as string).getTime() - new Date(b.date as string).getTime());
 
         console.log(`[Cockpit Debug] Trades após adaptação Domínio (para o cockpit):`, domainTrades.map(t => ({ id: t.tradeId, pnl: t.pnl, date: t.date })));
         
@@ -160,7 +163,9 @@ export class RiskStore {
             {
                 daily_loss_mode: activeGrowthPlan?.daily_loss_mode,
                 phase_drawdown_mode: activeGrowthPlan?.phase_drawdown_mode,
-                phase_target_mode: activeGrowthPlan?.phase_target_mode
+                phase_target_mode: activeGrowthPlan?.phase_target_mode,
+                target_unit: activeGrowthPlan?.target_unit,
+                drawdown_unit: activeGrowthPlan?.drawdown_unit
             }
         );
 
@@ -191,7 +196,7 @@ export class RiskStore {
 
         const evalResult = this.globalGrowthEvaluation;
         if (!evalResult?.canPromote) {
-            toast.error("Critérios de promoção não atingidos.");
+            toast.error(get(t)('risk.messages.promoteCriteriaNotMet', { default: "Critérios de promoção não atingidos." }));
             return;
         }
 
@@ -205,7 +210,7 @@ export class RiskStore {
                     current_phase_index: nextIndex,
                     currentPhaseStartedAt: now
                 });
-                toast.success(`Promovido para fase ${nextIndex + 1}`);
+                toast.success(get(t)('risk.messages.promote', { values: { name: nextIndex + 1 } }));
             }
         } else if (res.source === "global" && res.growthPlanId) {
             const nextIndex = res.currentPhaseIndex + 1;
@@ -214,7 +219,7 @@ export class RiskStore {
                     current_phase_index: nextIndex,
                     currentPhaseStartedAt: now
                 });
-                toast.success(`Promovido para fase ${nextIndex + 1}`);
+                toast.success(get(t)('risk.messages.promote', { values: { name: nextIndex + 1 } }));
             }
         }
     }
@@ -241,10 +246,10 @@ export class RiskStore {
                     currentPhaseStartedAt: now
                 });
             }
-            toast.success("Plano reiniciado com sucesso.");
+            toast.success(get(t)('risk.messages.restartSuccess'));
         } catch (e: any) {
             console.error("[RiskStore] Erro ao reiniciar plano:", e);
-            toast.error("Falha ao reiniciar plano.");
+            toast.error(get(t)('risk.messages.restartError', { default: "Falha ao reiniciar plano." }));
         }
     }
 
@@ -263,13 +268,13 @@ export class RiskStore {
                 current_phase_index: res.currentPhaseIndex - 1,
                 currentPhaseStartedAt: now
             });
-            toast.info(`Regredido para fase ${res.currentPhaseIndex}`);
+            toast.info(get(t)('risk.messages.demote', { values: { name: res.currentPhaseIndex } }));
         } else if (res.source === "global" && res.growthPlanId && res.currentPhaseIndex > 0) {
             riskSettingsStore.updateGrowthPlan(res.growthPlanId, {
                 current_phase_index: res.currentPhaseIndex - 1,
                 currentPhaseStartedAt: now
             });
-            toast.info(`Regredido para fase ${res.currentPhaseIndex}`);
+            toast.info(get(t)('risk.messages.demote', { values: { name: res.currentPhaseIndex } }));
         }
     }
 
@@ -318,8 +323,8 @@ export class RiskStore {
         // Aqui adaptamos para o contrato do Dashboard que espera um DeskValidationResult simplificado
         return {
             allowed: state.dailyRiskStatus.statusLabel !== 'LOCKED' && state.dailyRiskStatus.statusLabel !== 'LOSS_LIMIT_HIT',
-            reasons: state.dailyRiskStatus.statusLabel === 'LOCKED' ? ["locked"] : 
-                     state.dailyRiskStatus.statusLabel === 'LOSS_LIMIT_HIT' ? ["daily_loss_hit"] : [],
+            reasons: state.dailyRiskStatus.statusLabel === 'LOCKED' ? ["max_daily_loss"] : 
+                     state.dailyRiskStatus.statusLabel === 'LOSS_LIMIT_HIT' ? ["max_daily_loss"] : [],
             warnings: [],
             checks: {
                 allowedAsset: true,

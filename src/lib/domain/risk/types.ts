@@ -170,10 +170,15 @@ export interface GrowthMetrics {
     currentDrawdownAmount: number;
     currentDrawdownPercent: number;
     maxDailyLoss: number;
+    maxDailyLossPoints: number;
     netPnL: number;
+    netPoints: number;
     positiveSessions: number;
     consistencyDays: number;
     consecutiveLossDays: number;
+    operatedDays: number;
+    bestDayShare: number;
+    drawdownAmountPoints: number;
 }
 
 /**
@@ -187,6 +192,7 @@ export interface GrowthConditionStatus {
     isMet: boolean;
     label_key: string;
     description_key?: string;
+    unit?: string;
 }
 
 export type GrowthPhaseStatus = 'active' | 'maintenance' | 'max_reached' | 'protected';

@@ -128,6 +128,7 @@
     },
     "general": {
         "add": "Adicionar",
+        "all": "Geral",
         "back": "Voltar",
         "cancel": "Cancelar",
         "confirmDeleteDescription": "Tem certeza que deseja excluir? Esta ação não pode ser desfeita.",

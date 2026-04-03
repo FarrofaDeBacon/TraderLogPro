@@ -669,17 +669,16 @@
 
                     {#snippet monthContent(month: any)}
                         <div class="space-y-2">
-                            <!-- Column Headers -->
                             <div class="hidden md:flex items-center justify-between p-3 border-b border-border/10 bg-muted/5 rounded-t-lg">
                                 <div class="flex items-center gap-3 w-32">
-                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Tipo de Operação</span>
+                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest">{$t("fiscal.irpf.table.operation")}</span>
                                 </div>
                                 <div class="flex items-center gap-8 pr-4">
-                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest w-24 text-right">Lucro Líquido</span>
-                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest w-24 text-right">Total a Pagar</span>
-                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest w-24 text-right">Compensado</span>
-                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest w-24 text-center">Status</span>
-                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest w-24 text-right">Ações</span>
+                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest w-24 text-right">{$t("fiscal.irpf.table.netProfit")}</span>
+                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest w-24 text-right">{$t("fiscal.irpf.table.toPay")}</span>
+                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest w-24 text-right">{$t("fiscal.irpf.table.compensated")}</span>
+                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest w-24 text-center">{$t("fiscal.irpf.table.status")}</span>
+                                    <span class="text-[9px] font-black uppercase text-muted-foreground tracking-widest w-24 text-right">{$t("fiscal.irpf.table.actions")}</span>
                                 </div>
                             </div>
                             {#each month.originalItems as item}
@@ -725,7 +724,7 @@
                                         <div class="flex flex-col items-end w-24">
                                             <span
                                                 class="text-[9px] text-muted-foreground uppercase font-bold"
-                                                >Líquido</span
+                                                >{$t("fiscal.irpf.table.shortNet")}</span
                                             >
                                             <span
                                                 class="font-mono text-sm leading-none font-bold {item.net_profit >=

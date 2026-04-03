@@ -42,21 +42,47 @@
             "currency": "Moeda",
             "search_placeholder": "Buscar ativo/nota... (Ctrl+K)"
         },
+        "quick_edit": {
+            "title": "Edição Rápida",
+            "description": "Ajuste os valores principais da operação.",
+            "date_time": "Data e Hora",
+            "asset": "Ativo",
+            "bias": "Direção (Bias)",
+            "result": "Resultado Financeiro (PnL)",
+            "full_mode": "Modo Completo",
+            "save": "Salvar Alterações"
+        },
         "kpi": {
             "totalBalance": "Saldo Total",
-            "winRate": "Win Rate",
+            "winRate": "Taxa de Acerto",
+            "win_rate": "Taxa de Acerto",
             "winRateDesc": "{winners} de {total} Trades",
             "profitFactor": "Fator de Lucro",
+            "profit_factor": "Fator de Lucro",
             "openTrades": "Em Aberto",
             "avgInterval": "Intervalo Entre Trades",
             "performance": "Desempenho",
             "drawdown": "Drawdown",
-            "riskReward": "Risco:Retorno",
+            "riskReward": "Risco/Retorno",
+            "risk_reward": "Risco/Retorno",
             "distribution": "Distribuição",
             "equityCurve": "Curva de Capital - Drawdown",
-            "trades_label": "Trades",
+            "trades_label": "Operações",
             "result": "Resultado",
-            "type": "Tipo"
+            "type": "Tipo",
+            "summary": "Resumo de Performance"
+        },
+        "charts": {
+            "outcome": {
+                "trades_label": "{count} Trades",
+                "gain": "Ganho",
+                "loss": "Loss"
+            },
+            "equity": {
+                "capital": "Capital Acumulado",
+                "drawdown": "Drawdown",
+                "empty": "Sem histórico de evolução"
+            }
         },
         "details": {
             "title": "Detalhes da Trade",

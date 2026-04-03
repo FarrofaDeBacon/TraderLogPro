@@ -12,7 +12,7 @@
     import { riskStore } from "$lib/stores/riskStore.svelte";
     import { getLiveIntervention } from "$lib/domain/insights/insights-engine";
     import type { LiveIntervention } from "$lib/domain/insights/insights-engine";
-    import { Zap, TrendingUp, TrendingDown, CheckSquare, Loader2, AlertCircle, AlertTriangle } from "lucide-svelte";
+    import { Zap, TrendingUp, TrendingDown, CheckSquare, Loader2, AlertCircle, AlertTriangle, Plus } from "lucide-svelte";
     import { toast } from "svelte-sonner";
 
     let intervention = $derived.by(() => {
@@ -53,13 +53,13 @@
 
     async function handleQuickSubmit() {
         if (!asset || !resultInput) {
-            toast.error($t("wizard.errors.required"));
+            toast.error($t("trades.wizard.messages.required_fields"));
             return;
         }
 
         const rawResult = parseFloat(resultInput.replace(",", "."));
         if (isNaN(rawResult)) {
-            toast.error($t("messages.invalid_result"));
+            toast.error($t("trades.messages.invalid_result"));
             return;
         }
 
@@ -102,19 +102,7 @@
                 exit_price: 0,
                 exit_date: today,
                 fee_total: 0,
-                notes: $t("messages.quick_log_note"),
-                timeframe: "1m",
-                volatility: "",
-                entry_emotional_state_id: null,
-                entry_emotional_state_name: null,
-                exit_reason: null,
-                exit_emotional_state_id: null,
-                exit_emotional_state_name: null,
-                entry_rationale: "",
-                confirmation_signals: "",
-                market_context: "",
-                relevant_news: "",
-                psychology_analysis_during: "",
+                feeling_exit: "",
                 followed_plan: true,
                 what_worked: "",
                 mistakes_improvements: "",
@@ -126,7 +114,7 @@
             if (res.success) {
                 const signal = rawResult >= 0 ? '+' : '';
                 const style = rawResult >= 0 ? 'success' : 'error';
-                inlineFeedback = { message: `${$t("messages.registered")}: ${upperAsset} ${signal}${rawResult.toFixed(2)}`, type: style };
+                inlineFeedback = { message: `${$t("trades.messages.registered")}: ${upperAsset} ${signal}${rawResult.toFixed(2)}`, type: style };
                 setTimeout(() => inlineFeedback = null, 4000);
 
                 localStorage.setItem("quicklog_last_asset", upperAsset);
@@ -141,7 +129,7 @@
                 setTimeout(() => inlineFeedback = null, 5000);
             }
         } catch (e) {
-            inlineFeedback = { message: $t("messages.submission_fail"), type: 'error' };
+            inlineFeedback = { message: $t("trades.messages.submission_fail"), type: 'error' };
             setTimeout(() => inlineFeedback = null, 5000);
         } finally {
             isSubmitting = false;
@@ -174,10 +162,10 @@
         </div>
     {/if}
 
-    <div class="flex flex-col md:flex-row items-center gap-3 p-3 bg-zinc-950/40 border-y md:border border-border/10 md:rounded-xl shadow-inner w-full">
+    <div class="flex flex-col md:flex-row items-center gap-3 p-3 bg-secondary/30 border-y md:border border-border/50 md:rounded-xl shadow-inner w-full">
     <div class="flex items-center gap-1.5 pr-3 border-r border-border/10 justify-center min-w-max hidden md:flex">
         <Zap class="w-3.5 h-3.5 text-emerald-500 fill-emerald-500/20" />
-        <span class="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">{$t("common.log", { default: "Log" })}</span>
+        <span class="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">{$t("trades.quick_edit.title")}</span>
     </div>
 
     <!-- Active Grid -->
@@ -185,37 +173,37 @@
         
         <!-- Asset -->
         <div class="col-span-2 md:col-span-1 md:w-24 relative">
-            <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{$t("list.table.asset")}</span>
+            <span class="absolute -top-2 left-2 px-1 bg-background text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{$t("trades.list.table.asset")}</span>
             <Input 
                 bind:ref={assetInputRef}
                 bind:value={asset}
-                placeholder={$t("placeholders.quick_asset")}
+                placeholder={$t("trades.placeholders.quick_asset")}
                 class="uppercase bg-transparent border-dashed border-border/30 h-10 text-xs font-bold font-mono px-3"
                 onkeydown={handleKeydown}
             />
         </div>
 
         <!-- Direction Toggle -->
-        <div class="col-span-2 md:col-span-1 flex items-center bg-zinc-900/50 p-1 rounded-lg border border-border/5">
+        <div class="col-span-2 md:col-span-1 flex items-center bg-secondary/20 p-1 rounded-lg border border-border/10">
             <button 
                 onclick={() => direction = "Buy"}
                 class="flex-1 flex items-center justify-center gap-1 h-8 px-2 rounded-md transition-all {direction === 'Buy' ? 'bg-emerald-500/10 text-emerald-500 shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
             >
                 <TrendingUp class="w-3 h-3" />
-                <span class="text-[10px] font-black uppercase">{$t("list.table.buy").charAt(0)}</span>
+                <span class="text-[10px] font-black uppercase">{$t("trades.enums.direction.Buy").charAt(0)}</span>
             </button>
             <button 
                 onclick={() => direction = "Sell"}
                 class="flex-1 flex items-center justify-center gap-1 h-8 px-2 rounded-md transition-all {direction === 'Sell' ? 'bg-rose-500/10 text-rose-500 shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
             >
                 <TrendingDown class="w-3 h-3" />
-                <span class="text-[10px] font-black uppercase">{$t("list.table.sell").charAt(0)}</span>
+                <span class="text-[10px] font-black uppercase">{$t("trades.enums.direction.Sell").charAt(0)}</span>
             </button>
         </div>
 
         <!-- Quantity -->
         <div class="col-span-2 md:col-span-1 md:w-16 relative">
-            <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{$t("wizard.fields.quantity")}</span>
+            <span class="absolute -top-2 left-2 px-1 bg-background text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{$t("trades.wizard.fields.quantity")}</span>
             <Input 
                 type="number"
                 bind:value={quantityInput}
@@ -227,13 +215,13 @@
 
         <!-- Result -->
         <div class="col-span-2 md:w-28 relative flex-1 md:flex-none">
-            <span class="absolute -top-2 left-2 px-1 bg-zinc-950 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
-                {$t("list.table.pl")} ({accountsStore.accounts.find(a => a.id === (accountsStore.accounts[0]?.id))?.currency || "R$"})
+            <span class="absolute -top-2 left-2 px-1 bg-background text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                {$t("trades.list.table.pl")} ({accountsStore.accounts.find(a => a.id === (accountsStore.accounts[0]?.id))?.currency || "R$"})
             </span>
             <Input 
                 bind:ref={resultInputRef}
                 bind:value={resultInput}
-                placeholder={$t("placeholders.quick_result")}
+                placeholder={$t("trades.placeholders.quick_result")}
                 class="bg-transparent border-solid border-border/20 h-10 text-sm font-black tabular-nums {resultInput.startsWith('-') ? 'text-rose-400 focus-visible:ring-rose-500' : 'text-emerald-400 focus-visible:ring-emerald-500'}"
                 onkeydown={handleKeydown}
             />
@@ -251,18 +239,16 @@
         <Button 
             disabled={isSubmitting || !asset || !resultInput}
             onclick={handleQuickSubmit}
-            class="w-full relative overflow-hidden h-10 px-4 font-bold bg-zinc-100 hover:bg-white text-zinc-900 shadow-xl shadow-white/5 group"
+            size="sm"
+            variant="outline"
+            class="h-8 text-[10px] font-bold uppercase tracking-tight"
         >
             {#if isSubmitting}
-                <Loader2 class="w-4 h-4 animate-spin" />
+                <Loader2 class="w-3.5 h-3.5 animate-spin mr-1" />
             {:else}
-                <div class="flex items-center gap-2">
-                    <span>{$t("common.add")}</span>
-                    <div class="hidden md:flex items-center gap-1 opacity-40 ml-2">
-                        <span class="text-[9px] px-1 py-0.5 border border-zinc-900/20 rounded font-mono">↵</span>
-                    </div>
-                </div>
+                <Plus class="w-3.5 h-3.5 mr-1" />
             {/if}
+            {$t("common.add")}
         </Button>
     </div>
 </div>

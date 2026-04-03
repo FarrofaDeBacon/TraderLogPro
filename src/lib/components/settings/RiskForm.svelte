@@ -1,770 +1,550 @@
 <script lang="ts">
   import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
   import { accountsStore } from "$lib/stores/accounts.svelte";
-    import { Input } from "$lib/components/ui/input";
-    import { Label } from "$lib/components/ui/label";
-    import { Button } from "$lib/components/ui/button";
-    import * as Select from "$lib/components/ui/select";
-    import { Switch } from "$lib/components/ui/switch";
-    import {
-        Shield,
-        Target,
-        Lock,
-        AlertTriangle,
-        TrendingUp,
-        Plus,
-        Trash2,
-        Zap,
-        Target as TargetIcon,
-        Link,
-        ChevronRight,
-        ShieldCheck,
-        Grid3X3,
-        Brain,
-    } from "lucide-svelte";
-    import { t, locale } from "svelte-i18n";
-    import type { RiskProfile } from "$lib/types";
-    import * as Tabs from "$lib/components/ui/tabs";
-    import * as Card from "$lib/components/ui/card";
-    import { slide } from "svelte/transition";
-    import CombinedRulesSection from "./risk/CombinedRulesSection.svelte";
-    import DeskConfigSection from "./risk/DeskConfigSection.svelte";
-    import RiskRulesSection from "./risk/RiskRulesSection.svelte";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { Button } from "$lib/components/ui/button";
+  import * as Select from "$lib/components/ui/select";
+  import { Switch } from "$lib/components/ui/switch";
+  import {
+    Shield, Target, Lock, AlertTriangle, TrendingUp, Plus, Trash2, Zap,
+    Link, ChevronRight, ShieldCheck, Brain, Activity, Copy,
+    CheckCircle2, Info, AlertCircle, Network
+  } from "lucide-svelte";
+  import { t, locale } from "svelte-i18n";
+  import type { RiskProfile } from "$lib/types";
+  import { slide, fade } from "svelte/transition";
+  import { Badge } from "$lib/components/ui/badge";
+  import { userProfileStore } from "$lib/stores/user-profile.svelte";
+  import * as Tabs from "$lib/components/ui/tabs";
+  import CombinedRulesSection from "./risk/CombinedRulesSection.svelte";
+  import DeskConfigSection from "./risk/DeskConfigSection.svelte";
+  import RiskRulesSection from "./risk/RiskRulesSection.svelte";
+  import RiskProfileDetails from "./RiskProfileDetails.svelte";
 
-    import { Badge as UI_Badge } from "$lib/components/ui/badge";
-    import { userProfileStore } from "$lib/stores/user-profile.svelte";
+  let { initialData, onSave, onCancel } = $props<{
+    initialData?: RiskProfile;
+    onSave: (data: Omit<RiskProfile, "id">) => void;
+    onCancel: () => void;
+  }>();
 
-    let { initialData, onSave, onCancel } = $props<{
-        initialData?: RiskProfile;
-        onSave: (data: Omit<RiskProfile, "id">) => void;
-        onCancel: () => void;
-    }>();
+  // 1. STATE INITIALIZATION
+  let formData = $state<Omit<RiskProfile, "id">>({
+    name: initialData?.name ?? "",
+    max_daily_loss: initialData?.max_daily_loss ?? 0,
+    daily_target: initialData?.daily_target ?? 0,
+    max_risk_per_trade_percent: initialData?.max_risk_per_trade_percent ?? 1.0,
+    max_trades_per_day: initialData?.max_trades_per_day ?? 5,
+    min_risk_reward: initialData?.min_risk_reward ?? 1.5,
+    lock_on_loss: initialData?.lock_on_loss ?? false,
+    account_type_applicability: initialData?.account_type_applicability ?? "All",
+    target_type: initialData?.target_type ?? "Financial",
+    capital_source: initialData?.capital_source ?? "Fixed",
+    fixed_capital: initialData?.fixed_capital ?? 0,
+    linked_account_id: initialData?.linked_account_id ?? null,
+    growth_plan_id: initialData?.growth_plan_id,
+    psychological_coupling_enabled: initialData?.psychological_coupling_enabled ?? false,
+    outlier_regression_enabled: initialData?.outlier_regression_enabled ?? false,
+    sniper_mode_enabled: initialData?.sniper_mode_enabled ?? false,
+    sniper_mode_selectivity: initialData?.sniper_mode_selectivity ?? 3,
+    psychological_lookback_count: initialData?.psychological_lookback_count ?? 10,
+    outlier_lookback_count: initialData?.outlier_lookback_count ?? 20,
+    psychological_threshold: initialData?.psychological_threshold ?? -2,
+    lot_reduction_multiplier: initialData?.lot_reduction_multiplier ?? 0.5,
+    psychological_search_strategy: initialData?.psychological_search_strategy ?? "Strict",
+    account_ids: initialData?.account_ids ?? [],
+    active: initialData?.active ?? false,
+    use_advanced_rules: initialData?.use_advanced_rules ?? false,
+    linked_asset_risk_profile_ids: initialData?.linked_asset_risk_profile_ids ?? [],
+    combined_rules: initialData?.combined_rules ?? [],
+    risk_rules: initialData?.risk_rules ?? [],
+    desk_config: initialData?.desk_config
+  });
 
-    const initial = $derived($state.snapshot(initialData));
-    
-    // Initialize with a clean object, let $effect handle the data loading
-    let formData = $state<Omit<RiskProfile, "id">>({
-        name: "",
-        max_daily_loss: 0,
-        daily_target: 0,
-        max_risk_per_trade_percent: 1.0,
-        max_trades_per_day: 5,
-        min_risk_reward: 1.5,
-        lock_on_loss: false,
-        account_type_applicability: "All",
-        target_type: "Financial",
-        capital_source: "Fixed",
-        fixed_capital: 0,
-        linked_account_id: null,
-        growth_plan_id: undefined,
-        psychological_coupling_enabled: false,
-        outlier_regression_enabled: false,
-        sniper_mode_enabled: false,
-        sniper_mode_selectivity: 3,
-        psychological_lookback_count: 10,
-        outlier_lookback_count: 20,
-        psychological_threshold: -2,
-        lot_reduction_multiplier: 0.5,
-        psychological_search_strategy: "Strict",
-        account_ids: [],
-        active: false,
-        use_advanced_rules: false,
-        linked_asset_risk_profile_ids: [],
-        combined_rules: [],
-        risk_rules: [],
-    });
+  // 2. VALIDATION ENGINE (REACTIVE)
+  const validation = $derived(riskSettingsStore.createRiskValidationState($state.snapshot(formData)));
+  let activeSection = $state<"foundation" | "operational" | "intelligence" | "ecosystem" | "status" | "summary">("foundation");
 
-    let activeTab = $state("protection");
-    
-    let selectedLinkedAccount = $state("");
+  // 3. NAVIGATION & HELPERS
+  const allSections = [
+    { id: "foundation", icon: Shield, label: $t("risk.form.sections.foundation") },
+    { id: "operational", icon: Zap, label: $t("risk.form.sections.operational") },
+    { id: "intelligence", icon: Brain, label: $t("risk.form.sections.intelligence") },
+    { id: "ecosystem", icon: Network, label: $t("risk.form.sections.ecosystem") },
+    { id: "status", icon: Activity, label: $t("risk.form.sections.status") },
+    { id: "summary", icon: Info, label: "Resumo" }
+  ] as const;
 
-    $effect(() => {
-        if (initialData?.linked_account_id) {
-            selectedLinkedAccount = initialData.linked_account_id;
-        }
-    });
+  const sections = $derived(
+    allSections.filter(s => s.id !== 'operational' || !formData.growth_plan_id)
+  );
 
-    $effect(() => {
-        if (selectedLinkedAccount) {
-            formData.linked_account_id = selectedLinkedAccount;
-        } else {
-            formData.linked_account_id = null;
-        }
-    });
-
-
-    $effect(() => {
-        // Only update if initialData changes significantly or logic requires it.
-        // For simple forms, often only init is enough, but keeping existing pattern.
-        if (initialData) {
-            let fd = { ...initialData };
-            formData = {
-                name: fd.name,
-                max_daily_loss: fd.max_daily_loss,
-                daily_target: fd.daily_target,
-                max_risk_per_trade_percent: fd.max_risk_per_trade_percent,
-                max_trades_per_day: fd.max_trades_per_day,
-                min_risk_reward: fd.min_risk_reward,
-                lock_on_loss: fd.lock_on_loss,
-                account_type_applicability: fd.account_type_applicability,
-                target_type: fd.target_type ?? "Financial",
-                capital_source: fd.capital_source ?? "Fixed",
-                fixed_capital: fd.fixed_capital ?? 0,
-                linked_account_id: fd.linked_account_id ?? null,
-                growth_plan_id: fd.growth_plan_id ?? undefined,
-                psychological_coupling_enabled:
-                    fd.psychological_coupling_enabled ?? false,
-                outlier_regression_enabled:
-                    fd.outlier_regression_enabled ?? false,
-                sniper_mode_enabled: fd.sniper_mode_enabled ?? false,
-                sniper_mode_selectivity: fd.sniper_mode_selectivity ?? 3,
-                psychological_lookback_count:
-                    fd.psychological_lookback_count ?? 10,
-                outlier_lookback_count: fd.outlier_lookback_count ?? 20,
-                psychological_threshold: fd.psychological_threshold ?? -2,
-                lot_reduction_multiplier: fd.lot_reduction_multiplier ?? 0.5,
-                psychological_search_strategy:
-                    fd.psychological_search_strategy ?? "Strict",
-                account_ids: fd.account_ids ?? [],
-                active: fd.active,
-                use_advanced_rules: fd.use_advanced_rules ?? false,
-                linked_asset_risk_profile_ids: fd.linked_asset_risk_profile_ids || [],
-                combined_rules: fd.combined_rules || [],
-                risk_rules: fd.risk_rules || [],
-            };
-            
-            selectedGrowthPlan = fd.growth_plan_id || "none";
-        }
-    });
-
-    const accountTypes = $derived([
-        {
-            value: "All",
-            label: $t("risk.plan.applicability.all"),
-        },
-        {
-            value: "Prop",
-            label: $t("risk.plan.applicability.prop"),
-        },
-        {
-            value: "Real",
-            label: $t("risk.plan.applicability.real"),
-        },
-        {
-            value: "Demo",
-            label: $t("risk.plan.applicability.demo"),
-        },
-        {
-            value: "Specific",
-            label: $t("risk.plan.applicability.specific"),
-        },
-    ]);
-
-    const growthPlanOptions = $derived([
-        { value: "none", label: $t("risk.growthPlan.none") },
-        ...riskSettingsStore.growthPlans.map(p => ({ value: p.id, label: p.name }))
-    ]);
-
-    import { appStore } from "$lib/stores/app.svelte";
-
-
-
-    function applyTemplate(id: string) {
-        const template = riskSettingsStore.createRiskProfileTemplate(id);
-        if (template) {
-            formData = template;
-        }
+  $effect(() => {
+    if (formData.growth_plan_id && activeSection === 'operational') {
+      activeSection = 'foundation';
     }
+  });
 
-    // Safe local state for Growth Plan
-    let selectedGrowthPlan = $state("none");
+  const currencyCode = $derived(
+    formData.linked_account_id
+      ? accountsStore.accounts.find(a => a.id === formData.linked_account_id)?.currency || 'BRL'
+      : userProfileStore.userProfile.main_currency || 'BRL'
+  );
 
-    function save() {
-        const payload = { ...formData };
-        if (selectedGrowthPlan === "none") {
-            payload.growth_plan_id = undefined;
-        } else {
-            payload.growth_plan_id = selectedGrowthPlan;
-        }
-        
-        onSave(payload);
+  const effectiveCapital = $derived.by(() => {
+    if (formData.capital_source === "Fixed") return formData.fixed_capital || 0;
+    if (formData.capital_source === "LinkedAccount" && formData.linked_account_id) {
+      return accountsStore.accounts.find(a => a.id === formData.linked_account_id)?.balance || 0;
     }
+    return 0;
+  });
 
-    // Dynamic capital estimation
-    const effectiveCapital = $derived.by(() => {
-        if (formData.capital_source === "Fixed") return formData.fixed_capital || 0;
-        if (formData.capital_source === "LinkedAccount" && selectedLinkedAccount) {
-            const acc = accountsStore.accounts.find(a => a.id === selectedLinkedAccount);
-            return acc?.balance || 0;
-        }
-        return 0;
-    });
+  const estimatedRiskPerTrade = $derived((effectiveCapital * (formData.max_risk_per_trade_percent || 0)) / 100);
 
-    const getCapitalSourceName = (source: string) => {
-        if (source === 'Fixed') return $t('risk.plan.finance.fixedValue');
-        if (source === 'LinkedAccount') return $t('risk.plan.finance.linkAccount');
-        return source;
-    };
+  function save() {
+    if (validation.isValid) onSave($state.snapshot(formData));
+  }
 
-    const currencyCode = $derived(
-        formData.linked_account_id
-        ? accountsStore.accounts.find(a => a.id === formData.linked_account_id)?.currency || 'BRL'
-        : userProfileStore.userProfile.main_currency || 'BRL'
-    );
-
-    const estimatedRiskPerTrade = $derived((effectiveCapital * (formData.max_risk_per_trade_percent || 0)) / 100);
+  function applyTemplate(id: string) {
+    const template = riskSettingsStore.createRiskProfileTemplate(id);
+    if (template) {
+        // Direct assignment in Svelte 5
+        formData.name = template.name;
+        formData.max_daily_loss = template.max_daily_loss;
+        formData.daily_target = template.daily_target;
+        formData.max_risk_per_trade_percent = template.max_risk_per_trade_percent;
+        formData.risk_rules = template.risk_rules || [];
+    }
+  }
 </script>
 
-<div class="space-y-4 py-4">
-    {#if !initialData}
-        <div class="space-y-2 pb-2 bg-muted/20 p-4 rounded-xl border border-border/50">
-            <Label class="text-xs text-muted-foreground uppercase font-bold">
-                {$t("risk.plan.finance.baseTemplate")}
-            </Label>
-            <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
-                <Select.Root
-                    type="single"
-                    onValueChange={(value: string) => {
-                        if (!value) return;
-                        if (value === "blank") {
-                            // nothing
-                        } else {
-                            applyTemplate(value);
-                        }
-                    }}
-                >
-                    <Select.Trigger class="w-full md:w-[350px] bg-background">
-                        {$t("risk.plan.finance.startBlank")}
-                    </Select.Trigger>
-                    <Select.Content>
-                        <Select.Item value="blank">
-                            {$t("risk.plan.finance.startBlank")}
-                        </Select.Item>
-                        <Select.Group>
-                            <Select.Label>
-                                {$t("risk.plan.finance.copyOf")}
-                            </Select.Label>
-                            {#each riskSettingsStore.riskProfiles as baseProfile}
-                                <Select.Item value={baseProfile.id}>
-                                    {baseProfile.name}
-                                </Select.Item>
-                            {/each}
-                        </Select.Group>
-                    </Select.Content>
-                </Select.Root>
-                <span class="text-xs text-muted-foreground max-w-sm">
-                    {$t("risk.plan.finance.templateDesc")}
-                </span>
-            </div>
-        </div>
-    {/if}
-
-
-
-    <div class="space-y-4">
-        <!-- Guia de Hierarquia (Visual Aid) -->
-        <div class="p-4 rounded-xl border border-primary/20 bg-primary/5 flex flex-col md:flex-row gap-4 items-start md:items-center">
-            <div class="p-3 rounded-lg bg-primary/10 text-primary">
-                <Shield class="w-6 h-6" />
-            </div>
-            <div class="space-y-1">
-                <h4 class="text-sm font-bold text-primary flex items-center gap-2">
-                    {$t("risk.plan.hierarchy.title")}
-                </h4>
-                <div class="flex flex-wrap gap-x-4 gap-y-1 text-[10px] uppercase font-bold tracking-wider text-muted-foreground/70">
-                    <span class="flex items-center gap-1"><UI_Badge variant="outline" class="h-4 px-1 text-[8px]">1</UI_Badge> {$t("risk.plan.hierarchy.global")}</span>
-                    <ChevronRight class="w-3 h-3 text-muted-foreground/50" />
-                    <span class="flex items-center gap-1"><UI_Badge variant="outline" class="h-4 px-1 text-[8px]">2</UI_Badge> {$t("risk.plan.hierarchy.asset")}</span>
-                    <ChevronRight class="w-3 h-3 text-muted-foreground/50" />
-                    <span class="flex items-center gap-1"><UI_Badge variant="outline" class="h-4 px-1 text-[8px]">3</UI_Badge> {$t("risk.plan.hierarchy.growth")}</span>
-                    <ChevronRight class="w-3 h-3 text-muted-foreground/50" />
-                    <span class="flex items-center gap-1 text-primary"><UI_Badge variant="outline" class="h-4 px-1 text-[8px] border-primary/30 text-primary">4</UI_Badge> {$t("risk.plan.hierarchy.rules")}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="space-y-2">
-            <Label>{$t("risk.plan.name")}</Label>
-            <Input
-                bind:value={formData.name}
-                placeholder={$t("risk.plan.namePlaceholder")}
-            />
-        </div>
+<div class="flex flex-col md:flex-row h-[520px] bg-background/40 backdrop-blur-md rounded-xl overflow-hidden border border-white/5 shadow-2xl">
+  <!-- SIDEBAR (LEFT) -->
+  <aside class="w-full md:w-[155px] bg-muted/20 border-b md:border-b-0 md:border-r border-white/5 flex flex-col shrink-0">
+    <div class="p-2 border-b border-white/5 overflow-hidden">
+      <h2 class="text-[8px] font-black uppercase tracking-[0.05em] text-primary truncate opacity-80">{$t("risk.plan.title")}</h2>
+      <p class="text-[6px] text-muted-foreground font-black uppercase tracking-tighter opacity-30 leading-none">Engine v4.1</p>
     </div>
 
-    <Tabs.Root bind:value={activeTab} class="w-full">
-        <Tabs.List class="flex flex-wrap w-full justify-start sm:justify-center p-1 h-auto gap-1">
-            <Tabs.Trigger value="protection" class="flex-1 min-w-[120px]"
-                >{$t("risk.plan.tabs.protection")}</Tabs.Trigger
-            >
-            <Tabs.Trigger value="evolution" class="flex-1 min-w-[120px]"
-                >{$t("risk.plan.tabs.evolution")}</Tabs.Trigger
-            >
-            <Tabs.Trigger value="adaptation" class="flex-1 min-w-[120px]"
-                >{$t("risk.plan.tabs.adaptation")}</Tabs.Trigger
-            >
-            <Tabs.Trigger value="scope" class="flex-1 min-w-[120px]"
-                >{$t("risk.plan.tabs.scope")}</Tabs.Trigger
-            >
-        </Tabs.List>
-
-        <Tabs.Content value="protection" class="space-y-6 pt-2">
-            <!-- 1. CAMADA FINANCEIRA E CAPITAL (NOVO) -->
-            <div class="space-y-5 p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <h3 class="flex items-center gap-2 font-bold text-emerald-500">
-                        <Target class="w-4 h-4" />
-                        {$t("risk.plan.finance.title")}
-                    </h3>
-                    <div class="flex items-center gap-2">
-                        <UI_Badge variant="outline" class="border-emerald-500/30 text-emerald-500 bg-emerald-500/5">
-                            {$t("risk.growthPlan.maxLotsLabel")}
-                        </UI_Badge>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <div class="space-y-2.5">
-                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.plan.finance.money")}</Label>
-                        <Select.Root
-                            type="single"
-                            bind:value={formData.target_type}
-                        >
-                            <Select.Trigger class="w-full">
-                                {formData.target_type === "Financial" ? $t("risk.plan.finance.money") : $t("risk.plan.finance.points")}
-                            </Select.Trigger>
-                            <Select.Content>
-                                <Select.Item value="Financial">{$t("risk.plan.finance.money")}</Select.Item>
-                                <Select.Item value="Points">{$t("risk.plan.finance.points")}</Select.Item>
-                            </Select.Content>
-                        </Select.Root>
-                    </div>
-
-                    <div class="space-y-2.5">
-                        <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.plan.finance.linkAccount")}</Label>
-                        <Select.Root
-                            type="single"
-                            bind:value={formData.capital_source}
-                        >
-                            <Select.Trigger class="w-full">
-                                {formData.capital_source === "Fixed" ? $t("risk.plan.finance.fixedValue") : $t("risk.plan.finance.linkAccount")}
-                            </Select.Trigger>
-                            <Select.Content>
-                                <Select.Item value="Fixed">{$t("risk.plan.finance.fixedValue")}</Select.Item>
-                                <Select.Item value="LinkedAccount">{$t("risk.plan.finance.linkAccount")}</Select.Item>
-                            </Select.Content>
-                        </Select.Root>
-                    </div>
-
-                    {#if formData.capital_source === "Fixed"}
-                        <div class="space-y-2.5 animate-in fade-in slide-in-from-top-1">
-                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.plan.finance.capitalBase")}</Label>
-                            <Input
-                                type="number"
-                                step="0.01"
-                                bind:value={formData.fixed_capital}
-                                placeholder="ex: 1000.00"
-                            />
-                        </div>
-                    {:else}
-                         <div class="space-y-2.5 animate-in fade-in slide-in-from-top-1">
-                            <Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.plan.finance.referenceAccount")}</Label>
-                            <Select.Root
-                                type="single"
-                                bind:value={selectedLinkedAccount}
-                            >
-                                <Select.Trigger class="w-full">
-                                    {accountsStore.accounts.find(a => a.id === selectedLinkedAccount)?.nickname ?? $t("risk.plan.finance.selectAccount")}
-                                </Select.Trigger>
-                                <Select.Content>
-                                    {#each accountsStore.accounts as account}
-                                        <Select.Item value={account.id}>{account.nickname}</Select.Item>
-                                    {/each}
-                                </Select.Content>
-                            </Select.Root>
-                        </div>
-                    {/if}
-                </div>
-            </div>
-
-            <!-- 2. MODO AVANÇADO TOGGLE -->
-            <div class="space-y-4 p-5 rounded-xl border border-primary/20 bg-primary/5 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div class="space-y-1">
-                        <h3 class="font-bold text-primary flex items-center gap-2">
-                            <Zap class="w-4 h-4" />
-                            {$t("risk.rules.advancedRules")}
-                        </h3>
-                        <p class="text-xs text-muted-foreground max-w-xl">
-                            {$t("risk.rules.advancedRulesDesc")}
-                        </p>
-                    </div>
-                    <Switch bind:checked={formData.use_advanced_rules} />
-                </div>
-            </div>
-
-            <!-- 3. LIMITES DIÁRIOS (BASE) -->
-            {#if !formData.use_advanced_rules}
-                <div transition:slide={{ duration: 400 }} class="grid grid-cols-1 md:grid-cols-2 gap-5 overflow-hidden">
-                    <div class="space-y-5 p-5 rounded-xl border border-rose-500/20 bg-rose-500/5 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <h3 class="flex items-center gap-2 font-bold text-rose-500">
-                                <Shield class="w-4 h-4" />
-                                {$t("risk.rules.engine.max_daily_loss")}
-                            </h3>
-                            <div class="text-right">
-                                <span class="text-[10px] uppercase font-bold text-muted-foreground block leading-none">{$t("risk.cockpit.stats.allowedSizing")}</span>
-                                <span class="text-sm font-mono font-bold text-rose-500">
-                                    {formData.target_type === 'Financial' ? (currencyCode === 'BRL' ? 'R$ ' : '$ ') : ''}
-                                    {estimatedRiskPerTrade.toLocaleString($locale || 'pt-BR', { minimumFractionDigits: 2 })}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-2.5">
-                                <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.plan.labels.dailyLossLimit")} ({formData.target_type === 'Financial' ? '$' : 'pts'})
-                                </Label>
-                                <Input
-                                    type="number"
-                                    step="0.01"
-                                    bind:value={formData.max_daily_loss}
-                                />
-                            </div>
-                            <div class="space-y-2.5">
-                                <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.rules.adaptation.psychological.multiplier")} (%)
-                                </Label>
-                                <Input
-                                    type="number"
-                                    step="0.1"
-                                    class="font-bold text-rose-500"
-                                    bind:value={formData.max_risk_per_trade_percent}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-5 p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 shadow-sm">
-                        <h3 class="flex items-center gap-2 font-bold text-emerald-500">
-                            <TargetIcon class="w-4 h-4" />
-                            {$t("risk.plan.labels.dailyGoal")}
-                        </h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-2.5">
-                                <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.plan.labels.dailyGoal")} ({formData.target_type === 'Financial' ? '$' : 'pts'})
-                                </Label>
-                                <Input
-                                    type="number"
-                                    step="0.01"
-                                    bind:value={formData.daily_target}
-                                />
-                            </div>
-                            <div class="space-y-2.5">
-                                <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                    {$t("risk.plan.labels.minRiskReward")}
-                                </Label>
-                                <Input
-                                    type="number"
-                                    step="0.1"
-                                    class="font-bold text-emerald-500"
-                                    bind:value={formData.min_risk_reward}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {/if}
-
-            <!-- 4. CONFIGURAÇÃO DE MESA (DESK) + REGRAS (ADVANCED) -->
-            {#if formData.use_advanced_rules}
-                <div transition:slide={{ duration: 400 }} class="space-y-6 overflow-hidden pt-2">
-                    <!-- Estratégia de Base (Configurações Globais no Modo Avançado) -->
-                    <div class="p-5 rounded-xl border border-primary/20 bg-black/20 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xs font-bold uppercase tracking-widest text-primary/70">{$t("risk.plan.finance.baseStrategy")}</h3>
-                            <div class="text-right">
-                                <span class="text-[10px] uppercase font-bold text-muted-foreground block leading-none">{$t("risk.cockpit.stats.allowedSizing")}</span>
-                                <span class="text-sm font-mono font-bold text-primary">
-                                    {formData.target_type === 'Financial' ? (currencyCode === 'BRL' ? 'R$ ' : '$ ') : ''}
-                                    {estimatedRiskPerTrade.toLocaleString($locale || 'pt-BR', { minimumFractionDigits: 2 })}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="space-y-2.5">
-                                <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.rules.adaptation.multiplier")} (%)</Label>
-                                <div class="relative">
-                                    <Input
-                                        type="number"
-                                        step="0.1"
-                                        class="font-bold border-primary/20"
-                                        bind:value={formData.max_risk_per_trade_percent}
-                                    />
-                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-primary/40">%</span>
-                                </div>
-                            </div>
-                            <div class="space-y-2.5">
-                                <Label class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{$t("risk.cockpit.criteria.win_rate")}</Label>
-                                <Input
-                                    type="number"
-                                    step="0.1"
-                                    class="font-bold border-primary/20"
-                                    bind:value={formData.min_risk_reward}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <DeskConfigSection
-                        bind:config={formData.desk_config}
-                        availableAssetProfiles={riskSettingsStore.assetRiskProfiles}
-                    />
-
-                    <RiskRulesSection
-                        bind:rules={() => formData.risk_rules ?? [], (v) => formData.risk_rules = v}
-                        assetRiskProfiles={riskSettingsStore.assetRiskProfiles}
-                    />
-                </div>
-            {/if}
-
-            <!-- 5. DISCIPLINA E TRAVAS -->
-            <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
-                <h3 class="flex items-center gap-2 font-bold text-muted-foreground">
-                    <Lock class="w-4 h-4" />
-                    {$t("risk.rules.disciplineTitle")}
-                </h3>
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-2">
-                        <Switch
-                            id="lock-mode"
-                            bind:checked={formData.lock_on_loss}
-                        />
-                        <Label for="lock-mode">{$t("risk.plan.labels.platformLock")}</Label>
-                    </div>
-                </div>
-                {#if formData.lock_on_loss}
-                    <p class="text-xs text-rose-400 flex items-center gap-1">
-                        <AlertTriangle class="w-3 h-3" />
-                        {$t("risk.plan.labels.lockWarning")}
-                    </p>
-                {/if}
-            </div>
-        </Tabs.Content>
-
-        <!-- ═══════════════════════════════════════════════════ -->
-        <!-- TAB 3: ADAPTAÇÃO (MOTORES)                         -->
-        <!-- ═══════════════════════════════════════════════════ -->
-        <Tabs.Content value="adaptation" class="space-y-4 pt-2">
-            {#if activeTab === "adaptation"}
-                <div class="space-y-4">
-                    <section class="space-y-4 p-4 rounded-xl border bg-background/30">
-                        <div class="flex items-center gap-2 text-primary">
-                            <Brain class="w-4 h-4" />
-                            <h4 class="text-xs font-bold uppercase tracking-widest">
-                                {$t("risk.rules.adaptation.psychological.title")}
-                            </h4>
-                        </div>
-                        <p class="text-[10px] text-muted-foreground leading-relaxed">
-                            {$t("risk.rules.adaptation.psychological.desc")}
-                        </p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.psychological.strategy")}</Label>
-                                <Select.Root type="single" value="strict">
-                                    <Select.Trigger class="h-8 text-xs">
-                                        {$t("risk.rules.adaptation.psychological.strategyStrict")}
-                                    </Select.Trigger>
-                                </Select.Root>
-                            </div>
-                            <div class="space-y-2">
-                                <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.psychological.lookback")}</Label>
-                                <Input type="number" class="h-8 text-xs" value={20} />
-                            </div>
-                            <div class="space-y-2">
-                                <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.psychological.threshold")}</Label>
-                                <Input type="number" step="0.1" class="h-8 text-xs" value={1.5} />
-                            </div>
-                            <div class="space-y-2">
-                                <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.psychological.multiplier")}</Label>
-                                <Input type="number" step="0.1" class="h-8 text-xs" value={0.5} />
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="space-y-4 p-4 rounded-xl border bg-background/30">
-                        <div class="flex items-center gap-2 text-primary">
-                            <Zap class="w-4 h-4" />
-                            <h4 class="text-xs font-bold uppercase tracking-widest">
-                                {$t("risk.rules.adaptation.outliers.title")}
-                            </h4>
-                        </div>
-                        <p class="text-[10px] text-muted-foreground leading-relaxed">
-                            {$t("risk.rules.adaptation.outliers.desc")}
-                        </p>
-                        <div class="space-y-2">
-                            <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.outliers.lookback")}</Label>
-                            <Input type="number" class="h-8 text-xs" value={50} />
-                        </div>
-                    </section>
-
-                    <section class="space-y-4 p-4 rounded-xl border bg-background/30">
-                        <div class="flex items-center gap-2 text-primary">
-                            <Target class="w-4 h-4" />
-                            <h4 class="text-xs font-bold uppercase tracking-widest">
-                                {$t("risk.rules.adaptation.sniper.title")}
-                            </h4>
-                        </div>
-                        <p class="text-[10px] text-muted-foreground leading-relaxed">
-                            {$t("risk.rules.adaptation.sniper.desc")}
-                        </p>
-                        <div class="space-y-2">
-                            <Label class="text-[10px] uppercase font-bold text-muted-foreground">{$t("risk.rules.adaptation.sniper.selectivity")}</Label>
-                            <Input type="number" step="0.1" class="h-8 text-xs" value={2.0} />
-                        </div>
-                    </section>
-                </div>
-            {/if}
-        </Tabs.Content>
-
-        <!-- ═══════════════════════════════════════════════════ -->
-        <!-- TAB 4: ESCOPO E VÍNCULOS                           -->
-        <!-- ═══════════════════════════════════════════════════ -->
-        <Tabs.Content value="scope" class="space-y-6 pt-2">
-            {#if activeTab === "scope"}
-                <!-- Applicability (Accounts) -->
-                <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
-                    <div class="space-y-6">
-                        <section class="space-y-4">
-                            <h4 class="text-sm font-bold flex items-center gap-2 text-primary uppercase tracking-wider">
-                                <ShieldCheck class="w-4 h-4" />
-                                {$t("risk.scope.accountsTitle")}
-                            </h4>
-                            <div class="p-4 rounded-lg border bg-background/50">
-                                <p class="text-xs text-muted-foreground">{$t("risk.scope.accounts")}</p>
-                            </div>
-                        </section>
-                        <section class="space-y-4">
-                            <h4 class="text-sm font-bold flex items-center gap-2 text-primary uppercase tracking-wider">
-                                <Grid3X3 class="w-4 h-4" />
-                                {$t("risk.scope.applicability")}
-                            </h4>
-                            <div class="p-4 rounded-lg border bg-background/50">
-                                <p class="text-xs text-muted-foreground">{$t("risk.accountTypes.All")}</p>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-
-                <!-- Asset Profiles Links -->
-                <div class="space-y-5 p-5 rounded-xl border border-border/10 bg-black/5 shadow-sm">
-                    <div class="flex items-center justify-between">
-                        <h3 class="flex items-center gap-2 font-bold text-muted-foreground">
-                            <TargetIcon class="w-4 h-4" />
-                            {$t("risk.scope.assets")}
-                        </h3>
-                    </div>
-                    <p class="text-xs text-muted-foreground">
-                        {$t("risk.management.linkedAssetProfilesDesc") || "Aplica as regras globais de risco a perfis de negociação específicos de um ativo."}
-                    </p>
-
-                    <div class="space-y-3 pt-2">
-                        <div class="flex gap-2">
-                            <Select.Root
-                                type="single"
-                                onValueChange={(val: string) => {
-                                    if (val && !formData.linked_asset_risk_profile_ids?.includes(val)) {
-                                        formData.linked_asset_risk_profile_ids = [...(formData.linked_asset_risk_profile_ids || []), val];
-                                    }
-                                }}
-                            >
-                                <Select.Trigger class="w-full md:w-[350px]">
-                                    {$t("risk.management.assetProfileSelector") || "Selecione um Perfil de Ativo..."}
-                                </Select.Trigger>
-                                <Select.Content>
-                                    {#each riskSettingsStore.assetRiskProfiles.filter((ap) => !formData.linked_asset_risk_profile_ids?.includes(ap.id as string)) as ap}
-                                        <Select.Item value={ap.id as string}>{ap.name}</Select.Item>
-                                    {/each}
-                                </Select.Content>
-                            </Select.Root>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
-                            {#if !formData.linked_asset_risk_profile_ids || formData.linked_asset_risk_profile_ids.length === 0}
-                                <div class="col-span-1 md:col-span-2 p-3 text-center border border-dashed rounded text-sm text-muted-foreground">
-                                    {$t("risk.management.noLinkedAssetProfiles") || "Nenhum perfil de ativo vinculado."}
-                                </div>
-                            {:else}
-                                {#each formData.linked_asset_risk_profile_ids as apId}
-                                    {@const profile = riskSettingsStore.assetRiskProfiles.find((p) => p.id === apId)}
-                                    {#if profile}
-                                        <div class="flex items-center justify-between p-2 rounded border bg-background/50 text-sm">
-                                            <span class="font-medium truncate">{profile.name}</span>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                class="h-8 text-destructive hover:bg-destructive/10"
-                                                onclick={() => {
-                                                    formData.linked_asset_risk_profile_ids = formData.linked_asset_risk_profile_ids?.filter((id) => id !== apId);
-                                                }}
-                                            >
-                                                <Trash2 class="w-4 h-4 mr-2" />
-                                                {$t("risk.management.removeAssetProfile") || "Remover"}
-                                            </Button>
-                                        </div>
-                                    {/if}
-                                {/each}
-                            {/if}
-                        </div>
-                    </div>
-                </div>
-            {/if}
-        </Tabs.Content>
-
-        <!-- ═══════════════════════════════════════════════════ -->
-        <!-- TAB 2: EVOLUÇÃO (GROWTH)                           -->
-        <!-- ═══════════════════════════════════════════════════ -->
-        <Tabs.Content value="evolution" class="space-y-4 pt-2">
-            <div class="space-y-5 p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-lg bg-emerald-500/10"><TrendingUp class="w-5 h-5 text-emerald-400" /></div>
-                        <div class="space-y-1">
-                            <h4 class="font-bold text-emerald-400 text-sm">
-                                {$t("risk.evolution.growthPlan")}
-                            </h4>
-                            <p class="text-[10px] text-muted-foreground/80 uppercase tracking-widest font-semibold">
-                                {$t("risk.evolution.bindDesc")}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="pt-3 border-t border-emerald-500/10">
-                    <div class="space-y-2.5">
-                        <Select.Root
-                            type="single"
-                            bind:value={selectedGrowthPlan}
-                        >
-                            <Select.Trigger class="w-full">
-                                {growthPlanOptions.find(o => o.value === selectedGrowthPlan)?.label ?? $t("risk.status_list.insufficient_data")}
-                            </Select.Trigger>
-                            <Select.Content>
-                                {#each growthPlanOptions as opt}
-                                    <Select.Item value={opt.value}>{opt.label}</Select.Item>
-                                {/each}
-                            </Select.Content>
-                        </Select.Root>
-                    </div>
-                </div>
-            </div>
-        </Tabs.Content>
-    </Tabs.Root>
-
-    <div class="flex justify-end gap-2 pt-4 border-t">
-        <Button variant="outline" onclick={onCancel}
-            >{$t("risk.plan.actions.cancel")}</Button
+    <nav class="p-1 space-y-0.5 overflow-x-auto md:overflow-x-visible flex md:flex-col gap-0.5 md:gap-0.5">
+      {#each sections as section}
+        <button
+          onclick={() => activeSection = section.id}
+          class="flex-1 md:w-full flex items-center justify-between py-1 px-2 rounded-lg transition-all group shrink-0
+            {activeSection === section.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-white/5 border border-transparent'}"
         >
-        <Button onclick={save}>{$t("risk.plan.actions.save")}</Button>
+          <div class="flex items-center gap-2">
+            <section.icon class="w-3 h-3 {activeSection === section.id ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}" />
+            <span class="text-[8px] font-black uppercase tracking-tight {activeSection === section.id ? 'text-primary' : 'text-muted-foreground font-bold'}">
+              {section.label}
+            </span>
+          </div>
+          
+          <div class="flex gap-0.5 ml-1.5">
+            {#if (validation.sectionStatus as any)[section.id]?.errors > 0}
+              <div class="w-1 h-1 rounded-full bg-destructive animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
+            {:else if (validation.sectionStatus as any)[section.id]?.warnings > 0}
+              <div class="w-1 h-1 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"></div>
+            {:else if section.id !== 'status'}
+              <CheckCircle2 class="w-2 h-2 text-emerald-500/40" />
+            {/if}
+          </div>
+        </button>
+      {/each}
+    </nav>
+    <div class="flex-1"></div>
+    <div class="p-1.5 bg-muted/10 border-t border-white/5 hidden md:block">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-[8px] font-black uppercase text-muted-foreground/50 tracking-widest">Integridade</span>
+        <Badge variant={validation.isValid ? "outline" : "destructive"} class="h-3.5 text-[7px] font-black px-1 leading-none">
+          {validation.isValid ? "OK" : "BLOQ"}
+        </Badge>
+      </div>
+      <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+        <div class="h-full bg-primary transition-all duration-500" style="width: {validation.isValid ? '100%' : '30%'}"></div>
+      </div>
     </div>
+  </aside>
+
+  <!-- CONTENT (RIGHT) -->
+  <main class="flex-1 flex flex-col min-w-0 bg-gradient-to-br from-background/5 to-transparent">
+    <div class="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar">
+      {#if activeSection === "foundation"}
+        <div in:fade={{ duration: 150 }} class="space-y-4">
+          <header class="space-y-0">
+            <h3 class="text-[10px] font-black uppercase text-foreground leading-none">{$t("risk.form.sections.foundation")}</h3>
+            <p class="text-[7px] text-muted-foreground uppercase font-bold opacity-40 tracking-tight">Parâmetros estruturais do perfil.</p>
+          </header>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="space-y-1.5 p-3 rounded-xl border bg-card/20 border-white/5 focus-within:border-primary/20 transition-all">
+              <Label class="text-[8px] font-black uppercase text-muted-foreground/50 tracking-widest">{$t("risk.form.labels.profileName")}</Label>
+              <Input bind:value={formData.name} class="h-7 font-black text-xs border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none mt-0" placeholder="Ex: Hedge Institucional" />
+            </div>
+
+            <div class="space-y-1.5 p-3 rounded-xl border bg-card/20 border-white/5">
+              <Label class="text-[8px] font-black uppercase text-muted-foreground/50 tracking-widest">Origem do Capital</Label>
+              <Select.Root type="single" bind:value={formData.capital_source}>
+                <Select.Trigger class="h-7 bg-transparent border-0 p-0 font-black text-[10px] shadow-none mt-0">
+                  {formData.capital_source === "Fixed" ? $t("risk.plan.finance.fixedValue") : $t("risk.plan.finance.linkAccount")}
+                </Select.Trigger>
+                <Select.Content>
+                  <Select.Item value="Fixed">{$t("risk.plan.finance.fixedValue")}</Select.Item>
+                  <Select.Item value="LinkedAccount">{$t("risk.plan.finance.linkAccount")}</Select.Item>
+                </Select.Content>
+              </Select.Root>
+            </div>
+          </div>
+
+          {#if formData.capital_source === "Fixed"}
+            <div class="p-3 rounded-xl border border-primary/20 bg-primary/5 space-y-1 transition-all">
+              <Label class="text-[8px] font-black uppercase text-primary/60">{$t("risk.form.labels.capitalBase")}</Label>
+              <div class="flex items-center gap-2">
+                <span class="text-base font-black text-primary/30">{currencyCode}</span>
+                <Input type="number" bind:value={formData.fixed_capital} class="text-xl font-black bg-transparent border-0 p-0 h-auto focus-visible:ring-0 text-primary w-full" />
+              </div>
+            </div>
+          {:else}
+             <div class="p-3 rounded-xl border border-primary/20 bg-primary/5 space-y-1 transition-all">
+              <Label class="text-[8px] font-black uppercase text-primary/60">{$t("risk.plan.finance.referenceAccount")}</Label>
+              <Select.Root type="single" bind:value={formData.linked_account_id as any}>
+                <Select.Trigger class="h-7 bg-transparent border-0 p-0 font-black text-[10px] shadow-none text-primary mt-0">
+                  {accountsStore.accounts.find(a => a.id === formData.linked_account_id)?.nickname ?? $t("risk.plan.finance.selectAccount")}
+                </Select.Trigger>
+                <Select.Content>
+                  {#each accountsStore.accounts as acc}
+                    <Select.Item value={acc.id}>{acc.nickname}</Select.Item>
+                  {/each}
+                </Select.Content>
+              </Select.Root>
+            </div>
+          {/if}
+          
+          {#if !initialData}
+            <div class="p-3 rounded-xl border border-dashed border-white/5 flex flex-col gap-2">
+               <Label class="text-[8px] font-black uppercase text-muted-foreground/30">Usar Template</Label>
+               <Select.Root type="single" onValueChange={applyTemplate}>
+                  <Select.Trigger class="h-7 bg-white/5 border-0 text-[10px] font-black px-3 rounded-lg">
+                      SELECIONAR MODELO...
+                  </Select.Trigger>
+                  <Select.Content>
+                      {#each riskSettingsStore.riskProfiles as p}
+                          <Select.Item value={p.id}>{p.name}</Select.Item>
+                      {/each}
+                  </Select.Content>
+               </Select.Root>
+            </div>
+          {/if}
+        </div>
+
+      {:else if activeSection === "operational"}
+        <div in:fade={{ duration: 150 }} class="space-y-4">
+          <header class="space-y-0.5">
+            <h3 class="text-xs font-black uppercase text-foreground">{$t("risk.form.sections.operational")}</h3>
+            <p class="text-[9px] text-muted-foreground uppercase font-bold opacity-60">Blindagem financeira diária.</p>
+          </header>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="p-4 rounded-xl border border-rose-500/10 bg-rose-500/5 space-y-2 transition-all">
+              <Label class="text-[9px] font-black uppercase text-rose-500/60">{$t("risk.form.labels.dailyLoss")}</Label>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-sm font-black text-rose-500/30">{currencyCode}</span>
+                <Input type="number" bind:value={formData.max_daily_loss} class="text-2xl font-black bg-transparent border-0 p-0 h-auto focus-visible:ring-0 text-rose-500 w-full" />
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl border border-emerald-500/10 bg-emerald-500/5 space-y-2 transition-all">
+              <Label class="text-[9px] font-black uppercase text-emerald-500/60">{$t("risk.form.labels.dailyTarget")}</Label>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-sm font-black text-emerald-500/30">{currencyCode}</span>
+                <Input type="number" bind:value={formData.daily_target} class="text-2xl font-black bg-transparent border-0 p-0 h-auto focus-visible:ring-0 text-emerald-500 w-full" />
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="p-3 balanced-p-3 rounded-xl border bg-card/10 border-white/5 space-y-2">
+              <div class="flex items-center justify-between">
+                <Label class="text-[9px] font-black uppercase text-muted-foreground/40">Risk per Trade (%)</Label>
+                <Badge class="bg-primary/10 text-primary border-0 font-black text-[8px] h-3.5 px-1">R$ {estimatedRiskPerTrade.toFixed(0)}</Badge>
+              </div>
+              <Input type="number" step="0.1" bind:value={formData.max_risk_per_trade_percent} class="text-xl font-black bg-background/30 border-white/5 rounded-lg text-center h-9" />
+            </div>
+
+            <div class="p-3 balanced-p-3 rounded-xl border bg-card/10 border-white/5 space-y-2">
+              <Label class="text-[9px] font-black uppercase text-muted-foreground/40 block text-center">Máximo de Ordens / Dia</Label>
+              <Input type="number" bind:value={formData.max_trades_per_day} class="text-xl font-black bg-background/30 border-white/5 rounded-lg text-center h-9" />
+            </div>
+          </div>
+        </div>
+
+      {:else if activeSection === "intelligence"}
+        <div in:fade={{ duration: 150 }} class="space-y-4">
+          <header class="space-y-0.5">
+            <h3 class="text-xs font-black uppercase text-foreground">{$t("risk.form.sections.intelligence")}</h3>
+            <p class="text-[9px] text-muted-foreground uppercase font-bold opacity-60">Governança algorítmica e proteção comportamental.</p>
+          </header>
+
+          <div class="space-y-3">
+            <div class="p-3 rounded-xl border border-indigo-500/10 bg-indigo-500/5 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="p-1.5 rounded-lg bg-indigo-500/10"><ShieldCheck class="w-4 h-4 text-indigo-400/70" /></div>
+                <div class="space-y-0 text-left">
+                  <h4 class="text-[10px] font-black uppercase text-indigo-400/80">{$t("risk.rules.advanced.title")}</h4>
+                  <p class="text-[8px] text-muted-foreground uppercase font-bold opacity-50">Condições granulares e limites de mesa.</p>
+                </div>
+              </div>
+              <div class="scale-75 origin-right">
+                <Switch bind:checked={formData.use_advanced_rules} />
+              </div>
+            </div>
+
+            {#if formData.use_advanced_rules}
+              <div transition:slide class="pt-1">
+                <Tabs.Root value="rules" class="w-full">
+                  <Tabs.List class="grid grid-cols-2 bg-white/5 rounded-lg h-8 p-0.5">
+                    <Tabs.Trigger value="rules" class="text-[9px] font-black uppercase py-1 data-[state=active]:bg-primary/20">{$t("risk.ruleBuilder.title")}</Tabs.Trigger>
+                    <Tabs.Trigger value="desk" class="text-[9px] font-black uppercase py-1 data-[state=active]:bg-primary/20">{$t("risk.rules.desk.title")}</Tabs.Trigger>
+                  </Tabs.List>
+                  <Tabs.Content value="rules" class="mt-3">
+                    <RiskRulesSection bind:rules={() => formData.risk_rules ?? [], (v) => formData.risk_rules = v} assetRiskProfiles={riskSettingsStore.assetRiskProfiles} />
+                  </Tabs.Content>
+                  <Tabs.Content value="desk" class="mt-3">
+                    <DeskConfigSection bind:config={formData.desk_config} availableAssetProfiles={riskSettingsStore.assetRiskProfiles} />
+                  </Tabs.Content>
+                </Tabs.Root>
+              </div>
+            {/if}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="p-3 rounded-xl border bg-card/10 border-white/5 space-y-2">
+                <div class="flex items-center justify-between">
+                   <div class="flex items-center gap-2">
+                     <Brain class="w-3 h-3 text-purple-400" />
+                     <span class="text-[9px] font-black uppercase text-purple-400">Adaptativo</span>
+                   </div>
+                   <div class="scale-75 origin-right">
+                    <Switch bind:checked={formData.psychological_coupling_enabled} />
+                   </div>
+                </div>
+                <p class="text-[8px] text-muted-foreground uppercase font-bold leading-tight opacity-40">{$t("risk.rules.adaptation.psychological.desc")}</p>
+              </div>
+
+               <div class="p-3 rounded-xl border bg-card/10 border-white/5 space-y-2">
+                <div class="flex items-center justify-between">
+                   <div class="flex items-center gap-2">
+                     <Activity class="w-3 h-3 text-cyan-400" />
+                     <span class="text-[9px] font-black uppercase text-cyan-400">Regressão</span>
+                   </div>
+                   <div class="scale-75 origin-right">
+                    <Switch bind:checked={formData.outlier_regression_enabled} />
+                   </div>
+                </div>
+                <p class="text-[8px] text-muted-foreground uppercase font-bold leading-tight opacity-40">{$t("risk.rules.adaptation.outliers.desc")}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      {:else if activeSection === "ecosystem"}
+        <div in:fade={{ duration: 150 }} class="space-y-4">
+          <header class="space-y-0.5">
+            <h3 class="text-xs font-black uppercase text-foreground">{$t("risk.form.sections.ecosystem")}</h3>
+            <p class="text-[9px] text-muted-foreground uppercase font-bold opacity-60">Escalabilidade e conectividade operacional.</p>
+          </header>
+
+          <div class="space-y-3">
+            <div class="p-4 rounded-xl border border-primary/10 bg-primary/5 space-y-2 group shadow-sm transition-all hover:bg-primary/[0.07]">
+               <div class="flex items-center gap-2 px-1">
+                <TrendingUp class="w-3.5 h-3.5 text-primary" />
+                <h4 class="text-[10px] font-black uppercase text-primary">Plano de Evolução</h4>
+              </div>
+              <Select.Root type="single" value={(formData.growth_plan_id as string) ?? "none"} onValueChange={(val: string) => formData.growth_plan_id = (val === 'none' ? undefined : val)}>
+                <Select.Trigger class="w-full h-9 bg-background/40 border-0 shadow-none font-black text-[10px] px-3 rounded-lg mt-0">
+                  <div class="flex items-center justify-between w-full">
+                    <span>{riskSettingsStore.growthPlans.find(p => p.id === formData.growth_plan_id)?.name ?? $t("risk.growthPlan.none")}</span>
+                    {#if formData.growth_plan_id && formData.growth_plan_id !== 'none'}
+                      <Badge class="ml-2 bg-emerald-500/20 text-emerald-500 border-0 text-[7px] h-3.5 font-black uppercase">Engine Override Active</Badge>
+                    {/if}
+                  </div>
+                </Select.Trigger>
+                <Select.Content>
+                  <Select.Item value="none">{$t("risk.growthPlan.none")}</Select.Item>
+                  {#each riskSettingsStore.growthPlans as plan}
+                    <Select.Item value={plan.id}>{plan.name}</Select.Item>
+                  {/each}
+                </Select.Content>
+              </Select.Root>
+            </div>
+
+            <div class="p-4 rounded-xl border bg-card/10 border-white/5 space-y-3">
+               <div class="flex justify-between items-center px-1">
+                 <h4 class="text-[10px] font-black uppercase text-muted-foreground/60">Ativos Vinculados</h4>
+                 <Badge variant="outline" class="h-3.5 text-[8px] font-black bg-primary/10 border-primary/20 text-primary">
+                    {formData.linked_asset_risk_profile_ids?.length || 0}
+                 </Badge>
+               </div>
+               
+               <Select.Root type="single" onValueChange={(val: string) => { 
+                if (val && !formData.linked_asset_risk_profile_ids?.includes(val)) {
+                  formData.linked_asset_risk_profile_ids = [...(formData.linked_asset_risk_profile_ids || []), val]; 
+                }
+               }}>
+                  <Select.Trigger class="w-full h-8 bg-background/20 border-0 font-bold text-[10px] rounded-lg px-3">
+                    {$t("risk.management.assetProfileSelector")}
+                  </Select.Trigger>
+                  <Select.Content>
+                    {#each riskSettingsStore.assetRiskProfiles.filter(p => p.id && !formData.linked_asset_risk_profile_ids?.includes(p.id)) as ap}
+                      <Select.Item value={ap.id!}>{ap.name}</Select.Item>
+                    {/each}
+                  </Select.Content>
+               </Select.Root>
+
+               <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar pr-1">
+                 {#each (formData.linked_asset_risk_profile_ids || []) as apId}
+                   {@const profile = riskSettingsStore.assetRiskProfiles.find(p => p.id === apId)}
+                   {#if profile}
+                     <div class="flex items-center justify-between p-1.5 pl-3 rounded-lg bg-background/40 border border-white/5 group hover:border-primary/20 transition-all">
+                       <span class="text-[9px] font-black uppercase truncate">{profile.name}</span>
+                       <Button variant="ghost" size="icon" class="h-5 w-5 text-muted-foreground/20 hover:text-destructive transition-colors" onclick={() => {
+                         formData.linked_asset_risk_profile_ids = (formData.linked_asset_risk_profile_ids || []).filter(id => id !== apId);
+                       }}>
+                         <Trash2 class="w-3 h-3" />
+                       </Button>
+                     </div>
+                   {/if}
+                 {/each}
+               </div>
+
+               {#if (formData.linked_asset_risk_profile_ids?.length || 0) > 0}
+                 <div class="pt-1">
+                   <CombinedRulesSection 
+                    bind:rules={() => formData.combined_rules ?? [], (v) => formData.combined_rules = v} 
+                    assetRiskProfiles={riskSettingsStore.assetRiskProfiles.filter(ap => ap.id && (formData.linked_asset_risk_profile_ids || []).includes(ap.id))} 
+                   />
+                 </div>
+               {/if}
+            </div>
+          </div>
+        </div>
+
+      {:else if activeSection === "status"}
+        <div in:fade={{ duration: 150 }} class="space-y-4">
+          <header class="space-y-0.5">
+            <h3 class="text-xs font-black uppercase text-foreground">{$t("risk.form.sections.status")}</h3>
+            <p class="text-[9px] text-muted-foreground uppercase font-bold opacity-60">Audit de integridade sistêmica.</p>
+          </header>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="p-3 rounded-xl border border-white/5 bg-card/10 space-y-0.5 text-center">
+              <span class="text-[8px] font-black uppercase text-muted-foreground/40 tracking-widest leading-none">Bloqueios</span>
+              <p class="text-xl font-black {validation.errors.length > 0 ? 'text-rose-500' : 'text-emerald-500'} leading-none">{validation.errors.length}</p>
+            </div>
+            <div class="p-3 rounded-xl border border-white/5 bg-card/10 space-y-0.5 text-center">
+              <span class="text-[8px] font-black uppercase text-muted-foreground/40 tracking-widest leading-none">Alertas</span>
+              <p class="text-xl font-black {validation.warnings.length > 0 ? 'text-amber-500' : 'text-emerald-500'} leading-none">{validation.warnings.length}</p>
+            </div>
+          </div>
+
+          <div class="space-y-3 max-h-[280px] overflow-y-auto custom-scrollbar pr-1">
+            {#if validation.errors.length > 0}
+              <div class="space-y-1.5">
+                <h4 class="text-[9px] font-black uppercase text-rose-500/70 flex items-center gap-1.5 px-1 tracking-wider">
+                  <AlertCircle class="w-3 h-3" /> Bloqueios Críticos
+                </h4>
+                <div class="space-y-1">
+                  {#each validation.errors as err}
+                    <div class="flex items-start gap-2.5 p-2 rounded-lg bg-destructive/5 border border-destructive/10 animate-in slide-in-from-left-1">
+                      <div class="p-1 rounded-full bg-destructive/10 mt-0"><AlertTriangle class="w-2.5 h-2.5 text-destructive" /></div>
+                      <p class="text-[10px] font-bold text-destructive/80 leading-tight uppercase tracking-tight">{$t(err.message)}</p>
+                    </div>
+                  {/each}
+                </div>
+              </div>
+            {/if}
+
+            {#if validation.warnings.length > 0}
+              <div class="space-y-1.5">
+                 <h4 class="text-[9px] font-black uppercase text-amber-500/70 flex items-center gap-1.5 px-1 tracking-wider">
+                  <Info class="w-3 h-3" /> Recomendações
+                </h4>
+                <div class="space-y-1">
+                  {#each validation.warnings as warn}
+                    <div class="flex items-start gap-2.5 p-2 rounded-lg bg-amber-500/5 border border-amber-500/10 animate-in slide-in-from-left-1">
+                      <div class="p-1 rounded-full bg-amber-500/10 mt-0"><Info class="w-2.5 h-2.5 text-amber-500" /></div>
+                      <p class="text-[10px] font-bold text-amber-500/80 leading-tight uppercase tracking-tight">{$t(warn.message)}</p>
+                    </div>
+                  {/each}
+                </div>
+              </div>
+            {/if}
+
+            {#if validation.errors.length === 0 && validation.warnings.length === 0}
+              <div class="p-10 border border-dashed border-emerald-500/20 bg-emerald-500/5 rounded-2xl flex flex-col items-center text-center space-y-3 opacity-60">
+                <CheckCircle2 class="w-10 h-10 text-emerald-500/30" />
+                <div class="space-y-0.5">
+                  <h4 class="text-xs font-black uppercase text-emerald-500">Perfil Zero-Fault</h4>
+                  <p class="text-[9px] text-muted-foreground uppercase font-bold">Todas as diretrizes operacionais foram validadas.</p>
+                </div>
+              </div>
+            {/if}
+          </div>
+        </div>
+      {:else if activeSection === "summary"}
+        <div in:fade={{ duration: 150 }} class="space-y-4">
+          <header class="space-y-0.5">
+            <h3 class="text-xs font-black uppercase text-foreground">Prévia Institucional</h3>
+            <p class="text-[9px] text-muted-foreground uppercase font-bold opacity-60">Visualização do perfil no terminal.</p>
+          </header>
+
+          <div class="rounded-xl border border-white/5 bg-background/20 p-4">
+            <RiskProfileDetails profile={{ ...$state.snapshot(formData), id: initialData?.id ?? 'preview' }} />
+          </div>
+          
+          <div class="p-3 rounded-lg bg-primary/5 border border-primary/10 flex items-start gap-3">
+             <AlertCircle class="w-4 h-4 text-primary mt-0.5" />
+             <div class="space-y-1">
+                <p class="text-[10px] font-black uppercase text-primary">Modo de Visualização</p>
+                <p class="text-[9px] text-muted-foreground uppercase font-medium leading-tight">Este resumo reflete as alterações atuais, incluindo limites dinâmicos de planos de crescimento vinculados.</p>
+             </div>
+          </div>
+        </div>
+      {/if}
+    </div>
+
+    <!-- FOOTER (CONTROL) -->
+    <footer class="p-3 border-t border-white/5 bg-background/40 flex items-center justify-between shrink-0">
+      <Button variant="ghost" class="h-8 px-4 font-black uppercase text-[9px] tracking-[0.1em] text-muted-foreground hover:text-foreground" onclick={onCancel}>
+        {$t("risk.actions.cancel")}
+      </Button>
+
+      <div class="flex items-center gap-3">
+        {#if !validation.isValid}
+          <div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-destructive/5 border border-destructive/10 animate-in fade-in">
+             <AlertTriangle class="w-3 h-3 text-destructive animate-pulse" />
+             <span class="text-[8px] font-black uppercase text-destructive tracking-widest">
+               {validation.errors.length} Bloqueios
+             </span>
+          </div>
+        {/if}
+
+        <Button
+          class="h-9 px-8 font-black uppercase text-[10px] tracking-[0.2em] shadow-xl transition-all duration-300
+            {validation.isValid ? 'bg-primary hover:bg-primary/90 shadow-primary/20' : 'bg-muted text-muted-foreground cursor-not-allowed opacity-40'}"
+          disabled={!validation.isValid}
+          onclick={save}
+        >
+          {initialData ? $t("risk.actions.save") : $t("risk.plan.new")}
+          <ShieldCheck class="w-3.5 h-3.5 ml-1.5" />
+        </Button>
+      </div>
+    </footer>
+  </main>
 </div>
+
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(var(--primary-rgb), 0.2); }
+</style>

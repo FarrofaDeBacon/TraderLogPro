@@ -45,6 +45,9 @@
   import { cn } from "$lib/utils";
   import type { GrowthPhase as AppGrowthPhase } from "$lib/types";
   import type { GrowthPhase as DomainGrowthPhase } from "$lib/domain/risk/types";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog";
+  
+  let isRestartModalOpen = $state(false);
   
   // Derived states
   let activeProfile = $derived(riskSettingsStore.activeProfile);
@@ -158,35 +161,35 @@
 <div class="flex-1 flex flex-col space-y-3 p-3 md:p-4 animate-in fade-in duration-500 min-h-screen">
   
   <!-- TOP NAVIGATION (ULTRA COMPACT COCKPIT) -->
-  <SystemCard status="primary" class="flex flex-col md:flex-row justify-between items-center gap-4 p-3 shadow-2xl bg-primary/5">
-    <div class="flex items-center gap-6">
+  <SystemCard status="primary" class="flex flex-col md:flex-row justify-between items-center gap-4 p-2 shadow-2xl bg-primary/5">
+    <div class="flex items-center gap-4">
       <SystemHeader 
         title={$t('risk.cockpit.title')}
         subtitle={$t('risk.cockpit.subtitle')}
         icon={Shield}
-        variant="page"
-        class="mb-0"
+        variant="compact"
+        class="mb-0 scale-90 origin-left"
       />
       
       <Separator orientation="vertical" class="h-10 opacity-10" />
       
       {#if activeProfile}
         <div class="flex items-center gap-3">
-          <div class="px-3 py-1.5 bg-white/5 rounded-lg border border-white/5 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 group hover:border-indigo-500/30 transition-all">
+          <div class="px-3 py-1.5 bg-white/5 rounded-lg border border-white/5 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 group hover:border-indigo-500/30 transition-all whitespace-nowrap">
             <Shield class="w-3 h-3 text-indigo-400 group-hover:scale-110 transition-transform" />
             <span class="text-foreground/90">{activeProfile?.name}</span>
           </div>
           {#if growthContext?.resolution}
             {@const res = growthContext.resolution}
             <div class={cn(
-                "px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-4 transition-all",
+                "px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-4 transition-all whitespace-nowrap",
                 res.source === 'scope' 
                     ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400" 
                     : "bg-indigo-500/5 border-indigo-500/10 text-indigo-400/80"
             )}>
               <div class="flex items-center gap-2">
-                <Layers class="w-3 h-3" />
-                <span>
+                <Layers class="w-3 h-3 shrink-0" />
+                <span class="whitespace-nowrap">
                     {res.source === 'scope' ? `${$t('risk.cockpit.group').toUpperCase()}: ${res.scopeName}` : `${$t('risk.cockpit.globalMode').toUpperCase()}: ${res.currentPhaseName}`}
                 </span>
               </div>
@@ -229,10 +232,6 @@
                 </Select.Group>
             </Select.Content>
         </Select.Root>
-
-        <Button variant="outline" size="sm" href="/" class="text-[9px] font-black h-9 uppercase tracking-[0.3em] text-muted-foreground border-white/5 bg-white/5 px-4 hover:bg-white/10 hover:text-white transition-all">
-          {$t('dashboard.title')}
-        </Button>
       </div>
     </SystemCard>
 
@@ -310,89 +309,120 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       
       <!-- LEFT: RISK ZONE (Layer 1: Financial Daily) -->
-      <SystemCard status="danger" class="flex flex-col min-h-[420px] overflow-hidden group p-4 space-y-4">
+      <SystemCard status="danger" class="flex flex-col min-h-[380px] overflow-hidden group p-3 space-y-3">
           <SystemHeader 
             title={$t('risk.cockpit.sections.ruinRisk')}
             icon={ShieldAlert}
-            class="mb-0"
+            class="mb-0 text-xs font-black uppercase tracking-widest"
           >
             {#snippet actions()}
-              <Badge variant="outline" class="text-[8px] font-black uppercase tracking-widest border-white/10 bg-white/5 text-muted-foreground">{$t('risk.cockpit.status.realTimeMonitor')}</Badge>
+              <Badge variant="outline" class="text-[7px] font-black uppercase tracking-[0.2em] border-white/5 bg-white/5 text-muted-foreground/60">{$t('risk.cockpit.status.realTimeMonitor')}</Badge>
             {/snippet}
           </SystemHeader>
 
-          <div class="space-y-6 text-foreground">
-            <SystemMetric 
-              label={limitLabel} 
-              value={formatValue(currentLimit)} 
-              status="danger"
-              weight="black"
-            />
+          <div class="space-y-4 text-foreground">
+            <div class="flex items-baseline justify-between">
+                <span class="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">{limitLabel}</span>
+                <span class="text-xl font-black font-mono text-rose-500 tracking-tighter">
+                   {formatValue(currentLimit)}
+                </span>
+            </div>
             
-            <div class="space-y-2">
-                <div class="flex justify-between text-[8px] font-black uppercase tracking-widest opacity-50 px-1">
-                    <span>{$t('risk.cockpit.stats.drawdownProgression')} (MAX INTRADAY)</span>
+            <div class="space-y-1.5">
+                <div class="flex justify-between text-[7px] font-black uppercase tracking-[0.2em] opacity-40 px-1">
+                    <span>{$t('risk.cockpit.stats.drawdownProgression')} (INTRADAY)</span>
                     <span>{((cockpit?.dailyRiskStatus.maxDailyDrawdown || 0) / (currentLimit || 1) * 100).toFixed(1)}%</span>
                 </div>
-                <div class="relative w-full h-10 bg-black/60 rounded-xl overflow-hidden border border-white/5 p-1 shadow-inner ring-1 ring-white/5">
+                <div class="relative w-full h-8 bg-black/60 rounded-lg overflow-hidden border border-white/5 p-0.5 shadow-inner ring-1 ring-white/5">
                 <div 
                     class={cn(
-                    "absolute top-1 left-1 bottom-1 transition-all duration-1000 rounded-lg flex items-center justify-end px-4",
-                    isLossHot ? "bg-gradient-to-r from-rose-600 to-rose-400 animate-pulse shadow-[0_0_20px_rgba(225,29,72,0.3)]" : "bg-gradient-to-r from-rose-500/60 to-rose-500"
+                    "absolute top-0.5 left-0.5 bottom-0.5 transition-all duration-1000 rounded-md flex items-center justify-end px-3",
+                    isLossHot ? "bg-gradient-to-r from-rose-600 to-rose-400 animate-pulse shadow-[0_0_15px_rgba(225,29,72,0.2)]" : "bg-gradient-to-r from-rose-500/40 to-rose-500/80"
                     )} 
-                    style="width: calc({Math.min(((cockpit?.dailyRiskStatus.maxDailyDrawdown || 0) / (currentLimit || 1) * 100), 100)}% - 8px)"
+                    style="width: calc({Math.min(((cockpit?.dailyRiskStatus.maxDailyDrawdown || 0) / (currentLimit || 1) * 100), 100)}% - 4px)"
                 >
-                    {#if ptcLoss > 20}
-                        <ShieldAlert class="w-4 h-4 text-white/50" />
-                    {/if}
                 </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-              <SystemMetric 
-                label={$t('risk.cockpit.stats.consumed')} 
-                value={formatValue(cockpit?.dailyRiskStatus.dailyGrossLoss || 0)} 
-                status="danger"
-                weight="black"
-                class="bg-black/40 p-2.5 rounded-xl border border-white/5 group-hover:border-rose-500/20 transition-all"
-              />
-              <SystemMetric 
-                label={$t('risk.cockpit.stats.remaining')} 
-                value={formatValue(cockpit?.dailyRiskStatus.remainingLossAllowance || 0)} 
-                status="success"
-                weight="black"
-                class="bg-black/40 p-2.5 rounded-xl border border-white/5 group-hover:border-emerald-500/20 transition-all text-right items-end"
-              />
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-secondary/20 p-2 rounded-lg border border-border/50">
+                 <p class="text-[8px] font-black text-muted-foreground/50 uppercase mb-1">{$t('risk.cockpit.stats.consumed')}</p>
+                 <p class="text-xs font-black font-mono text-rose-500">{formatValue(cockpit?.dailyRiskStatus.dailyGrossLoss || 0)}</p>
+              </div>
+              <div class="bg-secondary/20 p-2 rounded-lg border border-border/50 text-right">
+                 <p class="text-[8px] font-black text-muted-foreground/50 uppercase mb-1">{$t('risk.cockpit.stats.remaining')}</p>
+                 <p class="text-xs font-black font-mono text-emerald-400">{formatValue(cockpit?.dailyRiskStatus.remainingLossAllowance || 0)}</p>
+              </div>
             </div>
           </div>
 
+          <!-- Operational Rules Checklist -->
+          <div class="space-y-1.5 border-t border-white/5 pt-3">
+              <p class="text-[8px] font-black text-rose-500/40 uppercase tracking-[0.3em] px-1 mb-1">
+                {$t('risk.cockpit.sections.operationalRules')}
+              </p>
+              
+              <div class="grid gap-1.5">
+                  <div class="flex items-center justify-between p-2 rounded-xl bg-secondary/30 border border-border/50 group">
+                      <div class="flex items-center gap-3">
+                          <div class={cn(
+                              "w-6 h-6 rounded-full flex items-center justify-center bg-background border",
+                              !cockpit?.dailyRiskStatus.dailyLossHit ? "border-emerald-500/30 text-emerald-500" : "border-rose-500/30 text-rose-500"
+                          )}>
+                              {#if !cockpit?.dailyRiskStatus.dailyLossHit}
+                                  <CheckCircle2 class="w-3 h-3" />
+                              {:else}
+                                  <ShieldAlert class="w-3 h-3" />
+                              {/if}
+                          </div>
+                          <span class="text-[9px] font-black uppercase tracking-widest text-foreground/80">{$t('risk.cockpit.sections.dailyLoss')}</span>
+                      </div>
+                      <span class={cn("text-[9px] font-black font-mono", !cockpit?.dailyRiskStatus.dailyLossHit ? "text-emerald-500" : "text-rose-500")}>
+                          {!cockpit?.dailyRiskStatus.dailyLossHit ? "OK" : "HIT"}
+                      </span>
+                  </div>
+
+                  <div class="flex items-center justify-between p-2 rounded-xl bg-secondary/30 border border-border/50 group">
+                      <div class="flex items-center gap-3">
+                          <div class={cn(
+                              "w-6 h-6 rounded-full flex items-center justify-center bg-background border",
+                              (cockpit?.dailyRiskStatus.currentDailyDrawdown || 0) < (cockpit?.dailyRiskStatus.effectiveMaxDailyLoss || 1) ? "border-emerald-500/30 text-emerald-500" : "border-rose-500/30 text-rose-500"
+                          )}>
+                              {#if (cockpit?.dailyRiskStatus.currentDailyDrawdown || 0) < (cockpit?.dailyRiskStatus.effectiveMaxDailyLoss || 1)}
+                                  <CheckCircle2 class="w-3 h-3" />
+                              {:else}
+                                  <ShieldAlert class="w-3 h-3" />
+                              {/if}
+                          </div>
+                          <span class="text-[9px] font-black uppercase tracking-widest text-foreground/90">{$t('risk.cockpit.sections.drawdown')}</span>
+                      </div>
+                      <span class="text-[9px] font-black font-mono text-emerald-500">OK</span>
+                  </div>
+              </div>
+          </div>
+
           <!-- Allowed Size -->
-          <div class="bg-indigo-500/5 p-3.5 rounded-2xl border border-white/5 flex justify-between items-center transition-all hover:bg-indigo-500/10 hover:border-indigo-500/20 mt-1 shadow-inner ring-1 ring-white/5">
+          <div class="bg-indigo-500/5 p-3 rounded-2xl border border-white/5 flex justify-between items-center transition-all hover:bg-indigo-500/10 hover:border-indigo-500/20 mt-1 shadow-inner ring-1 ring-white/5">
             {#if riskStore.positionSizingResult?.isValid}
               <div class="flex flex-col">
-                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-1 flex items-center gap-2">
-                  <Target class="w-4 h-4" /> {$t('risk.cockpit.stats.allowedSizing')}
+                <p class="text-[9px] font-black text-indigo-400 uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
+                  <Target class="w-3 h-3" /> {$t('risk.cockpit.stats.allowedSizing')}
                 </p>
-                {#if riskStore.positionSizingResult?.isValid}
-                  <p class="text-[8px] font-black text-indigo-400/40 uppercase tracking-[0.2em]">{$t('risk.cockpit.stats.availableOperational')}</p>
-                {/if}
               </div>
-              {#if riskStore.positionSizingResult?.isValid}
-                <div class="flex items-baseline gap-2">
-                  <span class="text-3xl font-black font-mono text-white tracking-tighter">
-                    {riskStore.positionSizingResult.allowedContracts}
-                  </span>
-                  <span class="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-40">{$t('risk.plan.finance.contracts').toUpperCase()}</span>
-                </div>
-              {/if}
+              <div class="flex items-baseline gap-2">
+                <span class="text-2xl font-black font-mono text-white tracking-tighter">
+                  {riskStore.positionSizingResult.allowedContracts}
+                </span>
+                <span class="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-40">{$t('risk.plan.finance.contracts').toUpperCase()}</span>
+              </div>
             {:else}
               <div class="flex flex-col">
-                <p class="text-[10px] font-black text-rose-400 uppercase tracking-[0.3em] mb-1 flex items-center gap-2">
-                  <Target class="w-4 h-4" /> {$t('risk.cockpit.stats.allowedSizing')}
+                <p class="text-[9px] font-black text-rose-400 uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
+                  <Target class="w-3 h-3" /> {$t('risk.cockpit.stats.allowedSizing')}
                 </p>
               </div>
-              <Badge variant="outline" class="bg-rose-500/10 text-rose-500 border-rose-500/20 text-[10px] font-black uppercase py-2 px-4 shadow-none tracking-widest">
+              <Badge variant="outline" class="bg-rose-500/10 text-rose-500 border-rose-500/20 text-[9px] font-black uppercase py-1 px-3 shadow-none tracking-widest">
                 {$t('risk.cockpit.stats.blockedStatus')}
               </Badge>
             {/if}
@@ -415,15 +445,15 @@
       </SystemCard>
 
       <!-- RIGHT: EVOLUTION ZONE (Layer 2 & 3: Growth & Progression) -->
-      <SystemCard status="success" class="flex flex-col min-h-[420px] overflow-hidden group p-4 space-y-4">
+      <SystemCard status="success" class="flex flex-col min-h-[380px] overflow-hidden group p-3 space-y-3">
           {#if activeProfile}
             <!-- CAMADA 1: FASE ATUAL -->
             <div class={cn(
-                "p-4 rounded-3xl border transition-all duration-500 shadow-inner ring-1 ring-white/5",
-                growthEval?.phaseStatus === 'maintenance' ? "bg-indigo-500/10 border-indigo-500/30" : 
-                growthEval?.phaseStatus === 'max_reached' ? "bg-amber-500/5 border-amber-500/20" :
-                growthEval?.phaseStatus === 'protected' ? "bg-rose-500/5 border-rose-500/20" :
-                "bg-emerald-500/5 border-emerald-500/20"
+                "p-3 rounded-2xl border transition-all duration-500 shadow-inner ring-1 ring-white/5",
+                growthEval?.phaseStatus === 'maintenance' ? "bg-indigo-500/10 border-indigo-500/20" : 
+                growthEval?.phaseStatus === 'max_reached' ? "bg-amber-500/5 border-amber-500/10" :
+                growthEval?.phaseStatus === 'protected' ? "bg-rose-500/5 border-rose-500/10" :
+                "bg-emerald-500/5 border-emerald-500/10"
             )}>
               <div class="flex justify-between items-start mb-4">
                 <div class="space-y-1">
@@ -449,6 +479,27 @@
                     <TrendingUp class="w-3 h-3 mr-2" />
                     {$t('risk.growth.actions.promote')}
                   </Button>
+                  {:else if growthEval?.shouldRegress && (riskStore.resolvedGrowthContext?.resolution.currentPhaseIndex || 0) > 0}
+                    <div class="flex gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            class="h-8 px-3 text-[9px] font-black uppercase tracking-widest border-rose-500/30 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition-all animate-pulse"
+                            onclick={() => riskStore.regressPhase()}
+                        >
+                            <TrendingDown class="w-3 h-3 mr-2" />
+                            {$t('risk.growth.actions.demote')}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            class="h-8 px-3 text-[9px] font-black uppercase tracking-widest border-white/10 text-muted-foreground/40 hover:bg-rose-500/10 hover:text-rose-400 transition-all"
+                            onclick={() => isRestartModalOpen = true}
+                        >
+                            <RotateCcw class="w-3 h-3 mr-2" />
+                            {$t('risk.growthPlan.actions.restart')}
+                        </Button>
+                    </div>
                   {:else if growthEval?.phaseStatus === 'max_reached'}
                     <Badge variant="outline" class="border-amber-500/20 text-amber-400 text-[9px] font-black uppercase tracking-widest py-1 bg-amber-500/5">
                         {$t('risk.states.phaseMaxReached')}
@@ -463,95 +514,128 @@
                             variant="outline"
                             size="sm"
                             class="h-8 px-3 text-[9px] font-black uppercase tracking-widest border-rose-500/10 text-rose-500/40 hover:bg-rose-500/10 hover:text-rose-400 transition-all"
-                            onclick={() => {
-                                if (confirm($t('risk.messages.restartConfirm'))) {
-                                    riskStore.restartGrowthPlan();
-                                    toast.success($t('risk.messages.restartSuccess'));
-                                }
-                            }}
+                            onclick={() => isRestartModalOpen = true}
                         >
                             <RotateCcw class="w-3 h-3 mr-2" />
-                            {$t('risk.growth.actions.restart')}
+                            {$t('risk.growthPlan.actions.restart')}
                         </Button>
 
                         <Badge variant="outline" class="border-white/10 text-muted-foreground/40 text-[9px] font-black uppercase tracking-widest py-1 h-8">
-                            {$t('risk.desk.progression.should_remain')}
+                            {$t('risk.states.evolutionRequirements')}
                         </Badge>
                     </div>
                 {/if}
               </div>
 
-              <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-1">
-                    <p class="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest">{$t('risk.growth.planName')}</p>
-                    <p class="text-lg font-black font-mono text-white">{activePhase?.maxContracts || '0'} <span class="text-[10px] opacity-40">{$t('risk.plan.finance.contracts').toUpperCase()}</span></p>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2 pt-2 border-t border-white/5">
+                <div class="space-y-0.5">
+                    <p class="text-[7px] font-black text-muted-foreground/40 uppercase tracking-widest">{$t('risk.plan.finance.contracts')}</p>
+                    <p class="text-xs font-black font-mono text-white leading-none">{activePhase?.maxContracts || '0'}</p>
                 </div>
-                <div class="space-y-1 text-right">
-                    <p class="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest">
+                <div class="space-y-0.5">
+                    <p class="text-[7px] font-black text-muted-foreground/40 uppercase tracking-widest">{$t('risk.plan.finance.maxDailyLoss')}</p>
+                    <p class="text-xs font-black font-mono text-rose-400 leading-none">{formatValue(activePhase?.maxDailyLoss || currentLimit || 0)}</p>
+                </div>
+                <div class="space-y-0.5">
+                    <p class="text-[7px] font-black text-muted-foreground/40 uppercase tracking-widest">{$t('risk.growth.metrics.drawdown')}</p>
+                    <p class="text-xs font-black font-mono text-amber-400 leading-none">{formatValue(activePhase?.maxDrawdownAmount || 0)}</p>
+                </div>
+                <div class="space-y-0.5 text-right">
+                    <p class="text-[7px] font-black text-muted-foreground/40 uppercase tracking-widest">
                         {growthEval?.phaseStatus === 'max_reached' ? $t('risk.cockpit.status.maintenanceMode') : $t('risk.cockpit.stats.goal')}
                     </p>
-                    <p class={cn("text-lg font-black font-mono", growthEval?.phaseStatus === 'maintenance' ? "text-indigo-400" : "text-emerald-400")}>
-                        {growthEval?.phaseStatus === 'max_reached' ? $t('risk.states.phaseMaxReached').toUpperCase() : formatValue(profitGoal)}
+                    <p class={cn("text-xs font-black font-mono leading-none", growthEval?.phaseStatus === 'maintenance' ? "text-indigo-400" : "text-emerald-400")}>
+                        {growthEval?.phaseStatus === 'max_reached' ? 'MAX' : formatValue(profitGoal)}
                     </p>
                 </div>
               </div>
             </div>
 
              <!-- CAMADA 2: MISSÕES / CHECKLIST DE CRITÉRIOS (Layer 3) -->
-            <div class="space-y-3 flex-1 flex flex-col pt-1">
+            <div class="space-y-2 flex-1 flex flex-col pt-1">
+              <!-- SECTION: COMPLIANCE (Survival Rules) -->
+              <div class="space-y-1 mb-2">
+                <p class="text-[8px] font-black text-rose-500/40 uppercase tracking-[0.3em] px-1 mb-1">
+                {$t('risk.cockpit.sections.survivalRules')}
+              </p>
+                <div class="flex items-center justify-between p-2 rounded-xl bg-secondary/10 border border-border/50 transition-all hover:bg-secondary/20 group">
+                    <div class="flex items-center gap-3">
+                        <div class={cn(
+                            "w-6 h-6 rounded-full flex items-center justify-center bg-background border",
+                            !cockpit?.dailyRiskStatus.dailyLossHit ? "border-emerald-500/30 text-emerald-500" : "border-rose-500/30 text-rose-500"
+                        )}>
+                            {#if !cockpit?.dailyRiskStatus.dailyLossHit}
+                                <CheckCircle2 class="w-3 h-3" />
+                            {:else}
+                                <ShieldAlert class="w-3 h-3" />
+                            {/if}
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[9px] font-black uppercase tracking-widest text-foreground/90 truncate max-w-[120px]">
+                                {$t('risk.cockpit.sections.dailyLoss')}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-right">
+                        <span class={cn(
+                            "text-[8px] font-black uppercase tracking-widest",
+                            !cockpit?.dailyRiskStatus.dailyLossHit ? "text-emerald-400" : "text-rose-400"
+                        )}>
+                            {!cockpit?.dailyRiskStatus.dailyLossHit ? "OK" : "VIOLADO"}
+                        </span>
+                    </div>
+                </div>
+              </div>
+
               <SystemHeader 
                   title={growthEval?.phaseStatus === 'max_reached' ? $t('risk.cockpit.status.maintenanceMode').toUpperCase() : $t('risk.cockpit.sections.pendingMissions')}
                   icon={growthEval?.phaseStatus === 'max_reached' ? ShieldCheck : Activity}
-                  class="mb-0 {growthEval?.phaseStatus === 'maintenance' ? 'text-indigo-400/70' : 'text-emerald-500/70'}"
+                  class="mb-0 {growthEval?.phaseStatus === 'maintenance' ? 'text-indigo-400/70' : 'text-emerald-500/70'} scale-90 origin-left"
               >
                   {#snippet actions()}
-                      <span class="text-[8px] font-black text-muted-foreground opacity-30 uppercase tracking-widest">
+                      <span class="text-[7px] font-black text-muted-foreground opacity-30 uppercase tracking-widest">
                         {growthEval?.phaseStatus === 'max_reached' ? $t('risk.states.continuousAudit') : $t('risk.states.evolutionRequirements')}
                       </span>
                   {/snippet}
               </SystemHeader>
 
-              <div class="grid gap-2">
+              <div class="grid gap-1.5">
                 {#if growthEval?.advanceConditions}
                     {#each growthEval.advanceConditions as cond, i (i)}
-                        <div class="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5 transition-all hover:bg-white/10 group">
+                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-secondary/20 border border-border/50 transition-all hover:bg-secondary/30 group">
                             <div class="flex items-center gap-3">
                                 <div class={cn(
-                                    "w-8 h-8 rounded-full flex items-center justify-center bg-background/50 border",
+                                    "w-7 h-7 rounded-full flex items-center justify-center bg-background border",
                                     cond.isMet ? "border-emerald-500/30 text-emerald-500" : "border-white/10 text-muted-foreground/40"
                                 )}>
                                     {#if cond.isMet}
-                                        <CheckCircle2 class="w-4 h-4" />
+                                        <CheckCircle2 class="w-3.5 h-3.5" />
                                     {:else}
-                                        <Timer class="w-4 h-4" />
+                                        <Timer class="w-3.5 h-3.5" />
                                     {/if}
                                 </div>
                                 <div class="flex flex-col">
-                                    <span class="text-[10px] font-black uppercase tracking-widest text-foreground/90">
+                                    <span class="text-[9px] font-black uppercase tracking-widest text-foreground/90">
                                         {$t(cond.label_key)}
-                                    </span>
-                                    <span class="text-[9px] font-bold text-muted-foreground/60 uppercase">
-                                        {$t('risk.growth.title')}
                                     </span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3 text-right">
                                 <div class="flex flex-col items-end">
                                     <span class={cn(
-                                        "text-[10px] font-mono font-bold",
+                                        "text-[9px] font-mono font-bold",
                                         cond.isMet ? "text-emerald-400" : "text-foreground/60"
                                     )}>
                                         {cond.metric.includes('win_rate') ? (cond.current || 0).toFixed(1) + '%' : 
                                          cond.metric.includes('profit') || cond.metric.includes('target') ? formatValue(cond.current || 0) : 
                                          (cond.current || 0)}
                                     </span>
-                                    <span class="text-[8px] font-black text-muted-foreground/30 uppercase tracking-tighter">
+                                    <span class="text-[7px] font-black text-muted-foreground/30 uppercase tracking-tighter">
                                         {$t('risk.cockpit.stats.goal')}: {cond.metric.includes('win_rate') ? (cond.target || 0).toFixed(1) + '%' : 
                                                cond.metric.includes('profit') || cond.metric.includes('target') ? formatValue(cond.target || 0) : 
                                                (cond.target || 0)}
                                     </span>
                                 </div>
-                                <div class={cn("w-1 h-8 rounded-full", cond.isMet ? "bg-emerald-500/50" : "bg-white/10")}></div>
                             </div>
                         </div>
                     {/each}
@@ -630,40 +714,20 @@
     </div>
 
     <!-- AI ADVISOR BOTTOM PANEL -->
-    <SystemCard class="p-4 shadow-2xl relative overflow-hidden group">
+    <SystemCard class="p-2 shadow-2xl relative overflow-hidden group">
       <!-- High-Tech Aesthetic Background -->
-      <div class="absolute right-0 top-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] -mr-64 -mt-64 translate-x-20 transition-transform duration-1000 group-hover:scale-110"></div>
-      <div class="absolute left-0 bottom-0 w-80 h-80 bg-indigo-500/5 rounded-full blur-[80px] -ml-40 -mb-40 group-hover:scale-125 transition-transform duration-700"></div>
+      <div class="absolute right-0 top-0 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px] -mr-48 -mt-48 translate-x-16 transition-transform duration-1000 group-hover:scale-110"></div>
       
-      <!-- Scanline effect -->
-      <div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(255,255,255,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]"></div>
-
-      <div class="relative z-10 flex flex-col lg:flex-row items-center gap-4">
-        <div class="relative">
+      <div class="relative z-10 flex flex-col lg:flex-row items-center gap-3">
+        <div class="relative scale-75 lg:scale-90">
             <div class="absolute inset-0 bg-indigo-500/30 blur-xl rounded-full scale-75 group-hover:scale-110 transition-transform duration-500"></div>
-            <div class="w-16 h-16 rounded-2xl bg-indigo-500/20 flex items-center justify-center shrink-0 border border-indigo-500/30 shadow-2xl relative z-10 transform -rotate-2 group-hover:rotate-0 transition-all duration-300">
-                <Brain class="w-9 h-9 text-indigo-300" />
-            </div>
-            <!-- Pulse dot -->
-            <div class="absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 rounded-full border-2 border-black flex items-center justify-center z-20">
-                <div class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+            <div class="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center shrink-0 border border-indigo-500/30 shadow-2xl relative z-10 transform -rotate-1 group-hover:rotate-0 transition-all duration-300">
+                <Brain class="w-7 h-7 text-indigo-300" />
             </div>
         </div>
 
-        <div class="flex-1 text-center lg:text-left space-y-2">
-          <SystemHeader 
-            title={$t('risk.cockpit.sections.emotionalSupervisor')}
-            class="mb-0 text-indigo-400/80"
-          >
-            {#snippet actions()}
-                <div class="flex gap-1">
-                    <div class="w-1 h-1 rounded-full bg-indigo-500/30"></div>
-                    <div class="w-1 h-1 rounded-full bg-indigo-500/50"></div>
-                    <div class="w-1 h-1 rounded-full bg-indigo-500/80 animate-pulse"></div>
-                </div>
-            {/snippet}
-          </SystemHeader>
-          <p class="text-xl md:text-2xl font-black text-white/90 leading-none tracking-tighter uppercase">
+        <div class="flex-1 text-center lg:text-left">
+          <p class="text-sm md:text-base font-black text-white/90 leading-none tracking-tighter uppercase mb-1">
             {#if mainStatus === 'blocked'}
               {$t('risk.cockpit.supervisor.blocked')}
             {:else if mainStatus === 'caution'}
@@ -674,18 +738,40 @@
               {$t('risk.cockpit.supervisor.stable')}
             {/if}
           </p>
-          <p class="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-40">{$t('risk.states.aiEngineStatus')}</p>
-        </div>
-        
-        <div class="flex items-center gap-2 opacity-20 group-hover:opacity-50 transition-all duration-700">
-          <div class="w-8 h-1 bg-indigo-500 rounded-full"></div>
-          <div class="w-4 h-1 bg-indigo-500 rounded-full"></div>
-          <div class="w-2 h-1 bg-indigo-500 rounded-full"></div>
+          <p class="text-[8px] font-black text-indigo-400/40 uppercase tracking-[0.2em]">{$t('risk.cockpit.sections.emotionalSupervisor').toUpperCase()}</p>
         </div>
       </div>
     </SystemCard>
   {/if}
 </div>
+
+<AlertDialog.Root bind:open={isRestartModalOpen}>
+    <AlertDialog.Content class="bg-black/90 border-white/5 backdrop-blur-xl">
+        <AlertDialog.Header>
+            <AlertDialog.Title class="text-[12px] font-black uppercase tracking-[0.2em] text-rose-500">
+                {$t('risk.growthPlan.actions.restart')}
+            </AlertDialog.Title>
+            <AlertDialog.Description class="text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest leading-relaxed">
+                {$t('risk.messages.restartConfirm')}
+            </AlertDialog.Description>
+        </AlertDialog.Header>
+        <AlertDialog.Footer class="gap-3">
+            <AlertDialog.Cancel class="bg-white/5 border-white/5 text-[9px] font-black uppercase tracking-widest hover:bg-white/10 h-10 px-6">
+                {$t('common.cancel')}
+            </AlertDialog.Cancel>
+            <AlertDialog.Action 
+                class="bg-rose-500 text-white text-[9px] font-black uppercase tracking-widest hover:bg-rose-600 h-10 px-6 shadow-lg shadow-rose-500/20"
+                onclick={() => {
+                    riskStore.restartGrowthPlan();
+                    toast.success($t('risk.messages.restartSuccess'));
+                    isRestartModalOpen = false;
+                }}
+            >
+                {$t('risk.growthPlan.actions.restart')}
+            </AlertDialog.Action>
+        </AlertDialog.Footer>
+    </AlertDialog.Content>
+</AlertDialog.Root>
 
 <style>
   /* Base reset for terminal fonts */
@@ -702,3 +788,4 @@
     animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 </style>
+

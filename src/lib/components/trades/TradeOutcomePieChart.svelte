@@ -28,10 +28,10 @@
             else beCount++;
         });
 
-        const gainLabel = $t("trades.wizard.charts.outcome.gain");
-        const lossLabel = $t("trades.wizard.charts.outcome.loss");
-        const beLabel = $t("trades.wizard.charts.outcome.be");
-        const emptyLabel = $t("trades.wizard.charts.outcome.vazio");
+        const gainLabel = $t("trades.charts.outcome.gain");
+        const lossLabel = $t("trades.charts.outcome.loss");
+        const beLabel = $t("trades.charts.outcome.be", { default: "B.E." });
+        const emptyLabel = $t("trades.charts.outcome.vazio", { default: "Vazio" });
 
         const data = [];
         if (gainCount > 0)
@@ -61,7 +61,7 @@
                       {
                           value: 1,
                           name: emptyLabel,
-                          itemStyle: { color: "#27272a" },
+                          itemStyle: { color: "rgba(128, 128, 128, 0.1)" },
                           label: { show: false },
                       },
                   ];
@@ -70,9 +70,9 @@
             backgroundColor: "transparent",
             tooltip: {
                 trigger: "item",
-                backgroundColor: "#18181b",
-                borderColor: "#27272a",
-                textStyle: { color: "#fff", fontSize: 12 },
+                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                borderColor: "rgba(255, 255, 255, 0.1)",
+                textStyle: { color: "#fff", fontSize: 10 },
                 formatter: "{b}: <b>{c}</b> ({d}%)",
             },
             legend: {
@@ -95,20 +95,20 @@
                     avoidLabelOverlap: false,
                     itemStyle: {
                         borderRadius: 4,
-                        borderColor: "#09090b",
+                        borderColor: "transparent",
                         borderWidth: 2,
                     },
                     label: {
                         show: true,
                         position: "center",
                         formatter: () =>
-                            `{total|${tradesData.length}}\n{label|${$t("trades.wizard.charts.outcome.trades_label")}}`,
+                            `{total|${tradesData.length}}\n{label|${$t("trades.kpi.trades_label")}}`,
                         rich: {
                             total: {
                                 fontSize: 11,
                                 fontWeight: "black",
                                 fontFamily: "JetBrains Mono, monospace",
-                                color: "#fff",
+                                color: "inherit",
                             },
                             label: {
                                 fontSize: 6,
@@ -137,9 +137,9 @@
         {/key}
     {:else}
         <div
-            class="absolute inset-0 flex items-center justify-center text-muted-foreground italic text-xs"
+            class="absolute inset-0 flex items-center justify-center text-muted-foreground italic text-[10px]"
         >
-            {$t("trades.wizard.charts.outcome.empty")}
+            {$t("common.no_data", { default: "Sem dados" })}
         </div>
     {/if}
 </div>
