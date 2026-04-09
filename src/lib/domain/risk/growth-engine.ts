@@ -16,6 +16,8 @@ const METRIC_MAP: Record<string, string> = {
     'target_financial': 'net_pnl',
     'meta_de_lucro': 'net_pnl',
     'objetivo_de_lucro': 'net_pnl',
+    'profit_target_financial': 'net_pnl',
+    'profit_target_amount': 'net_pnl',
     'profit': 'net_pnl',
     'pnl': 'net_pnl',
     'lucro': 'net_pnl',
@@ -59,11 +61,15 @@ const METRIC_MAP: Record<string, string> = {
     'best_day_percent': 'best_day_share',
     
     'max_drawdown': 'max_drawdown',
+    'max_drawdown_amount': 'max_drawdown',
+    'max_drawdown_financial': 'max_drawdown',
     'drawdown_limit': 'max_drawdown',
     'drawdown_maximo': 'max_drawdown',
     'daily_drawdown_limit': 'max_drawdown',
     
     'max_daily_loss': 'max_daily_loss',
+    'max_daily_loss_amount': 'max_daily_loss',
+    'max_daily_loss_financial': 'max_daily_loss',
     'daily_loss_limit': 'max_daily_loss',
     'perda_diaria': 'max_daily_loss',
     'max_loss_limit': 'max_daily_loss',
@@ -337,21 +343,26 @@ export function evaluateGrowthPhase(
         console.log(`  - Condition "${c.metric}": isMet=${res.isMet}, current=${res.current}, target=${res.target}`);
         return res;
     });
-    const regressionConditions = (currentPhase.conditionsToDemote || []).map(c => evaluateCondition(c, metrics, targetUnit, drawdownUnit));
+    const regressionConditions = (currentPhase.conditionsToDemote || [])
+        .filter(c => c && c.metric && c.metric !== 'unknown')
+        .map(c => evaluateCondition(c, metrics, targetUnit, drawdownUnit));
 
     const isLastPhase = phaseIndex >= totalPhases - 1;
-    const canPromote = currentPhase.allowPromotion && !isLastPhase && advanceConditions.length > 0 && advanceConditions.every(c => c.isMet);
-    
+    const hasTrades = metrics.tradeCount > 0;
     const canRegress = currentPhase.allowRegression && phaseIndex > 0;
     const shouldRegress = canRegress && regressionConditions.some(c => c.isMet);
 
+    const canPromote = currentPhase.allowPromotion && !isLastPhase && hasTrades && !shouldRegress && advanceConditions.length > 0 && advanceConditions.every(c => c.isMet);
+
     let phaseStatus: GrowthEvaluationResult['phaseStatus'] = 'active';
     let regressionReasonKey: string | undefined;
+    let regressionReasonMetric: string | undefined;
 
     if (shouldRegress) {
         phaseStatus = 'protected'; 
-        const failedCondition = regressionConditions.find(c => c.isMet);
-        regressionReasonKey = failedCondition?.label_key;
+        const violation = regressionConditions.find(c => c.isMet);
+        regressionReasonKey = violation?.label_key;
+        regressionReasonMetric = violation?.metric;
     } else if (isLastPhase) {
         phaseStatus = 'max_reached';
         // No modo manutenção, não há promoção, mas monitoramos se as condições de avanço (alvos) continuam batidas

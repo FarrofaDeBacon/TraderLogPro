@@ -45,7 +45,7 @@ export function adaptPositionSizingInput(
 
     // 3. Extrair Regras da Fase Ativa de Crescimento
     const maxContractsPhase = (profile.growth_plan_id && currentPhase) 
-        ? currentPhase.lot_size 
+        ? ((currentPhase as any).lot_size || (currentPhase as any).maxContracts) 
         : undefined;
 
     return {

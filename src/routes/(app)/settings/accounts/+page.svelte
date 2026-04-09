@@ -67,7 +67,7 @@ import type { Account } from "$lib/types";
         account_type: "Real",
         broker: "",
         account_number: "",
-        currency: "BRL", // Default
+        currency: "BRL",
         balance: 0,
         custom_logo: null,
     });
@@ -78,7 +78,7 @@ import type { Account } from "$lib/types";
             account_type: "Real",
             broker: "",
             account_number: "",
-            currency: currenciesStore.currencies[0]?.code || "BRL",
+            currency: "BRL",
             balance: 0,
             custom_logo: null,
         };
@@ -101,9 +101,9 @@ import type { Account } from "$lib/types";
         isProcessing = true;
         try {
             if (editingId) {
-                accountsStore.updateAccount(editingId, formData);
+                await accountsStore.updateAccount(editingId, formData);
             } else {
-                accountsStore.addAccount(formData);
+                await accountsStore.addAccount(formData);
             }
             isDialogOpen = false;
         } finally {

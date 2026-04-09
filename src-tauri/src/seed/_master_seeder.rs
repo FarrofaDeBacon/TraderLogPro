@@ -47,7 +47,7 @@ pub async fn run_all_seeds(db: &Surreal<Db>) -> Result<(), String> {
 
     // Nível 4: Dados Operacionais (Contas e Trades)
     demo_accounts_seed::seed_accounts(db, None).await?;
-    demo_trades_seed::seed_all_demo_trades(db, None).await?;
+    // demo_trades_seed::seed_all_demo_trades(db, None).await?;
     tax_seed::seed_initial_tax_records(db).await?;
 
     println!("\n[SEED] ✅ Seeding concluído com sucesso!\n");
@@ -57,6 +57,9 @@ pub async fn run_all_seeds(db: &Surreal<Db>) -> Result<(), String> {
 /// Inicialização base (Configurações, Sem dados operacionais/trades)
 pub async fn run_base_seeds(db: &Surreal<Db>) -> Result<(), String> {
     println!("\n[SEED] 🚀 Iniciando seeding base (Configurações)...\n");
+
+    // Nuclear Reset: Removido após garantir a limpeza inicial solicitada pelo usuário.
+    // O banco agora persistirá os dados do usuário.
 
     // Nível 1: Dados básicos sem dependências
     currencies_seed::seed_currencies(db).await?;
@@ -79,6 +82,9 @@ pub async fn run_base_seeds(db: &Surreal<Db>) -> Result<(), String> {
     assets_seed::seed_assets(db, None).await?;
     indicators_seed::seed_indicators(db, None).await?;
     strategies_seed::seed_strategies(db, None).await?;
+
+    // Nível 4: Dados Operacionais (Contas) - Adicionado para garantir que Toro apareça
+    demo_accounts_seed::seed_accounts(db, None).await?;
 
     println!("\n[SEED] ✅ Seeding base concluído!\n");
     Ok(())

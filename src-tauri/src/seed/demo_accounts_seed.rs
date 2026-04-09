@@ -9,50 +9,28 @@ pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Res
 
     let accounts = vec![
         (
-            "sim_brl",
-            "Simulador (BRL)",
-            "BRL",
+            "sim_toro",
+            "Simulador TORO",
+            "TORO",
             "Demo",
-            10000.0,
+            "brl",
+            "99999-9",
+            100000.0,
+            Some("chart_pie"),
         ),
         (
-            "sim_usd",
-            "Simulador (USD)",
-            "USD",
-            "Demo",
-            10000.0,
-        ),
-        (
-            "sim_usdt",
-            "Simulador (USDT)",
-            "USDT",
-            "Demo",
-            10000.0,
-        ),
-        (
-            "real_brl",
-            "Conta Real (BRL)",
-            "BRL",
+            "real_toro",
+            "Conta Real TORO",
+            "TORO",
             "Real",
+            "brl",
+            "12345-6",
             0.0,
-        ),
-        (
-            "real_usd",
-            "Conta Real (USD)",
-            "USD",
-            "Real",
-            0.0,
-        ),
-        (
-            "real_usdt",
-            "Conta Real (USDT)",
-            "USDT",
-            "Real",
-            0.0,
+            Some("landmark"),
         ),
     ];
 
-    for (id_suffix, name, currency, account_type, balance) in accounts {
+    for (id_suffix, name, broker, account_type, currency, account_number, balance, logo) in accounts {
         let id_part = format!("account:{}", id_suffix);
         
         // Skip if filter is present and doesn't contain this ID
@@ -73,12 +51,12 @@ pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Res
             id: id_part.clone().into(),
             nickname: name.into(),
             account_type: account_type.into(),
-            broker: "Demo Broker".into(),
-            account_number: format!("DEMO-{}", id_suffix.to_uppercase()),
+            broker: broker.into(),
+            account_number: account_number.into(),
             currency_id: Some(format!("currency:{}", currency)),
             currency: None,
             balance: balance,
-            custom_logo: None,
+            custom_logo: logo.map(|s| s.into()),
         };
 
         let mut account_json = serde_json::to_value(&account).unwrap();

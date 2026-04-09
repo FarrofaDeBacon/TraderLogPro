@@ -132,12 +132,24 @@ export class RiskSettingsStore {
         } as Omit<RiskProfile, "id">;
     }
 
-    setActiveRiskProfile(id: string) {
-        this.riskProfiles = this.riskProfiles.map(r => ({
-            ...r,
-            active: r.id === id
-        }));
-        this.saveRiskProfiles();
+    async setActiveRiskProfile(id: string) {
+        try {
+            // Hard reset active states in DB to prevent conflicts (Ghost active profiles)
+            await safeInvoke("db_query", { 
+                query: "UPDATE risk_profile SET active = false WHERE active = true" 
+            });
+            
+            this.riskProfiles = this.riskProfiles.map(r => ({
+                ...r,
+                active: r.id === id
+            }));
+            
+            await this.saveRiskProfiles();
+            toast.success("Perfil de risco ativado com sucesso");
+        } catch (e) {
+            console.error("[RiskSettingsStore] Error activating profile:", e);
+            toast.error("Erro ao ativar perfil de risco");
+        }
     }
 
     // --- Asset Risk Profiles CRUD ---

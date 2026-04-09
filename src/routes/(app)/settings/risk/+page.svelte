@@ -258,9 +258,9 @@ import type { RiskProfile } from "$lib/types";
                 </Card.Content>
                 <Card.Footer class="justify-between items-center pt-2">
                     <div>
-                        {#if !profile.active}
+                        {#if !profile.active || riskSettingsStore.riskProfiles.filter(p => p.active).length > 1}
                             <Button
-                                variant="outline"
+                                variant={riskSettingsStore.riskProfiles.filter(p => p.active).length > 1 ? "destructive" : "outline"}
                                 size="sm"
                                 class="h-8 text-xs px-3"
                                 onclick={(e) => {
@@ -270,7 +270,7 @@ import type { RiskProfile } from "$lib/types";
                                     );
                                 }}
                             >
-                                {$t("risk.profiles.activate")}
+                                {riskSettingsStore.riskProfiles.filter(p => p.active).length > 1 ? "Resolver Conflito (Ativar)" : $t("risk.profiles.activate")}
                             </Button>
                         {/if}
                     </div>
@@ -324,7 +324,7 @@ import type { RiskProfile } from "$lib/types";
 <!-- Edit/New Modal -->
 <Dialog.Root bind:open={isDialogOpen}>
     <Dialog.Content class="max-w-4xl w-[95vw] max-h-[95vh] overflow-y-auto no-scrollbar p-0 bg-background/95 backdrop-blur-xl border-white/10 shadow-2xl">
-        <Dialog.Header>
+        <Dialog.Header class="pl-[155px]">
             <Dialog.Title>
                 {editingItem
                     ? $t("risk.edit")

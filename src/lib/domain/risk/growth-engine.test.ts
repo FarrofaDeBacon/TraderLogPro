@@ -153,7 +153,7 @@ describe('Domain: Growth Engine - evaluateGrowthPhase (Genérico)', () => {
             createTestTrade(-100, '2026-03-03T10:00:00Z'),
         ];
         
-        const result = evaluateGrowthPhase(targetPhase, trades, 10000, 0, 2);
+        const result = evaluateGrowthPhase(targetPhase, trades, 10000, 1, 3);
         expect(result.shouldRegress).toBe(true);
         expect(result.regressionReasonKey).toContain('loss_streak');
     });
@@ -166,7 +166,7 @@ describe('Domain: Growth Engine - evaluateGrowthPhase (Genérico)', () => {
             createTestTrade(-100, '2026-03-04T10:00:00Z'),
         ];
         
-        const result = evaluateGrowthPhase(targetPhase, trades, 10000, 0, 2);
+        const result = evaluateGrowthPhase(targetPhase, trades, 10000, 1, 3);
         expect(result.shouldRegress).toBe(false);
         expect(result.metrics.consecutiveLossDays).toBe(2);
     });

@@ -1,16 +1,16 @@
 {
     "header": {
         "searchPlaceholder": "Rechercher...",
-        "toggleUserMenu": "Basculer le Menu Utilisateur",
+        "toggleUserMenu": "Basculer le menu utilisateur",
         "userMenu": {
-            "logout": "Déconnexion",
-            "myAccount": "Mon Compte",
+            "logout": "Se déconnecter",
+            "myAccount": "Mon compte",
             "settings": "Paramètres",
-            "support": "Support"
+            "support": "Support technique"
         }
     },
     "nav": {
-        "dashboard": "Tableau de Bord",
+        "dashboard": "Tableau de bord",
         "finance": "Finances",
         "fiscal": {
             "irpf": "Impôt sur le Revenu"
@@ -18,8 +18,10 @@
         "help": "Aide",
         "psychology": "Psychologie",
         "risk": "Contrôle des Risques",
-        "settings": "Paramètres",
-        "trades": "Transactions"
+        "settings": "Réglages",
+        "strategies": "Stratégies",
+        "reports": "Rapports",
+        "trades": "Opérations"
     },
     "sidebar": {
         "categories": {
@@ -28,13 +30,14 @@
             "support": "Support",
             "workspace": "Accueil"
         },
-        "dashboard": "Tableau de Bord",
-        "finance": "Pôle Financier",
+        "dashboard": "Tableau de bord",
+        "finance": "Centre Financier",
         "help": "Centre d'Aide",
-        "irpf": "Fiscal",
+        "irpf": "Fiscalité",
         "psychology": "Psychologie",
         "settings": "Paramètres",
         "strategies": "Stratégies",
-        "trades": "Trades"
+        "reports": "Rapports",
+        "trades": "Opérations"
     }
 }

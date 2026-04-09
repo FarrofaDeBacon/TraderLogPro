@@ -361,7 +361,7 @@
                         </p>
                         <p class="text-xs font-bold">
                             {step}
-                            {$t("calendar.of")}
+                            {$t("common.of")}
                             {totalSteps}
                         </p>
                     </div>
@@ -1106,7 +1106,7 @@
                                 {#if step === 4 && !licenseUploaded}
                                     {$t("setup.wizard.nav.skipTrial")}
                                 {:else}
-                                    {$t("calendar.next") || "PRÓXIMO"}
+                                    {$t("common.next")}
                                 {/if}
                                 <ChevronRight class="w-4 h-4 ml-1" />
                             </Button>

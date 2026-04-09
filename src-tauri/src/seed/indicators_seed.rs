@@ -19,7 +19,7 @@ pub async fn seed_indicators(db: &Surreal<Db>, filter: Option<Vec<String>>) -> R
         (
             "i1",
             "IFR (14)",
-            "Oscillator",
+            "Oscilador",
             "SubWindow",
             "#9C27B0",
             "Índice de Força Relativa",
@@ -27,7 +27,7 @@ pub async fn seed_indicators(db: &Surreal<Db>, filter: Option<Vec<String>>) -> R
         (
             "i2",
             "MACD Padrão",
-            "Trend",
+            "Tendência",
             "SubWindow",
             "#2196F3",
             "Moving Average Convergence Divergence",
@@ -35,7 +35,7 @@ pub async fn seed_indicators(db: &Surreal<Db>, filter: Option<Vec<String>>) -> R
         (
             "i3",
             "MME 21",
-            "Trend",
+            "Tendência",
             "Overlay",
             "#FF9800",
             "Média Móvel Exponencial 21",
@@ -43,7 +43,7 @@ pub async fn seed_indicators(db: &Surreal<Db>, filter: Option<Vec<String>>) -> R
         (
             "i4",
             "MME 8",
-            "Trend",
+            "Tendência",
             "Overlay",
             "#4CAF50",
             "Média Móvel Exponencial 8",
@@ -51,7 +51,7 @@ pub async fn seed_indicators(db: &Surreal<Db>, filter: Option<Vec<String>>) -> R
         (
             "i5",
             "MMS 9",
-            "Trend",
+            "Tendência",
             "Overlay",
             "#F44336",
             "Média Móvel Simples 9",
@@ -59,7 +59,7 @@ pub async fn seed_indicators(db: &Surreal<Db>, filter: Option<Vec<String>>) -> R
         (
             "i6",
             "MMS 21",
-            "Trend",
+            "Tendência",
             "Overlay",
             "#E91E63",
             "Média Móvel Simples 21",
@@ -75,7 +75,7 @@ pub async fn seed_indicators(db: &Surreal<Db>, filter: Option<Vec<String>>) -> R
         (
             "i8",
             "Bollinger Bands",
-            "Volatility",
+            "Volatilidade",
             "Overlay",
             "#795548",
             "Bandas de Bollinger",

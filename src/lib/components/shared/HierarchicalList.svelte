@@ -247,7 +247,7 @@
 
             {#if isMonthExpanded}
                 <div
-                    class="pl-4 pb-4 space-y-3 border-l-2 border-border/30 ml-6 animate-in fade-in slide-in-from-top-2 duration-300"
+                    class="pl-4 pb-4 space-y-3 border-l-2 border-border/30 ml-6 pr-2 animate-in fade-in slide-in-from-top-2 duration-300"
                 >
                     <Separator.Root class="bg-border/20 mb-3" />
 
@@ -376,10 +376,11 @@
                             )}
                             <div class="space-y-3 relative">
                                 <!-- ═══ Week Divider (Clickable) ══════════════════════ -->
-                                <button
-                                    class="w-full flex items-center gap-2 mb-2 ml-4 p-1.5 rounded-lg hover:bg-muted/50 transition-colors animate-in fade-in slide-in-from-top-1 duration-300 cursor-pointer text-left"
-                                    onclick={() => toggleWeek(week.key)}
-                                >
+                                <div class="ml-4 mb-2">
+                                    <button
+                                        class="w-full flex items-center gap-2 p-1.5 rounded-lg hover:bg-muted/50 transition-colors animate-in fade-in slide-in-from-top-1 duration-300 cursor-pointer text-left"
+                                        onclick={() => toggleWeek(week.key)}
+                                    >
                                     <div
                                         class="p-1 rounded bg-muted border border-border/40"
                                     >
@@ -440,11 +441,12 @@
                                         </div>
                                     </div>
                                 </button>
+                                </div>
 
                                 <!-- ═══ Days ════════════════════════════════ -->
                                 {#if isWeekExpanded}
                                     <div
-                                        class="pl-4 pb-2 space-y-3 border-l-2 border-border/30 ml-6 animate-in fade-in slide-in-from-top-2 duration-300"
+                                        class="pl-4 pb-2 space-y-3 border-l-2 border-border/30 ml-6 pr-2 animate-in fade-in slide-in-from-top-2 duration-300"
                                     >
                                         {#each week.days as day (day.key)}
                                             {@const isDayExpanded =

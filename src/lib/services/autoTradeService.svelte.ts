@@ -18,6 +18,10 @@ class AutoTradeService {
     pendingTrade = $state<PendingTrade | null>(null);
     isDialogOpen = $state(false);
 
+    // Cooldown map: symbol -> timestamp of last dismissal
+    private dismissedSymbols = new Map<string, number>();
+    private readonly COOLDOWN_MS = 30_000; // 30 seconds
+
     constructor() {
         if (typeof window !== 'undefined') {
             rtdStore.onTradeExecuted((event) => this.handleDetection(event));
@@ -30,6 +34,17 @@ class AutoTradeService {
         // SANITY CHECK: Ignore detections with zero or negative price
         if (quote.last <= 0) {
             console.log("[AutoTradeService] Ignoring detection due to invalid price:", quote.symbol, quote.last);
+            return;
+        }
+
+        // GUARD: Don't reopen if dialog is already showing
+        if (this.isDialogOpen) {
+            return;
+        }
+
+        // COOLDOWN GUARD: Don't reopen the same symbol within 30 seconds of dismissal
+        const lastDismissed = this.dismissedSymbols.get(quote.symbol.toUpperCase());
+        if (lastDismissed && (Date.now() - lastDismissed) < this.COOLDOWN_MS) {
             return;
         }
 
@@ -71,10 +86,15 @@ class AutoTradeService {
             existingTradeId: existingId
         };
 
-        this.isDialogOpen = true;
+        // Temporarily disabled auto-popup based on user request
+        // this.isDialogOpen = true;
     }
 
     clear() {
+        // Register dismissal time for this symbol so it doesn't reopen immediately
+        if (this.pendingTrade?.symbol) {
+            this.dismissedSymbols.set(this.pendingTrade.symbol.toUpperCase(), Date.now());
+        }
         this.pendingTrade = null;
         this.isDialogOpen = false;
     }

@@ -28,10 +28,15 @@
         ArrowRight,
         Loader2,
         RefreshCw,
-        Layers
+        Layers,
+        Search,
+        Zap,
+        BookText,
+        Edit2
     } from "lucide-svelte";
     import { llmService } from "$lib/services/llmService";
     import { integrationsStore } from "$lib/stores/integrations.svelte";
+    import * as Table from "$lib/components/ui/table";
 
     import { Button } from "$lib/components/ui/button";
     import DailyCheckinDialog from "$lib/components/psychology/DailyCheckinDialog.svelte";
@@ -50,6 +55,7 @@
     import { analyzePsychology } from "$lib/domain/stats/psychology-engine";
 
     let showCheckinDialog = $state(false);
+    let selectedCheckinDate = $state(new Date().toISOString().split("T")[0]);
     let showDeleteConfirm = $state(false);
     let entryToDelete = $state<string | null>(null);
     let showDayModal = $state(false);
@@ -144,6 +150,11 @@
             }
             entryToDelete = null;
         }
+    }
+
+    function editJournal(entry: any) {
+        selectedCheckinDate = entry.date.split('T')[0];
+        showCheckinDialog = true;
     }
 
     function openInsight(data: any) {
@@ -732,6 +743,90 @@
 
     let expandedMonths = $state(new Set<string>());
     let expandedWeeks = $state(new Set<string>());
+    let expandedDays = $state(new Set<string>());
+
+    // Contextual Filtering for Unified Timeline
+    let activeContext = $state<{
+        type: 'all' | 'month' | 'week' | 'day';
+        id?: string;
+        label?: string;
+    }>({ type: 'all' });
+
+    function handleMonthToggle(key: string, expanded: boolean) {
+        if (expanded) {
+            const m = hierarchicalPsychologyData.find(m => m.key === key);
+            activeContext = { type: 'month', id: key, label: m?.label };
+        } else if (activeContext.id === key) {
+            activeContext = { type: 'all' };
+        }
+    }
+
+    function handleWeekToggle(key: string, expanded: boolean) {
+        if (expanded) {
+            // Find week in hierarchical data
+            let foundWeek: any = null;
+            hierarchicalPsychologyData.some(m => {
+                foundWeek = m.weeks.find((w: any) => w.key === key);
+                return !!foundWeek;
+            });
+            activeContext = { type: 'week', id: key, label: foundWeek?.label };
+        } else if (activeContext.id === key) {
+            // Fallback to active month if still expanded
+            const monthKey = key.split('-w')[0];
+            if (expandedMonths.has(monthKey)) {
+                handleMonthToggle(monthKey, true);
+            } else {
+                activeContext = { type: 'all' };
+            }
+        }
+    }
+
+    function handleDayToggle(key: string, expanded: boolean) {
+        if (expanded) {
+            activeContext = { type: 'day', id: key, label: key };
+        } else if (activeContext.id === key) {
+            // Fallback to active week or month
+            const weekKey = key.slice(0, 10); // Simple fallback logic or keep context
+            activeContext = { type: 'all' }; 
+        }
+    }
+
+    // Unified Timeline Data Source
+    const unifiedTimelineItems = $derived.by(() => {
+        const rawJournal = filteredJournal.map(j => ({
+            ...j,
+            timeline_type: 'journal' as const,
+            timestamp: new Date(j.date + 'T12:00:00').getTime(),
+            sort_date: j.date
+        }));
+
+        const rawTrades = filteredTrades.filter(t => t.entry_emotional_state_id || t.exit_emotional_state_id).map(t => ({
+            ...t,
+            timeline_type: 'trade' as const,
+            timestamp: (t as any).processed_timestamp || 0,
+            sort_date: ((t as any).exit_date || (t as any).date || '').split('T')[0]
+        }));
+
+        const merged = [...rawJournal, ...rawTrades];
+
+        // Filter by Context
+        let filtered = merged;
+        if (activeContext.type === 'month') {
+            filtered = merged.filter(i => i.sort_date.startsWith(activeContext.id!));
+        } else if (activeContext.type === 'week') {
+            // Week filtering in our app uses YYYY-MM-wX. 
+            // The items have sort_date as YYYY-MM-DD.
+            // We need to check if the date falls within that week's range.
+            // For simplicity and to match hierarchical data, we'll use the month prefix if week key matches.
+            // A better way would be a mapping or date range check.
+            const monthPrefix = activeContext.id!.split('-w')[0];
+            filtered = merged.filter(i => i.sort_date.startsWith(monthPrefix));
+        } else if (activeContext.type === 'day') {
+            filtered = merged.filter(i => i.sort_date === activeContext.id);
+        }
+
+        return filtered.sort((a, b) => b.timestamp - a.timestamp);
+    });
 
     $effect(() => {
         if (hierarchicalPsychologyData.length > 0) {
@@ -769,7 +864,7 @@
     });
 </script>
 
-<DailyCheckinDialog bind:open={showCheckinDialog} />
+<DailyCheckinDialog bind:open={showCheckinDialog} bind:selectedDate={selectedCheckinDate} />
 
 <DeleteConfirmationModal
     bind:open={showDeleteConfirm}
@@ -963,6 +1058,10 @@
                             data={hierarchicalPsychologyData}
                             bind:expandedMonths
                             bind:expandedWeeks
+                            bind:expandedDays
+                            onMonthToggle={handleMonthToggle}
+                            onWeekToggle={handleWeekToggle}
+                            onDayToggle={handleDayToggle}
                             mutualExclusion={true}
                         >
                         {#snippet monthRight(month)}
@@ -1127,41 +1226,41 @@
                         {#snippet dayContent(day)}
                             <div class="px-4 pb-4">
                                 <div
-                                    class="rounded-lg border border-border/40 overflow-hidden bg-background/40 mt-1"
+                                    class="rounded-lg border border-border/40 overflow-x-auto bg-background/40 mt-1 custom-scrollbar"
                                 >
-                                    <table class="w-full text-left">
-                                        <thead
+                                    <Table.Root class="w-full text-left">
+                                        <Table.Header
                                             class="bg-muted/50 h-7 border-b border-border/20"
                                         >
-                                            <tr>
-                                                <th
-                                                    class="px-3 text-[8px] font-black text-muted-foreground uppercase"
-                                                    >{$t("common.asset")}</th
+                                            <Table.Row class="h-7 hover:bg-transparent">
+                                                <Table.Head
+                                                    class="px-3 text-[8px] font-black text-muted-foreground uppercase whitespace-nowrap"
+                                                    >{$t("common.asset")}</Table.Head
                                                 >
-                                                <th
-                                                    class="px-3 text-[8px] font-black text-muted-foreground uppercase"
+                                                <Table.Head
+                                                    class="px-3 text-[8px] font-black text-muted-foreground uppercase whitespace-nowrap"
                                                     >{$t(
                                                         "psychology.analysis.emotionalCalc",
-                                                    )}</th
+                                                    )}</Table.Head
                                                 >
-                                                <th
-                                                    class="px-3 text-[8px] font-black text-muted-foreground uppercase text-right"
+                                                <Table.Head
+                                                    class="px-3 text-[8px] font-black text-muted-foreground uppercase text-right whitespace-nowrap"
                                                     >{$t(
                                                         "psychology.analysis.totalWeight",
-                                                    )}</th
+                                                    )}</Table.Head
                                                 >
-                                            </tr>
-                                        </thead>
-                                        <tbody>
+                                            </Table.Row>
+                                        </Table.Header>
+                                        <Table.Body>
                                             {#each day.trades as trade}
-                                                <tr
+                                                <Table.Row
                                                     class="h-8 border-b border-border/10 last:border-0 hover:bg-primary/10 transition-colors"
                                                 >
-                                                    <td
-                                                        class="px-3 text-[10px] font-bold text-foreground uppercase"
-                                                        >{trade.asset_symbol}</td
+                                                    <Table.Cell
+                                                        class="px-3 py-1.5 text-[10px] font-bold text-foreground uppercase whitespace-nowrap"
+                                                        >{trade.asset_symbol}</Table.Cell
                                                     >
-                                                    <td class="px-3 py-1.5">
+                                                    <Table.Cell class="px-3 py-1.5 whitespace-nowrap">
                                                         {#if trade.entry_emotional_state_id}
                                                             {@const st =
                                                                 emotionalStates.find(
@@ -1194,9 +1293,9 @@
                                                                 </span>
                                                             </div>
                                                         {/if}
-                                                    </td>
-                                                    <td
-                                                        class="px-3 text-[10px] font-black text-right text-foreground"
+                                                    </Table.Cell>
+                                                    <Table.Cell
+                                                        class="px-3 py-1.5 text-[10px] font-black text-right text-foreground whitespace-nowrap"
                                                     >
                                                         {#if trade.entry_emotional_state_id}
                                                             {@const st =
@@ -1212,167 +1311,108 @@
                                                                     5)
                                                             ).toFixed(1)}
                                                         {/if}
-                                                    </td>
-                                                </tr>
+                                                    </Table.Cell>
+                                                </Table.Row>
                                             {/each}
-                                        </tbody>
-                                    </table>
+                                        </Table.Body>
+                                    </Table.Root>
                                 </div>
                             </div>
                         {/snippet}
                     </HierarchicalList>
                 </SystemCard>
-            {/if}
-        </div>
+                {/if}
+            </div>
 
-            <!-- Right: Journal List -->
+            <!-- Right: Unified Contextual Timeline -->
             <div class="lg:col-span-4 space-y-4">
-                <SystemHeader 
-                    title={$t("psychology.journal.title")}
-                    class="mb-2"
-                />
-                <SystemCard class="overflow-hidden">
-                    <div class="max-h-[70vh] overflow-y-auto">
-                        <table class="w-full text-left">
-                            <thead
-                                class="bg-muted/80 border-b border-border/40 sticky top-0 backdrop-blur-md"
-                            >
-                                <tr class="h-8">
-                                    <th
-                                        class="px-3 text-[9px] font-black text-muted-foreground uppercase"
-                                        >{$t("common.date")}</th
-                                    >
-                                    <th
-                                        class="px-3 text-[9px] font-black text-muted-foreground uppercase w-32"
-                                        >{$t(
-                                            "psychology.journal.entryStateShort",
-                                        )}</th
-                                    >
-                                    <th
-                                        class="px-3 text-[9px] font-black text-muted-foreground uppercase w-32"
-                                        >{$t(
-                                            "psychology.journal.exitStateShort",
-                                        )}</th
-                                    >
-                                    <th
-                                        class="px-3 text-[9px] font-black text-muted-foreground uppercase text-right"
-                                        >{$t(
-                                            "psychology.journal.intensityShort",
-                                        )}</th
-                                    >
-                                    <th
-                                        class="px-3 text-[9px] font-black text-muted-foreground uppercase text-right"
-                                        >{$t("psychology.journal.score")}</th
-                                    >
-                                    <th
-                                        class="px-3 text-[9px] font-black text-muted-foreground uppercase text-right"
-                                        >{$t("common.actions")}</th
-                                    >
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {#each filteredJournal
-                                    .slice()
-                                    .sort( (a, b) => b.date.localeCompare(a.date), ) as entry}
-                                    {@const em = emotionalStates.find(
-                                        (s) =>
-                                            s.id === entry.emotional_state_id,
-                                    )}
+                <div class="flex items-center justify-between mb-2">
+                    <SystemHeader 
+                        title={activeContext.type === 'all' ? $t("psychology.journal.title") : `${$t("psychology.journal.title")} (${activeContext.label || activeContext.id})`}
+                    />
+                    {#if activeContext.type !== 'all'}
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            class="h-7 text-[8px] font-black uppercase tracking-widest text-primary hover:bg-primary/10"
+                            onclick={() => {
+                                activeContext = { type: 'all' };
+                                expandedMonths = new Set();
+                                expandedWeeks = new Set();
+                                expandedDays = new Set();
+                            }}
+                        >
+                            {$t("common.clear")}
+                        </Button>
+                    {/if}
+                </div>
+
+                <SystemCard class="overflow-hidden flex flex-col">
+                    <div class="max-h-[70vh] overflow-auto custom-scrollbar">
+                        <Table.Root class="w-full text-left">
+                            <Table.Header class="bg-muted/80 sticky top-0 z-10 backdrop-blur-md">
+                                <Table.Row class="h-8 border-b-border/40 hover:bg-transparent">
+                                    <Table.Head class="px-3 text-[9px] font-black text-muted-foreground uppercase">{$t("common.date")}</Table.Head>
+                                    <Table.Head class="px-3 text-[9px] font-black text-muted-foreground uppercase w-32">{$t("psychology.journal.entryStateShort")}</Table.Head>
+                                    <Table.Head class="px-3 text-[9px] font-black text-muted-foreground uppercase w-32">{$t("psychology.journal.exitStateShort")}</Table.Head>
+                                    <Table.Head class="px-3 text-[9px] font-black text-muted-foreground uppercase text-right">{$t("psychology.journal.intensityShort")}</Table.Head>
+                                    <Table.Head class="px-3 text-[9px] font-black text-muted-foreground uppercase text-right">{$t("psychology.journal.score")}</Table.Head>
+                                    <Table.Head class="px-3 text-[9px] font-black text-muted-foreground uppercase text-right">{$t("common.actions")}</Table.Head>
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                                {#each filteredJournal.slice().sort((a, b) => b.date.localeCompare(a.date)) as entry}
+                                    {@const em = emotionalStates.find(s => s.id === entry.emotional_state_id)}
                                     {@const itemScore = em?.weight ?? 5}
-                                    {@const itemIntensity =
-                                        entry.intensity || 5}
-                                    <tr
-                                        class="h-10 border-b border-border/10 hover:bg-primary/10 transition-colors group"
-                                    >
-                                        <td class="px-3">
+                                    {@const itemIntensity = entry.intensity || 5}
+                                    <Table.Row class="h-10 border-b border-border/10 hover:bg-primary/10 transition-colors group">
+                                        <Table.Cell class="px-3 py-2">
                                             <div class="flex flex-col">
-                                                <span
-                                                    class="text-[10px] font-black text-foreground uppercase"
-                                                >
-                                                    {new Date(
-                                                        entry.date +
-                                                            "T12:00:00",
-                                                    ).toLocaleDateString(
-                                                        $locale || "pt-BR",
-                                                        {
-                                                            day: "2-digit",
-                                                            month: "2-digit",
-                                                        },
-                                                    )}
+                                                <span class="text-[10px] font-black text-foreground uppercase">
+                                                    {new Date(entry.date + "T12:00:00").toLocaleDateString($locale || "pt-BR", { day: "2-digit", month: "2-digit" })}
                                                 </span>
-                                                <span
-                                                    class="text-[8px] text-muted-foreground/50 font-medium"
-                                                >
-                                                    {new Date(
-                                                        entry.date +
-                                                            "T12:00:00",
-                                                    ).toLocaleDateString(
-                                                        $locale || "pt-BR",
-                                                        { weekday: "short" },
-                                                    )}
+                                                <span class="text-[8px] text-muted-foreground/50 font-medium">
+                                                    {new Date(entry.date + "T12:00:00").toLocaleDateString($locale || "pt-BR", { weekday: "short" })}
                                                 </span>
                                             </div>
-                                        </td>
-                                        <td class="px-3">
+                                        </Table.Cell>
+                                        <Table.Cell class="px-3 py-2">
                                             {#if em}
-                                                <div
-                                                    class="flex items-center gap-1.5"
-                                                >
-                                                    <span
-                                                        class="text-[9px] font-black uppercase {em.impact ===
-                                                        'Positive'
-                                                            ? 'text-emerald-400'
-                                                            : 'text-red-400'}"
-                                                        >{em.name}</span
-                                                    >
-                                                    <span
-                                                        class="text-[8px] text-muted-foreground font-medium"
-                                                        >({em.weight ||
-                                                            5})</span
-                                                    >
+                                                <div class="flex items-center gap-1.5">
+                                                    <span class="text-[9px] font-black uppercase {em.impact === 'Positive' ? 'text-emerald-400' : 'text-red-400'}">
+                                                        {em.name}
+                                                    </span>
+                                                    <span class="text-[8px] text-muted-foreground font-medium">
+                                                        ({em.weight || 5})
+                                                    </span>
                                                 </div>
                                             {:else}
-                                                <span
-                                                    class="text-[8px] text-muted-foreground/30 italic font-bold"
-                                                    >- -</span
-                                                >
+                                                <span class="text-[8px] text-muted-foreground/30 italic font-bold">- -</span>
                                             {/if}
-                                        </td>
-                                        <td class="px-3">
-                                            <span
-                                                class="text-[8px] text-muted-foreground/20 font-bold"
-                                                >N/A</span
-                                            >
-                                        </td>
-                                        <td
-                                            class="px-3 text-[10px] font-medium text-right text-muted-foreground/60"
-                                        >
+                                        </Table.Cell>
+                                        <Table.Cell class="px-3 py-2">
+                                            <span class="text-[8px] text-muted-foreground/20 font-bold">N/A</span>
+                                        </Table.Cell>
+                                        <Table.Cell class="px-3 py-2 text-[10px] font-medium text-right text-muted-foreground/60">
                                             {itemIntensity.toFixed(1)}
-                                        </td>
-                                        <td
-                                            class="px-3 text-[10px] font-black text-right text-foreground"
-                                        >
+                                        </Table.Cell>
+                                        <Table.Cell class="px-3 py-2 text-[10px] font-black text-right text-foreground">
                                             {itemScore.toFixed(1)}
-                                        </td>
-                                        <td class="px-3 text-right">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                class="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                onclick={() =>
-                                                    requestDeleteJournal(
-                                                        entry.id,
-                                                    )}
-                                            >
-                                                <Trash2
-                                                    class="w-3 h-3 text-red-400"
-                                                />
-                                            </Button>
-                                        </td>
-                                    </tr>
+                                        </Table.Cell>
+                                        <Table.Cell class="px-3 py-2 text-right">
+                                            <div class="flex items-center justify-end">
+                                                <Button variant="ghost" size="icon" class="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity" onclick={() => editJournal(entry)}>
+                                                    <Edit2 class="w-3 h-3 text-muted-foreground" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" class="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity" onclick={() => requestDeleteJournal(entry.id)}>
+                                                    <Trash2 class="w-3 h-3 text-red-400" />
+                                                </Button>
+                                            </div>
+                                        </Table.Cell>
+                                    </Table.Row>
                                 {/each}
-                            </tbody>
-                        </table>
+                            </Table.Body>
+                        </Table.Root>
                     </div>
                 </SystemCard>
             </div>

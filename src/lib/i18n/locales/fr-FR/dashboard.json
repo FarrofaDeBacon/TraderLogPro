@@ -4,85 +4,142 @@
             "balance": "Solde"
         },
         "actions": {
-            "detailedRegister": "ENREGISTREMENT DÉTAILLÉ",
-            "evolutionJournal": "JOURNAL D'ÉVOLUTION",
-            "finishTrading": "Terminer la Séance",
+            "detailedRegister": "REGISTRE DÉTAILLÉ",
+            "evolutionJournal": "JOURNAL ÉVOLUTION",
+            "finishTrading": "Terminer Session",
             "newTrade": "NOUVEL ORDRE",
-            "reviewDone": "Révision Terminée",
+            "reviewDone": "Revue Terminée",
             "riskControlShort": "C.R"
+        },
+        "preparation": {
+            "economicCalendar": "Calendrier Économique",
+            "items": {
+                "gap_analysis": "Gap d'Ouverture : Identifié comme Novice ou Pro ?",
+                "mindset": "Mental : Suis-je calme et concentré pour trader ?",
+                "news": "Actu : Vérifié le Calendrier Économique du jour ?",
+                "newsDetected": "⚠️ Actu à Fort Impact Détectée :",
+                "newsNone": "Rien de pertinent dans le calendrier aujourd'hui.",
+                "prior_levels": "Niveaux : Marqué les plus Hauts et Bas d'hier ?",
+                "riskInput": "Limite de Perte du Jour ($) :",
+                "risk_limit": "Riesgo : Défini mon Stop Loss Max pour aujourd'hui ?",
+                "trend_200ma": "Territoire (200MA) : Au-dessus (Bull) ou En-dessous (Bear) ?",
+                "trend_20ma": "Tendance (20MA) : Le prix respecte-t-il la moyenne 20 ?"
+            },
+            "newsUpdate": "Mettre à jour",
+            "newsUpdateError": "Erreur de mise à jour.",
+            "newsUpdateSuccess": "Flux mis à jour avec succès.",
+            "ready": "PRÊT À TRADER",
+            "reset": "Réinitialiser",
+            "resetSuccess": "Statistiques réinitialisées.",
+            "start": "Démarrer Session",
+            "subtitle": "Vérifiez les fondations avant le premier clic.",
+            "success": "Checklist prête.",
+            "title": "Checklist Pré-Marché (Oliver Velez)",
+            "verified": "vérifié",
+            "volatilityAlert": "ALERTE DE VOLATILITÉ",
+            "scrollMore": "Défiler pour plus",
+            "calendarTitle": "Calendrier Économique"
         },
         "charts": {
             "consistency": "CONSISTANCE",
-            "equity": "Évolution du Patrimoine",
+            "equity": "Évolution du Capital",
             "equitySubtitle": "Évolution graphique",
             "losses": "PERTES",
             "wins": "GAINS"
         },
         "dailyDetail": {
             "asset": "Actif",
-            "buy": "Achat",
+            "buy": "A",
             "buyShort": "A",
             "direction": "Direction",
             "efficiency": "Efficacité",
-            "noTrades": "Aucun trade",
-            "operationsList": "Liste des Trades",
+            "noTrades": "Pas d'opérations",
+            "operationsList": "Liste d'Opérations",
             "result": "Résultat",
-            "sell": "Vente",
+            "sell": "V",
             "sellShort": "V",
-            "subtitle": "Vue détaillée de la journée",
+            "subtitle": "Vue détaillée du jour",
             "summary": "Résumé",
             "title": "Détail Quotidien",
-            "tradeQty": "Total de Trades"
+            "tradeQty": "Total Trades"
         },
         "gann": {
             "kpis": {
-                "avgInterval": "Intervalle Entre Trades",
+                "avgInterval": "Intervalle entre Trades",
                 "cycleDay": "Jour du Cycle",
                 "days": "Jours",
-                "hot_window": "Fenêtre Chaude (Réversion Imminente)",
-                "masterCycle": "Cycle Maître",
+                "hot_window": "Fenêtre Chaude (Imminente)",
+                "masterCycle": "Cycle Majeur",
                 "neutral": "Zone Neutre",
-                "nextCot": "Prochaine Réversion (Fenêtre)",
+                "nextCot": "Renversement Cible",
                 "outOfDays": "Hors Cycle",
                 "vibration": "Vibration Actuelle"
             },
             "sq9": {
                 "degrees": "{deg}°",
-                "expansion": "Objectifs d'Expansion",
-                "reference": "Ref",
-                "retracement": "Objectifs de Retrait"
+                "expansion": "Cibles d'Expansion",
+                "reference": "Réf",
+                "retracement": "Cibles de Retracement"
             },
-            "subtitle": "Confluence Mathématique et Cycles",
+            "subtitle": "Confluence et Cycles",
             "title": "Vibrations de Gann"
         },
         "kpis": {
-            "avgInterval": "Intervalle Entre Trades",
+            "avgInterval": "Intervalle Moy.",
             "discipline": "Discipline",
-            "maxDrawdown": "Drawdown Maximum",
+            "maxDrawdown": "Drawdown Max",
             "netResult": "Résultat Net",
-            "payoff": "Payoff",
-            "profitFactor": "Facteur de Profit",
-            "winRate": "Win Rate"
+            "payoff": "Gain Risque",
+            "profitFactor": "Facteur Profit",
+            "winRate": "Précision"
         },
         "market_context": {
             "di": "Taux DI (CDI)",
-            "di_desc": "Indice de Référence",
+            "di_desc": "Réf Interêt",
             "ptax": "PTAX (Officiel)",
-            "ptax_desc": "Moyenne Dollar BCB",
-            "selic": "SELIC AN.",
-            "selic_desc": "Cible Banque Centrale",
+            "ptax_desc": "Dollar Moyen BCB",
+            "selic": "SELIC PY.",
+            "selic_desc": "Cible BCB",
             "wdo": "Dollar (WDO)",
             "win": "Indice (WIN)"
         },
         "mindset": {
-            "deviated_plan": "A dévié du Plan",
-            "empty": "Aucun enregistrement récent",
-            "followed_plan": "A suivi le Plan",
-            "impact_detected": "Impact {impact} détecté",
-            "placeholder": "Enregistrez l'état émotionnel pour activer l'analyse.",
+            "deviated_plan": "Écart du Plan",
+            "empty": "Aucun registre",
+            "followed_plan": "Plan Respecté",
+            "impact_detected": "{impact} impact détecté",
+            "impacts": {
+                "Negative": "Négatif",
+                "Neutral": "Neutre",
+                "Positive": "Positif"
+            },
+            "placeholder": "Notez l'état mental ici.",
             "title": "État Psychologique"
         },
-        "newTrade": "Nouveau Trade",
+        "newTrade": "Nouvel Ordre",
+        "onboarding_wizard": {
+            "title": "Réglez votre Cockpit",
+            "subtitle": "Suivez les 4 étapes pour sécuriser votre capital.",
+            "step1": {
+                "title": "1. Créer le Compte",
+                "subtitle": "Connecte le capital de base.",
+                "action": "Suivant"
+            },
+            "step2": {
+                "title": "2. Définir le Risque",
+                "subtitle": "Protège le Stop Max Journalier.",
+                "action": "Blindage"
+            },
+            "step3": {
+                "title": "3. Établir le Plan",
+                "subtitle": "Phase de croissance progressive.",
+                "action": "Monter Plan"
+            },
+            "step4": {
+                "title": "4. Enregistrez",
+                "subtitle": "Vous êtes paré. À vos marques."
+            }
+        },
         "quant": {
             "dollar": "Dollar",
             "index": "Indice",
@@ -90,69 +147,69 @@
             "ranking": "Classement",
             "subtitle": "Sous-titre",
             "title": "Titre",
-            "waitingData": "En attente de données"
+            "waitingData": "En attente"
         },
         "schedule": {
             "afternoon": "Après-midi",
-            "basedOn": "Basé sur les {count} últimos jours ouvrables",
+            "basedOn": "Sur derniers {count} jours",
             "morning": "Matin",
-            "title": "Horaires de Trading"
+            "title": "Heures de Trade"
         },
         "sections": {
-            "allClear": "Tout Propre (Lots Normaux)",
+            "allClear": "Voie Libre (Lots)",
             "assistantLabel": "ASSISTANT",
-            "behavioralRadar": "Radar Comportemental (IA Heuristique)",
-            "behavioralRadarLabel": "RADAR COMPORTEMENTAL",
-            "evolutionStreaks": "Évolution et Séquences",
-            "noAnomalies": "Aucune anomalie détectée",
-            "systemStatus": "STATUT DU SYSTÈME",
-            "traderAssistant": "Assistant du Trader"
+            "behavioralRadar": "Radar Comportemental",
+            "behavioralRadarLabel": "RADAR HEURISTIQUE",
+            "evolutionStreaks": "Évolution & Streaks",
+            "noAnomalies": "Aucune anomalie",
+            "systemStatus": "STATUT SYSTÈME",
+            "traderAssistant": "Assistante Trader"
         },
         "stats": {
-            "emotionalControl": "Contrôle Émotionnel",
+            "emotionalControl": "Contrôle Mental",
             "gainLabel": "GAIN",
-            "greenDays": "Jours de Profit",
+            "greenDays": "Jours Verts",
             "lossLabel": "PERTE",
-            "rollingScore": "Score (30T)",
-            "streaks": "SÉQUENCES",
-            "todayPnL": "P&L du Jour",
-            "todayPnLShort": "P&L AUJOURD'HUI",
-            "tradeFrequency": "Fréquence (Trades)",
-            "unbreakableDiscipline": "Discipline Inébranlable",
-            "weekPnL": "P&L de la Semaine",
-            "weekPnLShort": "HEBDOMADAIRE"
+            "rollingScore": "Points (30T)",
+            "streaks": "SÉRIES",
+            "todayPnL": "Bénéfice du Jour",
+            "todayPnLShort": "JOUR",
+            "tradeFrequency": "Fréquence",
+            "unbreakableDiscipline": "Discipline de Fer",
+            "weekPnL": "Semaine PnL",
+            "weekPnLShort": "SEMAINE"
         },
-        "subtitle": "Résumé du compte opérationnel.",
+        "subtitle": "Résumé du compte",
         "survivor": {
-            "activePlan": "Plan Actif :",
-            "avgRFactor": "Facteur R Moyen",
+            "activePlan": "Plan Actif:",
+            "avgRFactor": "Facteur R Moy",
             "consistency": "Consist.",
             "currentPhase": "Phase Actuelle",
-            "dailyEvolution": "Évolution Quotidienne",
+            "dailyEvolution": "Évolution",
             "eligibility": "Éligibilité",
             "greenZone": "Zone Verte",
             "limit": "Limite",
-            "operateTrade": "OPÉRER 2% TRADE",
-            "operationalStatus": "Statut Opérationnel",
-            "pnl": "PnL",
-            "riskMonth": "Survivor Risk (Mois)",
-            "roadmapProgress": "Progression du Roadmap",
-            "select": "Sélectionner",
-            "statusAlpha": "Opérationnel Alpha",
-            "statusBlocked": "Bloqué (Perte Max)",
-            "statusRisk": "Alerte de Risque",
-            "target": "Cible : ",
-            "title": "Survivor Hub & Surveillance",
-            "tradesUsage": "Utilisation des Trades"
+            "operateTrade": "TRADE 2%",
+            "operationalStatus": "Statut",
+            "pnl": "Profit",
+            "riskMonth": "Risque Mois",
+            "roadmapProgress": "Progression",
+            "select": "Choix",
+            "statusAlpha": "Alpha",
+            "statusBlocked": "Bloqué Max-Loss",
+            "statusRisk": "Alerte Risque",
+            "target": "Cible: ",
+            "title": "Superviseur",
+            "tradesUsage": "Ut. Trades"
         },
-        "syncingTerminal": "Synchronisation du Terminal...",
-        "terminalHub": "Terminal Hub",
-        "title": "Dashboard",
-        "waitingSurvivorData": "Attente de la matrice de données du Survivor Hub"
+        "syncingTerminal": "Synchronisation...",
+        "terminalHub": "Centre de Commandes",
+        "title": "Tableau de Bord",
+        "waitingSurvivorData": "Attente données"
     },
     "home": {
-        "newTrade": "Nouveau Trade",
-        "subtitle": "L'évolution de votre journal de trading.",
-        "viewDashboard": "Voir Dashboard"
+        "newTrade": "Nouvel Ordre",
+        "subtitle": "L'évolution de votre journal.",
+        "viewDashboard": "Voir Tableau"
     }
 }

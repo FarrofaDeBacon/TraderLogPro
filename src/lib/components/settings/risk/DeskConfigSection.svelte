@@ -228,7 +228,7 @@
                         <div class="space-y-0.5">
                             <h4 class="font-semibold text-sm">{$t("risk.rules.desk.progression.title")}</h4>
                             <p class="text-xs text-muted-foreground uppercase tracking-widest">
-                                {$t("risk.rules.desk.progression.current")}: <span class="font-mono font-bold text-primary">{$t(`risk.rules.desk.stages.${progression.currentPhaseId.toLowerCase()}`) || config.stages.find((s: any) => s.id.toLowerCase() === progression.currentPhaseId.toLowerCase())?.name || progression.currentPhaseId}</span>
+                                {$t("risk.rules.desk.progression.current")}: <span class="font-mono font-bold text-primary">{config.stages.find((s: any) => s.id.toLowerCase() === progression.currentPhaseId.toLowerCase())?.name || progression.currentPhaseId}</span>
                             </p>
                         </div>
                         {#if progression.canPromote}
@@ -248,10 +248,10 @@
                                 <div class="flex items-center gap-2 text-xs">
                                     {#if check.isMet}
                                         <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div>
-                                        <span class="text-muted-foreground">{check.metric}: {check.current}/{check.target}</span>
+                                        <span class="text-muted-foreground">{$t(`risk.growth.metrics.${check.metric}`, { default: $t(`risk.violations.${check.metric}`, { default: $t(`risk.rules.targetType.${check.metric}`, { default: check.metric }) }) })}: {check.current}/{check.target}</span>
                                     {:else}
                                         <div class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></div>
-                                        <span class="text-amber-500/90">{check.metric}: {check.current}/{check.target}</span>
+                                        <span class="text-amber-500/90">{$t(`risk.growth.metrics.${check.metric}`, { default: $t(`risk.violations.${check.metric}`, { default: $t(`risk.rules.targetType.${check.metric}`, { default: check.metric }) }) })}: {check.current}/{check.target}</span>
                                     {/if}
                                 </div>
                             {/each}
@@ -261,7 +261,7 @@
                         <div class="pt-2">
                             {#each progression.regressionConditions as r}
                                 <p class="text-[10px] text-amber-500 italic flex items-center gap-1">
-                                    <span class="mt-0.5">•</span> {r.metric}: {r.current} (Max: {r.target})
+                                    <span class="mt-0.5">•</span> {$t(`risk.growth.metrics.${r.metric}`, { default: $t(`risk.violations.${r.metric}`, { default: $t(`risk.rules.targetType.${r.metric}`, { default: r.metric }) }) })}: {r.current} (Max: {r.target})
                                 </p>
                             {/each}
                         </div>

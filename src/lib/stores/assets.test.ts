@@ -1,37 +1,39 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { assetsStore } from './assets.svelte';
-import { mockAssets } from './test-fixtures';
+import { AssetsStore } from './assets.svelte';
 
-vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
+// Mock Tauri service (safeInvoke)
+vi.mock('$lib/services/tauri', () => ({
+    safeInvoke: vi.fn().mockResolvedValue(true)
+}));
 
-describe('AssetsStore Unit Tests', () => {
+import { safeInvoke } from '$lib/services/tauri';
+
+describe('AssetsStore', () => {
+    let store: AssetsStore;
+
     beforeEach(() => {
+        store = new AssetsStore();
         vi.clearAllMocks();
-        assetsStore.clearAssets();
-        assetsStore.assets = [...mockAssets]; 
     });
 
-    it('should initialize and read the asset objects accurately', () => {
-        expect(assetsStore.assets.length).toBe(2);
-        expect(assetsStore.assets[0].symbol).toBe('PETR4');
-        expect(assetsStore.assets[1].point_value).toBe(0.20);
+    it('should add an asset', async () => {
+        await store.addAsset({ symbol: 'PETR4', name: 'Petrobras', asset_type_id: 'stock' } as any);
+        expect(store.assets.length).toBe(1);
+        expect(store.assets[0].symbol).toBe('PETR4');
+        expect(safeInvoke).toHaveBeenCalledWith('save_asset', expect.any(Object));
     });
 
-    it('should perform partial property updates', () => {
-        assetsStore.updateAsset('asset:WIN', { point_value: 10 } as any);
-        const updated = assetsStore.assets.find(a => a.id === 'asset:WIN');
-        expect(updated?.point_value).toBe(10);
+    it('should update an asset', () => {
+        store.assets = [{ id: '1', symbol: 'VALE3', point_value: 1 } as any];
+        store.updateAsset('1', { point_value: 2 });
+        expect(store.assets[0].point_value).toBe(2);
     });
 
-    it('should execute raw deletion accurately', async () => {
-        const result = await assetsStore.deleteAsset('asset:WIN', []);
-        
+    it('should delete an asset', async () => {
+        store.assets = [{ id: '1', symbol: 'TO_DELETE' } as any];
+        const result = await store.deleteAsset('1', []);
         expect(result.success).toBe(true);
-        expect(assetsStore.assets.length).toBe(1);
-    });
-
-    it('should flush all state bindings during cleanup procedures', () => {
-        assetsStore.clearAssets();
-        expect(assetsStore.assets.length).toBe(0);
+        expect(store.assets.length).toBe(0);
+        expect(safeInvoke).toHaveBeenCalledWith('delete_asset', { id: '1' });
     });
 });

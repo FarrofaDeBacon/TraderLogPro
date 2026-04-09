@@ -27,6 +27,7 @@ mod tests {
             exit_emotional_state_id: None,
             exit_emotional_state_name: None,
             entry_rationale: "".to_string(),
+            psychology_analysis_during: "".to_string(),
             confirmation_signals: "".to_string(),
             market_context: "".to_string(),
             relevant_news: "".to_string(),

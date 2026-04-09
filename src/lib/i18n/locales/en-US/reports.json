@@ -1,5 +1,11 @@
 {
     "reports": {
+        "behavior": {
+            "noCriticalBehaviors": "No critical behaviors detected in the period. Neutral operational rotation."
+        },
+        "reflection": {
+            "reviewMissing": "You operated without recording a daily review. This reduces audit capacity and period learning."
+        },
         "daily": {
             "actions": {
                 "save": "Save Closure"
@@ -69,6 +75,69 @@
             "unsupportedEvaluations": "Evaluations unsupported by descriptive texts.",
             "winRate": "Win Rate"
         },
-        "scoreUnavailable": "Score unavailable without trade volume."
+        "scoreUnavailable": "Score unavailable without trade volume.",
+        "ui": {
+            "exportTitle": "Direct PDF Export",
+            "exportDesc": "The file will be generated in the background, ensuring an Institutional format across 2 pages. Screen visual remains clean (Dark Mode).",
+            "generating": "Generating Document...",
+            "exportAction": "Export to PDF",
+            "performanceReportTitle": "Performance Report",
+            "auditorSubtitle": "Consolidated Professional Audit ({start} to {end})",
+            "sections": {
+                "summary": "1. Period Summary",
+                "score": "2. Official Window Score (Qualitative Assessment)",
+                "behavioral": "3. Behavioral Audit",
+                "reflection": "4. Diary & Subjective Reflection",
+                "decision": "5. Decision Layer (Tactical Direction)"
+            },
+            "metrics": {
+                "pnl": "Net (PnL)",
+                "winRate": "Win Rate",
+                "profitFactor": "Profit Factor",
+                "volume": "Volume (Trades / Days)",
+                "activeDays": "{days} active d",
+                "executionCut": "Execution Cut",
+                "riskCut": "Risk Cut",
+                "behavior": "Behavior",
+                "psychological": "Psychological",
+                "masterScore": "Master Score",
+                "streaksTitle": "Window Streaks",
+                "unbreakableDiscipline": "Unbreakable Discipline",
+                "emotionalControl": "Emotional Control",
+                "noTilt": "No-Tilt (Shielding)"
+            },
+            "behavior": {
+                "offendersTitle": "System Offenders (Top Penalties)",
+                "edgesTitle": "Edges Found (Top Bonuses)",
+                "perfectSystem": "System in perfect mechanical operation. Zero failures.",
+                "noAdvantages": "No exceptional advantages recorded.",
+                "noCriticalBehaviors": "No critical behaviors detected in the period. Neutral operational rotation."
+            },
+            "reflection": {
+                "rhythmTitle": "Registration Rhythm",
+                "extractsTitle": "Relevant Diary Extracts",
+                "noNotes": "Recorded assessments do not contain extensive text for qualitative analysis.",
+                "noVolume": "Score unavailable without operational volume.",
+                "reviewMissing": "You operated without recording a daily review. This reduces audit capacity and period learning."
+            },
+            "tactical": {
+                "finalDiagnosis": "Final Diagnosis",
+                "imminentRisks": "Imminent Risks",
+                "executionPlan": "Execution Plan",
+                "noGraveRisks": "No serious matrix risks identified."
+            },
+            "ai": {
+                "visionTitle": "Portfolio Executive View (AI)",
+                "visionDesc": "Macro cross-referencing of KPIs and capital efficiency.",
+                "visionError": "Failed to generate Executive View.",
+                "error_no_config": "AI not configured. Enable an API key in settings.",
+                "generateAction": "Generate Analysis",
+                "retryAction": "Try Again",
+                "institutionalSummary": "Institutional Summary",
+                "coreAdvantage": "Core Advantage",
+                "criticalPoint": "Critical Point",
+                "requiredFocus": "Required Focus"
+            }
+        }
     }
 }

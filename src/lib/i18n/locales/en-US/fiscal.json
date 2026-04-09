@@ -8,8 +8,21 @@
                 "calculationBasis": "Calculation Basis",
                 "taxDue": "Tax Due",
                 "compensatedLosses": "Compensated Losses",
-                "netProfit": "Net Profit"
+                "netProfit": "Net Profit",
+                "totalDue": "Total Due",
+                "dueYearHint": "Yearly payment expectation",
+                "totalPaid": "Total Paid",
+                "paidYearHint": "DARFs settled in the period",
+                "pending": "Current Pending",
+                "pendingHint": "{count} Pending Guides",
+                "losses": "Accumulated Losses"
             },
+            "manageDarfs": "Manage DARFs",
+            "newAppraisal": "New Appraisal",
+            "evolution": "Fiscal Evolution",
+            "periodFilter": "Period Filter",
+            "saveBeforeDarf": "Save appraisal before generating DARF.",
+            "complementary": "Complementary",
             "table": {
                 "month": "Month",
                 "netProfit": "Gross Result",
@@ -18,7 +31,13 @@
                 "status": "Status",
                 "paid": "Paid",
                 "pending": "Pending",
-                "late": "Overdue"
+                "late": "Overdue",
+                "ok": "OK",
+                "toPay": "Total to Pay",
+                "compensated": "Compensated",
+                "operation": "Operation Type",
+                "actions": "Actions",
+                "shortNet": "Net"
             },
             "messages": {
                 "loading": "Loading fiscal data...",

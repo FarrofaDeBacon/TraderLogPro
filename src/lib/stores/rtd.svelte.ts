@@ -1,4 +1,6 @@
 import { listen } from '@tauri-apps/api/event';
+import { assetsStore } from './assets.svelte';
+import { assetTypesStore } from './asset-types.svelte';
 
 export interface RTDQuote {
     symbol: string;
@@ -111,7 +113,7 @@ class RTDStore {
         }, 500);
     }
 
-    private parseCSV(content: string) {
+    private async parseCSV(content: string) {
         if (!content) return;
         const lines = content.split('\n');
 
@@ -144,16 +146,14 @@ class RTDStore {
                     sheet: sheet
                 };
 
-                const prevTradeCount = this.previousTrades[rawSym];
-                if (prevTradeCount !== undefined && trades > prevTradeCount) {
-                    log(`Trade count increase detected for ${rawSym}: ${prevTradeCount} -> ${trades}`);
-                    const isPartial = (this.previousPositions[rawSym] || 0) > 0;
-                    this.triggerTradeCallback(rawSym, last, isPartial ? 'partial_entry' : 'new', isPartial, sheet);
-                } else if (prevTradeCount === undefined) {
-                    log(`Initializing trade count for ${rawSym}: ${trades}`);
+                // ASSET DISCOVERY: Auto-import new symbols from RTD
+                if (rawSym) {
+                    await assetsStore.ensureAssetExists(rawSym, undefined, assetTypesStore.assetTypes, sheet);
                 }
 
-                this.previousTrades[rawSym] = trades;
+                // Removed incorrect Market Trade count trigger. 
+                // Market "trades" (Negócios) increment continuously and should NOT trigger user trades.
+                
                 this._quotesBuffer[rawSym] = newQuote;
 
                 // --- SYMBOL NORMALIZATION ---
@@ -175,24 +175,30 @@ class RTDStore {
                 const avgPrice = parseFloat(parts[3]) || 0;
                 const sheet = parts[11];
 
+                // ASSET DISCOVERY: Auto-import new symbols from RTD
+                if (rawSym) {
+                    await assetsStore.ensureAssetExists(rawSym, undefined, assetTypesStore.assetTypes, sheet);
+                }
+
                 const symsToUpdate = [rawSym];
                 if (rawSym.startsWith('WIN') && rawSym.length > 3) symsToUpdate.push('WIN', 'WINFUT');
                 if (rawSym.startsWith('WDO') && rawSym.length > 3) symsToUpdate.push('WDO', 'WDOFUT');
 
-                symsToUpdate.forEach(sym => {
-                    const prevQty = this.previousPositions[sym];
+                for (const sym of symsToUpdate) {
+                    const posKey = `${sym}_${sheet || ''}`;
+                    const prevQty = this.previousPositions[posKey];
                     if (prevQty !== undefined) {
                         if (qty !== prevQty) {
-                            log(`Position change detected for ${sym}: ${prevQty} -> ${qty}`);
+                            log(`Position change detected for ${sym} (${sheet}): ${prevQty} -> ${qty}`);
                             const type = qty > prevQty ? 'partial_entry' : 'partial_exit';
                             this.triggerTradeCallback(sym, avgPrice, type, true, sheet);
                         }
                     } else {
                         // INITIALIZATION GUARD: Don't trigger on first load to avoid ghost trades
-                        log(`Initializing position for ${sym}: ${qty}`);
+                        log(`Initializing position for ${sym} (${sheet}): ${qty}`);
                     }
-                    this.previousPositions[sym] = qty;
-                });
+                    this.previousPositions[posKey] = qty;
+                }
 
             } else if (type === 'BOOK') {
                 const id = parts[1];

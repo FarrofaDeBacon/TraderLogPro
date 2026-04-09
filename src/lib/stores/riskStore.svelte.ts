@@ -1,188 +1,143 @@
-// --- RISK STORE (Position Sizing Enabled) ---
-// This file serves as the reactive bindings for the pure risk domains.
-
 import { get } from "svelte/store";
+import { toast } from "svelte-sonner";
 import { t } from "svelte-i18n";
-
-import { assetsStore } from "$lib/stores/assets.svelte";
 import { riskSettingsStore } from "$lib/stores/risk-settings.svelte";
 import { accountsStore } from "$lib/stores/accounts.svelte";
-import { appStore } from "./app.svelte";
-import { tradesStore } from './trades.svelte';
+import { tradesStore } from "$lib/stores/trades.svelte";
+import { assetsStore } from "$lib/stores/assets.svelte";
+
 import { 
-    buildRiskCockpitState, 
     type RiskCockpitState,
-    adaptPositionSizingInput,
-    calculatePositionSizing,
-    type PositionSizingInput,
+    buildRiskCockpitState
+} from "$lib/domain/risk/risk-cockpit";
+
+import { 
     type PositionSizingResult,
-    validateTradeContext,
-    calculateHistoricalAudit,
-    type DeskValidationContext,
+    calculatePositionSizing
+} from "$lib/domain/risk/position-sizing-engine";
+
+import { 
     type DeskValidationResult,
     type DeskAuditResult,
-    evaluateDeskStageProgression,
-    generateDeskProgressFeedback,
+    calculateHistoricalAudit
+} from "$lib/domain/risk/desk-validation-engine";
+
+import { 
     type GrowthEvaluationResult,
-    evaluateGrowthPhase,
-    toLocalDateStr
-} from '$lib/domain/risk';
+    type GrowthPhase as DomainGrowthPhase
+} from "$lib/domain/risk/types";
+
+import { 
+    resolveEffectiveRiskContext
+} from "$lib/domain/risk/risk-resolver";
+
 import { 
     adaptSettingsProfileToDomain, 
     adaptTradeToDomain, 
     adaptGrowthPhaseToDomain 
-} from "../domain/risk/risk-adapters";
-import { toast } from "svelte-sonner";
-import type { 
-    ResolvedGrowthContext, 
-    AssetRiskProfile, 
-    RiskProfile, 
-    Trade, 
-    Asset, 
-    RiskContextResolution, 
-    GrowthPhase as DBGrowthPhase,
-    DeskConfig
-} from '$lib/types';
-import type { 
-    GrowthPhase as DomainGrowthPhase,
-    RiskProfileConfig
-} from '$lib/domain/risk/types';
-import { resolveEffectiveRiskContext } from "$lib/domain/risk/risk-resolver";
+} from "$lib/domain/risk/risk-adapters";
+
+import { adaptPositionSizingInput } from "$lib/domain/risk/position-sizing-adapter";
+import type { DeskConfig, RiskProfile, GrowthPhase as AppGrowthPhase, ResolvedGrowthContext } from "$lib/types";
+
+/**
+ * REGRAS DE CONVERSÃO:
+ * A Store lida com tipos do APP (AppGrowthPhase, RiskProfile).
+ * O Domínio lida com tipos de LÓGICA (DomainGrowthPhase, RiskProfileConfig).
+ */
 
 export class RiskStore {
-    // --- Reactive State ---
-    activeAssetId = $state<string | undefined>(undefined);
-    activeTradeId = $state<string | undefined>(undefined);
+    private _activeAssetId = $state<string | null>(null);
 
     constructor() {
-        // Observability moved to UI layer (+page.svelte) to comply with Svelte 5 lifecycle rules
+        if (typeof window !== 'undefined') {
+            this._activeAssetId = localStorage.getItem("risk_active_asset_id");
+        }
     }
 
-    get activeAsset(): Asset | undefined {
-        return assetsStore.assets.find(a => a.id === this.activeAssetId);
+    get activeAssetId() { return this._activeAssetId; }
+    set activeAssetId(value: string | null) {
+        this._activeAssetId = value;
+        if (typeof window !== 'undefined') {
+            if (value) localStorage.setItem("risk_active_asset_id", value);
+            else localStorage.removeItem("risk_active_asset_id");
+        }
+    }
+
+    get activeAsset() {
+        if (!this.activeAssetId) return null;
+        return assetsStore.assets.find(a => a.id === this.activeAssetId) || null;
+    }
+
+    get resolvedAssetRiskProfile() {
+        if (!this.activeAssetId) return null;
+        return riskSettingsStore.getScopeForAsset(this.activeAssetId);
     }
 
     /**
-     * Getter principal do Cockpit que agrega toda a lógica de negócio.
+     * Resolve o estado completo do cockpit de risco usando os motores de domínio.
+     * Realiza a ponte entre tipos do APP (DB/Store) e tipos de DOMÍNIO (Engines).
      */
     get riskCockpitState(): RiskCockpitState | null {
+        const activeAssetId = this.activeAssetId;
         const activeProfile = riskSettingsStore.activeProfile;
-        if (!activeProfile || !activeProfile.active) return null;
+        
+        if (!activeAssetId || !activeProfile) return null;
 
-        // 1. RESOLUÇÃO ÚNICA DE CONTEXTO (FONTE DE VERDADE)
+        // 1. Resolver contexto efetivo (Decide qual plano e limites aplicar)
         const resolution = resolveEffectiveRiskContext(
-            this.activeAssetId ?? null,
+            activeAssetId,
             riskSettingsStore.assetRiskProfiles,
             activeProfile,
             riskSettingsStore.growthPlans,
             assetsStore.assets
         );
 
-        // 2. Adaptação para o Domínio
+        // 2. Localizar a fase ativa e ADAPTAR para o domínio
+        let activeGrowthPhase: DomainGrowthPhase | undefined;
+        const activePlan = riskSettingsStore.growthPlans.find(p => p.id === resolution.growthPlanId);
+        
+        let appPhase: AppGrowthPhase | undefined;
+        if (resolution.source === 'scope') {
+             const scope = riskSettingsStore.assetRiskProfiles.find(s => s.id === resolution.scopeId);
+             if (scope?.growth_override_enabled && scope.growth_phases_override) {
+                 appPhase = scope.growth_phases_override[resolution.currentPhaseIndex];
+             } else if (activePlan && activePlan.phases) {
+                 appPhase = activePlan.phases[resolution.currentPhaseIndex];
+             }
+        } else if (activePlan && activePlan.phases) {
+            appPhase = activePlan.phases[resolution.currentPhaseIndex];
+        }
+
+        if (appPhase) {
+            activeGrowthPhase = adaptGrowthPhaseToDomain(appPhase);
+        }
+
+        // 3. Adaptar Perfil de Risco e Trades para o domínio
         const domainProfile = adaptSettingsProfileToDomain(activeProfile);
-        const closedTrades = tradesStore.trades.filter(t => 
-            (t.exit_price !== null && t.exit_price !== undefined) || 
-            (t.processed_result_brl !== undefined && t.processed_result_brl !== 0) || 
-            (Number(t.result) !== 0)
-        );
-        
-        console.log(`[Cockpit Debug] Total Trades na Store: ${tradesStore.trades.length} | Fechados: ${closedTrades.length}`);
-        
-        // --- FILTRAGEM POR ATIVOS DO ESCOPO ---
-        let filteredTrades = closedTrades;
-        if (resolution.assetIds.length > 0) {
-            const scopeSymbols = resolution.assetIds
-                .map(id => assetsStore.assets.find(a => a.id === id)?.symbol)
-                .filter(Boolean);
+        const domainTrades = tradesStore.trades.map(t => adaptTradeToDomain(t as any));
 
-            filteredTrades = closedTrades.filter(t => 
-                resolution.assetIds.includes(t.asset_id || "") || 
-                (t.asset_symbol && scopeSymbols.includes(t.asset_symbol))
-            );
-        }
-
-        const domainTrades = filteredTrades
-            .map(adaptTradeToDomain)
-            .sort((a, b) => new Date(a.date as string).getTime() - new Date(b.date as string).getTime());
-
-        console.log(`[Cockpit Debug] Trades após adaptação Domínio (para o cockpit):`, domainTrades.map(t => ({ id: t.tradeId, pnl: t.pnl, date: t.date })));
-        
-        // 3. Estruturar Parâmetros de GrowthPhase (Mock do Domínio a partir da Resolução)
-        const domainGrowthPhase: DomainGrowthPhase = {
-            id: crypto.randomUUID(),
-            index: resolution.currentPhaseIndex,
-            level: (resolution.currentPhaseIndex || 0) + 1,
-            name: resolution.currentPhaseName,
-            maxContracts: resolution.currentPhaseLotLimit,
-            minTrades: 0,
-            minWinRate: 0,
-            minProfitFactor: 0,
-            minExpectancyR: 0,
-            minNetPnL: resolution.currentPhaseTarget,
-            maxDrawdownPercent: 0,
-            maxDrawdownAmount: resolution.currentPhaseDrawdown,
-            allowPromotion: (resolution.currentPhaseIndex || 0) < (resolution.totalPhases || 1) - 1,
-            allowRegression: (resolution.currentPhaseIndex || 0) > 0,
-            // Mapeamento Robusto para suportar nomes de propriedades tanto Snake quanto Camel
-            conditionsToAdvance: (resolution.conditionsToAdvance || []).map((c: any) => ({
-                metric: c.metric || c.metric_name || "unknown",
-                operator: c.operator || c.condition_operator || ">=",
-                value: Number(c.value !== undefined ? c.value : (c.target_value || 0))
-            })),
-            conditionsToDemote: (resolution.conditionsToDemote || [])?.map((c: any) => ({
-                metric: c.metric || c.metric_name || "unknown",
-                operator: c.operator || c.condition_operator || ">=",
-                value: Number(c.value !== undefined ? c.value : (c.target_value || 0))
-            }))
-        };
-
-        // 6. Determinar Capital Base (para drawdowns)
-        let startingCapital: number | undefined = undefined;
-        if (domainProfile.fixedCapital) {
-            startingCapital = domainProfile.fixedCapital;
-        } else if (activeProfile.linked_account_id) {
-            const linkedAccount = accountsStore.accounts.find(a => a.id === activeProfile.linked_account_id);
-            startingCapital = linkedAccount ? linkedAccount.balance : undefined;
-        }
-
-        // 7. Resolver Plano Ativo para extrair os Modos
-        const activeGrowthPlan = resolution.growthPlanId 
-            ? riskSettingsStore.growthPlans.find(p => p.id === resolution.growthPlanId)
-            : undefined;
-
-        // 8. Acionar o Agregador Central Puro do Domínio
-        const state = buildRiskCockpitState(
+        // 4. Computar o estado consolidado (Agregação imutável dos motores)
+        return buildRiskCockpitState(
             domainProfile,
             domainTrades,
-            domainGrowthPhase,
-            startingCapital,
+            activeGrowthPhase,
+            undefined, // startingCapital (resolution/engine cuidam)
             resolution.currentPhaseIndex,
             resolution.totalPhases,
             resolution.phaseStartedAt,
-            resolution,
-            {
-                daily_loss_mode: activeGrowthPlan?.daily_loss_mode,
-                phase_drawdown_mode: activeGrowthPlan?.phase_drawdown_mode,
-                phase_target_mode: activeGrowthPlan?.phase_target_mode,
-                target_unit: activeGrowthPlan?.target_unit,
-                drawdown_unit: activeGrowthPlan?.drawdown_unit
-            }
+            resolution
         );
-
-        console.log("[CockpitState] Resolution Conditions Raw:", resolution.conditionsToAdvance);
-        console.log("[CockpitState] Domain Conditions:", domainGrowthPhase.conditionsToAdvance?.length || 0);
-        
-        return state;
     }
 
     get resolvedGrowthContext(): ResolvedGrowthContext | null {
         const state = this.riskCockpitState;
-        if (!state || !state.growthPhase) return null;
+        if (!state || !riskSettingsStore.activeProfile) return null;
 
         return {
-            riskProfile: riskSettingsStore.activeProfile!,
-            growthSourceType: (state.resolution?.source === "scope" ? "assetProfile" : "global") as any,
-            growthPhase: (state.growthPhase as any),
+            riskProfile: riskSettingsStore.activeProfile,
+            growthSourceType: state.resolution?.source === "scope" ? "assetProfile" : "global",
+            growthPhase: state.growthPhase,
             resolution: state.resolution
         };
     }
@@ -278,38 +233,34 @@ export class RiskStore {
         }
     }
 
-    // --- Computed Evaluations ---
+    // --- Avaliações Computadas ---
 
     get globalGrowthEvaluation(): GrowthEvaluationResult | null {
         const state = this.riskCockpitState;
-        return state?.growthEvaluation || null;
+        return (state?.growthEvaluation as GrowthEvaluationResult) || null;
     }
 
     /**
      * Retorna a definição da próxima fase (preview) para o Cockpit.
      */
-    get nextGrowthPhase(): DomainGrowthPhase | null {
+    get nextGrowthPhase(): any | null {
         const resolution = this.resolvedGrowthContext?.resolution;
         if (!resolution) return null;
 
         const activePlanId = resolution.growthPlanId;
         const activePlan = riskSettingsStore.growthPlans.find(p => p.id === activePlanId);
 
-        // Se estiver num escopo com sobrescrita, busca na lista de fases sobrescritas
         if (resolution.source === 'scope') {
             const scope = riskSettingsStore.assetRiskProfiles.find(s => s.id === resolution.scopeId);
             if (scope?.growth_override_enabled && scope.growth_phases_override) {
                 const nextIndex = resolution.currentPhaseIndex + 1;
-                const dbNext = (scope.growth_phases_override[nextIndex] as DBGrowthPhase);
-                return dbNext ? adaptGrowthPhaseToDomain(dbNext) || null : null;
+                return scope.growth_phases_override[nextIndex] || null;
             }
         }
 
-        // Caso contrário, busca no plano (global ou vinculado)
         if (activePlan && activePlan.phases) {
             const nextIndex = resolution.currentPhaseIndex + 1;
-            const dbNext = (activePlan.phases[nextIndex] as DBGrowthPhase);
-            return dbNext ? adaptGrowthPhaseToDomain(dbNext) || null : null;
+            return activePlan.phases[nextIndex] || null;
         }
 
         return null;
@@ -319,12 +270,17 @@ export class RiskStore {
         const state = this.riskCockpitState;
         if (!state) return null;
 
-        // O motor de validação de desk usa uma lógica diferente para progressão histórica
-        // Aqui adaptamos para o contrato do Dashboard que espera um DeskValidationResult simplificado
+        const regressionSlug = state.growthEvaluation?.regressionReasonMetric === 'drawdown' ? 'max_drawdown' : 
+                               state.growthEvaluation?.regressionReasonMetric === 'daily_loss' ? 'max_daily_loss' : 
+                               'max_drawdown';
+
         return {
-            allowed: state.dailyRiskStatus.statusLabel !== 'LOCKED' && state.dailyRiskStatus.statusLabel !== 'LOSS_LIMIT_HIT',
+            allowed: state.dailyRiskStatus.statusLabel !== 'LOCKED' && 
+                     state.dailyRiskStatus.statusLabel !== 'LOSS_LIMIT_HIT' && 
+                     !state.growthEvaluation?.shouldRegress,
             reasons: state.dailyRiskStatus.statusLabel === 'LOCKED' ? ["max_daily_loss"] : 
-                     state.dailyRiskStatus.statusLabel === 'LOSS_LIMIT_HIT' ? ["max_daily_loss"] : [],
+                     state.dailyRiskStatus.statusLabel === 'LOSS_LIMIT_HIT' ? ["max_daily_loss"] : 
+                     state.growthEvaluation?.shouldRegress ? [regressionSlug] : [],
             warnings: [],
             checks: {
                 allowedAsset: true,
@@ -349,16 +305,26 @@ export class RiskStore {
 
     get positionSizingResult(): PositionSizingResult | null {
         const state = this.riskCockpitState;
-        const activeAsset = assetsStore.assets.find(a => a.id === this.activeAssetId);
-        if (!state || !activeAsset || !state.growthPhase) return null;
+        const activeAsset = this.activeAsset;
+        const assetProfile = this.resolvedAssetRiskProfile;
+        
+        if (!state || !activeAsset || !assetProfile || !riskSettingsStore.activeProfile) return null;
 
-        // Using cast to Domain Types for Position Sizing (to be refined in Phase 5)
+        let startingCapital: number | undefined = undefined;
+        if (riskSettingsStore.activeProfile.capital_source === 'Fixed') {
+            startingCapital = riskSettingsStore.activeProfile.fixed_capital || 0;
+        } else if (riskSettingsStore.activeProfile.linked_account_id) {
+            const linkedAccount = accountsStore.accounts.find(a => a.id === riskSettingsStore.activeProfile!.linked_account_id);
+            startingCapital = linkedAccount ? linkedAccount.balance : undefined;
+        }
+
+        // Usando o ADAPTADOR para Position Sizing
         const input = adaptPositionSizingInput(
-            state.profile as any,
+            riskSettingsStore.activeProfile,
             activeAsset,
-            state.growthEvaluation?.metrics as any,
-            state.growthEvaluation?.metrics as any,
-            state.growthPhase as any
+            assetProfile,
+            state.growthPhase as any, 
+            startingCapital
         );
 
         return input ? calculatePositionSizing(input) : null;
@@ -369,14 +335,12 @@ export class RiskStore {
      */
     validateTradeEntry(contracts: number): { canTrade: boolean; reasons: string[] } {
         const state = this.riskCockpitState;
-        if (!state || !state.growthPhase) return { canTrade: false, reasons: ["Risco não inicializado"] };
+        if (!state || !state.dailyRiskStatus) return { canTrade: false, reasons: ["Risco não inicializado"] };
 
-        // Simulamos a regra de validação via Engine Diária
         const canTrade = !state.dailyRiskStatus.isLocked;
         const reasons = canTrade ? [] : ["Limite diário atingido ou bloqueado"];
         
-        // Adiciona validação de lote da fase
-        if (contracts > state.growthPhase.maxContracts) {
+        if (state.growthPhase && contracts > state.growthPhase.maxContracts) {
             return { canTrade: false, reasons: [`Limite de lotes da fase excedido (${state.growthPhase.maxContracts})`] };
         }
 
@@ -391,14 +355,13 @@ export class RiskStore {
         const activeProfile = riskSettingsStore.activeProfile;
         if (!state || !activeProfile) return null;
         
-        // DeskConfig opcional para auditoria
         const desk: DeskConfig = {
             enabled: true,
             plan_name: 'Auditoria'
         };
 
-        const trades = tradesStore.trades; // Historical audit expects raw App trades
-        return calculateHistoricalAudit(trades, desk);
+        // Passando trades adaptados e mock de config desk
+        return calculateHistoricalAudit(tradesStore.trades as any, desk);
     }
 }
 

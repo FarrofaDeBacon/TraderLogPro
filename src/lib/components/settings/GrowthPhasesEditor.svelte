@@ -28,6 +28,8 @@
 
     const advanceMetrics: Record<string, string> = {
         profit: 'risk.growth.metrics.profit',
+        totalTarget: 'risk.growth.metrics.totalTarget',
+        dailyTarget: 'risk.growth.metrics.dailyTarget',
         days: 'risk.growth.metrics.days',
         winRate: 'risk.growth.metrics.winRate',
         consistency: 'risk.growth.metrics.consistency'
@@ -162,6 +164,8 @@
                                                 {rule.metric ? $t(advanceMetrics[rule.metric] || 'risk.growth.metrics.profit') : $t('risk.growth.metrics.profit')}
                                             </Select.Trigger>
                                             <Select.Content>
+                                                <Select.Item value="totalTarget">{$t("risk.growth.metrics.totalTarget")}</Select.Item>
+                                                <Select.Item value="dailyTarget">{$t("risk.growth.metrics.dailyTarget")}</Select.Item>
                                                 <Select.Item value="profit">{$t("risk.growth.metrics.profit")}</Select.Item>
                                                 <Select.Item value="days">{$t("risk.growth.metrics.days")}</Select.Item>
                                                 <Select.Item value="winRate">{$t("risk.growth.metrics.winRate")}</Select.Item>
@@ -184,12 +188,12 @@
                                         <div class="relative flex items-center">
                                             <Input type="number" step="0.1" class="h-7 text-[10px] w-[65px] font-mono font-bold bg-muted/20 border-0 rounded-md pr-5 text-right" bind:value={rule.value} />
                                             <span class="absolute right-1.5 text-[8px] font-bold text-muted-foreground opacity-50 uppercase tracking-tighter">
-                                                {rule.metric === 'profit' ? (targetUnit === 'points' ? 'pts' : '$') : 
+                                                {['profit', 'totalTarget', 'dailyTarget'].includes(rule.metric) ? (targetUnit === 'points' ? 'pts' : '$') : 
                                                  rule.metric === 'winRate' ? '%' : ''}
                                             </span>
                                         </div>
                                         
-                                        <Button variant="ghost" size="icon" class="h-7 w-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive shrink-0 rounded-md" onclick={() => phase.conditions_to_advance.splice(ri, 1)}>
+                                        <Button variant="ghost" size="icon" class="h-7 w-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive shrink-0 rounded-md" onclick={() => { phase.conditions_to_advance = phase.conditions_to_advance.filter((_v: any, i: number) => i !== ri); onChange?.(); }}>
                                             <Trash2 class="w-3 h-3" />
                                         </Button>
                                     </div>
@@ -249,7 +253,7 @@
                                             </span>
                                         </div>
                                         
-                                        <Button variant="ghost" size="icon" class="h-7 w-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive shrink-0 rounded-md" onclick={() => phase.conditions_to_demote.splice(ri, 1)}>
+                                        <Button variant="ghost" size="icon" class="h-7 w-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive shrink-0 rounded-md" onclick={() => { phase.conditions_to_demote = phase.conditions_to_demote.filter((_v: any, i: number) => i !== ri); onChange?.(); }}>
                                             <Trash2 class="w-3 h-3" />
                                         </Button>
                                     </div>

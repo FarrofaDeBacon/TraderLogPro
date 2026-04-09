@@ -205,6 +205,7 @@ export interface GrowthEvaluationResult {
     canPromote: boolean;
     shouldRegress: boolean;
     regressionReasonKey?: string;
+    regressionReasonMetric?: string;
     advanceConditions: GrowthConditionStatus[];
     regressionConditions: GrowthConditionStatus[];
     metrics: GrowthMetrics;

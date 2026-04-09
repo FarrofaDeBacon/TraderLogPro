@@ -10,11 +10,6 @@ pub async fn seed_currencies(db: &Surreal<Db>) -> Result<(), String> {
         ("BRL", "BRL", "R$", "Real Brasileiro", 1.0),
         ("USD", "USD", "$", "Dólar Americano", 5.0),
         ("EUR", "EUR", "€", "Euro", 5.40),
-        ("GBP", "GBP", "£", "Libra Esterlina", 6.30),
-        ("JPY", "JPY", "¥", "Iene Japonês", 0.034),
-        ("AUD", "AUD", "A$", "Dólar Australiano", 3.25),
-        ("CAD", "CAD", "C$", "Dólar Canadense", 3.70),
-        ("CHF", "CHF", "Fr", "Franco Suíço", 5.60),
     ];
 
     for (id, code, symbol, name, rate) in currencies {

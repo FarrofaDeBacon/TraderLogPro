@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { AssetType } from "$lib/types";
 import { compareAssetTypeIds, normalizeAssetTypeId } from "$lib/utils";
+import { assetsStore } from "./assets.svelte";
 
 export class AssetTypesStore {
     assetTypes = $state<AssetType[]>([]);
@@ -27,6 +28,12 @@ export class AssetTypesStore {
     }
 
     async deleteAssetType(id: string): Promise<{ success: boolean; error?: string }> {
+        // Validation: Block if any asset uses this type
+        const isUsed = assetsStore.assets.some(a => compareAssetTypeIds(a.asset_type_id, id));
+        if (isUsed) {
+            return { success: false, error: "Cannot delete asset type: It is currently used by one or more assets." };
+        }
+
         try {
             await invoke("delete_asset_type", { id: normalizeAssetTypeId(id) });
             this.assetTypes = this.assetTypes.filter(at => !compareAssetTypeIds(at.id, id));

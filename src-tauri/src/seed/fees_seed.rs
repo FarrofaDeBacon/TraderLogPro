@@ -23,8 +23,8 @@ pub async fn seed_fees(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Result<
     let fees = vec![
         (
             "f1",
-            "B3 - Day Trade (Ações/FIIs)",
-            "Genérica",
+            "Toro - Day Trade (Ações/FIIs)",
+            "Toro Investimentos",
             0.0,
             0.0,
             0.030,
@@ -32,12 +32,12 @@ pub async fn seed_fees(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Result<
             0.0,
             1.0,
             20.0,
-            "Taxas padrão para DT em ações/FIIs",
+            "Taxas padrão para DT em ações/FIIs na Toro",
         ),
         (
             "f2",
-            "B3 - Swing Trade (Ações/FIIs)",
-            "Genérica",
+            "Toro - Swing Trade (Ações/FIIs)",
+            "Toro Investimentos",
             0.0,
             0.0,
             0.030,
@@ -45,12 +45,12 @@ pub async fn seed_fees(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Result<
             0.0,
             1.0,
             15.0,
-            "Taxas padrão para ST em ações/FIIs",
+            "Taxas padrão para ST em ações/FIIs na Toro",
         ),
         (
             "f3",
-            "B3 - Futuros (WIN/WDO)",
-            "Genérica",
+            "Toro - Futuros (WIN/WDO)",
+            "Toro Investimentos",
             0.0,
             0.0,
             0.0,
@@ -58,7 +58,7 @@ pub async fn seed_fees(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Result<
             0.0,
             0.0,
             20.0,
-            "Taxas de registro e emolumentos para Minicontratos",
+            "Taxas de registro e emolumentos para Minicontratos na Toro",
         ),
     ];
 

@@ -16,16 +16,11 @@ pub async fn seed_chart_types(db: &Surreal<Db>, filter: Option<Vec<String>>) -> 
     println!("[SEED] Populando Tipos de Gráfico...");
 
     let chart_types = vec![
-        ("ct1", "Candlestick 1 min", "TimeBased", "1m"),
-        ("ct2", "Candlestick 5 min", "TimeBased", "5m"),
-        ("ct3", "Candlestick 15 min", "TimeBased", "15m"),
-        ("ct4", "Candlestick 60 min", "TimeBased", "60m"),
-        ("ct5", "Candlestick Diário", "TimeBased", "1D"),
-        ("ct6", "Renko 5R", "Renko", "5R"),
-        ("ct7", "Renko 10R", "Renko", "10R"),
-        ("ct8", "Renko 21R", "Renko", "21R"),
-        ("ct9", "Heiken Ashi", "TimeBased", "HA"),
-        ("ct10", "Range 100", "Range", "100"),
+        ("ct1", "Candlestick 1 min", "Temporal", "1m"),
+        ("ct2", "Candlestick 5 min", "Temporal", "5m"),
+        ("ct3", "Candlestick 15 min", "Temporal", "15m"),
+        ("ct4", "Candlestick 60 min", "Temporal", "60m"),
+        ("ct5", "Candlestick Diário", "Temporal", "1D"),
     ];
 
     for (id, name, base_type, parameter) in chart_types {

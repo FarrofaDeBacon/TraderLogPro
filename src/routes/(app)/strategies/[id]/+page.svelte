@@ -578,13 +578,18 @@
                         </div>
                         <p class="text-xs text-muted-foreground leading-relaxed">
                             {#if stats.diagnostic.status === "INSUFFICIENT_DATA"}
-                                Continue executando a estratégia dentro dos parâmetros para permitir que o algoritmo calibre a leitura de eficácia.
+                                {$t("strategies.aiCockpit.ai.actions.continue")}
                             {:else if stats.diagnostic.current_risk === "CRITICAL"}
-                                O capital desta estratégia está exposto a um Drawdown incompatível com o Payoff. <span class="font-bold text-rose-500 block mt-2">Ação: Reduza agressivamente o fracionamento de lotes ou congele operações temporariamente.</span>
+                                {$t("strategies.aiCockpit.ai.messages.critical")} 
+                                <span class="font-bold text-rose-500 block mt-2">{$t("strategies.aiCockpit.ai.actions.reduce")}</span>
                             {:else if stats.diagnostic.status === "HOT" && stats.diagnostic.current_risk === "LOW"}
-                                O sistema vibra em harmonia máxima. O fluxo operacional e emocional provam consistência direcional. <span class="font-bold text-emerald-500 block mt-2">Ação: Mantenha volume cheio. Deixe os lucros transbordarem na lei geométrica dos alvos originais.</span>
+                                {$t("strategies.aiCockpit.ai.messages.hot")}
+                                <span class="font-bold text-emerald-500 block mt-2">{$t("strategies.aiCockpit.ai.actions.maintain")}</span>
                             {:else}
-                                Consistência em maturação. Resultados sofrem atrito cruzado (Quente/Frio) entre classes de ativos ou sessões horárias. <span class="font-bold text-blue-500 block mt-2">Ação: Adote a direção predominante ({$t(`aiCockpit.values.${stats.operational.best_direction}`) || stats.operational.best_direction || "N/A"}) como viés primário para estabilizar os drawdowns curtos.</span>
+                                {$t("strategies.aiCockpit.ai.messages.maturing")}
+                                <span class="font-bold text-blue-500 block mt-2">
+                                    {$t("strategies.aiCockpit.ai.actions.bias", { values: { direction: $t(`strategies.aiCockpit.values.${stats.operational.best_direction}`) || stats.operational.best_direction || "N/A" } })}
+                                </span>
                             {/if}
                         </p>
                     </div>
@@ -603,7 +608,7 @@
                 >
                 <Tabs.Trigger value="gann" class="gap-2">
                     <Compass class="w-3.5 h-3.5" />
-                    Gann Analysis
+                    {$t("strategyDashboard.tabs.gann")}
                 </Tabs.Trigger>
             </Tabs.List>
 
@@ -1023,7 +1028,7 @@
                 <div class="mt-2">
                     <StrategyAICard 
                         strategyId={strategyId || ""}
-                        periodStr="All Time"
+                        periodStr={$t("common.period.allTime")}
                         metricsPayload={aiMetricsPayload}
                         {hasActiveAiProvider}
                     />

@@ -76,60 +76,77 @@ export class AssetsStore {
         }
     }
 
-    ensureAssetExists(symbol: string, forceTypeId: string | undefined, assetTypes: AssetType[]) {
+    private discoveryCache = new Set<string>();
+
+    async ensureAssetExists(symbol: string, forceTypeId: string | undefined, assetTypes: AssetType[], sheetContext?: string) {
         if (!symbol) return;
-        const sym = symbol.toUpperCase();
+        const sym = symbol.toUpperCase().trim();
+        
+        // Local cache check to prevent concurrent duplicate adds
+        if (this.discoveryCache.has(sym)) return;
+
         const existing = this.assets.find(a => a.symbol === sym);
         if (existing) {
             if (forceTypeId && existing.asset_type_id !== forceTypeId) {
-                this.updateAsset(existing.id, { asset_type_id: forceTypeId });
+                await this.updateAsset(existing.id, { asset_type_id: forceTypeId });
             }
             return;
         }
 
-        let typeId = forceTypeId || "";
-        let name = sym;
+        this.discoveryCache.add(sym);
 
-        if (sym.startsWith("WIN") || sym.startsWith("WDO") || sym.startsWith("IND") || sym.startsWith("DOL") || sym.startsWith("BIT")) {
-            const type = assetTypes.find(at => at.name.toLowerCase().includes("futuro") || at.code.toLowerCase().includes("index"));
-            typeId = type?.id || assetTypes[0]?.id || "";
-            name = sym.startsWith("WIN") ? "Mini Index" :
-                sym.startsWith("WDO") ? "Mini Dollar" :
-                    sym.startsWith("IND") ? "Bovespa Index" :
-                        sym.startsWith("DOL") ? "Full Dollar" :
-                            sym.startsWith("BIT") ? "Mini Bitcoin" : sym;
-        } else if (sym.length === 6 && !sym.match(/\d/)) {
-            const type = assetTypes.find(at => at.name.toLowerCase().includes("forex") || at.code.toLowerCase().includes("fx"));
-            typeId = type?.id || assetTypes[0]?.id || "";
-        } else if (sym.length >= 5 && (sym.endsWith("11") || sym.endsWith("3") || sym.endsWith("4"))) {
-            const type = assetTypes.find(at => at.name.toLowerCase().includes("stock") || at.name.toLowerCase().includes("ação") || at.code.toLowerCase().includes("stk"));
-            typeId = type?.id || assetTypes[0]?.id || "";
-        } else {
-            typeId = assetTypes[0]?.id || "";
+        try {
+            let typeId = forceTypeId || "";
+            let name = sym;
+
+            // Context-based type detection (ABA do Profit)
+            const context = (sheetContext || "").toUpperCase();
+            const isFutureContext = context.includes("WIN") || context.includes("DOL") || context.includes("FUT") || context.includes("IND") || context.includes("B3");
+
+            if (isFutureContext || sym.startsWith("WIN") || sym.startsWith("WDO") || sym.startsWith("IND") || sym.startsWith("DOL") || sym.startsWith("BIT")) {
+                const type = assetTypes.find(at => at.name.toLowerCase().includes("futuro") || at.code.toLowerCase().includes("index") || at.name.toLowerCase().includes("índice"));
+                typeId = type?.id || assetTypes[0]?.id || "";
+                name = sym.startsWith("WIN") ? "Mini Index" :
+                    sym.startsWith("WDO") ? "Mini Dollar" :
+                        sym.startsWith("IND") ? "Bovespa Index" :
+                            sym.startsWith("DOL") ? "Full Dollar" :
+                                sym.startsWith("BIT") ? "Mini Bitcoin" : sym;
+            } else if (sym.length === 6 && !sym.match(/\d/)) {
+                const type = assetTypes.find(at => at.name.toLowerCase().includes("forex") || at.code.toLowerCase().includes("fx"));
+                typeId = type?.id || assetTypes[0]?.id || "";
+            } else if (sym.length >= 5 && (sym.endsWith("11") || sym.endsWith("3") || sym.endsWith("4") || sym.endsWith("5") || sym.endsWith("6"))) {
+                const type = assetTypes.find(at => at.name.toLowerCase().includes("stock") || at.name.toLowerCase().includes("ação") || at.code.toLowerCase().includes("stk"));
+                typeId = type?.id || assetTypes[0]?.id || "";
+            } else {
+                typeId = assetTypes[0]?.id || "";
+            }
+
+            let pv = 1.0;
+            if (sym.startsWith("WDO") || sym.startsWith("DOL")) pv = 10.0;
+            else if (sym.startsWith("WIN") || sym.startsWith("IND")) pv = 0.20;
+            else if (sym.startsWith("BIT")) pv = 0.1;
+
+            // Auto-link to root if possible
+            let rootId: string | null = null;
+            if (sym.length >= 3) {
+                const prefix = sym.substring(0, 3);
+                const root = this.assets.find(a => a.is_root && a.symbol === prefix);
+                if (root) rootId = root.id;
+            }
+
+            await this.addAsset({
+                symbol: sym,
+                name: `${name} (Auto)`,
+                asset_type_id: typeId,
+                point_value: pv,
+                default_fee_id: "",
+                is_root: false,
+                root_id: rootId ?? undefined
+            });
+        } finally {
+            // Stay in cache for 10s to prevent rapid re-triggering while store reloads
+            setTimeout(() => this.discoveryCache.delete(sym), 10000);
         }
-
-        let pv = 1.0;
-        if (sym.startsWith("WDO") || sym.startsWith("DOL")) pv = 10.0;
-        else if (sym.startsWith("WIN") || sym.startsWith("IND")) pv = 0.20;
-        else if (sym.startsWith("BIT")) pv = 0.1;
-
-        // Auto-link to root if possible
-        let rootId: string | null = null;
-        if (sym.length >= 3) {
-            const prefix = sym.substring(0, 3);
-            const root = this.assets.find(a => a.is_root && a.symbol === prefix);
-            if (root) rootId = root.id;
-        }
-
-        this.addAsset({
-            symbol: sym,
-            name: `${name} (Auto)`,
-            asset_type_id: typeId,
-            point_value: pv,
-            default_fee_id: "",
-            is_root: false,
-            root_id: rootId ?? undefined
-        });
     }
 }
 

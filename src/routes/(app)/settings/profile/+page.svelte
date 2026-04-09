@@ -228,32 +228,6 @@
                             <div class="space-y-2">
                                 <Label
                                     >{$t(
-                                        "settings.profile.personalInfo.cpf",
-                                    )}</Label
-                                >
-                                <Input
-                                    bind:value={formData.cpf}
-                                    placeholder={$t(
-                                        "settings.profile.personalInfo.cpfPlaceholder",
-                                    )}
-                                />
-                            </div>
-                            <div class="space-y-2">
-                                <Label
-                                    >{$t(
-                                        "settings.profile.personalInfo.birthDate",
-                                    )}</Label
-                                >
-                                <Input
-                                    type="date"
-                                    bind:value={formData.birth_date}
-                                />
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <Label
-                                    >{$t(
                                         "settings.profile.personalInfo.email",
                                     )}</Label
                                 >

@@ -8,42 +8,71 @@
             "evolutionJournal": "DIARIO DE EVOLUCIÓN",
             "finishTrading": "Finalizar Sesión",
             "newTrade": "NUEVA ORDEN",
-            "reviewDone": "Revisión Completada",
+            "reviewDone": "Revisión Finalizada",
             "riskControlShort": "C.R"
+        },
+        "preparation": {
+            "economicCalendar": "Calendario Económico",
+            "items": {
+                "gap_analysis": "Brecha de Apertura: ¿Se identificó si es Novato o Profesional?",
+                "mindset": "Mentalidad: ¿Estoy tranquilo y concentrado para operar?",
+                "news": "Noticias: ¿Revisó el Calendario Económico de hoy?",
+                "newsDetected": "⚠️ Noticias de Alto Impacto Detectadas:",
+                "newsNone": "No hay noticias relevantes en el calendario de hoy.",
+                "prior_levels": "Niveles Clave: ¿Marcó los máximos y mínimos de ayer?",
+                "riskInput": "Límite de Pérdida Hoy ($):",
+                "risk_limit": "Riesgo: ¿Definí mi Stop Loss máximo para hoy?",
+                "trend_200ma": "Territorio (200MA): ¿Por encima (Alcista) o debajo (Bajista)?",
+                "trend_20ma": "Tendencia (20MA): ¿El precio respeta el promedio de 20 períodos?"
+            },
+            "newsUpdate": "Actualizar Feed",
+            "newsUpdateError": "Error al actualizar eventos económicos.",
+            "newsUpdateSuccess": "Feed económico actualizado correctamente.",
+            "ready": "LISTO PARA OPERAR",
+            "reset": "Restablecer",
+            "resetSuccess": "Estadísticas de verificación restablecidas.",
+            "start": "Iniciar Sesión de Trading",
+            "subtitle": "Revise los fundamentos antes del primer clic.",
+            "success": "Lista de verificación completa. Listo para operar.",
+            "title": "Registro Premercado (Oliver Velez)",
+            "verified": "verificado",
+            "volatilityAlert": "ALERTA DE VOLATILIDAD",
+            "scrollMore": "Desplázate para más",
+            "calendarTitle": "Calendario Económico Global"
         },
         "charts": {
             "consistency": "CONSISTENCIA",
-            "equity": "Evolución del Patrimonio",
+            "equity": "Evolución de Capital",
             "equitySubtitle": "Evolución gráfica",
             "losses": "PÉRDIDAS",
             "wins": "GANANCIAS"
         },
         "dailyDetail": {
             "asset": "Activo",
-            "buy": "Compra",
+            "buy": "C",
             "buyShort": "C",
             "direction": "Dirección",
             "efficiency": "Eficiencia",
-            "noTrades": "Ningún trade",
-            "operationsList": "Lista de Trades",
+            "noTrades": "Sin operaciones",
+            "operationsList": "Lista de Operaciones",
             "result": "Resultado",
-            "sell": "Venta",
+            "sell": "V",
             "sellShort": "V",
-            "subtitle": "Visión detallada del día",
+            "subtitle": "Vista detallada diaria",
             "summary": "Resumen",
             "title": "Detalle Diario",
-            "tradeQty": "Total de Trades"
+            "tradeQty": "Total Operaciones"
         },
         "gann": {
             "kpis": {
-                "avgInterval": "Intervalo Entre Trades",
+                "avgInterval": "Intervalo entre Operaciones",
                 "cycleDay": "Día del Ciclo",
                 "days": "Días",
-                "hot_window": "Ventana Caliente (Reversión Inminente)",
+                "hot_window": "Ventana Caliente (Inminente)",
                 "masterCycle": "Ciclo Maestro",
-                "neutral": "Zona Neutra",
-                "nextCot": "Próxima Reversión (Ventana)",
-                "outOfDays": "Fuera de Ciclo",
+                "neutral": "Zona Neutral",
+                "nextCot": "Próxima Reversión",
+                "outOfDays": "Fuera del Ciclo",
                 "vibration": "Vibración Actual"
             },
             "sq9": {
@@ -53,36 +82,64 @@
                 "retracement": "Objetivos de Retroceso"
             },
             "subtitle": "Confluencia Matemática y Ciclos",
-            "title": "Vibraciones de Gann"
+            "title": "Vibraciones Gann"
         },
         "kpis": {
-            "avgInterval": "Intervalo Entre Trades",
+            "avgInterval": "Intervalo Prom.",
             "discipline": "Disciplina",
             "maxDrawdown": "Drawdown Máximo",
             "netResult": "Resultado Neto",
-            "payoff": "Payoff",
-            "profitFactor": "Factor de Ganancia",
-            "winRate": "Win Rate"
+            "payoff": "Beneficio Riesgo",
+            "profitFactor": "Factor de Benef.",
+            "winRate": "Tasa de Acierto"
         },
         "market_context": {
             "di": "Tasa DI (CDI)",
-            "di_desc": "Referencial Intereses",
+            "di_desc": "Referencia de Interés",
             "ptax": "PTAX (Oficial)",
-            "ptax_desc": "Media Dólar BCB",
-            "selic": "SELIC AN.",
-            "selic_desc": "Meta Banco Central",
+            "ptax_desc": "Dólar Banco Central",
+            "selic": "SELIC PY.",
+            "selic_desc": "Objetivo Banco Central",
             "wdo": "Dólar (WDO)",
             "win": "Índice (WIN)"
         },
         "mindset": {
-            "deviated_plan": "Desvió el Plan",
-            "empty": "Sin registros recientes",
-            "followed_plan": "Siguió el Plan",
-            "impact_detected": "Impacto {impact} detectado",
-            "placeholder": "Registra el estado emocional para activar el análisis.",
+            "deviated_plan": "Desviado del Plan",
+            "empty": "No hay registros",
+            "followed_plan": "Plan Seguido",
+            "impact_detected": "{impact} impacto detectado",
+            "impacts": {
+                "Negative": "Negativo",
+                "Neutral": "Neutral",
+                "Positive": "Positivo"
+            },
+            "placeholder": "Registre el estado emocional.",
             "title": "Estado Psicológico"
         },
-        "newTrade": "Nuevo Trade",
+        "newTrade": "Nueva Orden",
+        "onboarding_wizard": {
+            "title": "Prepara tu Cabina",
+            "subtitle": "Sigue los 4 pasos para blindar tu capital y desbloquear los Radares.",
+            "step1": {
+                "title": "1. Crea tu Cuenta",
+                "subtitle": "Conecta tu capital base para rastrear beneficios.",
+                "action": "Siguiente"
+            },
+            "step2": {
+                "title": "2. Determina tu Riesgo",
+                "subtitle": "Configura Límites de Pérdida para activar el Bloqueo de Comportamiento.",
+                "action": "Blindar Capital"
+            },
+            "step3": {
+                "title": "3. Estructura tu Plan",
+                "subtitle": "Crea fases de crecimiento para escalar lotes matemáticamente.",
+                "action": "Crear Plan"
+            },
+            "step4": {
+                "title": "4. Registra tu Primer Trade",
+                "subtitle": "Estás 100% blindado. Inicia QuickLog para dar vida a los gráficos."
+            }
+        },
         "quant": {
             "dollar": "Dólar",
             "index": "Índice",
@@ -94,38 +151,38 @@
         },
         "schedule": {
             "afternoon": "Tarde",
-            "basedOn": "Basado en los últimos {count} días hábiles",
+            "basedOn": "Basado en últimos {count} días",
             "morning": "Mañana",
-            "title": "Horarios de Trade"
+            "title": "Horarios Operativos"
         },
         "sections": {
-            "allClear": "Todo Limpio (Lotes Normales)",
+            "allClear": "Todo Seguro (Lotes Normales)",
             "assistantLabel": "ASISTENTE",
-            "behavioralRadar": "Radar Comportamental (IA Heurística)",
-            "behavioralRadarLabel": "RADAR COMPORTAMENTAL",
-            "evolutionStreaks": "Evolución y Secuencias",
-            "noAnomalies": "Sin anomalías detectadas",
+            "behavioralRadar": "Radar de Comportamiento (Heurística)",
+            "behavioralRadarLabel": "RADAR PSICOLÓGICO",
+            "evolutionStreaks": "Evolución y Rachas",
+            "noAnomalies": "Sin anomalías",
             "systemStatus": "ESTADO DEL SISTEMA",
-            "traderAssistant": "Asistente del Trader"
+            "traderAssistant": "Asistente Trader"
         },
         "stats": {
-            "emotionalControl": "Control Emocional",
+            "emotionalControl": "Control Emoc.",
             "gainLabel": "GANANCIA",
-            "greenDays": "Días de Ganancia",
+            "greenDays": "Días Verdes",
             "lossLabel": "PÉRDIDA",
-            "rollingScore": "Puntuación (30T)",
-            "streaks": "SECUENCIAS",
-            "todayPnL": "P&L de Hoy",
-            "todayPnLShort": "P&L HOY",
-            "tradeFrequency": "Frecuencia (Trades)",
+            "rollingScore": "Puntos (30T)",
+            "streaks": "RACHAS",
+            "todayPnL": "Lucro Hoy",
+            "todayPnLShort": "LUCRO HOY",
+            "tradeFrequency": "Frecuencia",
             "unbreakableDiscipline": "Disciplina Inquebrantable",
-            "weekPnL": "P&L de la Semana",
+            "weekPnL": "Semana PnL",
             "weekPnLShort": "SEMANAL"
         },
-        "subtitle": "Resumen de la cuenta operativa.",
+        "subtitle": "Resumen de la cuenta.",
         "survivor": {
             "activePlan": "Plan Activo:",
-            "avgRFactor": "Factor R Medio",
+            "avgRFactor": "Factor R Prom",
             "consistency": "Consist.",
             "currentPhase": "Fase Actual",
             "dailyEvolution": "Evolución Diaria",
@@ -134,25 +191,25 @@
             "limit": "Límite",
             "operateTrade": "OPERAR 2% TRADE",
             "operationalStatus": "Estado Operativo",
-            "pnl": "PnL",
-            "riskMonth": "Survivor Risk (Mes)",
-            "roadmapProgress": "Progreso del Roadmap",
-            "select": "Seleccione",
-            "statusAlpha": "Operativo Alpha",
-            "statusBlocked": "Bloqueado (Loss Max)",
-            "statusRisk": "Alerta de Riesgo",
+            "pnl": "Beneficio",
+            "riskMonth": "Riesgo Survivor (Mes)",
+            "roadmapProgress": "Progreso de Hoja de Ruta",
+            "select": "Seleccionar",
+            "statusAlpha": "Alpha Operativo",
+            "statusBlocked": "Bloqueado (Max)",
+            "statusRisk": "Alerta Riesgo",
             "target": "Meta: ",
-            "title": "Survivor Hub & Monitoreo",
+            "title": "Supervisor Survivor",
             "tradesUsage": "Uso de Trades"
         },
         "syncingTerminal": "Sincronizando Terminal...",
-        "terminalHub": "Terminal Hub",
-        "title": "Dashboard",
-        "waitingSurvivorData": "Esperando matriz de datos del Survivor Hub"
+        "terminalHub": "Terminal Central",
+        "title": "Panel de Control",
+        "waitingSurvivorData": "Esperando matriz de datos"
     },
     "home": {
-        "newTrade": "Nuevo Trade",
-        "subtitle": "La evolución de tu diario de trading.",
-        "viewDashboard": "Ver Dashboard"
+        "newTrade": "Nueva Orden",
+        "subtitle": "La evolución de tu diario.",
+        "viewDashboard": "Ver Panel"
     }
 }

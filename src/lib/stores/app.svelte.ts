@@ -1,7 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import { getLocalDatePart } from "$lib/utils";
 import { safeInvoke } from "$lib/services/tauri";
-import { validateLicenseKey, computeCustomerId, type LicenseData } from "$lib/utils/license";
+import { validateLicenseKey, type LicenseData } from "$lib/utils/license";
 
 // Mock Global Store for Settings (Simulating Backend DB)
 // Using Svelte 5 Runes for reactivity outside components

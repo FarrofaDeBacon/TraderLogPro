@@ -33,23 +33,23 @@
 
     // Workspace Items (Principal)
     let workspaceItems = $derived([
-        { label: $t("nav.trades", { default: "Trades" }), href: "/trades", icon: TrendingUp },
-        { label: $t("nav.strategies", { default: "Estratégias" }), href: "/strategies", icon: Target },
-        { label: $t("nav.finance", { default: "Financeiro" }), href: "/finance", icon: Wallet },
+        { label: $t("nav.trades"), href: "/trades", icon: TrendingUp },
+        { label: $t("nav.strategies"), href: "/strategies", icon: Target },
+        { label: $t("nav.finance"), href: "/finance", icon: Wallet },
     ]);
 
     // Análise Items
     let analysisItems = $derived([
-        { label: $t("nav.dashboard", { default: "Dashboard" }), href: "/", icon: LayoutDashboard },
-        { label: $t("nav.psychology", { default: "Psicologia" }), href: "/psychology", icon: Brain },
-        { label: $t("nav.risk", { default: "Controle de Risco" }), href: "/risk-control", icon: Activity },
-        { label: $t("nav.reports", { default: "Relatórios" }), href: "/reports", icon: Printer },
+        { label: $t("nav.dashboard"), href: "/", icon: LayoutDashboard },
+        { label: $t("nav.psychology"), href: "/psychology", icon: Brain },
+        { label: $t("nav.risk"), href: "/risk-control", icon: Activity },
+        { label: $t("nav.reports"), href: "/reports", icon: Printer },
     ]);
 
     // Fiscal Items
     let fiscalItems = $derived([
         {
-            label: $t("nav.fiscal.irpf", { default: "Imposto de Renda" }),
+            label: $t("nav.fiscal.irpf"),
             href: "/fiscal/irpf",
             icon: FileText,
         },
@@ -58,12 +58,12 @@
     // System Items
     let systemItems = $derived([
         {
-            label: $t("nav.help", { default: "Ajuda" }),
+            label: $t("nav.help"),
             href: "/help",
             icon: LifeBuoy,
         },
         {
-            label: $t("nav.settings", { default: "Configurações" }),
+            label: $t("nav.settings"),
             href: "/settings",
             icon: Settings,
         },
@@ -99,8 +99,8 @@
                     <img src="/branding/navbar-logo.png" alt="Logo" class="h-6 w-6 object-contain" />
                     <span
                         >TraderLog <span
-                            class="text-[9px] font-black uppercase text-primary px-1 rounded border border-primary/20 bg-primary/5 align-top"
-                            >Beta</span
+                            class="text-[9px] font-black uppercase text-muted-foreground/60 px-1 rounded border border-border/30 bg-muted/30 align-top"
+                            >v0.3</span
                         ></span
                     >
                 </h2>
@@ -205,8 +205,8 @@
                 <div class="flex items-center gap-2 overflow-hidden">
                     <span class="truncate">TraderLog Pro</span>
                     <span
-                        class="text-[9px] font-black uppercase text-primary px-1 rounded border border-primary/20 bg-primary/5"
-                        >Beta</span
+                        class="text-[9px] font-black uppercase text-muted-foreground/50 px-1 rounded border border-border/30 bg-muted/30"
+                        >v0.3.0</span
                     >
                 </div>
             {/if}
@@ -444,7 +444,7 @@
                 </AlertDialog.Header>
                 <AlertDialog.Footer>
                     <AlertDialog.Cancel
-                        >{$t("general.cancel")}</AlertDialog.Cancel
+                        >{$t("common.cancel")}</AlertDialog.Cancel
                     >
                     <AlertDialog.Action
                         onclick={() => {

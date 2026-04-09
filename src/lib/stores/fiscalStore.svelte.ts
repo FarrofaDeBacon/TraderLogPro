@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { browser } from "$app/environment";
+const browser = typeof window !== "undefined";
 import type { TaxPayment, Trade, TaxRule, TaxMapping } from "$lib/types";
 import { appStore } from "./app.svelte";
 

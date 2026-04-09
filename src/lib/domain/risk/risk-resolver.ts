@@ -7,18 +7,7 @@ import type {
     GrowthPhase,
     RiskCondition
 } from "../../types";
-
-/**
- * Função auxiliar para extrair valores numéricos de condições dinâmicas do plano
- */
-function extractMetricValue(conditions: RiskCondition[] | undefined, metric: string): number {
-    if (!conditions) return 0;
-    const cond = conditions.find(c => 
-        c.metric === metric || 
-        (metric === 'profit_target' && c.metric === 'target_financial')
-    );
-    return cond ? cond.value : 0;
-}
+import { extractMetricValue } from './risk-utils';
 
 /**
  * RESOLVEDOR CENTRALIZADO DE CONTEXTO DE RISCO
@@ -46,6 +35,7 @@ export function resolveEffectiveRiskContext(
             let phaseName = "N/A";
             let phaseTarget = 0;
             let phaseDrawdown = 0;
+            let phaseMaxDailyLoss = 0;
             let phaseLotLimit = 0;
             let growthPlanId: string | undefined = undefined;
 
@@ -68,7 +58,8 @@ export function resolveEffectiveRiskContext(
             if (phase) {
                 phaseName = phase.name;
                 phaseTarget = extractMetricValue(phase.conditions_to_advance, "profit_target");
-                phaseDrawdown = extractMetricValue(phase.conditions_to_advance, "max_drawdown") || extractMetricValue(phase.conditions_to_demote, "max_drawdown");
+                phaseDrawdown = extractMetricValue(phase.conditions_to_demote, "max_drawdown") || extractMetricValue(phase.conditions_to_advance, "max_drawdown");
+                phaseMaxDailyLoss = extractMetricValue(phase.conditions_to_demote, "loss") || extractMetricValue(phase.conditions_to_demote, "drawdown");
                 phaseLotLimit = phase.lot_size;
             }
 
@@ -83,6 +74,7 @@ export function resolveEffectiveRiskContext(
                 currentPhaseName: phaseName,
                 currentPhaseTarget: phaseTarget,
                 currentPhaseDrawdown: phaseDrawdown,
+                currentPhaseMaxDailyLoss: phaseMaxDailyLoss,
                 currentPhaseLotLimit: phaseLotLimit,
                 assetIds: activeScope.asset_ids,
                 conditionsToAdvance: phase?.conditions_to_advance,
@@ -111,7 +103,8 @@ export function resolveEffectiveRiskContext(
             totalPhases: globalGrowthPlan.phases.length,
             currentPhaseName: phase.name,
             currentPhaseTarget: extractMetricValue(phase.conditions_to_advance, "profit_target"),
-            currentPhaseDrawdown: extractMetricValue(phase.conditions_to_advance, "max_drawdown") || extractMetricValue(phase.conditions_to_demote, "max_drawdown"),
+            currentPhaseDrawdown: extractMetricValue(phase.conditions_to_demote, "max_drawdown") || extractMetricValue(phase.conditions_to_advance, "max_drawdown"),
+            currentPhaseMaxDailyLoss: extractMetricValue(phase.conditions_to_demote, "loss") || extractMetricValue(phase.conditions_to_demote, "drawdown"),
             currentPhaseLotLimit: phase.lot_size,
             assetIds: [], 
             conditionsToAdvance: phase.conditions_to_advance,
@@ -130,6 +123,7 @@ export function resolveEffectiveRiskContext(
         currentPhaseName: "Inativo",
         currentPhaseTarget: 0,
         currentPhaseDrawdown: 0,
+        currentPhaseMaxDailyLoss: 0,
         currentPhaseLotLimit: 0,
         assetIds: [],
         resolvedAt: now

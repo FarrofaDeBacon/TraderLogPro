@@ -98,7 +98,7 @@ export const mockRiskProfiles: RiskProfile[] = [
 export const mockAssetRiskProfiles: AssetRiskProfile[] = [
     {
         id: 'asset_risk:WIN',
-        asset_id: 'asset:WIN',
+        asset_ids: ['asset:WIN'],
         min_contracts: 1,
         max_contracts: 10,
         default_stop_points: 150,

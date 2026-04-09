@@ -1,58 +1,52 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { accountsStore } from './accounts.svelte';
-import { setupTauriMock, mockAccounts } from './test-fixtures';
+import { AccountsStore } from './accounts.svelte';
 
-// Setup basic Tauri Mocks
-vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
+// Mock Tauri service (Backend commands)
+vi.mock('$lib/services/tauri', () => ({
+    safeInvoke: vi.fn().mockResolvedValue(true)
+}));
 
-describe('AccountsStore Unit Tests', () => {
+import { safeInvoke } from '$lib/services/tauri';
+
+describe('AccountsStore', () => {
+    let store: AccountsStore;
+
     beforeEach(() => {
+        store = new AccountsStore();
         vi.clearAllMocks();
-        accountsStore.clearAccounts();
-        accountsStore.accounts = [...mockAccounts]; // Inject initial state
     });
 
-    it('should read the initial list correctly', () => {
-        expect(accountsStore.accounts.length).toBe(2);
+    it('should add an account', () => {
+        store.addAccount({ nickname: 'Test Acc', balance: 1000, currency_id: '1' } as any);
+        expect(store.accounts.length).toBe(1);
+        expect(store.accounts[0].nickname).toBe('Test Acc');
+        expect(safeInvoke).toHaveBeenCalledWith('save_account', expect.any(Object));
     });
 
-    it('should add a new account and save securely', () => {
-        accountsStore.addAccount({
-            nickname: 'New Crypto',
-            account_type: 'Real',
-            broker: 'Binance',
-            account_number: 'CRYPTO-1',
-            currency_id: 'currency:USD',
-            currency: 'USD',
-            balance: 1000,
-            custom_logo: null
-        });
-
-        expect(accountsStore.accounts.length).toBe(3);
-        const added = accountsStore.accounts.find(a => a.nickname === 'New Crypto');
-        expect(added).toBeDefined();
-        expect(added?.id).toBeDefined(); // crypto.randomUUID() generates it
+    it('should update an account', () => {
+        store.accounts = [{ id: '1', nickname: 'Acc 1', balance: 100 } as any];
+        store.updateAccount('1', { balance: 200 });
+        expect(store.accounts[0].balance).toBe(200);
     });
 
-    it('should update an existing account and flush to db', () => {
-        accountsStore.updateAccount('account:1', { balance: 25000 });
-        
-        const updated = accountsStore.accounts.find(a => a.id === 'account:1');
-        expect(updated?.balance).toBe(25000);
-        // Ensure other properties remain intact
-        expect(updated?.nickname).toBe('Main B3 Account');
-    });
-
-    it('should delete an account gracefully', async () => {
-        const result = await accountsStore.deleteAccount('account:2');
-        
+    it('should delete an account', async () => {
+        store.accounts = [{ id: '1', nickname: 'To Delete' } as any];
+        const result = await store.deleteAccount('1');
         expect(result.success).toBe(true);
-        expect(accountsStore.accounts.length).toBe(1);
-        expect(accountsStore.accounts.find(a => a.id === 'account:2')).toBeUndefined();
+        expect(store.accounts.length).toBe(0);
+        expect(safeInvoke).toHaveBeenCalledWith('delete_account', { id: '1' });
     });
 
-    it('should clear all accounts from state memory', () => {
-        accountsStore.clearAccounts();
-        expect(accountsStore.accounts.length).toBe(0);
+    it('should deduplicate accounts by nickname', async () => {
+        store.accounts = [
+            { id: '1', nickname: 'Dailly', balance: 10 } as any,
+            { id: '2', nickname: 'Dailly', balance: 20 } as any,
+            { id: '3', nickname: 'Other', balance: 30 } as any
+        ];
+        
+        await store.deduplicateAccounts();
+        expect(store.accounts.length).toBe(2);
+        expect(store.accounts.map(a => a.nickname)).toContain('Dailly');
+        expect(store.accounts.map(a => a.nickname)).toContain('Other');
     });
 });

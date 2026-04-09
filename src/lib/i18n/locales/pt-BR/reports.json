@@ -1,5 +1,11 @@
 {
     "reports": {
+        "behavior": {
+            "noCriticalBehaviors": "Sem comportamentos críticos detectados no período. Rotação operacional neutra."
+        },
+        "reflection": {
+            "reviewMissing": "Você operou sem registrar revisão diária. Isso reduz a capacidade de auditoria e aprendizado do período."
+        },
         "daily": {
             "actions": {
                 "save": "Salvar Fechamento"
@@ -69,6 +75,69 @@
             "unsupportedEvaluations": "Avaliações não suportadas por textos discritivos o suficiente.",
             "winRate": "Win Rate"
         },
-        "scoreUnavailable": "Score indisponível sem volume de trades."
+        "scoreUnavailable": "Score indisponível sem volume de trades.",
+        "ui": {
+            "exportTitle": "Exportação Direta em PDF",
+            "exportDesc": "O arquivo será gerado de maneira oculta garantindo o formato Institucional em 2 páginas. O visual na tela permanecerá limpo (Dark Mode).",
+            "generating": "Gerando Documento...",
+            "exportAction": "Exportar para PDF",
+            "performanceReportTitle": "Performance Report",
+            "auditorSubtitle": "Auditoria Profissional Consolidada ({start} a {end})",
+            "sections": {
+                "summary": "1. Resumo do Período",
+                "score": "2. Score Oficial da Janela (Avaliação Qualitativa)",
+                "behavioral": "3. Auditoria Comportamental",
+                "reflection": "4. Diário & Reflexão Subjetiva",
+                "decision": "5. Decision Layer (Direção Tática)"
+            },
+            "metrics": {
+                "pnl": "Líquido (PnL)",
+                "winRate": "Win Rate",
+                "profitFactor": "Profit Factor",
+                "volume": "Volume (Trades / Dias)",
+                "activeDays": "{days}d ativos",
+                "executionCut": "Corte Execução",
+                "riskCut": "Corte Risco",
+                "behavior": "Comportamento",
+                "psychological": "Psicológico",
+                "masterScore": "Master Score",
+                "streaksTitle": "Streaks da Janela",
+                "unbreakableDiscipline": "Disciplina Inquebrável",
+                "emotionalControl": "Controle Emocional",
+                "noTilt": "No-Tilt (Blindagem)"
+            },
+            "behavior": {
+                "offendersTitle": "Ofensores de Sistema (Top Punições)",
+                "edgesTitle": "Edges Encontrados (Top Bônus)",
+                "perfectSystem": "Sistema em perfeito funcionamento mecânico. Zero falhas.",
+                "noAdvantages": "Sem vantagens excepcionais contabilizadas.",
+                "noCriticalBehaviors": "Sem comportamentos críticos detectados no período. Rotação operacional neutra."
+            },
+            "reflection": {
+                "rhythmTitle": "Ritmo de Registro",
+                "extractsTitle": "Extratos Relevantes do Diário",
+                "noNotes": "As avaliações registradas não contêm textos extensos para análise qualitativa.",
+                "noVolume": "Score indisponível sem volume operacional.",
+                "reviewMissing": "Você operou sem registrar revisão diária. Isso reduz a capacidade de auditoria e aprendizado do período."
+            },
+            "tactical": {
+                "finalDiagnosis": "Diagnóstico Final",
+                "imminentRisks": "Riscos Iminentes",
+                "executionPlan": "Plano de Execução",
+                "noGraveRisks": "Nenhum risco matricial grave identificado."
+            },
+            "ai": {
+                "visionTitle": "Visão Executiva de Portfólio (IA)",
+                "visionDesc": "Cruzamento macro de KPIs e eficiência de capital.",
+                "visionError": "Falha ao gerar a Visão Executiva.",
+                "error_no_config": "AI não configurada. Ative uma chave de API nas configurações.",
+                "generateAction": "Gerar Análise",
+                "retryAction": "Tentar Novamente",
+                "institutionalSummary": "Súmula Institucional",
+                "coreAdvantage": "Core Advantage",
+                "criticalPoint": "Ponto Crítico",
+                "requiredFocus": "Foco Requerido"
+            }
+        }
     }
 }

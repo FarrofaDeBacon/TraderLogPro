@@ -7,8 +7,7 @@ pub async fn seed_assets(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Resul
     println!("[SEED] Verificando Ativos (B3 Only)...");
 
     let assets: Vec<(&str, &str, &str, &str, f64, &str, bool)> = vec![
-        ("asset:win", "WIN", "Mini Índice", "at2", 0.2, "markets:m1", true),
-        ("asset:wdo", "WDO", "Mini Dólar", "at2", 10.0, "markets:m1", true),
+        // Removido WIN/WDO para permitir cadastro manual via RTD
     ];
 
     for (id, symbol, name, type_id, point_value, required_module, is_root) in assets {

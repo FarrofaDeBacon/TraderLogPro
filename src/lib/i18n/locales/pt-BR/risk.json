@@ -105,6 +105,8 @@
             },
             "metrics": {
                 "profit": "Lucro ($/pts)",
+                "totalTarget": "Meta Total",
+                "dailyTarget": "Meta Diária",
                 "days": "Dias O.K",
                 "winRate": "Win Rate %",
                 "consistency": "Consistência",

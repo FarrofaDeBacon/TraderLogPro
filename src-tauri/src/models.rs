@@ -632,7 +632,9 @@ pub struct StrategyImage {
 pub struct Strategy {
     #[serde(deserialize_with = "deserialize_id")]
     pub id: String,
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub name: String,
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub description: String,
     #[serde(deserialize_with = "crate::models::deserialize_vec_id")]
     pub market_ids: Vec<String>,
@@ -644,10 +646,14 @@ pub struct Strategy {
     pub indicators: Vec<String>,
     #[serde(deserialize_with = "crate::models::deserialize_vec_id")]
     pub specific_assets: Vec<String>,
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub entry_criteria: String,
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub exit_criteria: String,
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub management_criteria: String,
     pub has_partial: bool,
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub partial_description: String,
     pub images: Vec<StrategyImage>,
 }
@@ -750,18 +756,20 @@ pub struct Trade {
     pub timeframe: String,
     #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub volatility: String,
-    #[serde(default, deserialize_with = "deserialize_id_opt")]
+    #[serde(default, deserialize_with = "crate::models::deserialize_id_opt")]
     pub entry_emotional_state_id: Option<String>,
     #[serde(default)]
     pub entry_emotional_state_name: Option<String>,
     #[serde(default)]
     pub exit_reason: Option<String>,
-    #[serde(default, deserialize_with = "deserialize_id_opt")]
+    #[serde(default, deserialize_with = "crate::models::deserialize_id_opt")]
     pub exit_emotional_state_id: Option<String>,
     #[serde(default)]
     pub exit_emotional_state_name: Option<String>,
     #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub entry_rationale: String,
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
+    pub psychology_analysis_during: String,
     #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
     pub confirmation_signals: String,
     #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
@@ -811,9 +819,28 @@ impl ToDto for Trade {
             fee_total: self.fee_total,
             notes: self.notes.clone(),
             timeframe: self.timeframe.clone(),
+            volatility: self.volatility.clone(),
+            entry_emotional_state_id: self.entry_emotional_state_id.clone(),
+            entry_emotional_state_name: self.entry_emotional_state_name.clone(),
+            exit_reason: self.exit_reason.clone(),
+            exit_emotional_state_id: self.exit_emotional_state_id.clone(),
+            exit_emotional_state_name: self.exit_emotional_state_name.clone(),
+            entry_rationale: self.entry_rationale.clone(),
+            psychology_analysis_during: self.psychology_analysis_during.clone(),
+            confirmation_signals: self.confirmation_signals.clone(),
+            market_context: self.market_context.clone(),
+            relevant_news: self.relevant_news.clone(),
             followed_plan: self.followed_plan,
+            what_worked: self.what_worked.clone(),
+            mistakes_improvements: self.mistakes_improvements.clone(),
+            lessons_learned: self.lessons_learned.clone(),
+            images: self.images.clone(),
+            partial_exits: self.partial_exits.clone(),
             asset_id: self.asset_id.clone(),
             modality_id: self.modality_id.clone(),
+            stop_loss: self.stop_loss,
+            take_profit: self.take_profit,
+            intensity: self.intensity,
         }
     }
 }

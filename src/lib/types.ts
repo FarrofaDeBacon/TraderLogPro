@@ -154,7 +154,7 @@ export type Trade = {
 
     images: string[];
     partial_exits: any[];
-    modality_id: string;
+    modality_id: string | null;
     stop_loss: number | null;
     take_profit: number | null;
     intensity: number;
@@ -282,6 +282,7 @@ export type FeeProfile = {
     id: string;
     name: string;
     broker: string;
+    account_id?: string;
     fixed_fee: number;
     percentage_fee: number;
     exchange_fee: number;
@@ -529,6 +530,7 @@ export type RiskContextResolution = {
     currentPhaseName: string;
     currentPhaseTarget: number;
     currentPhaseDrawdown: number;
+    currentPhaseMaxDailyLoss: number;
     currentPhaseLotLimit: number;
     assetIds: string[];
     conditionsToAdvance?: RiskCondition[];

@@ -19,7 +19,9 @@
         "psychology": "Psicologia",
         "risk": "Cockpit de Risco",
         "settings": "Configurações",
-        "trades": "Trades"
+        "strategies": "Estratégias",
+        "reports": "Relatórios",
+        "trades": "Negociações"
     },
     "sidebar": {
         "categories": {
@@ -35,6 +37,7 @@
         "psychology": "Psicologia",
         "settings": "Configurações",
         "strategies": "Estratégias",
+        "reports": "Relatórios",
         "trades": "Negociações"
     }
 }

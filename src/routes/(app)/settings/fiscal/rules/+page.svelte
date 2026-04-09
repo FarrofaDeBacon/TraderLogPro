@@ -390,7 +390,7 @@ import type { TaxRule } from "$lib/types";
             </div>
 
             <div class="space-y-2">
-                <Label>{$t("fiscal.irpf.table.type")}</Label>
+                <Label>{$t("fiscal.settings.rules.form.modality")}</Label>
                 <Select.Root type="single" bind:value={formData.trade_type}>
                     <Select.Trigger>
                         {formData.trade_type === "DayTrade" ? "Day Trade" : "Swing Trade"}

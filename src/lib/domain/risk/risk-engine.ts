@@ -22,8 +22,15 @@ export function calculateDailyRiskStatus(
     const todayStr = toLocalDateStr(new Date());
     
     const todayTrades = trades.filter((t) => {
-        return toLocalDateStr(t.date) === todayStr;
+        const tradeDate = toLocalDateStr(t.date);
+        const match = tradeDate === todayStr;
+        return match;
     });
+
+    console.log(`[RiskEngine] Daily Audit: ${todayStr} | Trades Total: ${trades.length} | Trades Today: ${todayTrades.length}`);
+    if (todayTrades.length > 0) {
+        console.log(`[RiskEngine] Today's Trades PnL:`, todayTrades.map(t => t.pnl));
+    }
 
     let dailyPnL = 0;
     let dailyPnLPoints = 0;

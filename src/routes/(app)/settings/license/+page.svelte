@@ -20,7 +20,7 @@
     import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import {
         validateLicenseKey,
-        computeCustomerId,
+        computeDeviceIdentity,
         type LicenseData,
     } from "$lib/utils/license";
     import { open } from "@tauri-apps/plugin-dialog";
@@ -29,17 +29,11 @@
     let isActivating = $state(false);
     let customerPin = $state("");
 
-    // Calculate PIN based on profile and hardware
+    // Calculate Machine Code based on hardware
     $effect(() => {
-        const profile = userProfileStore.userProfile;
         const hwid = userProfileStore.hardwareId;
-        if (profile && profile.name && profile.cpf) {
-            computeCustomerId({
-                name: profile.name,
-                cpf: profile.cpf,
-                birthDate: profile.birth_date || "",
-                hardwareId: hwid,
-            }).then((id) => {
+        if (hwid) {
+            computeDeviceIdentity(hwid).then((id) => {
                 customerPin = id;
             });
         }

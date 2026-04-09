@@ -943,7 +943,7 @@
                                 class="text-[9px] px-1.5 h-4 bg-muted/50 border-border/50 font-bold uppercase"
                             >
                                 {month.trades.length}
-                                {$t("messages.trades_count")}
+                                {$t("trades.messages.trades_count")}
                             </Badge>
                             <div class="flex gap-2">
                                 {#each month.pnlEntries ?? [] as entry}

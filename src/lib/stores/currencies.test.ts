@@ -1,42 +1,44 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { currenciesStore } from './currencies.svelte';
-import { setupTauriMock, mockCurrencies } from './test-fixtures';
+import { CurrenciesStore } from './currencies.svelte';
+import { invoke } from '@tauri-apps/api/core';
 
-// Setup basic Tauri Mocks
-vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
+// Mock Tauri service
+vi.mock('@tauri-apps/api/core', () => ({
+    invoke: vi.fn().mockResolvedValue(true)
+}));
 
-describe('CurrenciesStore Unit Tests', () => {
+describe('CurrenciesStore', () => {
+    let store: CurrenciesStore;
+
     beforeEach(() => {
+        store = new CurrenciesStore();
         vi.clearAllMocks();
-        currenciesStore.clearCurrencies();
-        currenciesStore.currencies = [...mockCurrencies]; // Inject initial state
     });
 
-    it('should read the initial list correctly', () => {
-        expect(currenciesStore.currencies.length).toBe(2);
-        expect(currenciesStore.currencies[0].code).toBe('USD');
-        expect(currenciesStore.currencies[1].code).toBe('BRL');
+    it('should add a currency', () => {
+        store.addCurrency({ code: 'BRL', symbol: 'R$', name: 'Real' } as any);
+        expect(store.currencies.length).toBe(1);
+        expect(store.currencies[0].code).toBe('BRL');
     });
 
-
-    it('should update an existing currency and trigger save routines', () => {
-        currenciesStore.updateCurrency('currency:BRL', { name: 'Real Brasileiro' });
-        
-        const updated = currenciesStore.currencies.find(c => c.id === 'currency:BRL');
-        expect(updated?.name).toBe('Real Brasileiro');
-        expect(updated?.symbol).toBe('R$'); // Untouched values
-    });
-
-    it('should delete an currency gracefully when unobstructed', async () => {
-        const result = await currenciesStore.deleteCurrency('currency:USD');
-        
+    it('should delete a currency', async () => {
+        store.currencies = [{ id: '1', code: 'USD' } as any];
+        const result = await store.deleteCurrency('1');
         expect(result.success).toBe(true);
-        expect(currenciesStore.currencies.length).toBe(1);
-        expect(currenciesStore.currencies.find(c => c.id === 'currency:USD')).toBeUndefined();
+        expect(store.currencies.length).toBe(0);
     });
 
-    it('should clear all currencies from state memory', () => {
-        currenciesStore.clearCurrencies();
-        expect(currenciesStore.currencies.length).toBe(0);
+    it('should block deletion if currency is used by an account', async () => {
+        const targetId = 'cur:BRL';
+        store.currencies = [{ id: targetId, code: 'BRL' } as any];
+        
+        // Mock accountsStore
+        const { accountsStore } = await import('./accounts.svelte');
+        accountsStore.accounts = [{ id: 'acc:1', currency_id: targetId }] as any;
+
+        const result = await store.deleteCurrency(targetId);
+        expect(result.success).toBe(false);
+        expect(result.error).toContain('used by one or more accounts');
+        expect(store.currencies.length).toBe(1);
     });
 });

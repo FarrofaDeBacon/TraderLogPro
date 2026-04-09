@@ -1,5 +1,19 @@
-import type { DeskConfig, CombinedRiskRule, Trade, RiskRule, DeskStageProgressionResult, DeskProgressFeedback } from '$lib/types';
-import type { DeskValidationContext, DeskValidationResult, DeskAuditResult, DeskAuditStatus } from './types';
+import type { 
+    DeskConfig, 
+    CombinedRiskRule, 
+    Trade, 
+    RiskRule, 
+    DeskStageProgressionResult, 
+    DeskProgressFeedback 
+} from '$lib/types';
+import type { 
+    DeskValidationContext, 
+    DeskValidationResult, 
+    DeskAuditResult, 
+    DeskAuditStatus 
+} from './types';
+
+export type { DeskValidationResult, DeskAuditResult };
 
 export function validateTradeContext(
     desk: DeskConfig | undefined,
@@ -29,7 +43,7 @@ export function validateTradeContext(
     if (desk.allowed_asset_ids && desk.allowed_asset_ids.length > 0) {
         if (!context.assetRiskProfileId || !desk.allowed_asset_ids.includes(context.assetRiskProfileId)) {
             result.checks.allowedAsset = false;
-            result.reasons.push("invalid_asset");
+            result.reasons.push("desk.reasons.invalid_asset");
         }
     }
 
@@ -43,7 +57,7 @@ export function validateTradeContext(
                 // Determine limits: example supports <= 
                 if (rule.operator === "<=" && context.combinedExposure > rule.limit_value) {
                     result.checks.combinedExposure = false;
-                    result.reasons.push("max_exposure");
+                    result.reasons.push("desk.reasons.max_exposure");
                 }
             }
         }
@@ -52,17 +66,17 @@ export function validateTradeContext(
     // 3. Day Trade Only
     if (desk.day_trade_only) {
         if (context.isSwingTrade === undefined) {
-            result.warnings.push("day_trade_only");
+            result.warnings.push("desk.warnings.day_trade_only");
         } else if (context.isSwingTrade) {
             result.checks.dayTradeOnly = false;
-            result.reasons.push("day_trade_only_violation");
+            result.reasons.push("desk.reasons.day_trade_only");
         }
     }
 
     // 4. Encerrar posições antes do fechamento
     if (desk.close_before_market_close_minutes && desk.close_before_market_close_minutes > 0) {
         if (context.currentTimeMinutes === undefined) {
-             result.warnings.push("time_constraint");
+             result.warnings.push("desk.warnings.time_constraint");
         } else {
              // Example placeholder logic for actual validation once time constraints exist in context
         }
@@ -157,7 +171,7 @@ export function calculateHistoricalAudit(
     if (minDays && minDays > 0) {
         if (operatedDays < minDays) {
             pending = true;
-            result.reasons.push("min_operated_days");
+            result.reasons.push("desk.reasons.min_operated_days");
         }
     }
 
@@ -171,7 +185,7 @@ export function calculateHistoricalAudit(
         if (maxShare && maxShare > 0 && totalNetProfit > 0) {
             if (bestDaySharePercent > maxShare) {
                 failed = true;
-                result.reasons.push("max_share_50");
+                result.reasons.push("desk.reasons.max_share_50");
             }
         }
     }
@@ -207,9 +221,9 @@ export function calculateHistoricalAudit(
         }
 
         if (!consPassed && failed) {
-            result.reasons.push("consistency_failed");
+            result.reasons.push("desk.reasons.consistency_failed");
         } else if (!consPassed && pending) {
-            result.reasons.push("consistency_pending");
+            result.reasons.push("desk.reasons.consistency_pending");
         }
     }
     }
@@ -268,7 +282,7 @@ export function evaluateDeskStageProgression(
                 ? `Atingiu mínimo de ${currentStage.min_trading_days} dias`
                 : `Faltam ${currentStage.min_trading_days - currentAudit.metrics.operated_days} dias operados`
         });
-        if (!passedDays) reasons.push("progression_pending_days");
+        if (!passedDays) reasons.push("desk.progression.reasons.pending_days");
     }
 
     // 2. Aggregate Historical Audit Check (Consistency, Rule 50%)
@@ -280,7 +294,7 @@ export function evaluateDeskStageProgression(
             ? "Auditoria histórica OK (Consistência e Limites Validados)"
             : "Critérios de auditoria da mesa ainda pendentes de fechamento"
     });
-    if (!auditPassed) reasons.push("progression_pending_audit");
+    if (!auditPassed) reasons.push("desk.progression.reasons.pending_audit");
 
     const allChecksPassed = checks.every((c: any) => c.passed);
 
@@ -297,7 +311,7 @@ export function evaluateDeskStageProgression(
     const hasNextStage = currentIndex < config.stages.length - 1;
 
     if (!hasNextStage) {
-        reasons.push("max_stage_reached");
+        reasons.push("desk.progression.reasons.max_stage_reached");
         return {
             ...defaultResult,
             checks,
@@ -346,7 +360,7 @@ export function generateDeskProgressFeedback(
 
     if (minDays && minDays > 0) {
         if (audit.metrics.operated_days < minDays) {
-            feedback.missing_requirements.push("feedback_missing_days");
+            feedback.missing_requirements.push("desk.feedback.missing_days");
         }
         feedback.progress.push({
             key: "min_days",
@@ -363,7 +377,7 @@ export function generateDeskProgressFeedback(
 
     if (profitTarget && profitTarget > 0) {
         if (audit.metrics.total_net_profit < profitTarget) {
-            feedback.missing_requirements.push("feedback_missing_profit");
+            feedback.missing_requirements.push("desk.feedback.missing_profit");
         }
         feedback.progress.push({
             key: "profit_target",
@@ -381,9 +395,9 @@ export function generateDeskProgressFeedback(
         // Find if audit failed due to consistency
         const failedConsistency = audit.reasons.some(r => r.toLowerCase().includes('consistência'));
         if (failedConsistency) {
-            feedback.missing_requirements.push("feedback_missing_consistency");
+            feedback.missing_requirements.push("desk.feedback.missing_consistency");
         } else {
-            feedback.suggestions.push("feedback_keep_consistency");
+            feedback.suggestions.push("desk.feedback.keep_consistency");
         }
     }
 
@@ -394,7 +408,7 @@ export function generateDeskProgressFeedback(
     if (hasRule50) {
         const failed50 = audit.reasons.some(r => r.toLowerCase().includes('50%'));
         if (failed50) {
-            feedback.missing_requirements.push("feedback_failed_50_percent");
+            feedback.missing_requirements.push("desk.feedback.failed_50_percent");
         }
         
         let safeTreshold = 50;
@@ -409,7 +423,7 @@ export function generateDeskProgressFeedback(
         });
 
         if (audit.metrics.best_day_share_percent > safeTreshold / 2 && audit.metrics.best_day_share_percent <= safeTreshold) {
-            feedback.suggestions.push("feedback_warning_50_percent");
+            feedback.suggestions.push("desk.feedback.warning_50_percent");
         }
     }
 

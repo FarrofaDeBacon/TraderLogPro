@@ -59,8 +59,8 @@
                         >Trader<span class="text-primary italic">Log</span> Pro</span
                     >
                     <span
-                        class="text-[10px] font-black uppercase tracking-wider text-primary px-1.5 py-0.5 rounded border border-primary/30 bg-primary/10"
-                        >Beta</span
+                        class="text-[10px] font-black uppercase tracking-wider text-zinc-500 px-1.5 py-0.5 rounded border border-zinc-700 bg-zinc-900"
+                        >v0.3.0</span
                     >
                 </h1>
                 <div class="flex items-center justify-center gap-2">

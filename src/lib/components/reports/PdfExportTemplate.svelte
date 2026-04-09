@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { t } from "svelte-i18n";
+  import { t, locale } from "svelte-i18n";
+  import { get } from "svelte/store";
   import {
       WalletCards,
       CalendarDays,
@@ -30,8 +31,8 @@
   }>();
 
   // Format Helper
-  const formatReportDate = (d: Date) => d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-  const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+  const formatReportDate = (d: Date) => d.toLocaleDateString(get(locale) || 'pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+  const formatCurrency = (val: number) => new Intl.NumberFormat(get(locale) || 'pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
   // UI Helpers (Usando apenas cores HEX seguras para html2canvas não quebrar no Tailwind 4 oklch)
   function getPillarColor(score: number) {
@@ -94,7 +95,7 @@
                         <div class="p-3">
                             <p style="color: #6b7280;" class="text-[10px] font-bold uppercase tracking-wider mb-1">{$t('reports.pdf.tradeVolume')}</p>
                             <p style="color: #000000;" class="text-base font-black tracking-tighter font-mono mt-1">
-                                {report.summary.tradeCount} <span style="color: #6b7280;" class="text-xs font-medium">Trades {$t('reports.pdf.inDays')}</span> {report.period.daysActive}d
+                                {report.summary.tradeCount} <span style="color: #6b7280;" class="text-xs font-medium">{$t('reports.pdf.trades')} {$t('reports.pdf.inDays')}</span> {report.period.daysActive}d
                             </p>
                         </div>
                     </div>
@@ -250,7 +251,7 @@
                         <div class="p-3 grid grid-cols-2 gap-4 items-center h-full">
                             <div>
                                 <p style="color: #6b7280;" class="text-[10px] font-bold uppercase tracking-widest mb-1.5">{$t('reports.pdf.documentedSessions')}</p>
-                                <div style="color: #000000;" class="text-2xl font-black">{report.reflection.reviewCount} <span style="color: #6b7280;" class="text-xs font-medium tracking-normal">{$t('reports.pdf.daysRead')}</span></div>
+                                <div style="color: #000000;" class="text-2xl font-black">{report.reflection.reviewCount} <span style="color: #6b7280;" class="text-xs font-medium tracking-normal">{$t('reports.reflection.reviewCountLabel')}</span></div>
                             </div>
                             <div style="border-left-width: 1px; border-color: #f3f4f6;" class="flex flex-col gap-1.5 pl-3 border-solid">
                                 <div class="flex items-center justify-between text-[10px]">
@@ -304,7 +305,7 @@
         <!-- BLOCO 5: DECISION LAYER (PLANO TÁTICO) -->
         <section class="break-inside-avoid w-full">
             <h2 style="color: #111827;" class="text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2 mt-2 pt-5 border-t border-solid border-gray-200">
-                <Target class="w-4 h-4" color="#111827" /> 5. Decision Layer
+                <Target class="w-4 h-4" color="#111827" /> {$t('reports.ui.sections.decision')}
             </h2>
             
             <div class="grid grid-cols-3 gap-4">
@@ -312,7 +313,7 @@
                 <!-- Diagnóstico Final -->
                 <div style="background-color: #f0fdf4; border-width: 1px; border-color: #bbf7d0;" class="rounded-xl border-solid flex flex-col p-4">
                     <div style="color: #059669;" class="text-[9px] font-black tracking-widest uppercase mb-2 flex items-center gap-1.5 leading-none">
-                        <Activity class="w-3.5 h-3.5" color="#059669" /> Diagnóstico Final
+                        <Activity class="w-3.5 h-3.5" color="#059669" /> {$t('reports.ui.tactical.finalDiagnosis')}
                     </div>
                     <p style="color: #000000;" class="text-[11px] font-bold leading-tight mt-1">{report.tactical.diagnosis.main}</p>
                     {#if report.tactical.diagnosis.sub}
@@ -338,7 +339,7 @@
                 <!-- Plano de Execução -->
                 <div style="background-color: #f8fafc; border-width: 1px; border-color: #e2e8f0;" class="rounded-xl border-solid flex flex-col p-4">
                     <div style="color: #0f172a;" class="text-[9px] font-black tracking-widest uppercase mb-2 flex items-center gap-1.5 leading-none">
-                        <CheckCircle2 class="w-3.5 h-3.5" color="#0f172a" /> Plano de Execução
+                        <CheckCircle2 class="w-3.5 h-3.5" color="#0f172a" /> {$t('reports.ui.tactical.executionPlan')}
                     </div>
                     <ul class="space-y-2 m-0 mt-2">
                         {#each report.tactical.actionPlan as action}

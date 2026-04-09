@@ -34,7 +34,9 @@ describe('Domain: Risk Cockpit', () => {
         maxDrawdownPercent: 10,
         minNetPnL: 500,
         allowPromotion: true,
-        allowRegression: true
+        allowRegression: true,
+        conditionsToAdvance: [],
+        conditionsToDemote: []
     };
 
     const createTestTrade = (pnl: number): TradeRiskSnapshot => {

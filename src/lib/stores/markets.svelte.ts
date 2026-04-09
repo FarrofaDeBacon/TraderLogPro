@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { Market } from "$lib/types";
+import { assetTypesStore } from "./asset-types.svelte";
 
 export class MarketsStore {
     markets = $state<Market[]>([]);
@@ -25,6 +26,12 @@ export class MarketsStore {
     }
 
     async deleteMarket(id: string): Promise<{ success: boolean; error?: string }> {
+        // Validation: Block if any asset type uses this market
+        const isUsed = assetTypesStore.assetTypes.some(at => at.market_id === id);
+        if (isUsed) {
+            return { success: false, error: "Cannot delete market: It is currently used by one or more asset types." };
+        }
+
         try {
             await invoke("delete_market", { id });
             this.markets = this.markets.filter(m => m.id !== id);

@@ -2,59 +2,85 @@
     "fiscal": {
         "irpf": {
             "title": "Cálculo de Impuestos (IRPF)",
-            "description": "Visualize y siga el cálculo mensual del impuesto sobre la renta de sus operaciones.",
+            "description": "Visualice y controle el cálculo del impuesto sobre la renta mensual en sus operaciones.",
             "history": "Historial de Impuestos",
             "kpis": {
                 "calculationBasis": "Base de Cálculo",
-                "taxDue": "Impuesto Debido",
+                "taxDue": "Impuesto Adeudado",
                 "compensatedLosses": "Pérdidas Compensadas",
-                "netProfit": "Beneficio Neto"
+                "netProfit": "Beneficio Neto",
+                "totalDue": "Total Adeudado",
+                "dueYearHint": "Expectativa de pago anual",
+                "totalPaid": "Total Pagado",
+                "paidYearHint": "DARFs liquidados en el periodo",
+                "pending": "Pendientes Actuales",
+                "pendingHint": "{count} Guías Pendientes",
+                "losses": "Pérdidas Acumuladas"
             },
+            "manageDarfs": "Gestionar DARFs",
+            "newAppraisal": "Nueva Liquidación",
+            "evolution": "Evolución Fiscal",
+            "periodFilter": "Filtro de Periodo",
+            "saveBeforeDarf": "Guarde la liquidación antes de generar el DARF.",
+            "complementary": "Complementario",
             "table": {
                 "month": "Mes",
-                "netProfit": "Resul. Bruto",
-                "base": "Base Calc.",
-                "tax": "Imp. Debido",
+                "netProfit": "Resultado Bruto",
+                "base": "Base de Cáculo",
+                "tax": "Impuesto Adeudado",
                 "status": "Estado",
                 "paid": "Pagado",
                 "pending": "Pendiente",
-                "late": "Atrasado"
+                "late": "Atrasado",
+                "ok": "OK",
+                "toPay": "Total a Pagar",
+                "compensated": "Compensado",
+                "operation": "Tipo de Operación",
+                "actions": "Acciones",
+                "shortNet": "Neto"
             },
             "messages": {
                 "loading": "Cargando datos fiscales...",
-                "noData": "No se encontraron registros de impuestos para el año {year}."
+                "noData": "No se encontraron registros fiscales para el año {year}."
+            },
+            "calculate": "Calcular",
+            "modal": {
+                "title": "Nuevo Cálculo Mensual",
+                "description": "Seleccione el mes y el año para calcular el informe de IRPF.",
+                "month": "Mes de Referencia",
+                "year": "Año de Referencia"
             }
         },
         "darf": {
             "title": "Gestión de DARF",
             "description": "Controle sus guías de impuestos, realice pagos y mantenga su historial organizado.",
             "active": "GUÍAS PENDIENTES / TOTALES",
-            "history": "Historial de pagos de {year}",
-            "emptyHistory": "No se encontraron DARF pagados en {year}.",
+            "history": "Historial de Pagos de {year}",
+            "emptyHistory": "No se encontraron DARFs pagados en {year}.",
             "accountError": "Seleccione una cuenta para realizar el pago.",
             "registerPayment": "Registrar Pago de DARF",
             "paymentDescription": "Ingrese los detalles del pago realizado para que el sistema pueda actualizar su saldo.",
-            "sourceAccount": "Cuenta que Realizó el Pago",
-            "selectAccount": "Seleccione cuenta...",
+            "sourceAccount": "Cuenta del Pago",
+            "selectAccount": "Seleccionar cuenta...",
             "principalValue": "Valor Principal",
-            "fineInterest": "Multa / Interés",
+            "fineInterest": "Multa / Intereses",
             "totalPaid": "Total Pagado",
-            "complementary_warning": "Alerta de DARF Complementario",
-            "complementary_description": "El resultado de este mes aumentó en {amount}. Verifique si es necesario emitir un DARF complementario para evitar multas por retraso.",
-            "min_value_info": "Recuerde: El valor mínimo para la emisión de DARF es R$ 10,00.",
+            "complementary_warning": "Aviso de DARF Complementario",
+            "complementary_description": "El resultado para este mes aumentó en {amount}. Verifique si necesita emitir un DARF complementario para evitar multas por retraso.",
+            "min_value_info": "Nota: El valor mínimo del DARF es R$ 10,00.",
             "labels": {
-                "valueToPay": "Valor para Pago",
+                "valueToPay": "Valor del Pago",
                 "dueDate": "Fecha de Vencimiento",
                 "principal": "Valor Principal",
                 "fine": "Multa",
-                "interest": "Interés",
+                "interest": "Intereses",
                 "paymentDate": "Fecha de Pago",
-                "totalPaid": "Valor Total Pagado"
+                "totalPaid": "Cantidad Total Pagada"
             },
             "status": {
                 "pending": "Pendiente",
                 "paid": "Pagado",
-                "late": "Vencido"
+                "late": "Expirado"
             },
             "buttons": {
                 "pay": "Pagar DARF",
@@ -64,9 +90,9 @@
             },
             "messages": {
                 "loading": "Cargando historial de guías...",
-                "successPay": "¡DARF marcada como pagada y saldo actualizado!",
-                "successDelete": "DARF eliminada con éxito.",
-                "successUnpay": "Pago deshecho con éxito."
+                "successPay": "¡DARF marcado como pagado y saldo actualizado!",
+                "successDelete": "DARF eliminado correctamente.",
+                "successUnpay": "Pago deshecho correctamente."
             },
             "modal": {
                 "pay": {
@@ -75,37 +101,37 @@
             }
         },
         "settings": {
-            "title": "Reglas Fiscales",
-            "description": "Configure las tasas de impuestos (IRPF) para cada tipo de activo y modalidad.",
+            "title": "Reglas de Impuestos",
+            "description": "Configure las tasas (IRPF) para cada tipo de activo y modalidad.",
             "tabs": {
                 "mappings": "Asignaciones",
-                "rules": "Reglas de Impuesto"
+                "rules": "Reglas Fiscales"
             },
             "assignments": {
-                "title": "Asignaciones Fiscales",
-                "description": "Asigne perfiles fiscales a tipos de activos para automatizar el cálculo de impuestos.",
-                "goToAssetTypes": "Ir a Tipos de Activo",
+                "title": "Asignaciones de Impuestos",
+                "description": "Asigne perfiles fiscales a los tipos de activos para automatizar el cálculo.",
+                "goToAssetTypes": "Ir a Tipos de Activos",
                 "tip": {
                     "title": "Consejo:",
-                    "text": "Las asignaciones se basan en los Tipos de Ativo. Puede cambiar el perfil fiscal editando el Tipo de Activo correspondiente."
+                    "text": "Las asignaciones se basan en Tipos de Activos. Puede cambiar el perfil fiscal editando el Tipo de Activo correspondiente."
                 },
                 "table": {
                     "assetType": "Tipo de Activo",
                     "market": "Mercado",
                     "fiscalProfile": "Perfil Fiscal",
-                    "defaultExempt": "Estándar / Exento",
+                    "defaultExempt": "Por Defecto / Exento",
                     "unknownProfile": "Perfil Desconocido",
                     "empty": "No se encontraron asignaciones."
                 }
             },
             "profiles": {
                 "title": "Perfiles Fiscales",
-                "description": "Los perfiles fiscales consolidan varias reglas.",
+                "description": "Los perfiles consolidan múltiples reglas.",
                 "new": "Nuevo Perfil",
                 "create": "Crear Perfil",
                 "empty": "No se encontraron perfiles fiscales.",
                 "linkedRules": "Reglas Vinculadas",
-                "noLinkedRules": "No hay reglas vinculadas.",
+                "noLinkedRules": "Sin reglas vinculadas.",
                 "form": {
                     "titleNew": "Nuevo Perfil",
                     "titleEdit": "Editar Perfil",
@@ -119,73 +145,73 @@
                     "saving": "Guardando...",
                     "update": "Actualizar",
                     "select": "Seleccionar...",
-                    "addModalityHint": "Haga clic en + para agregar una regla a una modalidad.",
+                    "addModalityHint": "Haz clic en + para añadir una regla a una modalidad.",
                     "rulesByModality": "Reglas por Modalidad",
-                    "emptyRules": "No se han agregado reglas."
+                    "emptyRules": "No se añadieron reglas."
                 },
                 "success": {
-                    "create": "Perfil creado con éxito.",
-                    "update": "Perfil actualizado con éxito.",
-                    "ruleAdded": "Regla añadida con éxito.",
+                    "create": "Perfil creado correctamente.",
+                    "update": "Perfil actualizado correctamente.",
+                    "ruleAdded": "Regla añadida correctamente.",
                     "ruleAddedDraft": "Regla añadida como borrador.",
-                    "ruleRemoved": "Regla eliminada con éxito.",
+                    "ruleRemoved": "Regla eliminada correctamente.",
                     "ruleRemovedDraft": "Regla eliminada del borrador."
                 },
                 "error": {
                     "nameRequired": "El nombre es obligatorio",
                     "duplicateModality": "Esta modalidad ya está configurada.",
                     "saveError": "Error al guardar el perfil",
-                    "selectRequired": "Selección obligatoria",
-                    "errorAddEntry": "Error al agregar entrada"
+                    "selectRequired": "Selección requerida",
+                    "errorAddEntry": "Error al añadir la entrada"
                 }
             },
             "rules": {
-                "title": "Reglas de Impuesto",
-                "description": "Reglas fiscales individuales.",
+                "title": "Reglas de Impuestos",
+                "description": "Reglas impositivas individuales.",
                 "new": "Nueva Regla",
-                "empty": "No hay reglas fiscales configuradas.",
+                "empty": "No hay reglas configuradas.",
                 "form": {
                     "titleNew": "Nueva Regla Fiscal",
-                    "titleEdit": "Editar Regra Fiscal",
+                    "titleEdit": "Editar Regla Fiscal",
                     "name": "Nombre",
-                    "namePlaceholder": "Ej: Regla de Day Trade",
-                    "nameRequired": "El nombre de la regla es obligatorio.",
+                    "namePlaceholder": "Ej: Regla Day Trade",
+                    "nameRequired": "El nombre es obligatorio.",
                     "modality": "Modalidad",
-                    "rate": "Alíquota",
-                    "rateHint": "Porcentaje del impuesto debido",
-                    "revenueCode": "Código de Ingresos",
+                    "rate": "Tasa",
+                    "rateHint": "Porcentaje adeudado",
+                    "revenueCode": "Código de Ingreso",
                     "revenueCodePlaceholder": "Ej: 6015",
-                    "revenueCodeHint": "Código DARF para el pago (Ej: 6015, 3317).",
+                    "revenueCodeHint": "Código DARF para pago (Ej: 6015, 3317).",
                     "exemption": "Exención",
-                    "exemptionHint": "Monto exento de impuestos",
+                    "exemptionHint": "Cantidad exenta de impuestos",
                     "cumulative": "Compensar Pérdidas",
                     "cumulativeHint": "Permite compensar pérdidas de meses anteriores.",
                     "basis": "Base de Cálculo",
                     "basisOptions": {
                         "netProfit": "Beneficio Neto",
-                        "saleAmount": "Valor de la Venta"
+                        "saleAmount": "Monto de Venta"
                     },
-                    "withholding": "IRRF (Dedo-duro)",
-                    "withholdingHint": "Porcentaje retenido en la fuente que puede deducirse.",
-                    "withholdingBasis": "Base del Dedo-duro",
+                    "withholding": "Retención en Origen",
+                    "withholdingHint": "Porcentaje retenido en la fuente que se puede deducir.",
+                    "withholdingBasis": "Base de Retención",
                     "withholdingBasisOptions": {
-                        "profit": "Sobre el Beneficio",
-                        "sales": "Sobre el Valor de la Venda"
+                        "profit": "Sobre Beneficio",
+                        "sales": "Sobre Monto de Venta"
                     },
                     "save": "Guardar Regla",
-                    "successSave": "¡Regla guardada con éxito!",
-                    "errorSave": "Error al guardar la regla fiscal."
+                    "successSave": "¡Regla guardada correctamente!",
+                    "errorSave": "Error al guardar."
                 }
             },
             "mappings": {
-                "description": "Asocie cada Tipo de Activo y Modalidad con una Regla Fiscal.",
+                "description": "Asocie cada Tipo de Activo y Modalidad a una Regla Fiscal.",
                 "assetType": "Tipo de Activo",
                 "modality": "Modalidad",
                 "rule": "Regla Aplicable",
                 "noRule": "Sin Regla (Exento/Ignorado)"
             }
         },
-        "darf_warning": "Alerta de DARF Complementario",
-        "darf_description": "El resultado de este mes aumentó en {amount}. Verifique si es necesario emitir un DARF complementario para evitar multas por retraso."
+        "darf_warning": "Aviso de DARF Complementario",
+        "darf_description": "El resultado para este mes aumentó en {amount}. Verifique si necesita emitir un DARF complementario para evitar multas por retraso."
     }
 }

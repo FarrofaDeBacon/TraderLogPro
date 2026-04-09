@@ -1,6 +1,6 @@
 import { safeInvoke, isTauri } from "$lib/services/tauri";
 import { type UserProfile } from "$lib/types";
-import { validateLicenseKey, computeCustomerId, type LicenseData } from "$lib/utils/license";
+import { validateLicenseKey, computeLegacyCustomerId, computeDeviceIdentity, type LicenseData } from "$lib/utils/license";
 
 export class UserProfileStore {
     userProfile = $state<UserProfile>({
@@ -82,16 +82,28 @@ export class UserProfileStore {
         console.log("[UserProfileStore] Refreshing license status for key:", this.userProfile.license_key.substring(0, 10) + "...");
 
         try {
-            const customerId = await computeCustomerId({
-                name: this.userProfile.name,
-                cpf: this.userProfile.cpf,
-                birthDate: this.userProfile.birth_date || "",
-                hardwareId: this.hardwareId
-            });
+            // First we try the modern approach tracking the Device ID
+            const devicePin = await computeDeviceIdentity(this.hardwareId);
+            
+            console.log("[UserProfileStore] Computed Device PIN:", devicePin);
 
-            console.log("[UserProfileStore] Computed Customer ID:", customerId);
+            let result = await validateLicenseKey(this.userProfile.license_key, devicePin);
+            
+            // Repescagem: Se der erro de CID e a conta for antiga
+            if (!result.valid && result.error?.includes("ID")) {
+                const legacyPin = await computeLegacyCustomerId({
+                    name: this.userProfile.name,
+                    cpf: this.userProfile.cpf || "",
+                    birthDate: this.userProfile.birth_date || "",
+                    hardwareId: this.hardwareId
+                });
+                console.log("[UserProfileStore] Device PIN failed. Trying Legacy PIN:", legacyPin);
+                const legacyResult = await validateLicenseKey(this.userProfile.license_key, legacyPin);
+                if (legacyResult.valid) {
+                    result = legacyResult;
+                }
+            }
 
-            const result = await validateLicenseKey(this.userProfile.license_key, customerId);
             console.log("[UserProfileStore] License Validation Result:", result);
             this.licenseDetails = result;
         } catch (e) {

@@ -19,6 +19,8 @@
         "psychology": "Psychology",
         "risk": "Risk Control",
         "settings": "Settings",
+        "strategies": "Strategies",
+        "reports": "Reports",
         "trades": "Trades"
     },
     "sidebar": {
@@ -35,6 +37,7 @@
         "psychology": "Psychology",
         "settings": "Settings",
         "strategies": "Strategies",
+        "reports": "Reports",
         "trades": "Trades"
     }
 }

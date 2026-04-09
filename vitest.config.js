@@ -1,17 +1,27 @@
-
 import { defineConfig } from 'vitest/config';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { sveltekit } from '@sveltejs/kit/vite';
 import path from 'path';
 
 export default defineConfig({
-    plugins: [svelte()],
+    plugins: [sveltekit()],
+    resolve: {
+        conditions: ['browser', 'development', 'svelte'],
+        alias: {
+            '$lib': path.resolve(process.cwd(), './src/lib'),
+        },
+    },
     test: {
+        css: false,
         environment: 'jsdom',
         globals: true,
         setupFiles: ['./src/setupTest.ts'],
         include: ['src/**/*.{test,spec}.{js,ts}'],
-        alias: {
-            $lib: path.resolve('./src/lib'),
-        },
+        deps: {
+            optimizer: {
+                web: {
+                    include: ['svelte-i18n']
+                }
+            }
+        }
     },
 });

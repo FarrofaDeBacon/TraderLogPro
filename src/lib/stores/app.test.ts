@@ -24,7 +24,8 @@ vi.mock('@tauri-apps/plugin-dialog', () => ({
 // Mock License Utility
 vi.mock('$lib/utils/license', () => ({
     validateLicenseKey: vi.fn().mockResolvedValue({ valid: true, plan: "Pro", expiration: null }),
-    computeCustomerId: vi.fn().mockResolvedValue("MOCK_CID"),
+    computeDeviceIdentity: vi.fn().mockResolvedValue("MOCK_CID"),
+    computeLegacyCustomerId: vi.fn().mockResolvedValue("MOCK_LEGACY_CID"),
 }));
 
 describe('SettingsStore Unit Tests', () => {
@@ -291,118 +292,6 @@ describe('SettingsStore Unit Tests', () => {
             expect(copy!.linked_asset_risk_profile_ids).toEqual([sharedAssetProfileId]);
             expect(copy!.linked_asset_risk_profile_ids![0]).toBe(original!.linked_asset_risk_profile_ids![0]);
         
-        });
-    });
-
-    describe.skip('Facade Pattern & Domain Delegation (Block C)', () => {
-        beforeEach(() => {
-            vi.clearAllMocks();
-            accountsStore.clearAccounts();
-            assetsStore.clearAssets();
-            riskSettingsStore.clearRiskSettings();
-            currenciesStore.clearCurrencies();
-            marketsStore.clearMarkets();
-            assetTypesStore.clearAssetTypes();
-            modalitiesStore.clearModalities();
-            timeframesStore.clearTimeframes();
-            chartTypesStore.clearChartTypes();
-            indicatorsStore.clearIndicators();
-        });
-
-        it('should correctly proxy passive read states to their domain endpoints', () => {
-            assetsStore.assets = [{ id: 'mock-asset' }] as any;
-            accountsStore.accounts = [{ id: 'mock-account' }] as any;
-            riskSettingsStore.riskProfiles = [{ id: 'mock-risk' }] as any;
-            currenciesStore.currencies = [{ id: 'mock-currency' }] as any;
-            marketsStore.markets = [{ id: 'mock-market' }] as any;
-            assetTypesStore.assetTypes = [{ id: 'mock-type' }] as any;
-            modalitiesStore.modalities = [{ id: 'mock-modality' }] as any;
-            timeframesStore.timeframes = [{ id: 'mock-timeframe' }] as any;
-            chartTypesStore.chartTypes = [{ id: 'mock-chart' }] as any;
-            indicatorsStore.indicators = [{ id: 'mock-indicator' }] as any;
-
-            expect(assetsStore.assets.length).toBe(1);
-            expect(accountsStore.accounts.length).toBe(1);
-            expect(riskSettingsStore.riskProfiles.length).toBe(1);
-            expect(currenciesStore.currencies.length).toBe(1);
-            expect(marketsStore.markets.length).toBe(1);
-            expect(assetTypesStore.assetTypes.length).toBe(1);
-            expect(modalitiesStore.modalities.length).toBe(1);
-            expect(timeframesStore.timeframes.length).toBe(1);
-            expect(chartTypesStore.chartTypes.length).toBe(1);
-            expect(indicatorsStore.indicators.length).toBe(1);
-            
-            expect(assetsStore.assets).toBe(assetsStore.assets);
-        });
-
-        it('should seamlessly delegate mutation methods to domain handlers', () => {
-            const addAssetSpy = vi.spyOn(assetsStore, 'addAsset').mockImplementation(async () => {});
-            const addAccountSpy = vi.spyOn(accountsStore, 'addAccount').mockImplementation(() => {});
-            const addCurrencySpy = vi.spyOn(currenciesStore, 'addCurrency').mockImplementation(() => {});
-            const addMarketSpy = vi.spyOn(marketsStore, 'addMarket').mockImplementation(() => {});
-            const addIndicatorSpy = vi.spyOn(indicatorsStore, 'addIndicator').mockImplementation(() => {});
-
-            assetsStore.addAsset({} as any);
-            accountsStore.addAccount({} as any);
-            currenciesStore.addCurrency({} as any);
-            marketsStore.addMarket({} as any);
-            indicatorsStore.addIndicator({} as any);
-
-            expect(addAssetSpy).toHaveBeenCalledOnce();
-            expect(addAccountSpy).toHaveBeenCalledOnce();
-            expect(addCurrencySpy).toHaveBeenCalledOnce();
-            expect(addMarketSpy).toHaveBeenCalledOnce();
-            expect(addIndicatorSpy).toHaveBeenCalledOnce();
-        });
-    });
-
-    describe.skip('Cross-Domain Integration & Safe Deletion (Block D)', () => {
-        beforeEach(() => {
-            vi.clearAllMocks();
-            accountsStore.clearAccounts();
-            assetsStore.clearAssets();
-            currenciesStore.clearCurrencies();
-            marketsStore.clearMarkets();
-            assetTypesStore.clearAssetTypes();
-            riskSettingsStore.clearRiskSettings();
-        });
-
-        it('Scenario A: Blocks Currency deletion if bound to an existing Account', async () => {
-            currenciesStore.currencies = [{ id: 'cur:BRL', code: 'BRL', name: '', symbol: '', exchange_rate: 1 }];
-            accountsStore.accounts = [{ id: 'acc:1', currency_id: 'cur:BRL', currency: 'cur:BRL' }] as any;
-
-            const res = await currenciesStore.deleteCurrency('cur:BRL');
-            expect(res.success).toBe(false);
-            expect(currenciesStore.currencies.length).toBe(1); 
-        });
-
-        it('Scenario B: Blocks Market deletion if bound to an Asset Type or Asset', async () => {
-            marketsStore.markets = [{ id: 'mkt:B3', code: 'B3', name: '' } as any];
-            assetTypesStore.assetTypes = [{ id: 'type:1', market_id: 'mkt:B3' }] as any;
-            
-            let res = await marketsStore.deleteMarket('mkt:B3');
-            expect(res.success).toBe(false);
-        });
-
-        it('Scenario C: Blocks AssetType deletion if logically bound to an Asset', async () => {
-            assetTypesStore.assetTypes = [{ id: 'type:STK', code: 'STK', name: '', market_id: '', tax_profile_id: '', result_type: 'currency', unit_label: '' } as any];
-            assetsStore.assets = [{ id: 'ast:PETR4', asset_type_id: 'type:STK' }] as any;
-
-            const res = await assetTypesStore.deleteAssetType('type:STK');
-            expect(res.success).toBe(false);
-        });
-
-        it('Scenario D: Current assets continue reading cleanly from isolated store proxy', () => {
-            assetsStore.assets = [{ id: 'ast:1', symbol: 'WIN', point_value: 0.20, tick_size: 5 }] as any;
-            const asset = assetsStore.assets.find(a => a.id === 'ast:1');
-            expect(asset?.symbol).toBe('WIN');
-        });
-
-        it('Scenario E: Risk and AssetProfiles retain account associations natively', () => {
-            accountsStore.accounts = [{ id: 'acc:1', nickname: 'Main' }] as any;
-            riskSettingsStore.riskProfiles = [{ id: 'risk:1', account_ids: ['acc:1'] }] as any;
-            const active = riskSettingsStore.riskProfiles.find(p => p.account_ids?.includes('acc:1'));
-            expect(active?.id).toBe('risk:1');
         });
     });
 });

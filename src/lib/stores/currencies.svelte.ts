@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { Currency } from "$lib/types";
+import { accountsStore } from "./accounts.svelte";
 
 export class CurrenciesStore {
     currencies = $state<Currency[]>([]);
@@ -56,6 +57,12 @@ export class CurrenciesStore {
     }
 
     async deleteCurrency(id: string): Promise<{ success: boolean; error?: string }> {
+        // Validation: Block if any account uses this currency
+        const isUsed = accountsStore.accounts.some(acc => acc.currency_id === id || acc.currency === id);
+        if (isUsed) {
+            return { success: false, error: "Cannot delete currency: It is currently used by one or more accounts." };
+        }
+
         try {
             await invoke("delete_currency", { id });
             this.currencies = this.currencies.filter(c => c.id !== id);

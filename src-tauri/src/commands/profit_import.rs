@@ -161,6 +161,7 @@ pub async fn import_profit_trades(
             exit_emotional_state_id: None,
             exit_emotional_state_name: None,
             entry_rationale: "Imported from Profit Report (Grouped)".to_string(),
+            psychology_analysis_during: "".to_string(),
             confirmation_signals: "External".to_string(),
             market_context: "B3".to_string(),
             relevant_news: "N/A".to_string(),

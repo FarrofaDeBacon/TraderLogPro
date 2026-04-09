@@ -3,6 +3,7 @@ import { assetTypesStore } from './asset-types.svelte';
 import { setupTauriMock, mockAssetTypes } from './test-fixtures';
 
 // Setup basic Tauri Mocks
+import { invoke } from '@tauri-apps/api/core';
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
 
 describe('AssetTypesStore Unit Tests', () => {
@@ -42,6 +43,28 @@ describe('AssetTypesStore Unit Tests', () => {
         const updated = assetTypesStore.assetTypes.find(at => at.id === 'type_stock_br');
         expect(updated?.name).toBe('Ações Nacionais');
         expect(updated?.code).toBe('STK_BR'); // Untouched
+    });
+
+    it('should delete an asset type', async () => {
+        assetTypesStore.assetTypes = [{ id: '1', name: 'Stocks' } as any];
+        const result = await assetTypesStore.deleteAssetType('1');
+        expect(result.success).toBe(true);
+        expect(assetTypesStore.assetTypes.length).toBe(0);
+        expect(invoke).toHaveBeenCalledWith('delete_asset_type', { id: '1' });
+    });
+
+    it('should block deletion if asset type is used by an asset', async () => {
+        const targetId = 'type:STK';
+        assetTypesStore.assetTypes = [{ id: targetId, name: 'Stocks' } as any];
+
+        // Mock assetsStore
+        const { assetsStore } = await import('./assets.svelte');
+        assetsStore.assets = [{ id: 'ast:PETR4', asset_type_id: targetId }] as any;
+
+        const result = await assetTypesStore.deleteAssetType(targetId);
+        expect(result.success).toBe(false);
+        expect(result.error).toContain('used by one or more assets');
+        expect(assetTypesStore.assetTypes.length).toBe(1);
     });
 
     it('should delete an asset type gracefully', async () => {

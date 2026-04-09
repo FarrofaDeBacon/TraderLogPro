@@ -19,8 +19,7 @@ pub mod irpf;
 pub mod profit_import;
 pub mod strategies_analytics;
 
-const LICENSE_SECRET_KEY: &[u8] = b"TRADERLOGPRO_SECRET_KEY_2026";
-
+// Secret key is now obfuscated at runtime via obfstr! macro.
 /// Helper: CREATE if new, UPDATE if exists.
 /// CRITICAL: Uses ⟨UUID⟩ angle-bracket notation in the SurrealQL Record ID.
 /// UUIDs contain hyphens which break the SurrealQL parser when unescaped.
@@ -41,14 +40,16 @@ async fn upsert_record(
     let query = format!("UPSERT {} CONTENT $data RETURN NONE", full_id);
 
     let mut response = db.query(&query).bind(("data", data)).await.map_err(|e| {
-        println!("[DB] SDK Upsert ERROR for {}. Error: {}", full_id, e);
+        println!("[DB] SDK Upsert QUERY ERROR for {}. Error: {}", full_id, e);
         e.to_string()
     })?;
     
-    response.check().map_err(|e| {
-        println!("[DB] SDK Upsert Check ERROR for {}. Error: {}", full_id, e);
-        e.to_string()
-    })?;
+    if let Err(e) = response.check() {
+        println!("[DB] SDK Upsert CHECK ERROR for {}. Error: {}", full_id, e);
+        return Err(e.to_string());
+    }
+
+    println!("[DB] Standard Upsert SUCCESS for {}", full_id);
 
     Ok(())
 }
@@ -279,14 +280,14 @@ pub async fn get_accounts(db: State<'_, DbState>) -> Result<Vec<Account>, String
     let mut result =
         db.0.query("SELECT 
                 type::string(id) as id, 
-                nickname, 
-                account_type, 
-                broker, 
-                account_number, 
+                (IF nickname THEN type::string(nickname) ELSE \"\" END) as nickname, 
+                (IF account_type THEN type::string(account_type) ELSE \"\" END) as account_type, 
+                (IF broker THEN type::string(broker) ELSE \"\" END) as broker, 
+                (IF account_number THEN type::string(account_number) ELSE \"\" END) as account_number, 
                 (IF currency_id THEN type::string(currency_id) ELSE null END) as currency_id, 
-                balance, 
-                custom_logo, 
-                (IF currency_id THEN currency_id.code ELSE null END) as currency 
+                (IF balance THEN type::number(balance) ELSE 0.0 END) as balance, 
+                (IF custom_logo THEN type::string(custom_logo) ELSE null END) as custom_logo, 
+                (IF currency_id THEN currency_id.code ELSE \"\" END) as currency 
             FROM account")
             .await
             .map_err(|e| e.to_string())?;
@@ -622,17 +623,44 @@ pub async fn get_trades(db: State<'_, DbState>) -> Result<Vec<Trade>, String> {
 
     // Explicitly cast ALL ID fields to string for frontend/JSON portability.
     // This avoids the "{ String: '...' }" or Thing object issues once and for all.
-    let sql = "SELECT *, 
+    let sql = "SELECT 
             type::string(id) as id, 
-            type::string(date) as date,
+            (IF date THEN type::string(date) ELSE \"\" END) as date,
             (IF exit_date THEN type::string(exit_date) ELSE null END) as exit_date,
-            type::string(account_id) as account_id,
-            type::string(asset_type_id) as asset_type_id,
-            type::string(strategy_id) as strategy_id,
+            (IF account_id THEN type::string(account_id) ELSE null END) as account_id,
+            (IF asset_type_id THEN type::string(asset_type_id) ELSE null END) as asset_type_id,
+            (IF strategy_id THEN type::string(strategy_id) ELSE null END) as strategy_id,
+            (IF result THEN type::number(result) ELSE 0.0 END) as result,
+            (IF quantity THEN type::number(quantity) ELSE 0.0 END) as quantity,
+            (IF entry_price THEN type::number(entry_price) ELSE 0.0 END) as entry_price,
+            (IF exit_price THEN type::number(exit_price) ELSE null END) as exit_price,
+            (IF intensity THEN type::number(intensity) ELSE 10.0 END) as intensity,
+            (IF fee_total THEN type::number(fee_total) ELSE 0.0 END) as fee_total,
+            (IF stop_loss THEN type::number(stop_loss) ELSE null END) as stop_loss,
+            (IF take_profit THEN type::number(take_profit) ELSE null END) as take_profit,
             (IF entry_emotional_state_id THEN type::string(entry_emotional_state_id) ELSE null END) as entry_emotional_state_id,
             (IF exit_emotional_state_id THEN type::string(exit_emotional_state_id) ELSE null END) as exit_emotional_state_id,
+            (IF entry_emotional_state_name THEN type::string(entry_emotional_state_name) ELSE null END) as entry_emotional_state_name,
+            (IF exit_reason THEN type::string(exit_reason) ELSE null END) as exit_reason,
+            (IF exit_emotional_state_name THEN type::string(exit_emotional_state_name) ELSE null END) as exit_emotional_state_name,
             (IF modality_id THEN type::string(modality_id) ELSE null END) as modality_id,
-            (IF asset_id THEN type::string(asset_id) ELSE null END) as asset_id
+            (IF asset_id THEN type::string(asset_id) ELSE null END) as asset_id,
+            (IF asset_symbol THEN type::string(asset_symbol) ELSE \"\" END) as asset_symbol,
+            (IF direction THEN type::string(direction) ELSE \"\" END) as direction,
+            (IF notes THEN type::string(notes) ELSE \"\" END) as notes,
+            (IF timeframe THEN type::string(timeframe) ELSE \"\" END) as timeframe,
+            (IF volatility THEN type::string(volatility) ELSE \"\" END) as volatility,
+            (IF entry_rationale THEN type::string(entry_rationale) ELSE \"\" END) as entry_rationale,
+            (IF psychology_analysis_during THEN type::string(psychology_analysis_during) ELSE \"\" END) as psychology_analysis_during,
+            (IF confirmation_signals THEN type::string(confirmation_signals) ELSE \"\" END) as confirmation_signals,
+            (IF market_context THEN type::string(market_context) ELSE \"\" END) as market_context,
+            (IF relevant_news THEN type::string(relevant_news) ELSE \"\" END) as relevant_news,
+            (IF what_worked THEN type::string(what_worked) ELSE \"\" END) as what_worked,
+            (IF mistakes_improvements THEN type::string(mistakes_improvements) ELSE \"\" END) as mistakes_improvements,
+            (IF lessons_learned THEN type::string(lessons_learned) ELSE \"\" END) as lessons_learned,
+            (IF followed_plan THEN followed_plan ELSE true END) as followed_plan,
+            (IF images THEN images ELSE [] END) as images,
+            (IF partial_exits THEN partial_exits ELSE [] END) as partial_exits
         FROM trade ORDER BY date DESC";
 
     let mut response = db.0.query(sql).await.map_err(|e| e.to_string())?;
@@ -682,14 +710,21 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
         }
     }
 
-    let mut data = serde_json::to_value(&trade).map_err(|e| e.to_string())?;
+    let mut data = serde_json::to_value(&trade).map_err(|e| {
+        println!("[COMMAND] save_trade SERIALIZATION ERROR: {}", e);
+        e.to_string()
+    })?;
+
     // Content should NOT include the ID as it is the primary key and immutable in SurrealDB
     if let Some(obj) = data.as_object_mut() {
         obj.remove("id");
     }
 
+    println!("[DEBUG] save_trade: Payload prepared (minus ID). Invoking upsert_record...");
     // First, standard upsert using string-interpolated Record ID
     upsert_record(&db.0, "trade", &clean_id, data).await?;
+
+    println!("[DEBUG] save_trade: Initial UPSERT finished. Updating relational fields...");
 
     // Then explicit UPDATE for relational fields using ⟨UUID⟩ Record ID
     let full_trade_id = format!("trade:⟨{}⟩", clean_id);
@@ -705,7 +740,13 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
         WHERE id = {};
     ", full_trade_id, full_trade_id);
 
-    db.0.query(&sql).await.map_err(|e| e.to_string())?;
+    db.0.query(&sql).await.map_err(|e| {
+        println!("[COMMAND] save_trade RELATIONAL UPDATE ERROR: {}", e);
+        e.to_string()
+    })?.check().map_err(|e| {
+        println!("[COMMAND] save_trade RELATIONAL UPDATE CHECK ERROR: {}", e);
+        e.to_string()
+    })?;
 
     println!("[COMMAND] save_trade SUCCESS for trade:{}", clean_id);
 
@@ -1867,18 +1908,58 @@ pub struct LicenseResult {
 }
 
 #[tauri::command]
-pub async fn validate_license_cmd(key: String, expected_cid: String) -> LicenseResult {
+pub async fn validate_license_cmd(key: String, expected_cid: String, db: tauri::State<'_, DbState>) -> Result<LicenseResult, String> {
     println!("[LICENSE] Validating key for CID: {}", expected_cid);
+
+    #[cfg(all(target_os = "windows", not(debug_assertions)))]
+    unsafe {
+        extern "system" {
+            fn IsDebuggerPresent() -> i32;
+        }
+        if IsDebuggerPresent() != 0 {
+            return Ok(LicenseResult {
+                valid: false,
+                plan: "Trial".into(),
+                expiration: None,
+                error: Some(obfstr::obfstr!("Ambiente de depuração detectado. Falha de integridade.").into()),
+            });
+        }
+    }
+
+    // Time Tampering Check (Anti-Freezing)
+    let now_millis = chrono::Utc::now().timestamp_millis();
+    let query_time = format!("SELECT * FROM system_state:license_time");
+    if let Ok(mut res) = db.0.query(&query_time).await {
+        if let Ok(mut records) = res.take::<Vec<serde_json::Value>>(0) {
+            if let Some(record) = records.pop() {
+                if let Some(last_run) = record.get("last_run_timestamp").and_then(|v| v.as_i64()) {
+                    if now_millis < last_run {
+                        return Ok(LicenseResult {
+                            valid: false,
+                            plan: "Trial".into(),
+                            expiration: None,
+                            error: Some(obfstr::obfstr!("Anomalia de tempo detectada (Relógio atrasado ou manipulado).").into()),
+                        });
+                    }
+                }
+            }
+        }
+    }
+    
+    // Save new validated time
+    let _ = db.0.query("UPSERT system_state:license_time SET last_run_timestamp = $now_millis")
+        .bind(("now_millis", now_millis))
+        .await;
 
     // FORMAT: TLP-v1-<B64_PAYLOAD>-<HEX_SIGNATURE>
     let parts: Vec<&str> = key.split('-').collect();
     if parts.len() != 4 || parts[0] != "TLP" || parts[1] != "v1" {
-        return LicenseResult {
+        return Ok(LicenseResult {
             valid: false,
             plan: "Trial".into(),
             expiration: None,
-            error: Some("Formato de chave inválido.".into()),
-        };
+            error: Some(obfstr::obfstr!("Formato de chave inválido.").into()),
+        });
     }
 
     let payload_b64 = parts[2];
@@ -1887,40 +1968,40 @@ pub async fn validate_license_cmd(key: String, expected_cid: String) -> LicenseR
 
     // 1. Verify Signature
     let mut mac =
-        HmacSha256::new_from_slice(LICENSE_SECRET_KEY).expect("HMAC can take key of any size");
+        HmacSha256::new_from_slice(obfstr::obfstr!("TRADERLOGPRO_SECRET_KEY_2026").as_bytes()).expect("HMAC can take key of any size");
     mac.update(data_to_verify.as_bytes());
 
     let signature_bytes = match hex::decode(signature_hex) {
         Ok(b) => b,
         Err(_) => {
-            return LicenseResult {
+            return Ok(LicenseResult {
                 valid: false,
                 plan: "Trial".into(),
                 expiration: None,
-                error: Some("Assinatura inválida (Hex decode failed).".into()),
-            }
+                error: Some(obfstr::obfstr!("Assinatura inválida (Hex decode failed).").into()),
+            })
         }
     };
 
     if mac.verify_slice(&signature_bytes).is_err() {
-        return LicenseResult {
+        return Ok(LicenseResult {
             valid: false,
             plan: "Trial".into(),
             expiration: None,
-            error: Some("Assinatura da chave inválida (Chave adulterada).".into()),
-        };
+            error: Some(obfstr::obfstr!("Assinatura da chave inválida (Chave adulterada).").into()),
+        });
     }
 
     // 2. Decode Payload
     let payload_bytes = match base64::engine::general_purpose::STANDARD.decode(payload_b64) {
         Ok(b) => b,
         Err(_) => {
-            return LicenseResult {
+            return Ok(LicenseResult {
                 valid: false,
                 plan: "Trial".into(),
                 expiration: None,
-                error: Some("Falha ao decodificar payload (Base64).".into()),
-            }
+                error: Some(obfstr::obfstr!("Falha ao decodificar payload (Base64).").into()),
+            })
         }
     };
 
@@ -1928,12 +2009,12 @@ pub async fn validate_license_cmd(key: String, expected_cid: String) -> LicenseR
     let payload: serde_json::Value = match serde_json::from_str(&payload_str) {
         Ok(v) => v,
         Err(_) => {
-            return LicenseResult {
+            return Ok(LicenseResult {
                 valid: false,
                 plan: "Trial".into(),
                 expiration: None,
-                error: Some("Payload corrompido (JSON).".into()),
-            }
+                error: Some(obfstr::obfstr!("Payload corrompido (JSON).").into()),
+            })
         }
     };
 
@@ -1944,22 +2025,22 @@ pub async fn validate_license_cmd(key: String, expected_cid: String) -> LicenseR
                 "[LICENSE] CID MISMATCH: expected {}, got {}",
                 expected_cid, payload_cid
             );
-            return LicenseResult {
+            return Ok(LicenseResult {
                 valid: false,
                 plan: payload["plan"].as_str().unwrap_or("Pro").into(),
                 expiration: payload["exp"].as_str().map(|s| s.into()),
-                error: Some("Licença vinculada a outra identidade (ID incorreto).".into()),
-            };
+                error: Some(obfstr::obfstr!("Licença vinculada a outra identidade (ID incorreto).").into()),
+            });
         }
     }
 
     // 4. Return Success
-    LicenseResult {
+    Ok(LicenseResult {
         valid: true,
         plan: payload["plan"].as_str().unwrap_or("Pro").into(),
         expiration: payload["exp"].as_str().map(|s| s.into()),
         error: None,
-    }
+    })
 }
 
 #[tauri::command]

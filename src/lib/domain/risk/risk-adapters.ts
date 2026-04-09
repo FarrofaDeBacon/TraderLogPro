@@ -5,6 +5,7 @@ import type {
     GrowthPhase as DomainGrowthPhase,
     EmotionalStateTag
 } from './types';
+import { extractMetricValue } from './risk-utils';
 
 /**
  * Converte um RiskProfile do aplicativo (armazenado no banco/store) 
@@ -102,8 +103,6 @@ export function adaptTradeToDomain(trade: Trade): TradeRiskSnapshot {
 export function adaptGrowthPhaseToDomain(phase: AppGrowthPhase): DomainGrowthPhase | undefined {
     if (!phase) return undefined;
 
-    const extractMetric = (conditions: any[], metric: string) => 
-        conditions?.find(c => c.metric === metric || (metric === 'profit_target' && c.metric === 'target_financial'))?.value;
 
     const conditionsToAdvance = phase.conditions_to_advance || [];
     const conditionsToDemote = phase.conditions_to_demote || [];
@@ -118,9 +117,10 @@ export function adaptGrowthPhaseToDomain(phase: AppGrowthPhase): DomainGrowthPha
         minWinRate: 0,
         minProfitFactor: 0,
         minExpectancyR: 0,
-        minNetPnL: Number(extractMetric(conditionsToAdvance, 'profit_target')) || 0,
+        minNetPnL: Number(extractMetricValue(conditionsToAdvance, 'profit')) || 0,
         maxDrawdownPercent: 100,
-        maxDrawdownAmount: Number(extractMetric(conditionsToDemote, 'max_drawdown')) || undefined,
+        maxDrawdownAmount: Number(extractMetricValue(conditionsToDemote, 'drawdown')) || undefined,
+        maxDailyLoss: Number(extractMetricValue(conditionsToDemote, 'loss')) || undefined,
         allowPromotion: conditionsToAdvance.length > 0,
         allowRegression: conditionsToDemote.length > 0,
         conditionsToAdvance: conditionsToAdvance.map(c => ({

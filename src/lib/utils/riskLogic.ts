@@ -14,6 +14,7 @@ export type TradeStatsSummary = {
     currentDrawdown: number;
     dailyLossLimit: number;
     maxDailyLossStreak: number;
+    todayProfit: number;
 };
 
 export type DailyEquityPoint = { day: string; value: number };
@@ -123,6 +124,7 @@ export function computeRiskStats(
         currentDrawdown,
         dailyLossLimit,
         maxDailyLossStreak: maxStreak,
+        todayProfit: todayNet,
         dailyEquityCurve,
     };
 }
@@ -130,13 +132,22 @@ export function computeRiskStats(
 export function evaluateCondition(stats: TradeStatsSummary, rule: RiskCondition): { passed: boolean, actual: number } {
     let statValue = 0;
     switch (rule.metric) {
-        case "profit_target": statValue = stats.totalProfit; break;
+        case "profit":
+        case "profit_target": 
+        case "totalTarget": statValue = stats.totalProfit; break;
+        case "dailyTarget": statValue = stats.todayProfit; break;
         case "days_positive": statValue = stats.daysPositive; break;
-        case "win_rate": statValue = stats.winRate; break;
-        case "consistency_days": statValue = stats.consistencyDays; break;
-        case "drawdown_limit": statValue = stats.currentDrawdown; break;
-        case "daily_loss_limit": statValue = stats.dailyLossLimit; break;
-        case "max_daily_loss_streak": statValue = stats.maxDailyLossStreak; break;
+        case "days":
+        case "win_rate": 
+        case "winRate": statValue = stats.winRate; break;
+        case "consistency_days": 
+        case "consistency": statValue = stats.consistencyDays; break;
+        case "drawdown_limit": 
+        case "drawdown": statValue = stats.currentDrawdown; break;
+        case "daily_loss_limit": 
+        case "dailyLoss": statValue = stats.dailyLossLimit; break;
+        case "max_daily_loss_streak": 
+        case "lossStreak": statValue = stats.maxDailyLossStreak; break;
     }
 
     let passed = false;

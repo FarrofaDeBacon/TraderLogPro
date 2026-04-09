@@ -328,20 +328,47 @@
                 </span>
             </div>
             
-            <div class="space-y-1.5">
-                <div class="flex justify-between text-[7px] font-black uppercase tracking-[0.2em] opacity-40 px-1">
-                    <span>{$t('risk.cockpit.stats.drawdownProgression')} (INTRADAY)</span>
-                    <span>{((cockpit?.dailyRiskStatus.maxDailyDrawdown || 0) / (currentLimit || 1) * 100).toFixed(1)}%</span>
+            <div class="space-y-4">
+                <div class="space-y-1.5">
+                    <div class="flex justify-between text-[7px] font-black uppercase tracking-[0.2em] opacity-40 px-1">
+                        <span>{$t('risk.cockpit.stats.drawdownProgression')} (INTRADAY)</span>
+                        <span>{((cockpit?.dailyRiskStatus.maxDailyDrawdown || 0) / (currentLimit || 1) * 100).toFixed(1)}%</span>
+                    </div>
+                    <div class="relative w-full h-6 bg-black/60 rounded-lg overflow-hidden border border-white/5 p-0.5 shadow-inner ring-1 ring-white/5">
+                        <div 
+                            class={cn(
+                                "absolute top-0.5 left-0.5 bottom-0.5 transition-all duration-1000 rounded-md flex items-center justify-end px-3",
+                                isLossHot ? "bg-gradient-to-r from-rose-600 to-rose-400 animate-pulse shadow-[0_0_15px_rgba(225,29,72,0.2)]" : "bg-gradient-to-r from-rose-500/40 to-rose-500/80"
+                            )} 
+                            style="width: calc({Math.min(((cockpit?.dailyRiskStatus.maxDailyDrawdown || 0) / (currentLimit || 1) * 100), 100)}% - 4px)"
+                        >
+                        </div>
+                    </div>
                 </div>
-                <div class="relative w-full h-8 bg-black/60 rounded-lg overflow-hidden border border-white/5 p-0.5 shadow-inner ring-1 ring-white/5">
-                <div 
-                    class={cn(
-                    "absolute top-0.5 left-0.5 bottom-0.5 transition-all duration-1000 rounded-md flex items-center justify-end px-3",
-                    isLossHot ? "bg-gradient-to-r from-rose-600 to-rose-400 animate-pulse shadow-[0_0_15px_rgba(225,29,72,0.2)]" : "bg-gradient-to-r from-rose-500/40 to-rose-500/80"
-                    )} 
-                    style="width: calc({Math.min(((cockpit?.dailyRiskStatus.maxDailyDrawdown || 0) / (currentLimit || 1) * 100), 100)}% - 4px)"
-                >
-                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between text-[7px] font-black uppercase tracking-[0.2em] opacity-40 px-1">
+                        <span>{$t('risk.growth.metrics.drawdown').toUpperCase()} (MÁXIMO FASE)</span>
+                        <span>{activePhase?.maxDrawdownAmount && activePhase.maxDrawdownAmount > 0 
+                            ? ((growthEval?.metrics.drawdownAmount || 0) / activePhase.maxDrawdownAmount * 100).toFixed(1) 
+                            : '0.0'}%</span>
+                    </div>
+                    <div class="relative w-full h-6 bg-black/60 rounded-lg overflow-hidden border border-white/5 p-0.5 shadow-inner ring-1 ring-white/5">
+                        <div 
+                            class={cn(
+                                "absolute top-0.5 left-0.5 bottom-0.5 transition-all duration-1000 rounded-md flex items-center justify-end px-3",
+                                activePhase?.maxDrawdownAmount && (growthEval?.metrics.drawdownAmount || 0) > activePhase.maxDrawdownAmount * 0.8 ? "bg-gradient-to-r from-amber-600 to-amber-400 animate-pulse shadow-[0_0_15px_rgba(245,158,11,0.2)]" : "bg-gradient-to-r from-amber-500/40 to-amber-500/80"
+                            )} 
+                            style="width: calc({activePhase?.maxDrawdownAmount && activePhase.maxDrawdownAmount > 0 ? Math.min(((growthEval?.metrics.drawdownAmount || 0) / activePhase.maxDrawdownAmount * 100), 100) : 0}% - 4px)"
+                        >
+                        </div>
+                    </div>
+                    <div class="flex justify-between px-1">
+                        <span class="text-[7px] font-black text-muted-foreground/40 uppercase">REALIZADO: {formatValue(growthEval?.metrics.drawdownAmount || 0)}</span>
+                        <span class="text-[7px] font-black text-muted-foreground/40 uppercase">
+                            LIMITE: {activePhase?.maxDrawdownAmount && activePhase.maxDrawdownAmount > 0 ? formatValue(activePhase.maxDrawdownAmount) : '(N/A / ILIMITADO)'}
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -387,9 +414,9 @@
                       <div class="flex items-center gap-3">
                           <div class={cn(
                               "w-6 h-6 rounded-full flex items-center justify-center bg-background border",
-                              (cockpit?.dailyRiskStatus.currentDailyDrawdown || 0) < (cockpit?.dailyRiskStatus.effectiveMaxDailyLoss || 1) ? "border-emerald-500/30 text-emerald-500" : "border-rose-500/30 text-rose-500"
+                              (growthEval?.metrics.drawdownAmount || 0) < (activePhase?.maxDrawdownAmount || 1) ? "border-emerald-500/30 text-emerald-500" : "border-rose-500/30 text-rose-500"
                           )}>
-                              {#if (cockpit?.dailyRiskStatus.currentDailyDrawdown || 0) < (cockpit?.dailyRiskStatus.effectiveMaxDailyLoss || 1)}
+                              {#if (growthEval?.metrics.drawdownAmount || 0) < (activePhase?.maxDrawdownAmount || 1)}
                                   <CheckCircle2 class="w-3 h-3" />
                               {:else}
                                   <ShieldAlert class="w-3 h-3" />
@@ -397,7 +424,9 @@
                           </div>
                           <span class="text-[9px] font-black uppercase tracking-widest text-foreground/90">{$t('risk.cockpit.sections.drawdown')}</span>
                       </div>
-                      <span class="text-[9px] font-black font-mono text-emerald-500">OK</span>
+                      <span class={cn("text-[9px] font-black font-mono", (growthEval?.metrics.drawdownAmount || 0) < (activePhase?.maxDrawdownAmount || 1) ? "text-emerald-500" : "text-rose-500")}>
+                        {(growthEval?.metrics.drawdownAmount || 0) < (activePhase?.maxDrawdownAmount || 1) ? "OK" : "MAX"}
+                      </span>
                   </div>
               </div>
           </div>
@@ -455,7 +484,7 @@
                 growthEval?.phaseStatus === 'protected' ? "bg-rose-500/5 border-rose-500/10" :
                 "bg-emerald-500/5 border-emerald-500/10"
             )}>
-              <div class="flex justify-between items-start mb-4">
+              <div class="flex justify-between items-start mb-3">
                 <div class="space-y-1">
                   <div class="flex items-center gap-2">
                     <Layers class={cn("w-4 h-4", growthEval?.phaseStatus === 'maintenance' ? "text-indigo-400" : "text-emerald-400")} />
@@ -468,7 +497,8 @@
                     {activePhase?.name || '---'}
                   </h3>
                 </div>
-                
+
+                <!-- Status badge / Promote (top-right) -->
                 {#if growthEval?.canPromote}
                   <Button 
                     variant="default" 
@@ -479,52 +509,43 @@
                     <TrendingUp class="w-3 h-3 mr-2" />
                     {$t('risk.growth.actions.promote')}
                   </Button>
-                  {:else if growthEval?.shouldRegress && (riskStore.resolvedGrowthContext?.resolution.currentPhaseIndex || 0) > 0}
-                    <div class="flex gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            class="h-8 px-3 text-[9px] font-black uppercase tracking-widest border-rose-500/30 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition-all animate-pulse"
-                            onclick={() => riskStore.regressPhase()}
-                        >
-                            <TrendingDown class="w-3 h-3 mr-2" />
-                            {$t('risk.growth.actions.demote')}
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            class="h-8 px-3 text-[9px] font-black uppercase tracking-widest border-white/10 text-muted-foreground/40 hover:bg-rose-500/10 hover:text-rose-400 transition-all"
-                            onclick={() => isRestartModalOpen = true}
-                        >
-                            <RotateCcw class="w-3 h-3 mr-2" />
-                            {$t('risk.growthPlan.actions.restart')}
-                        </Button>
-                    </div>
-                  {:else if growthEval?.phaseStatus === 'max_reached'}
-                    <Badge variant="outline" class="border-amber-500/20 text-amber-400 text-[9px] font-black uppercase tracking-widest py-1 bg-amber-500/5">
-                        {$t('risk.states.phaseMaxReached')}
-                    </Badge>
-                  {:else if growthEval?.phaseStatus === 'protected'}
-                    <Badge variant="outline" class="border-rose-500/20 text-rose-400 text-[9px] font-black uppercase tracking-widest py-1 bg-rose-500/5">
-                        {$t('risk.states.violation')}
-                    </Badge>
+                {:else if growthEval?.phaseStatus === 'max_reached'}
+                  <Badge variant="outline" class="border-amber-500/20 text-amber-400 text-[9px] font-black uppercase tracking-widest py-1 bg-amber-500/5">
+                    {$t('risk.states.phaseMaxReached')}
+                  </Badge>
+                {:else if growthEval?.phaseStatus === 'protected' || growthEval?.shouldRegress}
+                  <Badge variant="outline" class="border-rose-500/20 text-rose-400 text-[9px] font-black uppercase tracking-widest py-1 bg-rose-500/5 animate-pulse">
+                    {$t('risk.states.violation')}
+                  </Badge>
                 {:else}
-                    <div class="flex gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            class="h-8 px-3 text-[9px] font-black uppercase tracking-widest border-rose-500/10 text-rose-500/40 hover:bg-rose-500/10 hover:text-rose-400 transition-all"
-                            onclick={() => isRestartModalOpen = true}
-                        >
-                            <RotateCcw class="w-3 h-3 mr-2" />
-                            {$t('risk.growthPlan.actions.restart')}
-                        </Button>
-
-                        <Badge variant="outline" class="border-white/10 text-muted-foreground/40 text-[9px] font-black uppercase tracking-widest py-1 h-8">
-                            {$t('risk.states.evolutionRequirements')}
-                        </Badge>
-                    </div>
+                  <Badge variant="outline" class="border-white/10 text-muted-foreground/30 text-[9px] font-black uppercase tracking-widest py-1">
+                    {$t('risk.states.evolutionRequirements')}
+                  </Badge>
                 {/if}
+              </div>
+
+              <!-- Linha de ações secundárias: SEMPRE VISÍVEL -->
+              <div class="flex gap-2 mb-3">
+                {#if (riskStore.resolvedGrowthContext?.resolution.currentPhaseIndex || 0) > 0}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    class="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-rose-500/20 text-rose-400/50 hover:bg-rose-500/20 hover:text-rose-300 transition-all {growthEval?.shouldRegress ? 'animate-pulse border-rose-500/50 text-rose-400' : ''}"
+                    onclick={() => riskStore.regressPhase()}
+                  >
+                    <TrendingDown class="w-3 h-3 mr-1.5" />
+                    {$t('risk.growth.actions.demote')}
+                  </Button>
+                {/if}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  class="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-white/10 text-muted-foreground/30 hover:bg-white/5 hover:text-muted-foreground transition-all"
+                  onclick={() => isRestartModalOpen = true}
+                >
+                  <RotateCcw class="w-3 h-3 mr-1.5" />
+                  {$t('risk.growthPlan.actions.restart')}
+                </Button>
               </div>
 
               <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2 pt-2 border-t border-white/5">
@@ -571,18 +592,30 @@
                             {/if}
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-[9px] font-black uppercase tracking-widest text-foreground/90 truncate max-w-[120px]">
+                            <span class="text-[9px] font-black uppercase tracking-widest text-foreground/90">
                                 {$t('risk.cockpit.sections.dailyLoss')}
                             </span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3 text-right">
-                        <span class={cn(
-                            "text-[8px] font-black uppercase tracking-widest",
-                            !cockpit?.dailyRiskStatus.dailyLossHit ? "text-emerald-400" : "text-rose-400"
+                </div>
+
+                <div class="flex items-center justify-between p-2 rounded-xl bg-secondary/10 border border-border/50 transition-all hover:bg-secondary/20 group">
+                    <div class="flex items-center gap-3">
+                        <div class={cn(
+                            "w-6 h-6 rounded-full flex items-center justify-center bg-background border",
+                            (growthEval?.metrics.drawdownAmount || 0) < (activePhase?.maxDrawdownAmount || 1) ? "border-emerald-500/30 text-emerald-500" : "border-rose-500/30 text-rose-500"
                         )}>
-                            {!cockpit?.dailyRiskStatus.dailyLossHit ? "OK" : "VIOLADO"}
-                        </span>
+                            {#if (growthEval?.metrics.drawdownAmount || 0) < (activePhase?.maxDrawdownAmount || 1)}
+                                <CheckCircle2 class="w-3 h-3" />
+                            {:else}
+                                <ShieldAlert class="w-3 h-3" />
+                            {/if}
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[9px] font-black uppercase tracking-widest text-foreground/90">
+                                {$t('risk.growth.metrics.drawdown')} (MAX)
+                            </span>
+                        </div>
                     </div>
                 </div>
               </div>
@@ -616,7 +649,7 @@
                                 </div>
                                 <div class="flex flex-col">
                                     <span class="text-[9px] font-black uppercase tracking-widest text-foreground/90">
-                                        {$t(cond.label_key)}
+                                        {$t(cond.label_key, { default: $t(`risk.rules.targetType.${cond.metric}`, { default: $t(`risk.violations.${cond.metric}`, { default: cond.metric }) }) })}
                                     </span>
                                 </div>
                             </div>

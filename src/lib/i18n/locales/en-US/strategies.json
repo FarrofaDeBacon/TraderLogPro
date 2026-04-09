@@ -167,6 +167,58 @@
         "currency_modes": {
             "main": "Main",
             "original": "Original"
+        },
+        "aiCockpit": {
+            "ctaBtn": "AI Vision Cockpit",
+            "title": "AI Vision Cockpit",
+            "health": {
+                "title": "Strategy Health",
+                "status": "Status",
+                "currentRisk": "Exposure Risk",
+                "stability": "Mathematical Stability"
+            },
+            "psychology": {
+                "title": "Strategy x Psychology",
+                "infractionRate": "Indiscipline Loss Rate:",
+                "dominantEmotion": "Dominant Emotion:"
+            },
+            "xray": {
+                "title": "Operational X-Ray",
+                "bestAsset": "Best Asset",
+                "worstAsset": "Worst Asset",
+                "bestTime": "Best Window",
+                "worstTime": "Worst Window",
+                "bestSide": "Predominant Side"
+            },
+            "ai": {
+                "title": "AI Analysis",
+                "desc": "Data cross-referencing and tactical suggestions.",
+                "insufficientVolume": "Insufficient volume for deep analysis.",
+                "actions": {
+                    "reduce": "Action: Aggressively reduce position sizing or temporarily freeze operations.",
+                    "maintain": "Action: Maintain full volume. Let profits flow within the geometric law of original targets.",
+                    "bias": "Action: Adopt the predominant direction ({direction}) as primary bias to stabilize short drawdowns.",
+                    "continue": "Continue executing the strategy within parameters to allow the algorithm to calibrate effectiveness reading."
+                },
+                "messages": {
+                    "critical": "This strategy's capital is exposed to a Drawdown incompatible with the Payoff.",
+                    "hot": "The system vibrates in maximum harmony. Operational and emotional flow prove directional consistency.",
+                    "maturing": "Consistency in maturation. Results suffer cross-friction (Hot/Cold) between asset classes or time sessions."
+                }
+            },
+            "values": {
+                "HOT": "HOT (Active Edge)",
+                "COLD": "COLD (Inactive Edge)",
+                "LEVEL": "NEUTRAL",
+                "LOW": "LOW",
+                "CRITICAL": "CRITICAL",
+                "MODERATE": "MODERATE",
+                "STABLE": "STABLE",
+                "UNSTABLE": "UNSTABLE",
+                "BUY": "BUY",
+                "SELL": "SELL",
+                "winRateShort": "WR"
+            }
         }
     },
     "strategyCard": {

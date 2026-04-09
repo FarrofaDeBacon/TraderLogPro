@@ -5,6 +5,7 @@
     import { BrainCircuit, Loader2, AlertCircle, Target, ShieldAlert, Zap } from "lucide-svelte";
     import { fade, slide } from "svelte/transition";
     import { onDestroy } from "svelte";
+    import { t } from "svelte-i18n";
 
     interface Props {
         strategyId: string;
@@ -29,7 +30,7 @@
 
     export async function generateInsight() {
         if (!hasActiveAiProvider) {
-            error = "Nenhum provedor de IA habilitado em Integrações."; return;
+            error = $t("reports.ai.error_no_config"); return;
         }
         loading = true;
         error = null;
@@ -37,7 +38,7 @@
             const result = await llmService.generateStrategyInsight(strategyId, periodStr, metricsPayload);
             if (componentMounted) insight = result;
         } catch (e: any) {
-            if (componentMounted) error = e.message || "Erro na análise estratégica.";
+            if (componentMounted) error = e.message || $t("strategies.aiCockpit.ai.error");
         } finally {
             if (componentMounted) loading = false;
         }
@@ -52,9 +53,9 @@
 
 <SystemAICard 
     {status} 
-    title="Estratégia sob Lente (IA)"
-    description="Extração de edge operacional e pontos de falha sistêmica."
-    errorText={error || "Erro na análise estratégica."}
+    title={$t("strategies.aiCockpit.ai.title")}
+    description={$t("strategies.aiCockpit.ai.desc")}
+    errorText={error || $t("strategies.aiCockpit.ai.error")}
     origin={insight?._meta?.origin}
     responseTimeMs={insight?._meta?.responseTimeMs}
 >
@@ -66,44 +67,50 @@
             disabled={!hasActiveAiProvider}
             class="h-7 text-[10px] px-3 border-emerald-500/20 hover:bg-emerald-500/5 text-emerald-500/80 font-bold uppercase tracking-wider"
         >
-            Gerar Insight
+            {$t("strategies.aiCockpit.ctaBtn")}
         </Button>
     {/snippet}
 
     {#snippet retryAction()}
-        <Button size="sm" variant="ghost" class="h-6 text-[9px] text-rose-500 hover:bg-rose-500/10 font-black uppercase" onclick={generateInsight}>Tentar Novamente</Button>
+        <Button size="sm" variant="ghost" class="h-6 text-[9px] text-rose-500 hover:bg-rose-500/10 font-black uppercase" onclick={generateInsight}>
+             {$t("reports.ui.exportAction")} <!-- Using export action as retry for now or add specific key -->
+        </Button>
     {/snippet}
 
     {#snippet content()}
-        <div class="hidden md:block">
-            <SystemHeader 
-                title="Performance Sintética"
-                icon={Zap}
-                class="mb-1 text-emerald-500/60"
-            />
-            <p class="text-[11px] leading-relaxed text-foreground/80 font-medium line-clamp-2 italic">"{insight.performanceInterpretation}"</p>
-        </div>
+        {#if insight}
+            <div class="hidden md:block">
+                <SystemHeader 
+                    title={$t("strategies.aiCockpit.ai.title")}
+                    icon={Zap}
+                    class="mb-1 text-emerald-500/60"
+                />
+                <p class="text-[11px] leading-relaxed text-foreground/80 font-medium line-clamp-2 italic">"{insight.performanceInterpretation}"</p>
+            </div>
+        {/if}
     {/snippet}
 
     {#snippet matrix()}
-        <div class="grid grid-cols-2 gap-3 w-full">
-            <div class="p-2.5 rounded-md border border-blue-500/10 bg-blue-500/[0.02]">
-                <SystemHeader 
-                    title="Contexto Ideal"
-                    icon={Target}
-                    class="mb-1 text-blue-500/70"
-                />
-                <p class="text-[10px] text-foreground/80 font-bold leading-snug">{insight.idealContext}</p>
-            </div>
+        {#if insight}
+            <div class="grid grid-cols-2 gap-3 w-full">
+                <div class="p-2.5 rounded-md border border-blue-500/10 bg-blue-500/[0.02]">
+                    <SystemHeader 
+                        title={$t("strategies.aiCockpit.xray.bestSide")}
+                        icon={Target}
+                        class="mb-1 text-blue-500/70"
+                    />
+                    <p class="text-[10px] text-foreground/80 font-bold leading-snug">{insight.idealContext}</p>
+                </div>
 
-            <div class="p-2.5 rounded-md border border-rose-500/10 bg-rose-500/[0.02]">
-                <SystemHeader 
-                    title="Fraqueza Crítica"
-                    icon={ShieldAlert}
-                    class="mb-1 text-rose-500/70"
-                />
-                <p class="text-[10px] text-foreground/80 font-bold leading-snug">{insight.criticalWeakness}</p>
+                <div class="p-2.5 rounded-md border border-rose-500/10 bg-rose-500/[0.02]">
+                    <SystemHeader 
+                        title={$t("strategies.aiCockpit.health.currentRisk")}
+                        icon={ShieldAlert}
+                        class="mb-1 text-rose-500/70"
+                    />
+                    <p class="text-[10px] text-foreground/80 font-bold leading-snug">{insight.criticalWeakness}</p>
+                </div>
             </div>
-        </div>
+        {/if}
     {/snippet}
 </SystemAICard>

@@ -21,6 +21,7 @@
       Printer,
       AlertTriangle
   } from "lucide-svelte";
+  import { t, locale } from "svelte-i18n";
   import { mount, unmount } from "svelte";
   import PdfExportTemplate from "$lib/components/reports/PdfExportTemplate.svelte";
   import ReportAICard from "$lib/components/reports/ReportAICard.svelte";
@@ -105,8 +106,8 @@
   });
 
   // Format Helper
-  const formatReportDate = (d: Date) => d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-  const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+  const formatReportDate = (d: Date) => d.toLocaleDateString($locale || 'pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+  const formatCurrency = (val: number) => new Intl.NumberFormat($locale || 'pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
   const report = $derived.by(() => {
     return generateReport(
@@ -199,7 +200,7 @@
           doc.open();
           doc.write(`
               <!DOCTYPE html>
-              <html lang="pt-BR">
+              <html lang="${$locale || 'pt-BR'}">
               <head>
                   <meta charset="UTF-8">
                   <title>TraderLogPro_Performance_${timeFilter}</title>
@@ -277,20 +278,20 @@
     <div class="mb-6 p-4 bg-primary/10 border border-primary/20 text-primary-foreground rounded-lg flex items-center justify-between gap-6">
         <div>
             <SystemHeader 
-                title="Exportação Direta em PDF" 
+                title={$t("reports.ui.exportTitle")} 
                 class="mb-1"
             />
             <p class="text-xs opacity-90 leading-relaxed text-foreground/80">
-                O arquivo será gerado de maneira oculta garantindo o formato Institucional em 2 páginas. O visual na tela permanecerá limpo (Dark Mode).
+                {$t("reports.ui.exportDesc")}
             </p>
         </div>
         <Button onclick={exportReport} disabled={isExporting} class="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-10 gap-2 shadow-lg w-[220px]">
             {#if isExporting}
                 <div class="h-4 w-4 rounded-full border-2 border-primary-foreground border-r-transparent animate-spin"></div>
-                Gerando Documento...
+                {$t("reports.ui.generating")}
             {:else}
                 <Printer class="w-4 h-4" />
-                Exportar para PDF
+                {$t("reports.ui.exportAction")}
             {/if}
         </Button>
     </div>
@@ -304,8 +305,8 @@
 
     <SystemCard status="info" class="p-3 mb-6">
         <SystemHeader 
-            title="Performance Report"
-            subtitle={`Auditoria Profissional Consolidada (${formatReportDate(dateRanges.start)} a ${formatReportDate(dateRanges.end)})`}
+            title={$t("reports.ui.performanceReportTitle")}
+            subtitle={$t("reports.ui.auditorSubtitle", { values: { start: formatReportDate(dateRanges.start), end: formatReportDate(dateRanges.end) } })}
             icon={FileText}
             variant="page"
             class="mb-0"
@@ -319,20 +320,20 @@
         <!-- BLOCO 1: RESUMO FINANCEIRO -->
         <section>
             <SystemHeader 
-                title="1. Resumo do Período"
+                title={$t("reports.ui.sections.summary")}
                 icon={BarChart3}
                 class="mb-3"
             />
             
             {#if report.summary.tradeCount === 0}
                 <div class="p-8 text-center border border-dashed rounded-xl border-border/50 text-muted-foreground bg-muted/20">
-                    Nenhuma operação registrada na janela selecionada.
+                    {$t("reports.pdf.noTrades")}
                 </div>
             {:else}
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <SystemCard class="p-4">
                         <SystemMetric 
-                            label="Líquido (PnL)"
+                            label={$t("reports.ui.metrics.pnl")}
                             value={formatCurrency(report.summary.totalPnL)}
                             status={report.summary.totalPnL >= 0 ? 'success' : 'danger'}
                             weight="black"
@@ -340,7 +341,7 @@
                     </SystemCard>
                     <SystemCard class="p-4">
                         <SystemMetric 
-                            label="Win Rate"
+                            label={$t("reports.ui.metrics.winRate")}
                             value={(report.summary.winRate * 100).toFixed(0) + "%"}
                             status={report.summary.winRate >= 0.5 ? 'success' : 'danger'}
                             weight="black"
@@ -348,7 +349,7 @@
                     </SystemCard>
                     <SystemCard class="p-4">
                         <SystemMetric 
-                            label="Profit Factor"
+                            label={$t("reports.ui.metrics.profitFactor")}
                             value={report.summary.profitFactor.toFixed(2)}
                             status={report.summary.profitFactor >= 1.2 ? 'success' : report.summary.profitFactor >= 1 ? 'warning' : 'danger'}
                             weight="black"
@@ -356,9 +357,9 @@
                     </SystemCard>
                     <SystemCard class="p-4">
                         <SystemMetric 
-                            label="Volume (Trades / Dias)"
+                            label={$t("reports.ui.metrics.volume")}
                             value={String(report.summary.tradeCount)}
-                            subvalue={report.period.daysActive + "d ativos"}
+                            subvalue={$t("reports.ui.metrics.activeDays", { values: { days: report.period.daysActive } })}
                             weight="black"
                         />
                     </SystemCard>
@@ -369,14 +370,14 @@
         <!-- BLOCO 2: SCORE E DISCIPLINA DA JANELA -->
         <section class="pt-2">
             <SystemHeader 
-                title="2. Score Oficial da Janela (Avaliação Qualitativa)"
+                title={$t("reports.ui.sections.score")}
                 icon={Trophy}
                 class="mb-3"
             />
             
             {#if report.summary.tradeCount === 0}
                 <div class="p-8 text-center border border-dashed rounded-xl border-border/50 text-muted-foreground bg-muted/20">
-                    Score indisponível sem volume operacional.
+                    {$t("reports.reflection.noVolume")}
                 </div>
             {:else}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -386,27 +387,27 @@
                             <div class="w-24 h-24 rounded-full border-4 flex items-center justify-center {report.scoreAndDiscipline.windowScore >= 80 ? 'border-emerald-500 text-emerald-500' : report.scoreAndDiscipline.windowScore >= 50 ? 'border-amber-500 text-amber-500' : 'border-rose-500 text-rose-500'}">
                                 <span class="text-4xl font-black tracking-tighter">{report.scoreAndDiscipline.windowScore.toFixed(0)}</span>
                             </div>
-                            <p class="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-3">Master Score</p>
+                            <p class="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-3">{$t("reports.ui.metrics.masterScore")}</p>
                         </div>
                         
                         <div class="flex-1 grid grid-cols-2 gap-4 w-full">
                             <SystemMetric 
-                                label="Corte Execução"
+                                label={$t("reports.ui.metrics.executionCut")}
                                 value={report.scoreAndDiscipline.executionScore.toFixed(0) + " / 100"}
                                 status={report.scoreAndDiscipline.executionScore >= 80 ? 'success' : report.scoreAndDiscipline.executionScore >= 50 ? 'warning' : 'danger'}
                             />
                             <SystemMetric 
-                                label="Corte Risco"
+                                label={$t("reports.ui.metrics.riskCut")}
                                 value={report.scoreAndDiscipline.riskScore.toFixed(0) + " / 100"}
                                 status={report.scoreAndDiscipline.riskScore >= 80 ? 'success' : report.scoreAndDiscipline.riskScore >= 50 ? 'warning' : 'danger'}
                             />
                             <SystemMetric 
-                                label="Comportamento"
+                                label={$t("reports.ui.metrics.behavior")}
                                 value={report.scoreAndDiscipline.behaviorScore.toFixed(0) + " / 100"}
                                 status={report.scoreAndDiscipline.behaviorScore >= 80 ? 'success' : report.scoreAndDiscipline.behaviorScore >= 50 ? 'warning' : 'danger'}
                             />
                             <SystemMetric 
-                                label="Psicológico"
+                                label={$t("reports.ui.metrics.psychological")}
                                 value={report.scoreAndDiscipline.psychoScore.toFixed(0) + " / 100"}
                                 status={report.scoreAndDiscipline.psychoScore >= 80 ? 'success' : report.scoreAndDiscipline.psychoScore >= 50 ? 'warning' : 'danger'}
                             />
@@ -417,20 +418,20 @@
                     <SystemCard status="info" class="flex flex-col justify-center">
                         <div class="p-3">
                             <SystemHeader 
-                                title="Streaks da Janela"
+                                title={$t("reports.ui.metrics.streaksTitle")}
                                 class="mb-3"
                             />
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs font-bold text-foreground">Disciplina Inquebrável</span>
+                                    <span class="text-xs font-bold text-foreground">{$t("reports.ui.metrics.unbreakableDiscipline")}</span>
                                     <span class="font-mono font-bold text-xs bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.discipline}d</span>
                                 </div>
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs font-bold text-foreground">Controle Emocional</span>
+                                    <span class="text-xs font-bold text-foreground">{$t("reports.ui.metrics.emotionalControl")}</span>
                                     <span class="font-mono font-bold text-xs bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.emotionalControl}d</span>
                                 </div>
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs font-bold text-foreground">No-Tilt (Blindagem)</span>
+                                    <span class="text-xs font-bold text-foreground">{$t("reports.ui.metrics.noTilt")}</span>
                                     <span class="font-mono font-bold text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">{report.scoreAndDiscipline.streaks.noTilt}d</span>
                                 </div>
                             </div>
@@ -443,21 +444,21 @@
         <!-- BLOCO 3: COMPORTAMENTO (AUDITORIA IA) -->
         <section class="pt-2">
             <SystemHeader 
-                title="3. Auditoria Comportamental"
+                title={$t("reports.ui.sections.behavioral")}
                 icon={Brain}
                 class="mb-3"
             />
             
             {#if report.behavior.topNegativeImpacts.length === 0 && report.behavior.topPositiveImpacts.length === 0}
                 <div class="p-8 text-center border border-dashed rounded-xl border-border/50 text-muted-foreground bg-muted/20">
-                    Sem comportamentos críticos detectados no período. Rotação operacional neutra.
+                    {$t("reports.ui.behavior.noCriticalBehaviors")}
                 </div>
             {:else}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                     <SystemCard status="danger" class="bg-rose-500/5 border-rose-500/20 shadow-none">
                         <div class="p-4">
                             <SystemHeader 
-                                title="Ofensores de Sistema (Top Punições)"
+                                title={$t("reports.ui.behavior.offendersTitle")}
                                 icon={ShieldAlert}
                                 class="mb-3 text-rose-500"
                             />
@@ -472,7 +473,7 @@
                                     </div>
                                 {/each}
                                 {#if report.behavior.topNegativeImpacts.length === 0}
-                                    <p class="text-xs text-muted-foreground">Sistema em perfeito funcionamento mecânico. Zero falhas.</p>
+                                    <p class="text-xs text-muted-foreground">{$t("reports.ui.behavior.perfectSystem")}</p>
                                 {/if}
                             </div>
                         </div>
@@ -480,7 +481,7 @@
                     <SystemCard status="success" class="bg-emerald-500/5 border-emerald-500/20 shadow-none">
                         <div class="p-4">
                             <SystemHeader 
-                                title="Edges Encontrados (Top Bônus)"
+                                title={$t("reports.ui.behavior.edgesTitle")}
                                 icon={Zap}
                                 class="mb-3 text-emerald-500"
                             />
@@ -495,7 +496,7 @@
                                     </div>
                                 {/each}
                                 {#if report.behavior.topPositiveImpacts.length === 0}
-                                    <p class="text-xs text-muted-foreground">Sem vantagens excepcionais contabilizadas.</p>
+                                    <p class="text-xs text-muted-foreground">{$t("reports.ui.behavior.noAdvantages")}</p>
                                 {/if}
                             </div>
                         </div>
@@ -507,19 +508,19 @@
         <!-- BLOCO 4: REFLEXÃO DO PÓS-MERCADO (DAILY REVIEWS) -->
         <section class="pt-2">
             <SystemHeader 
-                title="4. Diário & Reflexão Subjetiva"
+                title={$t("reports.ui.sections.reflection")}
                 icon={BookOpen}
                 class="mb-3"
             />
 
             {#if report.reflection.reviewCount === 0}
                 <div class="p-8 text-center border border-dashed rounded-xl border-rose-500/30 text-rose-500/80 bg-rose-500/5 font-medium">
-                    Você operou sem registrar revisão diária. Isso reduz a capacidade de auditoria e aprendizado do período.
+                    {$t("reports.reflection.reviewMissing")}
                 </div>
             {:else}
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <SystemCard class="md:col-span-1 p-4 flex flex-col justify-center">
-                        <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Ritmo de Registro</p>
+                        <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">{$t("reports.reflection.rhythmTitle")}</p>
                         <div class="text-3xl font-black mb-1 text-foreground">{report.reflection.reviewCount} <span class="text-sm font-medium text-muted-foreground tracking-normal">Reviews</span></div>
                         <div class="flex flex-col gap-1 mt-3">
                             <div class="flex items-center justify-between text-xs">
@@ -539,7 +540,7 @@
                         {#if report.psychologyStats.lossPercentageInNegativeState !== null}
                             <div class="mt-4 pt-3 border-t border-border/50">
                                 <p class="text-[10px] text-muted-foreground leading-tight">
-                                    <span class="font-bold text-rose-500">{(report.psychologyStats.lossPercentageInNegativeState * 100).toFixed(0)}% dos prejuízos</span> ocorreram sob estado emocional negativo <span class="uppercase font-bold">({report.psychologyStats.dominantNegativeEmotion})</span>. 
+                                    <span class="font-bold text-rose-500">{(report.psychologyStats.lossPercentageInNegativeState * 100).toFixed(0)}% {$t("reports.pdf.lossesUnderNegative")} <span class="uppercase font-bold">({report.psychologyStats.dominantNegativeEmotion})</span></span>. 
                                 </p>
                             </div>
                         {/if}
@@ -548,11 +549,11 @@
                     <SystemCard class="md:col-span-3">
                         <div class="p-4">
                             <SystemHeader 
-                                title="Extratos Relevantes do Diário"
+                                title={$t("reports.reflection.extractsTitle")}
                                 class="mb-3 text-muted-foreground"
                             />
                             {#if report.reflection.relevantNotes.length === 0}
-                                <p class="text-sm italic text-muted-foreground">As avaliações registradas não contêm textos extensos para análise qualitativa.</p>
+                                <p class="text-sm italic text-muted-foreground">{$t("reports.reflection.noNotes")}</p>
                             {:else}
                                 <div class="space-y-4">
                                     {#each report.reflection.relevantNotes as note}
@@ -571,7 +572,7 @@
         <!-- BLOCO 5: DECISION LAYER (PLANO TÁTICO) -->
         <section class="pt-4 border-t border-border/40 mt-4">
             <SystemHeader 
-                title="5. Decision Layer (Direção Tática)"
+                title={$t("reports.ui.sections.decision")}
                 icon={Target}
                 class="mb-3 text-primary"
             />
@@ -581,7 +582,7 @@
                 <SystemCard status="info" class="bg-primary/5 shadow-none border-primary/20">
                     <div class="p-4">
                         <SystemHeader 
-                            title="Diagnóstico Final"
+                            title={$t("reports.ui.tactical.finalDiagnosis")}
                             icon={Activity}
                             class="mb-3 text-primary"
                         />
@@ -596,7 +597,7 @@
                 <SystemCard status="danger" class="bg-background/60 shadow-sm border-border/50">
                     <div class="p-4">
                         <SystemHeader 
-                            title="Riscos Iminentes"
+                            title={$t("reports.ui.tactical.imminentRisks")}
                             icon={AlertTriangle}
                             class="mb-3 text-rose-500"
                         />
@@ -605,7 +606,7 @@
                                 <li class="leading-tight">{risk}</li>
                             {/each}
                             {#if report.tactical.risks.length === 0}
-                                <li class="leading-tight text-emerald-500/80">Nenhum risco matricial grave identificado.</li>
+                                <li class="leading-tight text-emerald-500/80">{$t("reports.ui.tactical.noGraveRisks")}</li>
                             {/if}
                         </ul>
                     </div>
@@ -615,7 +616,7 @@
                 <SystemCard status="none" class="bg-background/80 shadow-sm border-border">
                     <div class="p-4">
                         <SystemHeader 
-                            title="Plano de Execução"
+                            title={$t("reports.ui.tactical.executionPlan")}
                             icon={CheckCircle2}
                             class="mb-3"
                         />

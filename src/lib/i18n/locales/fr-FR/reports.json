@@ -1,74 +1,143 @@
 {
     "reports": {
+        "behavior": {
+            "noCriticalBehaviors": "Aucun comportement critique détecté au cours de la période."
+        },
+        "reflection": {
+            "reviewMissing": "Trading effectué sans revue subjective. Réduit les paramètres de l'auditeur."
+        },
         "daily": {
             "actions": {
-                "save": "Enregistrer Clôture"
+                "save": "Enregistrer Revue"
             },
-            "empty": "Aucune transaction trouvée à cette date.",
+            "empty": "Aucune opération à cette date.",
             "ratings": {
                 "bad": "Mauvais",
                 "good": "Bon",
                 "neutral": "Neutre",
-                "placeholder": "Note rapide (optionnel)... Qu'avez-vous appris aujourd'hui ou où avez-vous échoué ?"
+                "placeholder": "Brève note... Point d'attention du jour?"
             },
             "sections": {
-                "behavioral": "Analyse Comportementale",
+                "behavioral": "Analyse du Comportement",
                 "best": "Meilleur",
-                "selfEvaluation": "Votre Évaluation Quotidienne",
-                "stats": "Transactions",
+                "selfEvaluation": "Votre Évaluation",
+                "stats": "Opérations",
                 "summary": "Résumé Financier",
                 "worst": "Pire"
             },
-            "subtitle": "Revue comportementale rapide",
-            "title": "Clôture Journalière",
+            "subtitle": "Revue Rapide",
+            "title": "Fermeture Quotidienne",
             "toasts": {
-                "rateFirst": "Veuillez d'abord évaluer votre journée.",
-                "saveSuccess": "Clôture journalière enregistrée avec succès ! 🎯",
-                "shieldWall": "Shield Wall ! Discipline prolongée à {days} jours consécutifs !",
-                "streakBroken": "Série de discipline rompue. Concentrez-vous sur la reprise du contrôle demain."
+                "rateFirst": "Évaluez votre jour en premier.",
+                "saveSuccess": "Revue quotidienne enregistrée avec succès! 🎯",
+                "shieldWall": "Mur de Boucliers! Discipline augmentée de {days} jours.",
+                "streakBroken": "Série de discipline brisée."
             }
         },
         "imminentRisks": "Risques Imminents",
-        "operationalTitle": "Rapport de Performance Opérationnelle",
+        "operationalTitle": "Rapport de Performance",
         "pdf": {
-            "aiAudit": "Audit IA (Mécanique)",
+            "aiAudit": "Audit Exécutif (IA)",
             "auditedPeriod": "Période Auditée",
-            "competitiveAdvantages": "Avantages Compétitifs",
+            "competitiveAdvantages": "Avantage Concurrentiel",
             "daysRead": "Jours Lus",
             "documentedSessions": "Sessions Documentées",
-            "emotionalControl": "Contrôle Émotionnel",
-            "executionCut": "Coupe d'Exécution (Économique)",
-            "executionPlan": "Plan d'Exécution",
-            "finalDiagnosis": "Diagnostic Final",
-            "financialStats": "Statistiques Financières Officielles",
-            "functionalSystem": "Système fonctionnel, zéro échec critique.",
-            "imminentRisks": "Risques Imminents",
-            "inDays": "dans",
-            "infractions": "Infractions (Grave Sévérité)",
-            "linearOperation": "Exécution linéaire sans déviations pertinentes.",
-            "lossesUnderNegative": "des pertes sont survenues sous un état émotionnel négatif",
-            "masterScore": "Master Score",
-            "medianNoJumps": "Médiane, pas de sauts mathématiques en faveur.",
-            "netPnl": "Net (PnL)",
-            "noDailyReview": "Trade sans revue quotidienne. Réduit la capacité d'audit.",
-            "noGraveRisks": "Aucun risque matriciel grave identifié.",
-            "noTrades": "Aucune transaction enregistrée dans la fenêtre sélectionnée.",
-            "offendersEdges": "Offenseurs & Bords",
-            "postMarketSummary": "Résumé Post-Marché",
-            "preservedStreaks": "Séries Préservées (Fenêtre)",
-            "primaryObservations": "Observations Primaires",
-            "profitFactor": "Profit Factor",
-            "psychologicalDaily": "Psychologique (Quotidien)",
-            "qualitativeScore": "Évaluation Qualitative (Score)",
-            "riskManagement": "Gestion des Risques (Limites)",
-            "scoreUnavailable": "Score indisponible sans volume de transactions.",
-            "tiltPrevention": "Prévention du Tilt",
-            "title": "Rapport de Performance Opérationnelle",
-            "tradeVolume": "Volume de Transactions",
-            "unbreakableDiscipline": "Discipline Inébranlable",
-            "unsupportedEvaluations": "Évaluations non étayées par des textes descriptifs.",
-            "winRate": "Win Rate"
+            "emotionalControl": "Contrôle Mental",
+            "executionCut": "Validation (Économique)",
+            "executionPlan": "Plan Tactique",
+            "finalDiagnosis": "Diagnostic",
+            "financialStats": "Finance Avancée",
+            "functionalSystem": "Système intègre. Zéro faille.",
+            "imminentRisks": "Risques",
+            "inDays": "en",
+            "infractions": "Fautes Lignes Rouges",
+            "linearOperation": "Précision d'exécution linéaire.",
+            "lossesUnderNegative": "des pertes enregistrées sur profil émotionnel faible.",
+            "masterScore": "Score Total",
+            "medianNoJumps": "Médiane stabilisée, aucun bon mathématique.",
+            "netPnl": "Gains (PnL)",
+            "noDailyReview": "Manque de documentation. Limite l'auto-audit.",
+            "noGraveRisks": "Aucun risque identifié.",
+            "noTrades": "Volume nul dans cette période.",
+            "offendersEdges": "Limites & Points Forts",
+            "postMarketSummary": "Résumé",
+            "preservedStreaks": "Séries Conservées",
+            "primaryObservations": "Défauts Primaires",
+            "profitFactor": "Facteur Profit",
+            "psychologicalDaily": "Psychologie du Jour",
+            "qualitativeScore": "Score Qualitatif",
+            "riskManagement": "Gestion du Risque Mensuel",
+            "scoreUnavailable": "Score N/A.",
+            "tiltPrevention": "Anti-Tilt",
+            "title": "Rapport Synthétique Exécutif",
+            "tradeVolume": "Volume (Transactions)",
+            "unbreakableDiscipline": "Discipline Pure",
+            "unsupportedEvaluations": "Évaluations génériques invisibles pour l'analyse NLP.",
+            "winRate": "Win Rate Parfait"
         },
-        "scoreUnavailable": "Score indisponible sans volume d'opération."
+        "scoreUnavailable": "N/D",
+        "ui": {
+            "exportTitle": "Exportation Architecturale",
+            "exportDesc": "Téléchargement PDF.",
+            "generating": "Travail en cours...",
+            "exportAction": "Générer PDF",
+            "performanceReportTitle": "Rapport Officiel",
+            "auditorSubtitle": "Audit Externe ({start} a {end})",
+            "sections": {
+                "summary": "1. Résultat Financier",
+                "score": "2. Score Quantifié",
+                "behavioral": "3. Moteur Comportemental",
+                "reflection": "4. Réflexions du Marché",
+                "decision": "5. Arbre de Décisions"
+            },
+            "metrics": {
+                "pnl": "Profit Absolu",
+                "winRate": "WR",
+                "profitFactor": "Facteur PT",
+                "volume": "Volume (Q)",
+                "activeDays": "{days} jours de trading",
+                "executionCut": "Execution",
+                "riskCut": "Risques",
+                "behavior": "Comport.",
+                "psychological": "Psycho.",
+                "masterScore": "Scoring Global",
+                "streaksTitle": "Séries Conservées",
+                "unbreakableDiscipline": "Pure Discipline",
+                "emotionalControl": "Contrôle Mental",
+                "noTilt": "Tilt Radar"
+            },
+            "behavior": {
+                "offendersTitle": "Failles Méthodologiques",
+                "edgesTitle": "Points Extrêmes",
+                "perfectSystem": "Système de trading fonctionnel.",
+                "noAdvantages": "Acquisition de données N/A.",
+                "noCriticalBehaviors": "Aucun comportement néfaste identifié."
+            },
+            "reflection": {
+                "rhythmTitle": "Cadence du Journal",
+                "extractsTitle": "Notes Majeures",
+                "noNotes": "Pas de notes trouvées (Écart NLP).",
+                "noVolume": "Zero Volume.",
+                "reviewMissing": "Absence de checklist quotidienne."
+            },
+            "tactical": {
+                "finalDiagnosis": "Diagnostic de Période",
+                "imminentRisks": "Radar Risque",
+                "executionPlan": "Execution Globale",
+                "noGraveRisks": "Validation Sécurité Ok."
+            },
+            "ai": {
+                "visionTitle": "Analyse Executive C-Level",
+                "visionDesc": "Validation automatique.",
+                "visionError": "Serveur non trouvé.",
+                "error_no_config": "Clé secrète introuvable.",
+                "generateAction": "Audit IA Complet",
+                "retryAction": "Nouvelle tentative",
+                "institutionalSummary": "Résumé Executif",
+                "coreAdvantage": "Atouts",
+                "criticalPoint": "Majeur",
+                "requiredFocus": "Correction Demandée"
+            }
+        }
     }
 }

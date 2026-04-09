@@ -1,4 +1,4 @@
-import { browser } from "$app/environment";
+const browser = typeof window !== "undefined";
 import type { BehavioralInsight } from "$lib/domain/insights/insights-engine";
 import { format } from "date-fns";
 

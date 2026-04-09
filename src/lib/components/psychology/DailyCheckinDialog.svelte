@@ -13,9 +13,8 @@
     import { Brain, Sparkles, Loader2, MessageSquare } from "lucide-svelte";
     import { llmService } from "$lib/services/llmService";
 
-    let { open = $bindable(false) } = $props();
+    let { open = $bindable(false), selectedDate = $bindable(new Date().toISOString().split("T")[0]) } = $props();
 
-    let selectedDate = $state(new Date().toISOString().split("T")[0]);
     let emotionalStateId = $state<string>("");
     let emotionalIntensity = $state(5);
     let journalNotes = $state("");

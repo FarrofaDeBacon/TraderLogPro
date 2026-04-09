@@ -167,6 +167,58 @@
         "currency_modes": {
             "main": "Principal",
             "original": "Original"
+        },
+        "aiCockpit": {
+            "ctaBtn": "Cockpit de Visão IA",
+            "title": "Cockpit de Visão IA",
+            "health": {
+                "title": "Saúde da Estratégia",
+                "status": "Status",
+                "currentRisk": "Risco de Exposição",
+                "stability": "Estabilidade Matemática"
+            },
+            "psychology": {
+                "title": "Estratégia x Psicologia",
+                "infractionRate": "Perda por Indisciplina:",
+                "dominantEmotion": "Emoção Dominante:"
+            },
+            "xray": {
+                "title": "Raio-X Operacional",
+                "bestAsset": "Melhor Ativo",
+                "worstAsset": "Pior Ativo",
+                "bestTime": "Melhor Janela",
+                "worstTime": "Pior Janela",
+                "bestSide": "Lado Predominante"
+            },
+            "ai": {
+                "title": "Leitura IA",
+                "desc": "Cruzamento de dados e sugestões táticas.",
+                "insufficientVolume": "Volume insuficiente para análise profunda.",
+                "actions": {
+                    "reduce": "Ação: Reduza agressivamente o fracionamento de lotes ou congele operações temporariamente.",
+                    "maintain": "Ação: Mantenha volume cheio. Deixe os lucros transbordarem na lei geométrica dos alvos originais.",
+                    "bias": "Ação: Adote a direção predominante ({direction}) como viés primário para estabilizar os drawdowns curtos.",
+                    "continue": "Continue executando a estratégia dentro dos parâmetros para permitir que o algoritmo calibre a leitura de eficácia."
+                },
+                "messages": {
+                    "critical": "O capital desta estratégia está exposto a um Drawdown incompatível com o Payoff.",
+                    "hot": "O sistema vibra em harmonia máxima. O fluxo operacional e emocional provam consistência direcional.",
+                    "maturing": "Consistência em maturação. Resultados sofrem atrito cruzado (Quente/Frio) entre classes de ativos ou sessões horárias."
+                }
+            },
+            "values": {
+                "HOT": "QUENTE (Edge Ativo)",
+                "COLD": "FRIO (Edge Inativo)",
+                "LEVEL": "NEUTRO",
+                "LOW": "BAIXO",
+                "CRITICAL": "CRÍTICO",
+                "MODERATE": "MODERADO",
+                "STABLE": "ESTÁVEL",
+                "UNSTABLE": "INSTÁVEL",
+                "BUY": "COMPRA",
+                "SELL": "VENDA",
+                "winRateShort": "WR"
+            }
         }
     },
     "strategyCard": {
