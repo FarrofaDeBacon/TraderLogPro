@@ -34,5 +34,4 @@ export {
 	ScrollUpButton as SelectScrollUpButton,
 	GroupHeading as SelectGroupHeading,
 	Portal as SelectPortal,
-	Portal as SelectPortal,
 };
