@@ -159,6 +159,9 @@ import type { RiskProfile } from "$lib/types";
 
     <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {#each riskSettingsStore.riskProfiles as profile}
+            {@const limits = getEffectiveLimits(profile)}
+            {@const riskVal = getRiskValue(profile)}
+            {@const planInfo = getPlanInfo(profile)}
             <div
                 class="group relative bg-[#0a0a0c]/80 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 transition-all duration-300 hover:border-indigo-500/30 hover:bg-[#0c0c0e]/90 hover:shadow-2xl hover:shadow-indigo-500/5 cursor-pointer ring-1 ring-white/5 overflow-hidden"
                 onclick={() => openDetails(profile)}
@@ -199,9 +202,6 @@ import type { RiskProfile } from "$lib/types";
                 </div>
 
                 <div class="space-y-4 mb-6">
-                    {@const limits = getEffectiveLimits(profile)}
-                    {@const riskVal = getRiskValue(profile)}
-                    {@const planInfo = getPlanInfo(profile)}
 
                     <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-1">
