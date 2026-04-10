@@ -4,7 +4,12 @@
             "noCriticalBehaviors": "No critical behaviors detected in the period. Neutral operational rotation."
         },
         "reflection": {
-            "reviewMissing": "You operated without recording a daily review. This reduces audit capacity and period learning."
+            "reviewMissing": "You operated without recording a daily review. This reduces audit capacity and period learning.",
+            "extractsTitle": "Reflection Extracts",
+            "noNotes": "No notes recorded.",
+            "noVolume": "No data volume.",
+            "reviewCountLabel": "Reviews performed",
+            "rhythmTitle": "Operational Rhythm"
         },
         "daily": {
             "actions": {
@@ -73,7 +78,8 @@
             "tradeVolume": "Trade Volume",
             "unbreakableDiscipline": "Unbreakable Discipline",
             "unsupportedEvaluations": "Evaluations unsupported by descriptive texts.",
-            "winRate": "Win Rate"
+            "winRate": "Win Rate",
+            "trades": "Trades"
         },
         "scoreUnavailable": "Score unavailable without trade volume.",
         "ui": {
@@ -138,6 +144,9 @@
                 "criticalPoint": "Critical Point",
                 "requiredFocus": "Required Focus"
             }
+        },
+        "ai": {
+            "error_no_config": "Configure AI in settings."
         }
     }
 }

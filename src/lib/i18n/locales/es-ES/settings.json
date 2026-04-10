@@ -101,44 +101,45 @@
             "account": "Cuenta",
             "allAccounts": "Todas las Cuentas",
             "allCurrencies": "Todas las Monedas",
-            "monthlyResult": "Resultado Mensal",
-            "result": "Resultado",
-            "columns": {
-                "account": "Cuenta",
-                "amount": "Valor",
-                "date": "Fecha",
-                "description": "Descripción",
-                "type": "Tipo"
+            "categories": {
+                "adjustment": "AJUSTE",
+                "tax_payment": "IMPUESTO",
+                "tax_refund": "REEMBOLSO",
+                "trading": "CIERRE",
+                "transfer": "TRANSF."
             },
-            "entries": "Entradas",
+            "columns": {
+                "account": "CUENTA",
+                "amount": "VALOR",
+                "date": "Fecha",
+                "description": "DESCRIPCIÓN",
+                "type": "TIPO"
+            },
+            "entries": "Asientos",
+            "hierarchy": "Jerarquía",
             "messages": {
                 "deleteError": "Delete Error",
                 "systemLinked": "Esta transacción fue generada por el sistema y solo puede modificarse en el módulo de origen (ej: IRPF)."
             },
-            "noNumber": "No Number",
+            "monthlyResult": "Resultado Mensual",
+            "noNumber": "Sin Número",
             "noTransactions": "Ninguna transacción encontrada en el período.",
-            "searchPlaceholder": "Buscar transacciones...",
+            "result": "Resultado",
+            "searchPlaceholder": "Buscar en descripción o valor...",
             "summary": {
                 "netResult": "Resultado Neto",
-                "periodEntries": "Entradas del Período",
-                "title": "Resumen del Día",
+                "periodEntries": "Asientos del Período",
+                "title": "Resumen Diario",
                 "totalDeposits": "Total Entradas",
                 "totalWithdrawals": "Total Salidas"
             },
-            "title": "Extracto de Caja",
+            "title": "Extracto de Movimiento",
             "types": {
                 "adjustment": "Ajuste",
-                "deposit": "Depósito",
+                "deposit": "Aportación",
                 "result": "RESULTADO",
                 "transfer": "Transferencia",
-                "withdraw": "Retiro"
-            },
-            "categories": {
-                "tax_payment": "IMPUESTO",
-                "trading": "CIERRE",
-                "transfer": "TRANSF.",
-                "tax_refund": "REEMBOLSO",
-                "adjustment": "AJUSTE"
+                "withdraw": "Retirada"
             }
         },
         "title": "Hub Financiero",
@@ -146,16 +147,16 @@
             "account": "Cuenta de Destino",
             "amount": "Valor",
             "cancel": "Cancelar",
-            "confirm": "Confirmar Transacción",
+            "confirm": "Confirmar",
             "date": "Fecha",
             "defaults": {
                 "adjustment": "Ajuste",
-                "deposit": "Depósito Manual",
+                "deposit": "Aporte Manual",
                 "transfer": "Transferencia",
                 "withdraw": "Retiro Manual"
             },
             "description": "Descripción",
-            "descriptionPlaceholder": "Ej: Depósito Mensual",
+            "descriptionPlaceholder": "Ej: Aporte Mensual",
             "errors": {
                 "differentAccounts": "Las cuentas deben ser diferentes.",
                 "requiredFields": "Complete los campos obligatorios.",
@@ -170,7 +171,7 @@
             },
             "newOperation": "Nueva Operación",
             "operationShortDesc": "Registre aportes, retiros o transferencias entre cuentas.",
-            "subtitle": "Registre manualmente depósitos o retiros.",
+            "subtitle": "Registre aportes o retiros manualmente.",
             "tabs": {
                 "transaction": "Transacción",
                 "transfer": "Transferencia"
@@ -191,7 +192,7 @@
             "description": "Mueva saldo entre cuentas, con soporte a cambio.",
             "errorDifferentAccounts": "Las cuentas de origen y destino deben ser diferentes.",
             "errorPositiveValue": "El valor debe ser mayor que cero.",
-            "errorSave": "Error Save",
+            "errorSave": "Error al guardar",
             "fee": "Tasas de Transferencia",
             "finalAmount": "Valor de Entrada",
             "finalAmountHint": "Valor después de tasas y conversión de moneda",
@@ -212,7 +213,6 @@
         }
     },
     "settings": {
-
         "accounts": {
             "balance": "SALDO",
             "confirmDeduplicate": "¿Confirmar eliminación de duplicados?",
@@ -406,7 +406,8 @@
                 "noneExempt": "Ninguno / Exento"
             },
             "new": "Nuevo Tipo",
-            "title": "Tipos de Activos"
+            "title": "Tipos de Activos",
+            "empty": "Ningún tipo de activo registrado."
         },
         "assets": {
             "description": "Registra los activos que operas (Símbolo, Valor del Punto, etc).",

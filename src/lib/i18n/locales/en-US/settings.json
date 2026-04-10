@@ -116,6 +116,7 @@
                 "type": "TYPE"
             },
             "entries": "Postings",
+            "hierarchy": "Hierarchy",
             "messages": {
                 "deleteError": "Delete Error",
                 "systemLinked": "This transaction was system-generated and can only be changed in the source module (e.g., IRPF)."
@@ -406,7 +407,8 @@
                 "noneExempt": "None / Exempt"
             },
             "new": "New Type",
-            "title": "Asset Types"
+            "title": "Asset Types",
+            "empty": "No asset types registered."
         },
         "assets": {
             "description": "Register the assets you trade (Symbol, Point Value, etc.).",

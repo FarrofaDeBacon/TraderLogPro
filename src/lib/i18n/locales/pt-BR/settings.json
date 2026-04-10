@@ -116,6 +116,7 @@
                 "type": "TIPO"
             },
             "entries": "Lançamentos",
+            "hierarchy": "Hierarquia",
             "messages": {
                 "deleteError": "Delete Error",
                 "systemLinked": "Esta transação foi gerada pelo sistema e só pode ser alterada no módulo de origem (ex: IRPF)."
@@ -406,7 +407,8 @@
                 "noneExempt": "Nenhum / Isento"
             },
             "new": "Novo Tipo",
-            "title": "Tipos de Ativos"
+            "title": "Tipos de Ativos",
+            "empty": "Nenhum tipo de ativo cadastrado."
         },
         "assets": {
             "description": "Cadastre os ativos que você opera (Símbolo, Valor do Ponto, etc).",
@@ -653,7 +655,6 @@
             "new": "Novo Perfil",
             "title": "Taxas e Custos Operacionais"
         },
-
         "general": {
             "checkUpdates": "Verificar Atualizações",
             "description": "Informações do sistema e preferências globais.",

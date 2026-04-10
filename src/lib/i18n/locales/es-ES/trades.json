@@ -23,7 +23,8 @@
                 "sell": "Venta",
                 "actions_delete": "Eliminar",
                 "quantity": "Cant.",
-                "strategy": "Estrategia"
+                "strategy": "Estrategia",
+                "date": "Fecha"
             },
             "empty": {
                 "title": "Historial Vacío",
@@ -56,7 +57,11 @@
             "equityCurve": "Curva de Capital - Drawdown",
             "trades_label": "TRADES",
             "result": "Resultado",
-            "type": "Tipo"
+            "type": "Tipo",
+            "profit_factor": "Factor de Beneficio",
+            "risk_reward": "Riesgo/Retorno",
+            "summary": "Resumen de Rendimiento",
+            "win_rate": "Tasa de Acierto"
         },
         "details": {
             "title": "Detalles de la Operación",
@@ -80,7 +85,8 @@
             "partial_date": "Fecha/Hora",
             "partial_price": "Precio",
             "partial_qty": "Cant",
-            "partial_notes": "Notas"
+            "partial_notes": "Notas",
+            "contribution": "Contribución"
         },
         "wizard": {
             "title_new": "Nueva Operación",
@@ -96,12 +102,25 @@
             "sections": {
                 "context": "Contexto de la Operación",
                 "partial_management": {
-                    "title": "Gestión de Parciales"
+                    "title": "Gestión de Parciales",
+                    "add_partial": "Añadir Parcial",
+                    "addition": "Aumento",
+                    "exit": "Salida",
+                    "no_partials": "Sin parciales registradas.",
+                    "remaining": "Restante",
+                    "volume_executed": "Volumen Ejecutado"
                 },
                 "closing_data": "Datos de Cierre",
                 "psychology_analysis": "Análisis Psychológico",
                 "visual_evidence": {
-                    "title": "Evidencia Visual"
+                    "title": "Evidencia Visual",
+                    "attachment": "Adjunto",
+                    "images_added": "imágenes añadidas",
+                    "invalid_image": "Formato de imagen inválido.",
+                    "process_error": "Error al procesar imagen.",
+                    "description": "Soporte para PNG, JPG y WEBP.",
+                    "drag_drop": "ARRASTRE Y SUELTE SUS CAPTURAS AQUÍ",
+                    "select_files": "Seleccionar Archivos"
                 },
                 "final_summary": "Resumen Final",
                 "calc_memory": "Memoria de Cálculo"
@@ -171,7 +190,10 @@
                 "closure_exists_warning": "Ya existe un cierre diario para este día. El trade será agregado y el cierre se atualizará automaticamente.",
                 "rtd_sync_success": "Precio y Horario actualizados ({symbol}): {price}",
                 "rtd_not_available": "Precio no disponível en el RTD - Verifique le Profit",
-                "rtd_profit_asset_active": "Ativo Profit RTD Ativo"
+                "rtd_profit_asset_active": "Ativo Profit RTD Ativo",
+                "select_asset": "Seleccione un activo",
+                "rtd_partial_exit": "Salida Parcial vía RTD",
+                "rtd_position_addition": "Aumento de Posición vía RTD"
             },
             "risk": {
                 "alerts_title": "Alertas de Riesgo",
@@ -182,7 +204,8 @@
                 "5m": "5 Minutos",
                 "15m": "15 Minutos",
                 "60m": "60 Minutos",
-                "d": "Diario"
+                "d": "Diario",
+                "1m": "1 Minuto"
             },
             "volatility_options": {
                 "low": "Baja",
@@ -218,12 +241,43 @@
                 "na": "N/A",
                 "back": "Anterior",
                 "next": "Continuar",
-                "finish": "Finalizar Registro"
+                "finish": "Finalizar Registro",
+                "cancel": "Cancelar",
+                "net_result": "Resultado Neto",
+                "prev": "Anterior",
+                "save_trade": "Finalizar y Guardar",
+                "saving": "Guardando..."
             },
             "tooltips": {
                 "open_in_separate_window": "Abrir en ventana independiente",
                 "risk": "Riesgo",
                 "target": "Objetivo"
+            },
+            "auto_detection": {
+                "title": "Detección Automática de Operación",
+                "source": "Fuente",
+                "register": "Registrar",
+                "ignore": "Ignorar"
+            },
+            "checklist": {
+                "calm": "Estoy tranquilo y enfocado",
+                "distraction": "Sin distracciones externas",
+                "ideal_condition": "Condición ideal para operar",
+                "plan": "Plan operacional definido",
+                "ready": "Listo para operar",
+                "risk": "Riesgo definido y aceptable",
+                "sleep": "Dormí bien anoche"
+            },
+            "labels": {
+                "average": "Promedio"
+            },
+            "partials": {
+                "date_time": "Fecha/Hora",
+                "observation": "Observación",
+                "price": "Precio",
+                "quantity": "Cant",
+                "result": "Resultado",
+                "type": "Tipo"
             }
         },
         "messages": {
@@ -234,7 +288,9 @@
             "importing": "Importando historial operativo...",
             "trade_created": "¡Operación creada!",
             "trade_updated": "¡Operación actualizada!",
-            "trades_count": "operaciones"
+            "trades_count": "operaciones",
+            "invalid_result": "Resultado financiero inválido.",
+            "submission_fail": "Error en el envío."
         },
         "placeholders": {
             "all_types": "Todos los Tipos",
@@ -248,6 +304,37 @@
         },
         "sidebar": {
             "summary": "Resumen Lateral"
+        },
+        "charts": {
+            "outcome": {
+                "be": "Empate",
+                "vazio": "Sin datos",
+                "gain": "Ganancia",
+                "loss": "Pérdida"
+            },
+            "equity": {
+                "capital": "Capital Acumulado",
+                "drawdown": "Drawdown",
+                "empty": "Sin historial de evolución"
+            }
+        },
+        "quick_edit": {
+            "invalid_result": "Resultado inválido.",
+            "network_fail": "Error de conexión.",
+            "save_error": "Error al guardar.",
+            "save_success": "¡Guardado exitosamente!",
+            "asset": "Activo",
+            "bias": "Dirección (Sesgo)",
+            "date_time": "Fecha y Hora",
+            "description": "Ajuste los valores principales.",
+            "full_mode": "Modo Completo",
+            "result": "Resultado Financiero (PnL)",
+            "save": "Guardar Cambios",
+            "title": "Edición Rápida"
+        },
+        "table": {
+            "buy": "Compra",
+            "sell": "Venta"
         }
     },
     "wizard": {

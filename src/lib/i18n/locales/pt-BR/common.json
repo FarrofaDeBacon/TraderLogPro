@@ -109,7 +109,14 @@
         },
         "weeks_upper": "SEMANAS",
         "weight": "peso",
-        "yes": "Sim"
+        "yes": "Sim",
+        "account": "Conta",
+        "clear": "Limpar",
+        "no_data": "Sem Dados Disponíveis",
+        "period": {
+            "allTime": "Todo o Período"
+        },
+        "select_ellipsis": "Selecionar..."
     },
     "filters": {
         "date": {
@@ -162,7 +169,28 @@
         "unknown": "Desconhecido",
         "yes": "Sim",
         "operator": "Operador",
-        "reload": "Recarregar"
+        "reload": "Recarregar",
+        "close": "Fechar",
+        "confirmDelete": "Confirmar exclusão",
+        "currency": "Moeda",
+        "description": "Descrição",
+        "empty": "Nenhum registro encontrado",
+        "noData": "Sem dados",
+        "of": "de",
+        "records": "registros",
+        "saving": "Salvando...",
+        "show": "Mostrar",
+        "time": {
+            "month": "mês",
+            "months": "meses",
+            "year": "ano",
+            "years": "anos"
+        },
+        "weeks_upper": "SEMANAS"
+    },
+    "messages": {
+        "delete_success": "Excluído com sucesso!",
+        "delete_error": "Erro ao excluir."
     },
     "help": {
         "emptyState": "Nenhum resultado encontrado",

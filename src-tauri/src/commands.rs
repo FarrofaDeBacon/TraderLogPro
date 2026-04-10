@@ -79,12 +79,19 @@ pub async fn get_user_profile(db: State<'_, DbState>) -> Result<Option<UserProfi
             .await
             .map_err(|e| e.to_string())?;
 
-    let mut profiles: Vec<UserProfile> = result.take(0).map_err(|e| {
-        println!("[ERROR] get_user_profile deserialization failure: {}", e);
-        e.to_string()
-    })?;
+    // RESILIENCE: If deserialization fails (e.g. Invalid revision after DB reset), 
+    // we return None so the UI can proceed with onboarding/clean state.
+    let profile: Option<UserProfile> = match result.take(0) {
+        Ok(mut profiles) => {
+            let p: Vec<UserProfile> = profiles;
+            p.into_iter().next()
+        },
+        Err(e) => {
+            println!("[WARN] get_user_profile deserialization failure (likely stale revision): {}", e);
+            None
+        }
+    };
 
-    let profile = profiles.pop();
     println!(
         "[COMMAND] get_user_profile returning: {:?}",
         profile.is_some()
@@ -291,10 +298,14 @@ pub async fn get_accounts(db: State<'_, DbState>) -> Result<Vec<Account>, String
             FROM account")
             .await
             .map_err(|e| e.to_string())?;
-    let accounts: Vec<Account> = result.take(0).map_err(|e| {
-        println!("[ERROR] get_accounts deserialization failure: {}", e);
-        e.to_string()
-    })?;
+
+    let accounts: Vec<Account> = match result.take(0) {
+        Ok(accs) => accs,
+        Err(e) => {
+            println!("[WARN] get_accounts deserialization failure (likely stale revision): {}", e);
+            Vec::new()
+        }
+    };
 
     println!(
         "[COMMAND] get_accounts returning {} accounts",
@@ -360,10 +371,13 @@ pub async fn get_currencies(db: State<'_, DbState>) -> Result<Vec<Currency>, Str
         db.0.query("SELECT *, type::string(id) as id FROM currency")
             .await
             .map_err(|e| e.to_string())?;
-    let currencies: Vec<Currency> = result.take(0).map_err(|e| {
-        println!("[ERROR] get_currencies deserialization failure: {}", e);
-        e.to_string()
-    })?;
+    let currencies: Vec<Currency> = match result.take(0) {
+        Ok(c) => c,
+        Err(e) => {
+            println!("[WARN] get_currencies deserialization failure: {}", e);
+            Vec::new()
+        }
+    };
     Ok(currencies)
 }
 
@@ -396,10 +410,13 @@ pub async fn get_markets(db: State<'_, DbState>) -> Result<Vec<Market>, String> 
         db.0.query("SELECT *, type::string(id) as id FROM market")
             .await
             .map_err(|e| e.to_string())?;
-    let markets: Vec<Market> = result.take(0).map_err(|e| {
-        println!("[ERROR] get_markets deserialization failure: {}", e);
-        e.to_string()
-    })?;
+    let markets: Vec<Market> = match result.take(0) {
+        Ok(m) => m,
+        Err(e) => {
+            println!("[WARN] get_markets deserialization failure: {}", e);
+            Vec::new()
+        }
+    };
     Ok(markets)
 }
 
@@ -439,10 +456,13 @@ pub async fn get_asset_types(db: State<'_, DbState>) -> Result<Vec<AssetType>, S
         db.0.query("SELECT *, type::string(id) as id FROM asset_type")
             .await
             .map_err(|e| e.to_string())?;
-    let types: Vec<AssetType> = result.take(0).map_err(|e| {
-        println!("[ERROR] get_asset_types deserialization failure: {}", e);
-        e.to_string()
-    })?;
+    let types: Vec<AssetType> = match result.take(0) {
+        Ok(t) => t,
+        Err(e) => {
+            println!("[WARN] get_asset_types deserialization failure: {}", e);
+            Vec::new()
+        }
+    };
     Ok(types)
 }
 
@@ -486,10 +506,13 @@ pub async fn get_assets(db: State<'_, DbState>) -> Result<Vec<Asset>, String> {
         db.0.query("SELECT *, type::string(id) as id FROM asset")
             .await
             .map_err(|e| e.to_string())?;
-    let assets: Vec<Asset> = result.take(0).map_err(|e| {
-        println!("[ERROR] get_assets deserialization failure: {}", e);
-        e.to_string()
-    })?;
+    let assets: Vec<Asset> = match result.take(0) {
+        Ok(a) => a,
+        Err(e) => {
+            println!("[WARN] get_assets deserialization failure: {}", e);
+            Vec::new()
+        }
+    };
     Ok(assets)
 }
 
@@ -1738,7 +1761,8 @@ pub async fn finish_custom_onboarding(
     }
 
     // CRITICAL: Mark onboarding as completed in the database
-    db.0.query("UPDATE user_profile:main SET onboarding_completed = true RETURN NONE")
+    // Use UPSERT instead of UPDATE to handle cases where the profile record doesn't exist yet (e.g. after DB reset)
+    db.0.query("UPSERT user_profile:main SET onboarding_completed = true RETURN NONE")
         .await
         .map_err(|e| e.to_string())?;
 

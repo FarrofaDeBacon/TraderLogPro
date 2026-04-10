@@ -37,7 +37,10 @@
                 "compensated": "Compensated",
                 "operation": "Operation Type",
                 "actions": "Actions",
-                "shortNet": "Net"
+                "shortNet": "Net",
+                "alreadyGenerated": "DARF already generated for this month.",
+                "cannotDelete": "Cannot delete a paid DARF.",
+                "generateDarf": "Generate DARF"
             },
             "messages": {
                 "loading": "Loading fiscal data...",
@@ -49,7 +52,8 @@
                 "description": "Select the month and year to calculate the IRPF tax report.",
                 "month": "Reference Month",
                 "year": "Reference Year"
-            }
+            },
+            "calculating": "Calculating tax..."
         },
         "darf": {
             "title": "DARF Management",
@@ -86,17 +90,31 @@
                 "pay": "Pay DARF",
                 "view": "View DARF",
                 "delete": "Remove",
-                "unpay": "Undo Payment"
+                "unpay": "Undo Payment",
+                "cancel": "Cancel",
+                "confirmPay": "Confirm Payment",
+                "confirmUnpay": "Revert Payment"
             },
             "messages": {
                 "loading": "Loading guide history...",
                 "successPay": "DARF marked as paid and balance updated!",
                 "successDelete": "DARF successfully removed.",
-                "successUnpay": "Payment successfully undone."
+                "successUnpay": "Payment successfully undone.",
+                "emptyHistory": "No DARF generated yet."
             },
             "modal": {
                 "pay": {
                     "noAccount": "Please select an account."
+                },
+                "delete": {
+                    "title": "Delete DARF",
+                    "prompt": "Are you sure you want to delete this DARF?"
+                },
+                "unpay": {
+                    "title": "Revert Payment",
+                    "descriptionLine1": "By reverting, the DARF will return to pending status.",
+                    "descriptionLine2": "You can pay again at any time.",
+                    "descriptionLine3": "Do you want to continue?"
                 }
             }
         },
@@ -147,7 +165,8 @@
                     "select": "Select...",
                     "addModalityHint": "Click + to add a rule to a modality.",
                     "rulesByModality": "Rules by Modality",
-                    "emptyRules": "No rules added."
+                    "emptyRules": "No rules added.",
+                    "description": "Tax profile description"
                 },
                 "success": {
                     "create": "Profile created successfully.",
@@ -200,7 +219,9 @@
                     },
                     "save": "Save Rule",
                     "successSave": "Rule saved successfully!",
-                    "errorSave": "Error saving tax rule."
+                    "errorSave": "Error saving tax rule.",
+                    "basisHint": "Tax calculation basis",
+                    "withholdingBasisHint": "Withholding calculation basis"
                 }
             },
             "mappings": {

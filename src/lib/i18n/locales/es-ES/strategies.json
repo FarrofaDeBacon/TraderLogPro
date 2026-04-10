@@ -167,6 +167,47 @@
         "currency_modes": {
             "main": "Principal",
             "original": "Original"
+        },
+        "aiCockpit": {
+            "ai": {
+                "error": "Error al procesar IA.",
+                "actions": {
+                    "bias": "Sesgo",
+                    "continue": "Continuar",
+                    "maintain": "Mantener",
+                    "reduce": "Reducir"
+                },
+                "desc": "Análisis inteligente de su estrategia.",
+                "insufficientVolume": "Volumen insuficiente para análisis.",
+                "messages": {
+                    "critical": "Desempeño crítico. Considere pausar.",
+                    "hot": "Excelente desempeño. Mantenga el ritmo.",
+                    "maturing": "Estrategia en maduración."
+                },
+                "title": "IA - Análisis de Estrategia"
+            },
+            "ctaBtn": "Ver Detalles",
+            "health": {
+                "currentRisk": "Riesgo Actual",
+                "stability": "Estabilidad",
+                "status": "Estado",
+                "title": "Salud de la Estrategia"
+            },
+            "psychology": {
+                "infractionRate": "Tasa de Infracciones",
+                "title": "Psicología"
+            },
+            "values": {
+                "winRateShort": "Acierto"
+            },
+            "xray": {
+                "bestAsset": "Mejor Activo",
+                "bestSide": "Mejor Lado",
+                "bestTime": "Mejor Hora",
+                "title": "Rayo X",
+                "worstAsset": "Peor Activo",
+                "worstTime": "Peor Hora"
+            }
         }
     },
     "strategyCard": {
@@ -267,7 +308,8 @@
         },
         "tabs": {
             "dashboard": "Dashboard",
-            "dossier": "Dossier de la Estrategia"
+            "dossier": "Dossier de la Estrategia",
+            "gann": "Cuadrado de Gann"
         },
         "title": "Dashboard"
     },

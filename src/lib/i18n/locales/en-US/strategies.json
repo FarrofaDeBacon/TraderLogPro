@@ -204,7 +204,8 @@
                     "critical": "This strategy's capital is exposed to a Drawdown incompatible with the Payoff.",
                     "hot": "The system vibrates in maximum harmony. Operational and emotional flow prove directional consistency.",
                     "maturing": "Consistency in maturation. Results suffer cross-friction (Hot/Cold) between asset classes or time sessions."
-                }
+                },
+                "error": "Error processing AI."
             },
             "values": {
                 "HOT": "HOT (Active Edge)",
@@ -294,7 +295,8 @@
         },
         "tabs": {
             "dashboard": "Dashboard",
-            "dossier": "Strategy Dossier"
+            "dossier": "Strategy Dossier",
+            "gann": "Gann Square"
         },
         "title": "Dashboard"
     },

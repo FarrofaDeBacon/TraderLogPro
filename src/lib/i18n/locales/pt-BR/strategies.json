@@ -204,7 +204,8 @@
                     "critical": "O capital desta estratégia está exposto a um Drawdown incompatível com o Payoff.",
                     "hot": "O sistema vibra em harmonia máxima. O fluxo operacional e emocional provam consistência direcional.",
                     "maturing": "Consistência em maturação. Resultados sofrem atrito cruzado (Quente/Frio) entre classes de ativos ou sessões horárias."
-                }
+                },
+                "error": "Erro ao processar IA."
             },
             "values": {
                 "HOT": "QUENTE (Edge Ativo)",

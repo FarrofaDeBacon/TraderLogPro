@@ -107,10 +107,11 @@
                 "account": "Compte",
                 "amount": "Montant",
                 "date": "Date",
-                "description": "Description",
-                "type": "Type"
+                "description": "DESCRIPTION",
+                "type": "TYPE"
             },
             "entries": "Écritures",
+            "hierarchy": "Hiérarchie",
             "messages": {
                 "deleteError": "Delete Error",
                 "systemLinked": "Cette transaction a été générée par le système et ne peut être modifiée que dans le module source (ex: IRPF)."
@@ -405,7 +406,8 @@
                 "noneExempt": "Aucun / Exempt"
             },
             "new": "Nouveau Type",
-            "title": "Types d'Actifs"
+            "title": "Types d'Actifs",
+            "empty": "Aucun type d'actif enregistré."
         },
         "assets": {
             "description": "Enregistrez les actifs tradés (Symbole, Valeur du Point, etc).",

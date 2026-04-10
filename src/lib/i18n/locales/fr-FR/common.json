@@ -109,7 +109,13 @@
         },
         "weeks_upper": "SEMAINES",
         "weight": "poids",
-        "yes": "Oui"
+        "yes": "Oui",
+        "account": "Compte",
+        "clear": "Effacer",
+        "no_data": "Aucune Donnée Disponible",
+        "period": {
+            "allTime": "Toute la Période"
+        }
     },
     "filters": {
         "date": {
@@ -153,7 +159,37 @@
         "unknown": "Inconnu",
         "yes": "Oui",
         "operator": "Opérateur",
-        "reload": "Recharger"
+        "reload": "Recharger",
+        "all": "Général",
+        "asset": "Actif",
+        "close": "Fermer",
+        "confirmDelete": "Confirmer la suppression",
+        "currency": "Devise",
+        "date": "Date",
+        "description": "Description",
+        "destination": "Destination",
+        "details": "Détails",
+        "empty": "Aucun enregistrement trouvé",
+        "from": "De",
+        "noData": "Pas de données",
+        "of": "de",
+        "optional": "Optionnel",
+        "origin": "Origine",
+        "records": "enregistrements",
+        "saving": "Enregistrement...",
+        "show": "Afficher",
+        "time": {
+            "month": "mois",
+            "months": "mois",
+            "year": "an",
+            "years": "ans"
+        },
+        "to": "Pour",
+        "weeks_upper": "SEMAINES"
+    },
+    "messages": {
+        "delete_success": "Supprimé avec succès !",
+        "delete_error": "Erreur lors de la suppression."
     },
     "help": {
         "emptyState": "Aucun résultat trouvé",

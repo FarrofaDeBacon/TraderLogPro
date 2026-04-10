@@ -37,7 +37,10 @@
                 "compensated": "Compensado",
                 "operation": "Tipo de Operação",
                 "actions": "Ações",
-                "shortNet": "Líquido"
+                "shortNet": "Líquido",
+                "alreadyGenerated": "DARF já gerada para este mês.",
+                "cannotDelete": "Não é possível excluir uma DARF paga.",
+                "generateDarf": "Gerar DARF"
             },
             "messages": {
                 "loading": "Carregando apuração fiscal...",
@@ -89,17 +92,29 @@
                 "delete": "Remover",
                 "unpay": "Desfazer Pagamento",
                 "cancel": "Cancelar",
-                "confirmPay": "Confirmar Pagamento"
+                "confirmPay": "Confirmar Pagamento",
+                "confirmUnpay": "Reverter Pagamento"
             },
             "messages": {
                 "loading": "Carregando histórico de guias...",
                 "successPay": "DARF marcada como paga e saldo atualizado!",
                 "successDelete": "DARF removida com sucesso.",
-                "successUnpay": "Pagamento desfeito com sucesso."
+                "successUnpay": "Pagamento desfeito com sucesso.",
+                "emptyHistory": "Nenhuma DARF gerada ainda."
             },
             "modal": {
                 "pay": {
                     "noAccount": "Por favor, selecione uma conta."
+                },
+                "delete": {
+                    "title": "Excluir DARF",
+                    "prompt": "Tem certeza que deseja excluir esta DARF?"
+                },
+                "unpay": {
+                    "title": "Reverter Pagamento",
+                    "descriptionLine1": "Ao reverter, a DARF voltará ao status de pendente.",
+                    "descriptionLine2": "Você poderá pagar novamente a qualquer momento.",
+                    "descriptionLine3": "Deseja continuar?"
                 }
             }
         },
@@ -150,7 +165,8 @@
                     "select": "Selecionar...",
                     "addModalityHint": "Clique em + para adicionar uma regra a uma modalidade.",
                     "rulesByModality": "Regras por Modalidade",
-                    "emptyRules": "Nenhuma regra adicionada."
+                    "emptyRules": "Nenhuma regra adicionada.",
+                    "description": "Descrição do perfil fiscal"
                 },
                 "success": {
                     "create": "Perfil criado com sucesso.",
@@ -203,7 +219,9 @@
                     },
                     "save": "Salvar Regra",
                     "successSave": "Regra salva com sucesso!",
-                    "errorSave": "Erro ao salvar a regra fiscal."
+                    "errorSave": "Erro ao salvar a regra fiscal.",
+                    "basisHint": "Base de cálculo do imposto",
+                    "withholdingBasisHint": "Base de cálculo da retenção"
                 }
             },
             "mappings": {

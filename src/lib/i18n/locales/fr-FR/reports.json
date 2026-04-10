@@ -4,7 +4,12 @@
             "noCriticalBehaviors": "Aucun comportement critique détecté au cours de la période."
         },
         "reflection": {
-            "reviewMissing": "Trading effectué sans revue subjective. Réduit les paramètres de l'auditeur."
+            "reviewMissing": "Trading effectué sans revue subjective. Réduit les paramètres de l'auditeur.",
+            "extractsTitle": "Extraits de Réflexion",
+            "noNotes": "Aucune note enregistrée.",
+            "noVolume": "Pas de volume de données.",
+            "reviewCountLabel": "Révisions effectuées",
+            "rhythmTitle": "Rythme Opérationnel"
         },
         "daily": {
             "actions": {
@@ -73,7 +78,8 @@
             "tradeVolume": "Volume (Transactions)",
             "unbreakableDiscipline": "Discipline Pure",
             "unsupportedEvaluations": "Évaluations génériques invisibles pour l'analyse NLP.",
-            "winRate": "Win Rate Parfait"
+            "winRate": "Win Rate Parfait",
+            "trades": "Opérations"
         },
         "scoreUnavailable": "N/D",
         "ui": {
@@ -138,6 +144,9 @@
                 "criticalPoint": "Majeur",
                 "requiredFocus": "Correction Demandée"
             }
+        },
+        "ai": {
+            "error_no_config": "Configurez l'IA dans les paramètres."
         }
     }
 }

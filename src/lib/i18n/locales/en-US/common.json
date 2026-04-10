@@ -109,7 +109,14 @@
         },
         "weeks_upper": "WEEKS",
         "weight": "weight",
-        "yes": "Yes"
+        "yes": "Yes",
+        "account": "Account",
+        "clear": "Clear",
+        "no_data": "No Data Available",
+        "period": {
+            "allTime": "All Time"
+        },
+        "select_ellipsis": "Select..."
     },
     "filters": {
         "date": {
@@ -155,7 +162,35 @@
         "unknown": "Unknown",
         "yes": "Yes",
         "operator": "Operator",
-        "reload": "Reload"
+        "reload": "Reload",
+        "close": "Close",
+        "confirmDelete": "Confirm deletion",
+        "currency": "Currency",
+        "date": "Date",
+        "description": "Description",
+        "destination": "Destination",
+        "details": "Details",
+        "empty": "No records found",
+        "from": "From",
+        "noData": "No data",
+        "of": "of",
+        "optional": "Optional",
+        "origin": "Origin",
+        "records": "records",
+        "saving": "Saving...",
+        "show": "Show",
+        "time": {
+            "month": "month",
+            "months": "months",
+            "year": "year",
+            "years": "years"
+        },
+        "to": "To",
+        "weeks_upper": "WEEKS"
+    },
+    "messages": {
+        "delete_success": "Deleted successfully!",
+        "delete_error": "Error deleting."
     },
     "help": {
         "emptyState": "No results found",

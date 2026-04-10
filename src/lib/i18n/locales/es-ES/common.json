@@ -107,9 +107,16 @@
             "weekly": "Semanal",
             "weeklyShort": "S"
         },
+        "select_ellipsis": "Seleccionar...",
         "weeks_upper": "SEMANAS",
         "weight": "peso",
-        "yes": "Sí"
+        "yes": "Sí",
+        "account": "Cuenta",
+        "clear": "Limpiar",
+        "no_data": "Sin Datos Disponibles",
+        "period": {
+            "allTime": "Todo el Período"
+        }
     },
     "filters": {
         "date": {
@@ -153,7 +160,37 @@
         "unknown": "Desconocido",
         "yes": "Sí",
         "operator": "Operador",
-        "reload": "Recargar"
+        "reload": "Recargar",
+        "all": "General",
+        "asset": "Activo",
+        "close": "Cerrar",
+        "confirmDelete": "Confirmar eliminación",
+        "currency": "Moneda",
+        "date": "Fecha",
+        "description": "Descripción",
+        "destination": "Destino",
+        "details": "Detalles",
+        "empty": "Ningún registro encontrado",
+        "from": "De",
+        "noData": "Sin datos",
+        "of": "de",
+        "optional": "Opcional",
+        "origin": "Origen",
+        "records": "registros",
+        "saving": "Guardando...",
+        "show": "Mostrar",
+        "time": {
+            "month": "mes",
+            "months": "meses",
+            "year": "año",
+            "years": "años"
+        },
+        "to": "Para",
+        "weeks_upper": "SEMANAS"
+    },
+    "messages": {
+        "delete_success": "¡Eliminado con éxito!",
+        "delete_error": "Error al eliminar."
     },
     "help": {
         "emptyState": "No se encontraron resultados",

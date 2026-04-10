@@ -20,7 +20,11 @@
                 "ruinRisk": "Riesgo de Ruina (Downside)",
                 "registeredViolations": "Violaciones Registradas",
                 "pendingMissions": "Misiones Pendientes",
-                "emotionalSupervisor": "Supervisor Emocional"
+                "emotionalSupervisor": "Supervisor Emocional",
+                "dailyLoss": "Pérdida Diaria",
+                "drawdown": "Drawdown",
+                "operationalRules": "Reglas Operacionales",
+                "survivalRules": "Reglas de Supervivencia"
             },
             "stats": {
                 "globalLimit": "Límite Global",
@@ -108,7 +112,8 @@
                 "templateDesc": "Use an existing profile as a starting point.",
                 "contracts": "Contratos",
                 "fixed_capital": "Fixed Capital",
-                "linked_account_id": "Linked Account ID"
+                "linked_account_id": "Linked Account ID",
+                "maxDailyLoss": "Pérdida Diaria Máxima"
             },
             "hierarchy": {
                 "title": "Execution Hierarchy (Rule Priority)",
@@ -116,6 +121,11 @@
                 "asset": "2. ASSET LIMITS (OVERRIDES)",
                 "growth": "3. GROWTH PLAN (LOT SCALING)",
                 "rules": "4. DYNAMIC RULES"
+            },
+            "active": "Activo",
+            "new": "Nuevo Perfil de Riesgo",
+            "scope": {
+                "assets": "Activos"
             }
         },
         "scope": {
@@ -239,7 +249,8 @@
                 "restart": "Restart Plan",
                 "restartConfirm": "Deseja realmente reiniciar o plano para a Fase 1?",
                 "promote": "Promover Fase"
-            }
+            },
+            "planNameLabel": "Nombre del Plan"
         },
         "ruleBuilder": {
             "title": "Reglas de Protección Dinámica",
@@ -301,7 +312,8 @@
             "linkedAssetProfilesDesc": "Apply global rules to specific asset profiles.",
             "assetProfileSelector": "Select Asset Profile...",
             "noLinkedAssetProfiles": "No links.",
-            "removeAssetProfile": "Remove"
+            "removeAssetProfile": "Remove",
+            "phases": "Fases del Plan"
         },
         "profiles": {
             "active": "Active",
@@ -344,11 +356,53 @@
                     "margin_building": "Construção de Margem",
                     "real_phase_1": "Fase 1 (Real)",
                     "real_final": "Conta Profissional"
+                },
+                "title": "Mesa Propietaria",
+                "desc": "Configuración de mesa propietaria y reglas de progresión.",
+                "enable": "Activar Mesa",
+                "planName": "Nombre del Plan",
+                "planNamePlaceholder": "Ej: Plan Conservador",
+                "auditTitle": "Auditoría de la Mesa",
+                "currentStage": "Etapa Actual",
+                "maintenance": "Mantenimiento",
+                "modes": {
+                    "fixed": "Fijo",
+                    "percent_of_margin": "% del Margen"
+                },
+                "metrics": {
+                    "totalProfit": "Beneficio Total",
+                    "operatedDays": "Días Operados",
+                    "positiveDays": "Días Positivos",
+                    "bestDayShare": "% Mejor Día"
+                },
+                "progression": {
+                    "title": "Progresión",
+                    "current": "Etapa actual",
+                    "can_advance": "Puede avanzar",
+                    "should_remain": "Debe permanecer"
+                },
+                "status": {
+                    "passed": "Aprobado",
+                    "failed": "Reprobado",
+                    "pending": "Pendiente"
                 }
             },
             "targetType": {
                 "max_daily_loss": "Tipo de Limite Diário"
-            }
+            },
+            "active": "Regla Activa",
+            "advanced": {
+                "title": "Configuración Avanzada"
+            },
+            "combined": {
+                "title": "Reglas Combinadas",
+                "add": "Añadir Regla",
+                "name": "Nombre de la Regla",
+                "namePlaceholder": "Ej: Regla de Drawdown Semanal",
+                "none": "Ninguna regla definida.",
+                "linkedProfiles": "Perfiles Vinculados"
+            },
+            "ruleNamePlaceholder": "Nombre de la regla..."
         },
         "states": {
             "evolutionRequirements": "Requisitos Pendientes para Evolución",
@@ -368,14 +422,24 @@
             "saveSuccess": "Configuración de riesgo guardada con éxito.",
             "deskAdvanceSuccess": "¡Enhorabuena! Etapa de Mesa avanzada con éxito.",
             "restartConfirm": "¿Seguro que quieres reiniciar el progreso?",
-            "deleteDesc": "Esta acción eliminará de forma permanente el perfil de riesgo."
+            "deleteDesc": "Esta acción eliminará de forma permanente el perfil de riesgo.",
+            "nextPhaseFallback": "Fase final alcanzada.",
+            "removePhase": "¿Eliminar esta fase?",
+            "restartSuccess": "¡Plan reiniciado exitosamente!"
         },
         "form": {
             "active": "Activa",
             "inactive": "Inactiva",
             "and": "y",
             "assetProfileSelector": "Seleccione perfiles de activos...",
-            "accountsTitle": "Cuentas de Referencia"
+            "accountsTitle": "Cuentas de Referencia",
+            "labels": {
+                "capitalBase": "Capital Base",
+                "dailyLoss": "Pérdida Diaria Máxima",
+                "dailyTarget": "Meta Diaria",
+                "profileName": "Nombre del Perfil",
+                "riskPerTrade": "Riesgo por Operación"
+            }
         },
         "title": "Risk Management",
         "description": "Define your parameters, limits and protection rules to trade safely.",
@@ -398,7 +462,27 @@
             "actions": {
                 "promote": "PROMOTE TO NEXT PHASE",
                 "demote": "DEMOTE PHASE"
-            }
+            },
+            "addPhase": "Añadir Fase",
+            "maxLotsLabel": "Lote Máximo",
+            "metrics": {
+                "consistency": "Consistencia",
+                "dailyLoss": "Pérdida Diaria",
+                "dailyTarget": "Meta Diaria",
+                "days": "Días",
+                "drawdown": "Drawdown",
+                "lossStreak": "Racha de Pérdidas",
+                "profit": "Beneficio",
+                "totalTarget": "Meta Total",
+                "winRate": "Tasa de Acierto"
+            },
+            "phaseNameLabel": "Nombre de la Fase",
+            "phases": "Fases de Crecimiento"
+        },
+        "growthPlans": {
+            "title": "Planes de Crecimiento",
+            "description": "Gestione sus planes de crecimiento progresivo.",
+            "new": "Nuevo Plan"
         }
     }
 }

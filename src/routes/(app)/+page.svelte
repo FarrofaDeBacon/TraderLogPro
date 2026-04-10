@@ -268,7 +268,7 @@
       <!-- OPERATIONAL COCKPIT STATUS (Dense Grid - Assistant + Radar) -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-4">
         <!-- Quick Log (8 cols) -->
-        <div class="lg:col-span-8 bg-card/60 rounded-xl p-0 border border-border/60 shadow-sm flex flex-col justify-center overflow-hidden">
+        <div class="lg:col-span-8 bg-card/60 rounded-xl p-0 border border-border/60 shadow-sm flex flex-col justify-center overflow-visible relative z-[20]">
           <QuickLog />
         </div>
 

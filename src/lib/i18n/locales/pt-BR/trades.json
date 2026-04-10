@@ -57,7 +57,11 @@
             "bias": "Direção (Bias)",
             "result": "Resultado Financeiro (PnL)",
             "full_mode": "Modo Completo",
-            "save": "Salvar Alterações"
+            "save": "Salvar Alterações",
+            "invalid_result": "Resultado inválido.",
+            "network_fail": "Falha na conexão.",
+            "save_error": "Erro ao salvar.",
+            "save_success": "Salvo com sucesso!"
         },
         "kpi": {
             "totalBalance": "Saldo Total",
@@ -83,7 +87,9 @@
             "outcome": {
                 "trades_label": "{count} Trades",
                 "gain": "Ganho",
-                "loss": "Loss"
+                "loss": "Loss",
+                "be": "Empate",
+                "vazio": "Sem dados"
             },
             "equity": {
                 "capital": "Capital Acumulado",
@@ -113,7 +119,8 @@
             "partial_date": "Data/Hora",
             "partial_price": "Preço",
             "partial_qty": "Qtd",
-            "partial_notes": "Notas"
+            "partial_notes": "Notas",
+            "contribution": "Contribuição"
         },
         "wizard": {
             "title_new": "Novo Trade",
@@ -143,7 +150,11 @@
                     "title": "Evidência Visual",
                     "drag_drop": "ARRASTE E SOLTE SEUS PRINTS AQUI",
                     "description": "Suporte para PNG, JPG e WEBP.",
-                    "select_files": "Selecionar Arquivos"
+                    "select_files": "Selecionar Arquivos",
+                    "attachment": "Anexo",
+                    "images_added": "imagens adicionadas",
+                    "invalid_image": "Formato de imagem inválido.",
+                    "process_error": "Erro ao processar imagem."
                 },
                 "final_summary": "Resumo da Operação",
                 "calc_memory": "Memória de Cálculo"
@@ -226,7 +237,8 @@
                 "rtd_not_available": "Cotação em tempo real não disponível para este ativo.",
                 "rtd_profit_asset_active": "Ativo Ativo no Profit",
                 "rtd_position_addition": "Aumento de Posição via RTD",
-                "rtd_partial_exit": "Saída Parcial via RTD"
+                "rtd_partial_exit": "Saída Parcial via RTD",
+                "select_asset": "Selecione um ativo"
             },
             "risk": {
                 "alerts_title": "Alertas de Risco",
@@ -286,6 +298,21 @@
                 "open_in_separate_window": "Abrir em janela separada",
                 "risk": "Risco",
                 "target": "Alvo"
+            },
+            "auto_detection": {
+                "title": "Detecção Automática de Trade",
+                "source": "Fonte",
+                "register": "Registrar",
+                "ignore": "Ignorar"
+            },
+            "checklist": {
+                "calm": "Estou calmo e focado",
+                "distraction": "Sem distrações externas",
+                "ideal_condition": "Condição ideal para operar",
+                "plan": "Plano operacional definido",
+                "ready": "Pronto para operar",
+                "risk": "Risco definido e aceitável",
+                "sleep": "Dormi bem na noite anterior"
             }
         },
         "messages": {
@@ -317,6 +344,10 @@
         },
         "sidebar": {
             "summary": "Resumo Lateral"
+        },
+        "table": {
+            "buy": "Compra",
+            "sell": "Venda"
         }
     }
 }

@@ -4,7 +4,12 @@
             "noCriticalBehaviors": "No se detectaron comportamientos críticos en el período. Rotación operativa neutral."
         },
         "reflection": {
-            "reviewMissing": "Usted operó sin registrar una revisión diaria. Esto reduce la capacidad de auditoría y aprendizaje del período."
+            "reviewMissing": "Usted operó sin registrar una revisión diaria. Esto reduce la capacidad de auditoría y aprendizaje del período.",
+            "extractsTitle": "Extractos de Reflexión",
+            "noNotes": "Sin notas registradas.",
+            "noVolume": "Sin volumen de datos.",
+            "reviewCountLabel": "Revisiones realizadas",
+            "rhythmTitle": "Ritmo Operacional"
         },
         "daily": {
             "actions": {
@@ -73,7 +78,8 @@
             "tradeVolume": "Volumen de Trades",
             "unbreakableDiscipline": "Disciplina Inquebrantable",
             "unsupportedEvaluations": "Evaluaciones sin textos descriptivos.",
-            "winRate": "Tasa de Acierto"
+            "winRate": "Tasa de Acierto",
+            "trades": "Operaciones"
         },
         "scoreUnavailable": "Puntuación no disponible sin volumen operativo.",
         "ui": {
@@ -138,6 +144,9 @@
                 "criticalPoint": "Punto Crítico",
                 "requiredFocus": "Foco Táctico"
             }
+        },
+        "ai": {
+            "error_no_config": "Configure la IA en ajustes."
         }
     }
 }

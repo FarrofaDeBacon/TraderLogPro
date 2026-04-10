@@ -415,7 +415,8 @@
             "linkedAssetProfilesDesc": "Aplica regras globais a perfis específicos de ativos.",
             "assetProfileSelector": "Selecionar Perfil de Ativo...",
             "noLinkedAssetProfiles": "Nenhum vínculo.",
-            "removeAssetProfile": "Remover"
+            "removeAssetProfile": "Remover",
+            "phases": "Fases do Plano"
         },
         "accountTypes": {
             "All": "Todas as Contas",
@@ -464,7 +465,8 @@
                 "drawdownAccumulate": "Drawdown é baseado no pico (High-Water Mark).",
                 "targetReset": "A meta reseta a cada nova fase alcançada.",
                 "targetCumulative": "A meta é acumulada desde o início do plano."
-            }
+            },
+            "planNameLabel": "Nome do Plano"
         },
         "ruleBuilder": {
             "title": "Regras Adicionais",
@@ -538,6 +540,11 @@
                 "no_psych_filters": "Filtros psicológicos desativados. Risco de escalada emocional.",
                 "no_blocking_rules": "Nenhuma regra de bloqueio avançada definida."
             }
+        },
+        "growthPlans": {
+            "title": "Planos de Crescimento",
+            "description": "Gerencie seus planos de crescimento progressivo.",
+            "new": "Novo Plano"
         }
     }
 }

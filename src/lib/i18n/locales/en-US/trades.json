@@ -57,7 +57,11 @@
             "bias": "Direction (Bias)",
             "result": "Financial Result (PnL)",
             "full_mode": "Full Mode",
-            "save": "Save Changes"
+            "save": "Save Changes",
+            "invalid_result": "Invalid result.",
+            "network_fail": "Connection failed.",
+            "save_error": "Error saving.",
+            "save_success": "Saved successfully!"
         },
         "kpi": {
             "totalBalance": "Total Balance",
@@ -83,7 +87,9 @@
             "outcome": {
                 "trades_label": "{count} Trades",
                 "gain": "Gain",
-                "loss": "Loss"
+                "loss": "Loss",
+                "be": "Break Even",
+                "vazio": "No data"
             },
             "equity": {
                 "capital": "Accumulated Capital",
@@ -113,7 +119,8 @@
             "partial_date": "Date/Time",
             "partial_price": "Price",
             "partial_qty": "Qty",
-            "partial_notes": "Notes"
+            "partial_notes": "Notes",
+            "contribution": "Contribution"
         },
         "wizard": {
             "title_new": "New Trade",
@@ -143,7 +150,11 @@
                     "title": "Visual Evidence",
                     "drag_drop": "DRAG AND DROP YOUR SCREENSHOTS HERE",
                     "description": "Supports PNG, JPG, and WEBP.",
-                    "select_files": "Select Files"
+                    "select_files": "Select Files",
+                    "attachment": "Attachment",
+                    "images_added": "images added",
+                    "invalid_image": "Invalid image format.",
+                    "process_error": "Error processing image."
                 },
                 "final_summary": "Final Summary",
                 "calc_memory": "Calculation Memory"
@@ -226,7 +237,8 @@
                 "rtd_not_available": "Real-time quote not available for this asset.",
                 "rtd_profit_asset_active": "Asset Active in Profit",
                 "rtd_position_addition": "Position Addition via RTD",
-                "rtd_partial_exit": "Partial Exit via RTD"
+                "rtd_partial_exit": "Partial Exit via RTD",
+                "select_asset": "Select an asset"
             },
             "risk": {
                 "alerts_title": "Risk Alerts",
@@ -286,6 +298,21 @@
                 "open_in_separate_window": "Open in separate window",
                 "risk": "Risk",
                 "target": "Target"
+            },
+            "auto_detection": {
+                "title": "Automatic Trade Detection",
+                "source": "Source",
+                "register": "Register",
+                "ignore": "Ignore"
+            },
+            "checklist": {
+                "calm": "I am calm and focused",
+                "distraction": "No external distractions",
+                "ideal_condition": "Ideal condition to operate",
+                "plan": "Operational plan defined",
+                "ready": "Ready to operate",
+                "risk": "Risk defined and acceptable",
+                "sleep": "I slept well last night"
             }
         },
         "messages": {
@@ -317,6 +344,10 @@
         },
         "sidebar": {
             "summary": "Sidebar Summary"
+        },
+        "table": {
+            "buy": "Buy",
+            "sell": "Sell"
         }
     }
 }

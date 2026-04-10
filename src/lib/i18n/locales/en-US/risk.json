@@ -110,7 +110,9 @@
                 "consistency": "Consistency",
                 "drawdown": "Max Drawdown",
                 "dailyLoss": "Daily Loss",
-                "lossStreak": "Consecutive Loss Days"
+                "lossStreak": "Consecutive Loss Days",
+                "dailyTarget": "Daily Target",
+                "totalTarget": "Total Target"
             },
             "requirements": {
                 "profit": "Retained Profit",
@@ -413,7 +415,8 @@
             "linkedAssetProfilesDesc": "Applies global rules to specific asset profiles.",
             "assetProfileSelector": "Select Asset Profile...",
             "noLinkedAssetProfiles": "No link.",
-            "removeAssetProfile": "Remove"
+            "removeAssetProfile": "Remove",
+            "phases": "Plan Phases"
         },
         "accountTypes": {
             "All": "All Accounts",
@@ -462,7 +465,8 @@
                 "drawdownAccumulate": "Drawdown is based on the peak (High-Water Mark).",
                 "targetReset": "The target resets with each new phase reached.",
                 "targetCumulative": "The target is accumulated since the start of the plan."
-            }
+            },
+            "planNameLabel": "Plan Name"
         },
         "ruleBuilder": {
             "title": "Additional Rules",
@@ -522,6 +526,11 @@
                 "no_psych_filters": "Psychological filters disabled. Risk of emotional escalation.",
                 "no_blocking_rules": "No advanced blocking rules defined."
             }
+        },
+        "growthPlans": {
+            "title": "Growth Plans",
+            "description": "Manage your progressive growth plans.",
+            "new": "New Plan"
         }
     }
 }

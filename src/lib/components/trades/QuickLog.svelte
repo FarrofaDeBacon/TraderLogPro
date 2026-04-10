@@ -9,6 +9,7 @@
     import { riskStore } from "$lib/stores/riskStore.svelte";
     import { getLiveIntervention } from "$lib/domain/insights/insights-engine";
     import { toLocalDateStr } from "$lib/domain/risk/risk-utils";
+    import { SystemCard } from "$lib/components/ui/system";
     import {
         Zap,
         TrendingUp,
@@ -18,8 +19,10 @@
         Plus,
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
+    import * as Select from "$lib/components/ui/select";
 
     let dateInput = $state(toLocalDateStr(new Date()) + "T" + `${String(new Date().getHours()).padStart(2, "0")}:${String(new Date().getMinutes()).padStart(2, "0")}`);
+    let selectedAccountId = $state("");
     let selectedAssetTypeId = $state("");
     let asset = $state("");
     let direction = $state<"Buy" | "Sell">("Buy");
@@ -28,6 +31,13 @@
     let entryPriceInput = $state("");
     let isSubmitting = $state(false);
     let resultInputRef = $state<HTMLInputElement | null>(null);
+
+    // Initialize selections from stores if available
+    $effect(() => {
+        if (!selectedAccountId && accountsStore.accounts.length > 0) {
+            selectedAccountId = accountsStore.accounts[0].id;
+        }
+    });
 
     // Auto-calculate exit price from entry price + result
     let computedExitPrice = $derived.by(() => {
@@ -69,7 +79,7 @@
                 asset_symbol: asset.toUpperCase(),
                 asset_type_id: selectedAssetTypeId || "",
                 strategy_id: workspaceStore.strategies[0]?.id || "",
-                account_id: accountsStore.accounts[0]?.id || "",
+                account_id: selectedAccountId || accountsStore.accounts[0]?.id || "",
                 result: rawResult,
                 quantity: parseInt(quantityInput) || 1,
                 direction,
@@ -100,7 +110,7 @@
     }
 </script>
 
-<div class="w-full bg-background/20 border-l-4 border-l-emerald-500 border-y border-r border-border/40 rounded-r-xl h-14 flex items-center px-4 gap-4 group/card transition-all hover:bg-background/40 relative overflow-hidden shadow-2xl backdrop-blur-xl">
+<SystemCard status="success" class="w-full !overflow-visible py-3 flex items-center px-6 gap-6 relative z-[100] min-h-[72px] transition-all hover:bg-card/80">
     <!-- Identity Section (Integrated Inline) -->
     <div class="flex items-center gap-2 shrink-0 border-r border-border/20 pr-4 h-8">
         <div class="w-7 h-7 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
@@ -113,79 +123,99 @@
     </div>
 
     <!-- Inputs Strip (SINGLE ROW FLOW) -->
-    <div class="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
-        <!-- Date/Time Pill -->
-        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[130px] relative hover:border-primary/40 transition-all">
-            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">DATA/HORA</span>
-            <input type="datetime-local" bind:value={dateInput} class="bg-transparent border-none p-0 mt-3 text-[9px] font-black uppercase outline-none focus:ring-0 w-full text-foreground/70 cursor-pointer inv-input" />
-        </div>
-
-        <!-- Asset Type Pill -->
-        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[100px] relative hover:border-primary/40 transition-all cursor-pointer">
-            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">TIPO</span>
-            <select bind:value={selectedAssetTypeId} class="bg-transparent border-none p-0 mt-3 text-[9px] font-black uppercase outline-none focus:ring-0 cursor-pointer w-full appearance-none pr-4 text-foreground/70">
-                <option value="" class="bg-slate-900">TODOS</option>
-                {#each assetTypesStore.assetTypes as type}
-                    <option value={type.id} class="bg-slate-900">{type.name}</option>
-                {/each}
-            </select>
-        </div>
-
-        <!-- Asset Pill -->
-        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[100px] relative hover:border-primary/40 transition-all">
-            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">ATIVO</span>
-            <select bind:value={asset} class="bg-transparent border-none p-0 mt-3 text-[9px] font-black uppercase outline-none focus:ring-0 cursor-pointer w-full appearance-none pr-4 text-foreground/70 uppercase">
-                <option value="" class="bg-slate-900">SELEC</option>
-                {#each filteredAssets as a}
-                    <option value={a.symbol} class="bg-slate-900">{a.symbol}</option>
-                {/each}
-            </select>
-        </div>
-
-        <!-- Direction Toggle (Ultra Compact) -->
-        <div class="h-9 p-0.5 bg-black/40 border border-border/40 rounded-lg flex items-center gap-0.5 shrink-0">
-            <button onclick={() => (direction = "Buy")} class="h-full px-2.5 rounded flex items-center gap-1.5 transition-all {direction === 'Buy' ? 'bg-emerald-500 text-[#064e3b] font-black shadow-lg shadow-emerald-500/20' : 'text-muted-foreground/30 hover:text-emerald-400'}">
-                <TrendingUp class="w-3 h-3" />
-                <span class="text-[8px] font-black">COMPRA</span>
-            </button>
-            <button onclick={() => (direction = "Sell")} class="h-full px-2.5 rounded flex items-center gap-1.5 transition-all {direction === 'Sell' ? 'bg-rose-500 text-[#4c0519] font-black shadow-lg shadow-rose-500/20' : 'text-muted-foreground/30 hover:text-rose-400'}">
-                <TrendingDown class="w-3 h-3" />
-                <span class="text-[8px] font-black">VENDA</span>
-            </button>
-        </div>
-
-        <!-- Qty Pill -->
-        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[60px] relative hover:border-primary/40 transition-all">
-            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">QTD</span>
-            <input type="number" bind:value={quantityInput} min="1" class="bg-transparent border-none p-0 mt-3 text-[9px] font-black outline-none focus:ring-0 w-full text-foreground/70" />
-        </div>
-
-        <!-- Entry Price Pill -->
-        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[90px] relative hover:border-primary/40 transition-all">
-            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">ENTRADA</span>
-            <input bind:value={entryPriceInput} placeholder="0.00" class="bg-transparent border-none p-0 mt-3 text-[9px] font-black tabular-nums outline-none focus:ring-0 w-full text-foreground/70" onkeydown={handleKeydown} />
-        </div>
-
-        <!-- PL Pill -->
-        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[110px] relative hover:border-emerald-500/40 transition-all">
-            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">RESULTADO</span>
-            <div class="flex items-center gap-1 mt-3">
-                <span class="text-[8px] font-black opacity-20">R$</span>
-                <input bind:value={resultInput} bind:this={resultInputRef} placeholder="0.00" class="bg-transparent border-none p-0 text-[9px] font-black tabular-nums outline-none focus:ring-0 w-full {resultInput.startsWith('-') ? 'text-rose-400' : 'text-emerald-400'}" onkeydown={handleKeydown} />
+    <div class="flex-1 flex items-end gap-3 py-1">
+        <!-- Date/Time Field -->
+        <div class="flex flex-col gap-1.5 min-w-[130px] shrink-0">
+            <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/30 px-1">{$t("common.date")}</span>
+            <div class="h-8 px-4 bg-white/[0.03] border border-white/5 rounded-full flex items-center hover:border-white/20 transition-all">
+                <input type="datetime-local" bind:value={dateInput} class="bg-transparent border-none p-0 text-[10px] font-black outline-none focus:ring-0 w-full text-foreground/70 cursor-pointer inv-input" />
             </div>
         </div>
 
-        <!-- Computed Exit Price (Read-only indicator) -->
-        {#if computedExitPrice !== null}
-        <div class="h-9 px-2.5 bg-black/20 border border-dashed border-border/30 rounded-lg flex flex-col justify-center min-w-[80px] relative shrink-0">
-            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/30 absolute top-1 left-2.5">SAÍDA</span>
-            <span class="mt-3 text-[9px] font-black tabular-nums {computedExitPrice > parseFloat(entryPriceInput.replace(',','.')) ? 'text-emerald-400' : 'text-rose-400'}">{computedExitPrice.toFixed(2)}</span>
+        <!-- Account Slot/Pill -->
+        <div class="flex flex-col gap-1.5 min-w-[140px] shrink-0">
+            <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/30 px-1">{$t("common.account")}</span>
+            <Select.Root type="single" bind:value={selectedAccountId}>
+                <Select.Trigger class="h-8 px-4 bg-white/[0.03] border border-white/5 rounded-full hover:border-white/20 transition-all text-[9px] font-black shadow-inner flex items-center justify-between gap-1 w-full text-foreground/70 ring-0 focus:ring-0">
+                    <span class="truncate">{accountsStore.accounts.find(a => a.id === selectedAccountId)?.nickname ?? $t('common.select_ellipsis')}</span>
+                </Select.Trigger>
+                <Select.Content class="bg-[#0c0d10] border-white/5 backdrop-blur-xl">
+                    {#each accountsStore.accounts as acc}
+                        <Select.Item value={acc.id} class="text-[9px] font-black">{acc.nickname}</Select.Item>
+                    {/each}
+                </Select.Content>
+            </Select.Root>
         </div>
-        {/if}
+
+        <!-- Asset Type Slot/Pill -->
+        <div class="flex flex-col gap-1.5 min-w-[140px] shrink-0">
+            <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/30 px-1">{$t("common.type")}</span>
+            <Select.Root type="single" bind:value={selectedAssetTypeId}>
+                <Select.Trigger class="h-8 px-4 bg-white/[0.03] border border-white/5 rounded-full hover:border-white/20 transition-all text-[9px] font-black shadow-inner flex items-center justify-between gap-1 w-full text-foreground/70 ring-0 focus:ring-0">
+                    <span class="truncate">{assetTypesStore.assetTypes.find(t => t.id === selectedAssetTypeId)?.name ?? "Todos"}</span>
+                </Select.Trigger>
+                <Select.Content class="bg-[#0c0d10] border-white/5 backdrop-blur-xl">
+                    <Select.Item value="" class="text-[9px] font-black">Todos</Select.Item>
+                    {#each assetTypesStore.assetTypes as type}
+                        <Select.Item value={type.id} class="text-[9px] font-black">{type.name}</Select.Item>
+                    {/each}
+                </Select.Content>
+            </Select.Root>
+        </div>
+
+        <!-- Asset Selector Slot -->
+        <div class="flex flex-col gap-1.5 min-w-[130px] shrink-0">
+            <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/30 px-1">{$t("common.asset")}</span>
+            <Select.Root type="single" bind:value={asset}>
+                <Select.Trigger class="h-8 px-5 bg-white/[0.03] border border-white/5 rounded-full hover:border-white/20 transition-all text-[10px] font-black shadow-inner flex items-center justify-between gap-2 w-full text-foreground/70 ring-0 focus:ring-0">
+                    <span class="truncate">{asset || $t('common.select_ellipsis')}</span>
+                </Select.Trigger>
+                <Select.Content class="bg-[#0c0d10] border-white/5 backdrop-blur-xl max-h-[300px] overflow-y-auto">
+                    <Select.Item value="" class="text-[10px] font-black">Selecionar</Select.Item>
+                    {#each filteredAssets as a}
+                        <Select.Item value={a.symbol} class="text-[10px] font-black">{a.symbol}</Select.Item>
+                    {/each}
+                </Select.Content>
+            </Select.Root>
+        </div>
+
+        <!-- Direction Toggle -->
+        <div class="flex flex-col gap-1.5 shrink-0">
+            <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/30 px-1">{$t("LIST.TABLE.DIRECTION")}</span>
+            <div class="h-8 p-1 bg-white/[0.02] border border-white/5 rounded-full flex items-center gap-1 shadow-inner">
+                <button onclick={() => (direction = "Buy")} class="h-full px-4 rounded-full flex items-center gap-2 transition-all {direction === 'Buy' ? 'bg-emerald-500 text-[#064e3b]' : 'text-muted-foreground/20 hover:text-emerald-400'}">
+                    <TrendingUp class="w-3.5 h-3.5" />
+                    <span class="text-[10px] font-black uppercase">COMPRA</span>
+                </button>
+                <button onclick={() => (direction = "Sell")} class="h-full px-4 rounded-full flex items-center gap-2 transition-all {direction === 'Sell' ? 'bg-rose-500 text-[#4c0519]' : 'text-muted-foreground/20 hover:text-rose-400'}">
+                    <TrendingDown class="w-3.5 h-3.5" />
+                    <span class="text-[10px] font-black uppercase">VENDA</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Result Field -->
+        <div class="flex flex-col gap-1.5 min-w-[120px] shrink-0">
+            <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/30 px-1">{$t("common.result")}</span>
+            <div class="h-8 px-5 bg-white/[0.03] border border-white/5 rounded-full flex items-center hover:border-emerald-500/20 transition-all group/res {resultInput.startsWith('-') ? 'focus-within:border-rose-500/40' : 'focus-within:border-emerald-500/40'}">
+                <div class="flex items-center gap-2 w-full">
+                    <span class="text-[10px] font-black opacity-20">R$</span>
+                    <input bind:value={resultInput} bind:this={resultInputRef} placeholder="0.00" class="bg-transparent border-none p-0 text-[11px] font-bold tabular-nums outline-none focus:ring-0 w-full {resultInput.startsWith('-') ? 'text-rose-400' : 'text-emerald-400'}" onkeydown={handleKeydown} />
+                </div>
+            </div>
+        </div>
+
+        <!-- Quantity Field -->
+        <div class="flex flex-col gap-1.5 min-w-[80px] shrink-0">
+            <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/30 px-1">{$t("common.quantity")}</span>
+            <div class="h-8 px-4 bg-white/[0.03] border border-white/5 rounded-full flex items-center hover:border-white/20 transition-all">
+                <input type="number" bind:value={quantityInput} min="1" class="bg-transparent border-none p-0 text-[10px] font-black outline-none focus:ring-0 w-full text-foreground/70 text-center" />
+            </div>
+        </div>
     </div>
 
     <!-- Submit Button (Fixed at right) -->
-    <button disabled={isSubmitting || !asset || !resultInput} onclick={handleQuickSubmit} class="h-9 px-5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-20 text-[#064e3b] rounded-lg font-black uppercase text-[9px] tracking-widest transition-all active:scale-[0.98] flex items-center gap-2 shadow-lg shadow-emerald-500/20 shrink-0">
+    <button disabled={isSubmitting || !asset || !resultInput} onclick={handleQuickSubmit} class="h-9 px-5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-20 text-[#064e3b] rounded-full font-black uppercase text-[9px] tracking-widest transition-all active:scale-[0.98] flex items-center gap-2 shadow-lg shadow-emerald-500/20 shrink-0">
         {#if isSubmitting}
             <Loader2 class="w-3.5 h-3.5 animate-spin" />
         {:else}
@@ -193,7 +223,7 @@
             ADICIONAR
         {/if}
     </button>
-</div>
+</SystemCard>
 
 {#if intervention}
     <div class="mt-2 flex items-center gap-2 px-3 py-1 bg-rose-500/5 border-l-2 border-rose-500 rounded-r text-rose-500 animate-in fade-in slide-in-from-top-1">

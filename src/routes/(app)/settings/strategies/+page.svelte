@@ -355,213 +355,123 @@
                     <Target class="w-3 h-3" />
                     {$t("settings.strategies.form.operationalContext")}
                 </h4>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <!-- Timeframes -->
-                    <div class="space-y-1.5">
-                        <Label class="text-xs"
-                            >{$t("settings.strategies.form.timeframes")}</Label
-                        >
-                        <div class="flex gap-2">
+                    <div class="flex flex-col gap-2">
+                        <Label class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 px-1">{$t("settings.strategies.form.timeframes")}</Label>
+                        <div class="flex items-center gap-2 group">
                             <div class="flex-1">
-                                <Select.Root
-                                    type="single"
-                                    bind:value={tempTimeframe}
-                                >
-                                    <Select.Trigger class="h-8 text-xs w-full">
-                                        {tempTimeframe ||
-                                            $t(
-                                                "settings.strategies.form.select",
-                                            )}
+                                <Select.Root type="single" bind:value={tempTimeframe}>
+                                    <Select.Trigger class="h-10 text-[11px] font-black uppercase w-full rounded-full bg-white/[0.03] border-white/5 hover:border-white/20 transition-all px-4 shadow-inner">
+                                        {tempTimeframe || $t("settings.strategies.form.select")}
                                     </Select.Trigger>
-                                    <Select.Content>
+                                    <Select.Content class="bg-[#0c0d10] border-white/5 backdrop-blur-xl">
                                         {#each timeframesStore.timeframes as tf}
-                                            <Select.Item
-                                                value={tf.name}
-                                                label={tf.name}
-                                                >{tf.name}</Select.Item
-                                            >
+                                            <Select.Item value={tf.name} class="text-xs uppercase font-bold">{tf.name}</Select.Item>
                                         {/each}
                                     </Select.Content>
                                 </Select.Root>
                             </div>
-                            <Button
-                                size="icon"
-                                variant="secondary"
-                                class="h-8 w-8 shrink-0"
-                                onclick={() =>
-                                    addTag("timeframes", tempTimeframe)}
-                                ><Plus class="w-3 h-3" /></Button
-                            >
+                            <Button size="icon" variant="secondary" class="h-10 w-10 shrink-0 rounded-full bg-white/[0.03] border border-white/5 hover:bg-primary/20 hover:border-primary/50 text-muted-foreground/40 hover:text-primary transition-all shadow-lg" onclick={() => addTag("timeframes", tempTimeframe)}>
+                                <Plus class="w-4 h-4" />
+                            </Button>
                         </div>
-                        <div class="flex flex-wrap gap-1 min-h-[24px]">
+                        <div class="flex flex-wrap gap-1.5 min-h-[28px] px-1 mt-1">
                             {#each formData.timeframes as item, i}
-                                <span
-                                    class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1"
-                                >
+                                <Badge variant="secondary" class="bg-primary/10 hover:bg-primary/20 text-primary text-[9px] px-2 py-0.5 rounded-full border border-primary/20 flex items-center gap-1.5 transition-all animate-in zoom-in-95">
                                     {item}
-                                    <button
-                                        onclick={() =>
-                                            removeTag("timeframes", i)}
-                                        class="hover:text-destructive"
-                                        ><X class="w-3 h-3" /></button
-                                    >
-                                </span>
+                                    <button onclick={() => removeTag("timeframes", i)} class="hover:text-rose-500 transition-colors"><X class="w-3 h-3" /></button>
+                                </Badge>
                             {/each}
                         </div>
                     </div>
 
                     <!-- Indicators -->
-                    <div class="space-y-1.5">
-                        <Label class="text-xs"
-                            >{$t("settings.strategies.form.indicators")}</Label
-                        >
-                        <div class="flex gap-2">
+                    <div class="flex flex-col gap-2">
+                        <Label class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 px-1">{$t("settings.strategies.form.indicators")}</Label>
+                        <div class="flex items-center gap-2 group">
                             <div class="flex-1">
-                                <Select.Root
-                                    type="single"
-                                    bind:value={tempIndicator}
-                                >
-                                    <Select.Trigger class="h-8 text-xs w-full">
+                                <Select.Root type="single" bind:value={tempIndicator}>
+                                    <Select.Trigger class="h-10 text-[11px] font-black uppercase w-full rounded-full bg-white/[0.03] border-white/5 hover:border-white/20 transition-all px-4 shadow-inner">
                                         {tempIndicator || "Selecionar"}
                                     </Select.Trigger>
-                                    <Select.Content>
+                                    <Select.Content class="bg-[#0c0d10] border-white/5 backdrop-blur-xl">
                                         {#each indicatorsStore.indicators as ind}
-                                            <Select.Item
-                                                value={ind.name}
-                                                label={ind.name}
-                                                >{ind.name}</Select.Item
-                                            >
+                                            <Select.Item value={ind.name} class="text-xs uppercase font-bold">{ind.name}</Select.Item>
                                         {/each}
                                     </Select.Content>
                                 </Select.Root>
                             </div>
-                            <Button
-                                size="icon"
-                                variant="secondary"
-                                class="h-8 w-8 shrink-0"
-                                onclick={() =>
-                                    addTag("indicators", tempIndicator)}
-                                ><Plus class="w-3 h-3" /></Button
-                            >
+                            <Button size="icon" variant="secondary" class="h-10 w-10 shrink-0 rounded-full bg-white/[0.03] border border-white/5 hover:bg-amber-500/10 hover:border-amber-500/50 text-muted-foreground/40 hover:text-amber-500 transition-all shadow-lg" onclick={() => addTag("indicators", tempIndicator)}>
+                                <Plus class="w-4 h-4" />
+                            </Button>
                         </div>
-                        <div class="flex flex-wrap gap-1 min-h-[24px]">
+                        <div class="flex flex-wrap gap-1.5 min-h-[28px] px-1 mt-1">
                             {#each formData.indicators as item, i}
-                                <span
-                                    class="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1"
-                                >
+                                <Badge variant="secondary" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 text-[9px] px-2 py-0.5 rounded-full border border-amber-500/20 flex items-center gap-1.5 transition-all animate-in zoom-in-95">
                                     {item}
-                                    <button
-                                        onclick={() =>
-                                            removeTag("indicators", i)}
-                                        class="hover:text-destructive"
-                                        ><X class="w-3 h-3" /></button
-                                    >
-                                </span>
+                                    <button onclick={() => removeTag("indicators", i)} class="hover:text-rose-500 transition-colors"><X class="w-3 h-3" /></button>
+                                </Badge>
                             {/each}
                         </div>
                     </div>
 
                     <!-- Asset Types -->
-                    <div class="space-y-1.5">
-                        <Label class="text-xs"
-                            >{$t("settings.strategies.form.assetTypes")}</Label
-                        >
-                        <div class="flex gap-2">
+                    <div class="flex flex-col gap-2">
+                        <Label class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 px-1">{$t("settings.strategies.form.assetTypes")}</Label>
+                        <div class="flex items-center gap-2 group">
                             <div class="flex-1">
-                                <Select.Root
-                                    type="single"
-                                    bind:value={tempAssetType}
-                                >
-                                    <Select.Trigger class="h-8 text-xs w-full">
+                                <Select.Root type="single" bind:value={tempAssetType}>
+                                    <Select.Trigger class="h-10 text-[11px] font-black uppercase w-full rounded-full bg-white/[0.03] border-white/5 hover:border-white/20 transition-all px-4 shadow-inner">
                                         {tempAssetType || "Selecionar"}
                                     </Select.Trigger>
-                                    <Select.Content>
+                                    <Select.Content class="bg-[#0c0d10] border-white/5 backdrop-blur-xl">
                                         {#each assetTypesStore.assetTypes as type}
-                                            <Select.Item
-                                                value={type.code}
-                                                label={type.code}
-                                                >{type.code}</Select.Item
-                                            >
+                                            <Select.Item value={type.code} class="text-xs uppercase font-bold">{type.code}</Select.Item>
                                         {/each}
                                     </Select.Content>
                                 </Select.Root>
                             </div>
-                            <Button
-                                size="icon"
-                                variant="secondary"
-                                class="h-8 w-8 shrink-0"
-                                onclick={() =>
-                                    addTag("asset_types", tempAssetType)}
-                                ><Plus class="w-3 h-3" /></Button
-                            >
+                            <Button size="icon" variant="secondary" class="h-10 w-10 shrink-0 rounded-full bg-white/[0.03] border border-white/5 hover:bg-indigo-500/10 hover:border-indigo-500/50 text-muted-foreground/40 hover:text-indigo-400 transition-all shadow-lg" onclick={() => addTag("asset_types", tempAssetType)}>
+                                <Plus class="w-4 h-4" />
+                            </Button>
                         </div>
-                        <div class="flex flex-wrap gap-1 min-h-[24px]">
+                        <div class="flex flex-wrap gap-1.5 min-h-[28px] px-1 mt-1">
                             {#each formData.asset_types as item, i}
-                                <span
-                                    class="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1"
-                                >
+                                <Badge variant="secondary" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 text-[9px] px-2 py-0.5 rounded-full border border-indigo-500/20 flex items-center gap-1.5 transition-all animate-in zoom-in-95">
                                     {item}
-                                    <button
-                                        onclick={() =>
-                                            removeTag("asset_types", i)}
-                                        class="hover:text-destructive"
-                                        ><X class="w-3 h-3" /></button
-                                    >
-                                </span>
+                                    <button onclick={() => removeTag("asset_types", i)} class="hover:text-rose-500 transition-colors"><X class="w-3 h-3" /></button>
+                                </Badge>
                             {/each}
                         </div>
                     </div>
+
                     <!-- Specific Assets -->
-                    <div class="space-y-1.5">
-                        <Label class="text-xs"
-                            >{$t(
-                                "settings.strategies.form.specificAssets",
-                            )}</Label
-                        >
-                        <div class="flex gap-2">
+                    <div class="flex flex-col gap-2">
+                        <Label class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 px-1">{$t("settings.strategies.form.specificAssets")}</Label>
+                        <div class="flex items-center gap-2 group">
                             <div class="flex-1">
-                                <Select.Root
-                                    type="single"
-                                    bind:value={tempSpecificAsset}
-                                >
-                                    <Select.Trigger class="h-8 text-xs w-full">
+                                <Select.Root type="single" bind:value={tempSpecificAsset}>
+                                    <Select.Trigger class="h-10 text-[11px] font-black uppercase w-full rounded-full bg-white/[0.03] border-white/5 hover:border-white/20 transition-all px-4 shadow-inner">
                                         {tempSpecificAsset || "Selecionar"}
                                     </Select.Trigger>
-                                    <Select.Content>
+                                    <Select.Content class="bg-[#0c0d10] border-white/5 backdrop-blur-xl max-h-[300px]">
                                         {#each assetsStore.assets as asset}
-                                            <Select.Item
-                                                value={asset.symbol}
-                                                label={asset.symbol}
-                                                >{asset.symbol}</Select.Item
-                                            >
+                                            <Select.Item value={asset.symbol} class="text-xs uppercase font-bold">{asset.symbol}</Select.Item>
                                         {/each}
                                     </Select.Content>
                                 </Select.Root>
                             </div>
-                            <Button
-                                size="icon"
-                                variant="secondary"
-                                class="h-8 w-8 shrink-0"
-                                onclick={() =>
-                                    addTag(
-                                        "specific_assets",
-                                        tempSpecificAsset,
-                                    )}><Plus class="w-3 h-3" /></Button
-                            >
+                            <Button size="icon" variant="secondary" class="h-10 w-10 shrink-0 rounded-full bg-white/[0.03] border border-white/5 hover:bg-emerald-500/10 hover:border-emerald-500/50 text-muted-foreground/40 hover:text-emerald-400 transition-all shadow-lg" onclick={() => addTag("specific_assets", tempSpecificAsset)}>
+                                <Plus class="w-4 h-4" />
+                            </Button>
                         </div>
-                        <div class="flex flex-wrap gap-1 min-h-[24px]">
+                        <div class="flex flex-wrap gap-1.5 min-h-[28px] px-1 mt-1">
                             {#each formData.specific_assets as item, i}
-                                <span
-                                    class="bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1"
-                                >
+                                <Badge variant="secondary" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-[9px] px-2 py-0.5 rounded-full border border-emerald-500/20 flex items-center gap-1.5 transition-all animate-in zoom-in-95">
                                     {item}
-                                    <button
-                                        onclick={() =>
-                                            removeTag("specific_assets", i)}
-                                        class="hover:text-destructive"
-                                        ><X class="w-3 h-3" /></button
-                                    >
-                                </span>
+                                    <button onclick={() => removeTag("specific_assets", i)} class="hover:text-rose-500 transition-colors"><X class="w-3 h-3" /></button>
+                                </Badge>
                             {/each}
                         </div>
                     </div>

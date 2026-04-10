@@ -37,7 +37,10 @@
                 "compensated": "Compensado",
                 "operation": "Tipo de Operación",
                 "actions": "Acciones",
-                "shortNet": "Neto"
+                "shortNet": "Neto",
+                "alreadyGenerated": "DARF ya generada para este mes.",
+                "cannotDelete": "No se puede eliminar una DARF pagada.",
+                "generateDarf": "Generar DARF"
             },
             "messages": {
                 "loading": "Cargando datos fiscales...",
@@ -49,7 +52,8 @@
                 "description": "Seleccione el mes y el año para calcular el informe de IRPF.",
                 "month": "Mes de Referencia",
                 "year": "Año de Referencia"
-            }
+            },
+            "calculating": "Calculando impuesto..."
         },
         "darf": {
             "title": "Gestión de DARF",
@@ -86,17 +90,31 @@
                 "pay": "Pagar DARF",
                 "view": "Ver DARF",
                 "delete": "Eliminar",
-                "unpay": "Deshacer Pago"
+                "unpay": "Deshacer Pago",
+                "cancel": "Cancelar",
+                "confirmPay": "Confirmar Pago",
+                "confirmUnpay": "Revertir Pago"
             },
             "messages": {
                 "loading": "Cargando historial de guías...",
                 "successPay": "¡DARF marcado como pagado y saldo actualizado!",
                 "successDelete": "DARF eliminado correctamente.",
-                "successUnpay": "Pago deshecho correctamente."
+                "successUnpay": "Pago deshecho correctamente.",
+                "emptyHistory": "Ninguna DARF generada todavía."
             },
             "modal": {
                 "pay": {
                     "noAccount": "Por favor, seleccione una cuenta."
+                },
+                "delete": {
+                    "title": "Eliminar DARF",
+                    "prompt": "¿Está seguro de eliminar esta DARF?"
+                },
+                "unpay": {
+                    "title": "Revertir Pago",
+                    "descriptionLine1": "Al revertir, la DARF volverá al estado pendiente.",
+                    "descriptionLine2": "Puede pagar nuevamente en cualquier momento.",
+                    "descriptionLine3": "¿Desea continuar?"
                 }
             }
         },
@@ -147,7 +165,8 @@
                     "select": "Seleccionar...",
                     "addModalityHint": "Haz clic en + para añadir una regla a una modalidad.",
                     "rulesByModality": "Reglas por Modalidad",
-                    "emptyRules": "No se añadieron reglas."
+                    "emptyRules": "No se añadieron reglas.",
+                    "description": "Descripción del perfil fiscal"
                 },
                 "success": {
                     "create": "Perfil creado correctamente.",
@@ -200,7 +219,9 @@
                     },
                     "save": "Guardar Regla",
                     "successSave": "¡Regla guardada correctamente!",
-                    "errorSave": "Error al guardar."
+                    "errorSave": "Error al guardar.",
+                    "basisHint": "Base de cálculo del impuesto",
+                    "withholdingBasisHint": "Base de cálculo de la retención"
                 }
             },
             "mappings": {
