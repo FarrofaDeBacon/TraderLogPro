@@ -267,14 +267,14 @@
 
       <!-- OPERATIONAL COCKPIT STATUS (Dense Grid - Assistant + Radar) -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-4">
-        <!-- Quick Log (5 cols) -->
-        <div class="lg:col-span-5 bg-card/60 rounded-xl p-3 border border-border/60 shadow-sm flex flex-col justify-center overflow-hidden">
+        <!-- Quick Log (8 cols) -->
+        <div class="lg:col-span-8 bg-card/60 rounded-xl p-0 border border-border/60 shadow-sm flex flex-col justify-center overflow-hidden">
           <QuickLog />
         </div>
 
-        <!-- AI Assistant & Radar (7 cols) -->
-        <div class="lg:col-span-7 flex flex-col gap-3">
-           <!-- AI ASSISTANT (Institutional Standard) -->
+        <!-- AI Assistant & Radar (4 cols) -->
+        <div class="lg:col-span-4 flex flex-col gap-3">
+           <!-- AI ASSISTANT (Institutional Standard - Compact) -->
            <SystemAICard 
               title={$t('dashboard.sections.assistantLabel')}
               status={gamificationStore.proactiveSignals.length > 0 ? "success" : "idle"}
@@ -285,24 +285,24 @@
                   {@const signal = gamificationStore.proactiveSignals[0]}
                    <div class="flex items-center gap-3">
                       <div class={cn(
-                          "w-8 h-8 rounded-full shrink-0 flex items-center justify-center border",
+                          "w-7 h-7 rounded-full shrink-0 flex items-center justify-center border",
                           signal.type === 'warning' ? "bg-rose-500/20 text-rose-500 border-rose-500/30" : 
                           signal.type === 'reminder' ? "bg-amber-500/20 text-amber-500 border-amber-500/30" : 
                           "bg-emerald-500/20 text-emerald-500 border-emerald-500/30"
                       )}>
-                         {#if signal.type === 'warning'} <ShieldAlert class="w-4 h-4" />
-                         {:else if signal.type === 'reminder'} <AlertTriangle class="w-4 h-4" />
-                         {:else} <Zap class="w-4 h-4" /> {/if}
+                         {#if signal.type === 'warning'} <ShieldAlert class="w-3.5 h-3.5" />
+                         {:else if signal.type === 'reminder'} <AlertTriangle class="w-3.5 h-3.5" />
+                         {:else} <Zap class="w-3.5 h-3.5" /> {/if}
                       </div>
                       <div class="min-w-0">
-                        <h5 class="text-[10px] font-black uppercase text-foreground/90 leading-tight truncate">{signal.title}</h5>
-                        <p class="text-[10px] font-bold text-muted-foreground leading-tight line-clamp-1">{signal.message}</p>
+                        <h5 class="text-[9px] font-black uppercase text-foreground/90 leading-tight truncate">{signal.title}</h5>
+                        <p class="text-[9px] font-bold text-muted-foreground leading-tight line-clamp-1">{signal.message}</p>
                       </div>
                    </div>
                 {:else}
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
                        <ShieldCheck class="w-4 h-4 text-emerald-500" />
-                       <span class="text-[10px] font-black uppercase text-emerald-500/80">{$t('dashboard.sections.allClear')}</span>
+                       <span class="text-[9px] font-black uppercase text-emerald-500/80">{$t('dashboard.sections.allClear')}</span>
                     </div>
                 {/if}
               {/snippet}

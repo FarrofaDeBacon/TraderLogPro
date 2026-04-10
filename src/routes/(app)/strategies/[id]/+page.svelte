@@ -457,7 +457,7 @@
                     </Badge>
                     <Button variant="outline" size="sm" onclick={() => isCockpitOpen = true} class="gap-2 bg-background/50 backdrop-blur-sm border-dashed border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-500 transition-colors">
                         <Radar class="w-4 h-4" />
-                        {$t("aiCockpit.ctaBtn")}
+                        {$t("strategies.aiCockpit.ctaBtn")}
                     </Button>
                 </div>
             {/snippet}
@@ -468,38 +468,38 @@
                     <Sheet.Header class="mb-6">
                         <Sheet.Title class="flex items-center gap-2">
                             <Radar class="w-5 h-5 text-emerald-500" />
-                            {$t("aiCockpit.ctaBtn")}
+                            {$t("strategies.aiCockpit.ctaBtn")}
                         </Sheet.Title>
-                        <Sheet.Description>{$t("aiCockpit.ai.desc")}</Sheet.Description>
+                        <Sheet.Description>{$t("strategies.aiCockpit.ai.desc")}</Sheet.Description>
                     </Sheet.Header>
 
                     <!-- Bloco 1: Saúde da Estratégia -->
                     <div class="space-y-4 mb-8">
                         <SystemHeader 
-                            title={$t("aiCockpit.health.title")}
+                            title={$t("strategies.aiCockpit.health.title")}
                             icon={Activity}
                             class="mb-3"
                         />
                         {#if stats.diagnostic.status === "INSUFFICIENT_DATA"}
-                            <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("aiCockpit.ai.insufficientVolume")}</div>
+                            <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("strategies.aiCockpit.ai.insufficientVolume")}</div>
                         {:else}
                             <div class="grid grid-cols-2 gap-2">
                                 <div class="p-3 rounded-lg border bg-background/50 flex flex-col gap-1">
-                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("aiCockpit.health.status")}</span>
+                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("strategies.aiCockpit.health.status")}</span>
                                     <span class="text-xs font-black {stats.diagnostic.status === 'HOT' ? 'text-emerald-500' : stats.diagnostic.status === 'COLD' ? 'text-rose-500' : 'text-amber-500'}">
-                                        {$t(`aiCockpit.values.${stats.diagnostic.status}`) || stats.diagnostic.status}
+                                        {$t(`strategies.aiCockpit.values.${stats.diagnostic.status}`) || stats.diagnostic.status}
                                     </span>
                                 </div>
                                 <div class="p-3 rounded-lg border bg-background/50 flex flex-col gap-1">
-                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("aiCockpit.health.currentRisk")}</span>
+                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("strategies.aiCockpit.health.currentRisk")}</span>
                                     <span class="text-xs font-black {stats.diagnostic.current_risk === 'LOW' ? 'text-emerald-500' : stats.diagnostic.current_risk === 'CRITICAL' ? 'text-rose-500' : 'text-amber-500'}">
-                                        {$t(`aiCockpit.values.${stats.diagnostic.current_risk}`) || stats.diagnostic.current_risk}
+                                        {$t(`strategies.aiCockpit.values.${stats.diagnostic.current_risk}`) || stats.diagnostic.current_risk}
                                     </span>
                                 </div>
                                 <div class="p-3 rounded-lg border bg-background/50 flex flex-col gap-1 col-span-2">
-                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("aiCockpit.health.stability")}</span>
+                                    <span class="text-[10px] text-muted-foreground font-bold uppercase">{$t("strategies.aiCockpit.health.stability")}</span>
                                     <span class="text-xs font-black {stats.diagnostic.stability === 'STABLE' ? 'text-blue-500' : 'text-amber-500'}">
-                                        {$t(`aiCockpit.values.${stats.diagnostic.stability}`) || stats.diagnostic.stability}
+                                        {$t(`strategies.aiCockpit.values.${stats.diagnostic.stability}`) || stats.diagnostic.stability}
                                     </span>
                                 </div>
                             </div>
@@ -509,15 +509,15 @@
                     <!-- Bloco 2: Estratégia x Psicologia -->
                     <div class="space-y-4 mb-8">
                         <SystemHeader 
-                            title={$t("aiCockpit.psychology.title")}
+                            title={$t("strategies.aiCockpit.psychology.title")}
                             icon={Brain}
                             class="mb-3"
                         />
                         {#if stats.psychology.emotion_breakdown.length === 0}
-                             <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("aiCockpit.ai.insufficientVolume")}</div>
+                             <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("strategies.aiCockpit.ai.insufficientVolume")}</div>
                         {:else}
                             <div class="p-3 rounded-lg border bg-rose-500/10 border-rose-500/20 mb-3 flex items-center justify-between">
-                                <span class="text-xs font-semibold text-rose-400">Taxa de Perda por Indisciplina:</span>
+                                <span class="text-xs font-semibold text-rose-400">{$t("strategies.aiCockpit.psychology.infractionRate")}</span>
                                 <span class="text-sm font-black text-rose-500">{stats.psychology.negative_state_loss_ratio.toFixed(1)}%</span>
                             </div>
                             <div class="space-y-2">
@@ -525,7 +525,7 @@
                                     <div class="flex items-center justify-between p-2 rounded-md bg-muted/20 text-xs">
                                         <span class="font-semibold uppercase tracking-wider">{emo.emotion_name || "N/A"}</span>
                                         <div class="flex gap-3 text-muted-foreground">
-                                            <span title="Win Rate" class="{emo.win_rate > 50 ? 'text-emerald-500' : 'text-rose-500'} font-bold">{(emo.win_rate).toFixed(0)}% {$t("aiCockpit.values.winRateShort")}</span>
+                                            <span title="Win Rate" class="{emo.win_rate > 50 ? 'text-emerald-500' : 'text-rose-500'} font-bold">{(emo.win_rate).toFixed(0)}% {$t("strategies.aiCockpit.values.winRateShort")}</span>
                                             <span title="Net Result" class="{emo.net_result >= 0 ? 'text-emerald-500' : 'text-rose-500'}">{formatCurrency(emo.net_result)}</span>
                                         </div>
                                     </div>
@@ -537,34 +537,34 @@
                     <!-- Bloco 3: Raio-X Operacional -->
                     <div class="space-y-4 mb-8">
                         <SystemHeader 
-                            title={$t("aiCockpit.xray.title")}
+                            title={$t("strategies.aiCockpit.xray.title")}
                             icon={Target}
                             class="mb-3"
                         />
                         {#if !stats.operational.best_asset && !stats.operational.best_time_of_day}
-                            <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("aiCockpit.ai.insufficientVolume")}</div>
+                            <div class="text-sm italic text-muted-foreground p-4 border border-dashed rounded-lg bg-muted/10 text-center">{$t("strategies.aiCockpit.ai.insufficientVolume")}</div>
                         {:else}
                             <div class="grid grid-cols-2 gap-2 text-xs">
                                 <div class="p-2 border rounded-md">
-                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("aiCockpit.xray.bestAsset").toUpperCase()}</div>
+                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("strategies.aiCockpit.xray.bestAsset").toUpperCase()}</div>
                                     <div class="font-bold text-emerald-500">{stats.operational.best_asset || "N/A"}</div>
                                 </div>
                                 <div class="p-2 border rounded-md">
-                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("aiCockpit.xray.worstAsset").toUpperCase()}</div>
+                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("strategies.aiCockpit.xray.worstAsset").toUpperCase()}</div>
                                     <div class="font-bold text-rose-500">{stats.operational.worst_asset || "N/A"}</div>
                                 </div>
                                 <div class="p-2 border rounded-md">
-                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("aiCockpit.xray.bestTime").toUpperCase()}</div>
+                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("strategies.aiCockpit.xray.bestTime").toUpperCase()}</div>
                                     <div class="font-bold text-emerald-500">{stats.operational.best_time_of_day ? `${stats.operational.best_time_of_day}h` : "N/A"}</div>
                                 </div>
                                 <div class="p-2 border rounded-md">
-                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("aiCockpit.xray.worstTime").toUpperCase()}</div>
+                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("strategies.aiCockpit.xray.worstTime").toUpperCase()}</div>
                                     <div class="font-bold text-rose-500">{stats.operational.worst_time_of_day ? `${stats.operational.worst_time_of_day}h` : "N/A"}</div>
                                 </div>
                                 <div class="p-2 border rounded-md col-span-2 text-center bg-muted/10">
-                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("aiCockpit.xray.bestSide").toUpperCase()}</div>
+                                    <div class="text-[9px] text-muted-foreground mb-1">{$t("strategies.aiCockpit.xray.bestSide").toUpperCase()}</div>
                                     <div class="font-bold uppercase tracking-widest text-blue-500">
-                                        {$t(`aiCockpit.values.${stats.operational.best_direction}`) || stats.operational.best_direction || "N/A"}
+                                        {$t(`strategies.aiCockpit.values.${stats.operational.best_direction}`) || stats.operational.best_direction || "N/A"}
                                     </div>
                                 </div>
                             </div>
@@ -574,7 +574,7 @@
                     <!-- Bloco 4: Leitura Resumida -->
                     <div class="p-4 rounded-xl border-l-4 {stats.diagnostic.current_risk === 'CRITICAL' ? 'border-rose-500 bg-rose-500/5' : stats.diagnostic.status === 'HOT' ? 'border-emerald-500 bg-emerald-500/5' : 'border-blue-500 bg-blue-500/5'}">
                         <div class="font-bold text-sm mb-2 flex items-center gap-2">
-                            <Zap class="w-4 h-4" /> {$t("aiCockpit.ai.title")}
+                            <Zap class="w-4 h-4" /> {$t("strategies.aiCockpit.ai.title")}
                         </div>
                         <p class="text-xs text-muted-foreground leading-relaxed">
                             {#if stats.diagnostic.status === "INSUFFICIENT_DATA"}

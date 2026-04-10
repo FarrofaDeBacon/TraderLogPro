@@ -217,6 +217,10 @@
                 "UNSTABLE": "INSTÁVEL",
                 "BUY": "COMPRA",
                 "SELL": "VENDA",
+                "Buy": "Compra",
+                "Sell": "Venda",
+                "buy": "compra",
+                "sell": "venda",
                 "winRateShort": "WR"
             }
         }
@@ -294,7 +298,8 @@
         },
         "tabs": {
             "dashboard": "Dashboard",
-            "dossier": "Dossiê da Estratégia"
+            "dossier": "Dossiê da Estratégia",
+            "gann": "Vibrações de Gann"
         },
         "title": "Dashboard"
     },
@@ -419,7 +424,8 @@
             },
             "tabs": {
                 "dashboard": "Dashboard",
-                "dossier": "Dossiê da Estratégia"
+                "dossier": "Dossiê da Estratégia",
+                "gann": "Vibrações de Gann"
             },
             "title": "Dashboard"
         },

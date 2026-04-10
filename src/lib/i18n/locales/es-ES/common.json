@@ -130,6 +130,7 @@
         "add": "Añadir",
         "back": "Volver",
         "cancel": "Cancelar",
+        "next": "Siguiente",
         "confirmDeleteDescription": "¿Estás seguro de que deseas eliminar? Esta acción no se puede deshacer.",
         "confirmDeleteTitle": "Confirmar Eliminación",
         "custom": "Personalizado",
@@ -151,7 +152,8 @@
         "success": "¡Éxito!",
         "unknown": "Desconocido",
         "yes": "Sí",
-        "operator": "Operador"
+        "operator": "Operador",
+        "reload": "Recargar"
     },
     "help": {
         "emptyState": "No se encontraron resultados",

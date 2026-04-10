@@ -11,6 +11,7 @@
                 "import_fail": "Failed to open file selector."
             },
             "table": {
+                "date": "Date",
                 "asset": "Asset",
                 "direction": "Direction",
                 "entry": "Entry",

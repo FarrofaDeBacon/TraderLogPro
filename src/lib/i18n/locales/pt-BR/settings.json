@@ -168,14 +168,14 @@
                 "entryWithCurrency": "Entrada ({currency})",
                 "feePercent": "Taxa (%)"
             },
-            "newOperation": "Nova Trade",
+            "newOperation": "Nova Transação",
             "operationShortDesc": "Registre aportes, retiradas ou transferências entre contas.",
             "subtitle": "Registre aportes ou retiradas manualmente.",
             "tabs": {
                 "transaction": "Transação",
                 "transfer": "Transferência"
             },
-            "title": "Novo Lancamento",
+            "title": "Nova Transação",
             "type": "Tipo de Transação",
             "types": {
                 "adjustment": "Ajuste de Saldo",

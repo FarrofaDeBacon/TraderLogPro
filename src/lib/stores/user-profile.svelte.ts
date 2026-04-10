@@ -1,6 +1,6 @@
 import { safeInvoke, isTauri } from "$lib/services/tauri";
 import { type UserProfile } from "$lib/types";
-import { validateLicenseKey, computeLegacyCustomerId, computeDeviceIdentity, type LicenseData } from "$lib/utils/license";
+import { validateLicenseKey, type LicenseData } from "$lib/utils/license";
 
 export class UserProfileStore {
     userProfile = $state<UserProfile>({
@@ -82,28 +82,10 @@ export class UserProfileStore {
         console.log("[UserProfileStore] Refreshing license status for key:", this.userProfile.license_key.substring(0, 10) + "...");
 
         try {
-            // First we try the modern approach tracking the Device ID
-            const devicePin = await computeDeviceIdentity(this.hardwareId);
-            
-            console.log("[UserProfileStore] Computed Device PIN:", devicePin);
+            console.log("[UserProfileStore] Validating license for machine PIN:", this.hardwareId);
 
-            let result = await validateLicenseKey(this.userProfile.license_key, devicePin);
+            let result = await validateLicenseKey(this.userProfile.license_key, this.hardwareId);
             
-            // Repescagem: Se der erro de CID e a conta for antiga
-            if (!result.valid && result.error?.includes("ID")) {
-                const legacyPin = await computeLegacyCustomerId({
-                    name: this.userProfile.name,
-                    cpf: this.userProfile.cpf || "",
-                    birthDate: this.userProfile.birth_date || "",
-                    hardwareId: this.hardwareId
-                });
-                console.log("[UserProfileStore] Device PIN failed. Trying Legacy PIN:", legacyPin);
-                const legacyResult = await validateLicenseKey(this.userProfile.license_key, legacyPin);
-                if (legacyResult.valid) {
-                    result = legacyResult;
-                }
-            }
-
             console.log("[UserProfileStore] License Validation Result:", result);
             this.licenseDetails = result;
         } catch (e) {

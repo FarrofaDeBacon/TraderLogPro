@@ -278,6 +278,8 @@ pub fn run() {
             commands::get_onboarding_meta,
             commands::get_machine_id_cmd,
             commands::validate_license_cmd,
+            commands::activate_license_online_cmd,
+            commands::db_query,
             commands::factory_reset,
             commands::backup_database,
             commands::restore_database,

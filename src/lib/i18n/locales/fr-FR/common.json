@@ -54,7 +54,7 @@
         "saving": "Enregistrement...",
         "show": "Afficher",
         "status": "Statut",
-        "success": "Opération effectuée avec sucesso !",
+        "success": "Opération effectuée avec succès !",
         "time": {
             "month": "mois",
             "months": "mois",
@@ -130,6 +130,7 @@
         "add": "Ajouter",
         "back": "Retour",
         "cancel": "Annuler",
+        "next": "Suivant",
         "confirmDeleteDescription": "Êtes-vous sûr de vouloir supprimer ? Cette action ne peut pas être annulée.",
         "confirmDeleteTitle": "Confirmer la Suppression",
         "custom": "Personnalisé",
@@ -151,7 +152,8 @@
         "success": "Succès",
         "unknown": "Inconnu",
         "yes": "Oui",
-        "operator": "Opérateur"
+        "operator": "Opérateur",
+        "reload": "Recharger"
     },
     "help": {
         "emptyState": "Aucun résultat trouvé",

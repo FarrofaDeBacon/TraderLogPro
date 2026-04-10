@@ -40,7 +40,7 @@
     import { toast } from "svelte-sonner";
     import { Checkbox } from "$lib/components/ui/checkbox";
     import { slide } from "svelte/transition";
-    import { cn } from "$lib/utils";
+    import { cn, normalizeAssetTypeId, compareAssetTypeIds } from "$lib/utils";
 
     let isDialogOpen = $state(false);
     let isImportOpen = $state(false);
@@ -87,11 +87,13 @@
         const groups: Record<string, Asset[]> = {};
         for (const type of assetTypesStore.assetTypes) {
             const assetsInType = filteredAssets.filter(a => 
-                a.asset_type_id === type.id || a.asset_type_id.replace(/^asset_type:/, "") === type.id.replace(/^asset_type:/, "")
+                compareAssetTypeIds(a.asset_type_id, type.id)
             );
             if (assetsInType.length > 0) groups[type.id] = assetsInType;
         }
-        const unknown = filteredAssets.filter(a => !assetTypesStore.assetTypes.find(t => t.id === a.asset_type_id || t.id.replace(/^asset_type:/, "") === a.asset_type_id.replace(/^asset_type:/, "")));
+        const unknown = filteredAssets.filter(a => !assetTypesStore.assetTypes.find(t => 
+            compareAssetTypeIds(t.id, a.asset_type_id)
+        ));
         if (unknown.length > 0) groups["unknown"] = unknown;
         return groups;
     });

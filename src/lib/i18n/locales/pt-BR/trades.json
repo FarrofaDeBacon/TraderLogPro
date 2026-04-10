@@ -1,7 +1,7 @@
 {
     "trades": {
         "title": "Trades",
-        "subtitle": "Visualize e gerencie seu histórico detalhado de trades.",
+        "subtitle": "Visualize e gerencie seu histórico detalhado de operações.",
         "list": {
             "actions": {
                 "new_trade": "Novo Trade",
@@ -11,6 +11,7 @@
                 "import_fail": "Falha ao abrir seletor de arquivos."
             },
             "table": {
+                "date": "Data",
                 "asset": "Ativo",
                 "direction": "Direção",
                 "entry": "Entrada",
@@ -91,7 +92,7 @@
             }
         },
         "details": {
-            "title": "Detalhes da Trade",
+            "title": "Detalhes do Trade",
             "basic_info": "Informações Básicas",
             "execution": "Execução",
             "psychology": "Psicologia",
@@ -105,7 +106,7 @@
             "take_profit": "Take Profit",
             "emotional_entry": "Emoção na Entrada",
             "emotional_exit": "Emoção na Saída",
-            "notes": "Notas da Trade",
+            "notes": "Notas da Transação",
             "no_media": "Nenhuma imagem anexada.",
             "no_notes": "Nenhuma nota registrada.",
             "partial_exits": "Saídas Parciais",
@@ -115,7 +116,7 @@
             "partial_notes": "Notas"
         },
         "wizard": {
-            "title_new": "Nova Trade",
+            "title_new": "Novo Trade",
             "title_edit": "Editar Trade",
             "subtitle": "Preencha os detalhes da sua jornada operacional.",
             "steps": {
@@ -203,7 +204,7 @@
                 "signals": "Quais sinais confirmaram sua entrada?",
                 "context": "Como estava o mercado no momento?",
                 "improvements": "O que você faria diferente da próxima vez?",
-                "visual_desc": "Arraste e solte seus prints de tela aqui para documentar o trade graficamente."
+                "visual_desc": "Arraste e solte seus prints de tela aqui para documentar a operação graficamente."
             },
             "messages": {
                 "required_fields": "Por favor, preencha os campos obrigatórios.",
@@ -293,8 +294,8 @@
             "delete_error": "Erro ao excluir. Tente novamente.",
             "no_accounts": "Nenhuma conta cadastrada.",
             "importing": "Importando trades...",
-            "trade_created": "Trade criada!",
-            "trade_updated": "Trade atualizada!",
+            "trade_created": "Trade criado!",
+            "trade_updated": "Trade atualizado!",
             "restartConfirm": "Deseja reiniciar o plano de crescimento?",
             "restartSuccess": "Plano reiniciado com sucesso.",
             "trades_count": "trades",

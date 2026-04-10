@@ -75,30 +75,18 @@ class AppFacadeStore {
                 const [
                     _tradesSignal,
                     currenciesRes,
-                    riskProfilesRes,
                     assetsRes,
-                    assetRiskProfilesRes,
-                    growthPlansRes,
+                    _riskSignal,
                     _financialSignal
                 ] = await Promise.all([
                     tradesStore.loadTrades().catch(() => null),
                     safeInvoke<Currency[]>("get_currencies", "Currencies"),
-                    safeInvoke<RiskProfile[]>("get_risk_profiles", "Risk Profiles"),
                     assetsStore.loadAssets().catch(() => null),
-                    safeInvoke<AssetRiskProfile[]>("get_asset_risk_profiles", "Asset Risk Profiles"),
-                    safeInvoke<GrowthPlan[]>("get_growth_plans", "Growth Plans"),
+                    riskSettingsStore.loadData().catch(() => null),
                     financialConfigStore.loadData().catch(() => null)
                 ]);
 
                 if (currenciesRes) currenciesStore.currencies = currenciesRes;
-                if (riskProfilesRes) {
-                    riskSettingsStore.riskProfiles = riskProfilesRes.map(rp => ({
-                        ...rp,
-                        account_ids: rp.account_ids ?? []
-                    }));
-                }
-                if (assetRiskProfilesRes) riskSettingsStore.assetRiskProfiles = assetRiskProfilesRes;
-                if (growthPlansRes) riskSettingsStore.growthPlans = growthPlansRes;
 
                 // BATCH 3: SECONDARY / WORKSPACE DATA
                 console.log("[SettingsStore] Background: Loading Secondary modules...");
@@ -129,9 +117,7 @@ class AppFacadeStore {
                 if (timeframesRes) timeframesStore.timeframes = timeframesRes;
                 if (chartTypesRes) chartTypesStore.chartTypes = chartTypesRes;
 
-                // Final sync/migrations
-                await riskSettingsStore.migrateLegacyRiskRules();
-                await riskSettingsStore.migrateAssetScopes();
+                // Final sync/migrations - now handled internally by riskSettingsStore.loadData()
                 
                 const totalDuration = (performance.now() - startTime).toFixed(0);
                 console.log(`[SettingsStore] Hydra pipeline complete. Total load time: ${totalDuration}ms.`);

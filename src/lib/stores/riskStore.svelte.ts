@@ -48,6 +48,7 @@ import type { DeskConfig, RiskProfile, GrowthPhase as AppGrowthPhase, ResolvedGr
 
 export class RiskStore {
     private _activeAssetId = $state<string | null>(null);
+    private _domainTradesCache = $derived(tradesStore.trades.map(t => adaptTradeToDomain(t as any)));
 
     constructor() {
         if (typeof window !== 'undefined') {
@@ -113,9 +114,9 @@ export class RiskStore {
             activeGrowthPhase = adaptGrowthPhaseToDomain(appPhase);
         }
 
-        // 3. Adaptar Perfil de Risco e Trades para o domínio
+        // 3. Use Cached Domain Trades (OPTIMIZED)
         const domainProfile = adaptSettingsProfileToDomain(activeProfile);
-        const domainTrades = tradesStore.trades.map(t => adaptTradeToDomain(t as any));
+        const domainTrades = this._domainTradesCache;
 
         // 4. Computar o estado consolidado (Agregação imutável dos motores)
         return buildRiskCockpitState(

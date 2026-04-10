@@ -11,7 +11,7 @@ use surrealdb::Surreal;
 use tauri::State;
 
 use hmac::{Hmac, Mac};
-use sha2::Sha256;
+use sha2::{Sha256, Digest};
 type HmacSha256 = Hmac<Sha256>;
 use base64::Engine as _;
 
@@ -1907,9 +1907,44 @@ pub struct LicenseResult {
     pub error: Option<String>,
 }
 
+// --- Licensing & Machine ID ---
+
+fn compute_machine_pin(hwid: &str) -> String {
+    let salt = "TLP-DEVICE-v2-";
+    let mut hasher = Sha256::new();
+    hasher.update(format!("{}{}", salt, hwid));
+    let result = hasher.finalize();
+    let hash_hex = format!("{:X}", result);
+    
+    // Take 20 characters
+    let base_id = if hash_hex.len() >= 20 {
+        &hash_hex[0..20]
+    } else {
+        &hash_hex
+    };
+    
+    // Format: XXXXX-XXXXX-XXXXX-XXXXX
+    let mut formatted = String::new();
+    for (i, c) in base_id.chars().enumerate() {
+        if i > 0 && i % 5 == 0 {
+            formatted.push('-');
+        }
+        formatted.push(c);
+    }
+    formatted
+}
+
 #[tauri::command]
-pub async fn validate_license_cmd(key: String, expected_cid: String, db: tauri::State<'_, DbState>) -> Result<LicenseResult, String> {
-    println!("[LICENSE] Validating key for CID: {}", expected_cid);
+pub async fn validate_license_cmd(
+    key: String,
+    _expected_cid: String, // Keeping param for front-end compatibility during migration, but ignoring it
+    db: tauri::State<'_, DbState>
+) -> Result<LicenseResult, String> {
+    // 0. Compute internal PIN for the current machine
+    let raw_hwid = crate::hardware::get_machine_id();
+    let internal_cid = compute_machine_pin(&raw_hwid);
+
+    println!("[LICENSE] Internal Validation for PIN: {}", internal_cid);
 
     #[cfg(all(target_os = "windows", not(debug_assertions)))]
     unsafe {
@@ -2020,10 +2055,10 @@ pub async fn validate_license_cmd(key: String, expected_cid: String, db: tauri::
 
     // 3. Check CID (Identity + Hardware Lock)
     if let Some(payload_cid) = payload["cid"].as_str() {
-        if payload_cid != expected_cid {
+        if payload_cid != internal_cid {
             println!(
-                "[LICENSE] CID MISMATCH: expected {}, got {}",
-                expected_cid, payload_cid
+                "[LICENSE] CID MISMATCH: machine {}, license {}",
+                internal_cid, payload_cid
             );
             return Ok(LicenseResult {
                 valid: false,
@@ -2044,8 +2079,42 @@ pub async fn validate_license_cmd(key: String, expected_cid: String, db: tauri::
 }
 
 #[tauri::command]
+pub async fn activate_license_online_cmd(
+    email: String,
+    pin: String,
+) -> Result<serde_json::Value, String> {
+    println!("[LICENSE] Backend activating online for: {}", email);
+    let client = reqwest::Client::new();
+    let res = client.post("https://plain-morning-1ef7.djreinaldodepaulabr.workers.dev/activate")
+        .json(&serde_json::json!({
+            "email": email,
+            "hwid": pin
+        }))
+        .send()
+        .await
+        .map_err(|e| format!("Falha na conexão: {}", e))?;
+    
+    let data = res.json::<serde_json::Value>().await.map_err(|e| format!("Falha no JSON: {}", e))?;
+    Ok(data)
+}
+
+#[tauri::command]
 pub fn get_machine_id_cmd() -> String {
-    crate::hardware::get_machine_id()
+    let raw_hwid = crate::hardware::get_machine_id();
+    compute_machine_pin(&raw_hwid)
+}
+
+#[tauri::command]
+pub async fn db_query(
+    db: tauri::State<'_, DbState>,
+    query: String,
+) -> Result<serde_json::Value, String> {
+    println!("[DB] Executing raw query: {}", query);
+    let mut response = db.0.query(&query).await.map_err(|e| e.to_string())?;
+    
+    // In SurrealDB 2.x, raw queries return a list. Vec implements the required bounds.
+    let result: Vec<serde_json::Value> = response.take(0).map_err(|e| e.to_string())?;
+    Ok(serde_json::Value::Array(result))
 }
 
 // --- Backup & Restore ---

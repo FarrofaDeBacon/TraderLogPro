@@ -44,6 +44,7 @@
                 "noData": "Nenhuma apuração encontrada para o ano de {year}."
             },
             "calculate": "Calcular",
+            "calculating": "Calculando...",
             "modal": {
                 "title": "Nova Apuração Mensal",
                 "description": "Selecione o mês e o ano para calcular a apuração de IRPF.",
@@ -86,7 +87,9 @@
                 "pay": "Pagar DARF",
                 "view": "Ver DARF",
                 "delete": "Remover",
-                "unpay": "Desfazer Pagamento"
+                "unpay": "Desfazer Pagamento",
+                "cancel": "Cancelar",
+                "confirmPay": "Confirmar Pagamento"
             },
             "messages": {
                 "loading": "Carregando histórico de guias...",

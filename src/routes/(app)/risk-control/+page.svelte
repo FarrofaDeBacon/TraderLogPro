@@ -69,14 +69,6 @@
       "allowed"
   );
 
-  // Auto-selecionar primeiro ativo se nenhum estiver ativo
-  $effect(() => {
-     if (!riskStore.activeAssetId && assetsStore.assets.length > 0) {
-       // Tenta encontrar o WIN ou o primeiro da lista
-       const defaultAsset = assetsStore.assets.find(a => a.symbol.includes('WIN')) || assetsStore.assets[0];
-       riskStore.activeAssetId = defaultAsset.id;
-     }
-  });
 
   // Defesa de Integração HMR e Landing: Garantir dados no modulo isolado
   onMount(() => {
@@ -98,7 +90,7 @@
     if (growthContext?.resolution) {
       const res = growthContext.resolution;
       console.groupCollapsed(`[Cockpit] Context Resolution: ${res.source.toUpperCase()}`);
-      console.log("Ativo Selecionado:", riskStore.activeAssetId || "Nenhum");
+      console.log("Ativo Contexto:", riskStore.activeAssetId || "Global");
       console.log("Motivo:", res.sourceReason);
       console.log("Meta Fase:", res.currentPhaseTarget);
       console.log("Drawdown:", res.currentPhaseDrawdown);
@@ -141,7 +133,12 @@
   });
   
   let profitGoal = $derived(
-      activePhase?.conditionsToAdvance?.find((c: any) => c.metric === 'profit_target' || c.metric === 'target_financial')?.value || 0
+      activePhase?.conditionsToAdvance?.find((c: any) => 
+        c.metric === 'profit' || 
+        c.metric === 'profit_target' || 
+        c.metric === 'totalTarget' ||
+        c.metric === 'target_financial'
+      )?.value || 0
   );
   
   let currentLimit = $derived(cockpit?.dailyRiskStatus.effectiveMaxDailyLoss || activeProfile?.max_daily_loss || 0);
@@ -211,28 +208,6 @@
       {/if}
     </div>
 
-      <div class="flex items-center gap-3">
-        <Select.Root type="single" bind:value={riskStore.activeAssetId}>
-            <Select.Trigger class="w-[180px] h-9 text-[10px] font-black uppercase tracking-widest bg-white/5 border-white/10 hover:bg-white/10 transition-all flex items-center justify-between px-3">
-                <div class="flex items-center gap-2">
-                    <Globe class="w-3.5 h-3.5 text-indigo-400 opacity-60" />
-                    <span class="truncate">
-                        {riskStore.activeAsset?.symbol || $t('risk.cockpit.selectAsset')}
-                    </span>
-                </div>
-            </Select.Trigger>
-            <Select.Content class="bg-card border-border/60">
-                <Select.Group>
-                    <Select.Label class="text-[9px] font-black uppercase tracking-widest opacity-40 py-2">{$t('risk.cockpit.activeMarket').toUpperCase()}</Select.Label>
-                    {#each assetsStore.assets as asset}
-                        <Select.Item value={asset.id} class="text-[10px] font-bold uppercase tracking-widest">
-                            {asset.symbol} - {asset.name}
-                        </Select.Item>
-                    {/each}
-                </Select.Group>
-            </Select.Content>
-        </Select.Root>
-      </div>
     </SystemCard>
 
   {#if !activeProfile}
@@ -494,7 +469,7 @@
                     </span>
                   </div>
                   <h3 class="text-2xl font-black text-white tracking-tighter uppercase leading-none">
-                    {activePhase?.name || '---'}
+                    {activePhase?.name || `Fase ${activePhase?.level || 1}`}
                   </h3>
                 </div>
 

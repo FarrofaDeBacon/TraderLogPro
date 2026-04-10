@@ -8,47 +8,14 @@ export interface LicenseData {
     error?: string;
 }
 
-export async function computeLegacyCustomerId(data: { name: string, cpf: string, birthDate: string, hardwareId?: string }): Promise<string> {
-    if (!data.name || !data.cpf || !data.birthDate) return "IDENTIDADE_NAO_PREENCHIDA";
-
-    // Normalize data (lowercase name, numbers-only CPF)
-    const normalizedName = data.name.trim().toLowerCase();
-    const normalizedCpf = data.cpf.replace(/\D/g, '');
-    const normalizedDob = data.birthDate.trim();
-    const hwid = data.hardwareId || "NO_HWID";
-
-    const raw = `TLP-ID-${normalizedName}-${normalizedCpf}-${normalizedDob}-${hwid}`;
-
-    const msgUint8 = new TextEncoder().encode(raw);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
-
-    return hashHex.slice(0, 12);
-}
-
-export async function computeDeviceIdentity(hardwareId: string | undefined): Promise<string> {
-    const hwid = hardwareId || "NO_HWID";
-    
-    // Simpler hash based only on the hardware ID for modern licensing
-    const raw = `TLP-HWID-${hwid}`;
-
-    const msgUint8 = new TextEncoder().encode(raw);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
-
-    return hashHex.slice(0, 12);
-}
-
-export async function validateLicenseKey(key: string, expectedCustomerId?: string): Promise<LicenseData> {
+export async function validateLicenseKey(key: string, _expectedCustomerId?: string): Promise<LicenseData> {
     try {
         console.log("[License] Delegating validation to Rust backend...");
 
         // Use the new Rust command for security (HMAC with secret hidden in binary)
         const result: any = await invoke("validate_license_cmd", {
             key: key.trim(),
-            expectedCid: expectedCustomerId || ""
+            expectedCid: _expectedCustomerId || ""
         });
 
         if (!result.valid) {
@@ -69,5 +36,22 @@ export async function validateLicenseKey(key: string, expectedCustomerId?: strin
     } catch (e) {
         console.error("License Validation Error:", e);
         return { valid: false, plan: "Trial", expiration: null, error: "Erro de comunicação com o sistema de segurança." };
+    }
+}
+
+/**
+ * Automático: Conecta-se ao Portal na nuvem para ativar a licença sem arquivos manuais.
+ */
+export async function activateLicenseOnline(email: string, pin: string): Promise<{ success: boolean; license?: string; error?: string }> {
+    try {
+        console.log("[License] Requesting online activation (via Rust) for:", email);
+        const result: any = await invoke("activate_license_online_cmd", {
+            email: email.trim(),
+            pin: pin
+        });
+        return result;
+    } catch (e: any) {
+        console.error("[License] Online activation failed:", e);
+        return { success: false, error: "Falha na conexão com o servidor de licenças." };
     }
 }

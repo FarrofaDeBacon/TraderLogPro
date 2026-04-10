@@ -19,7 +19,6 @@
         FileText,
         Printer,
         DollarSign,
-        LifeBuoy,
     } from "lucide-svelte";
     import * as Tooltip from "$lib/components/ui/tooltip";
     import * as AlertDialog from "$lib/components/ui/alert-dialog";
@@ -57,11 +56,6 @@
 
     // System Items
     let systemItems = $derived([
-        {
-            label: $t("nav.help"),
-            href: "/help",
-            icon: LifeBuoy,
-        },
         {
             label: $t("nav.settings"),
             href: "/settings",

@@ -1,55 +1,53 @@
 <script lang="ts">
-  import { assetTypesStore } from "$lib/stores/asset-types.svelte";
-  import { accountsStore } from "$lib/stores/accounts.svelte";
+    import { assetTypesStore } from "$lib/stores/asset-types.svelte";
+    import { assetsStore } from "$lib/stores/assets.svelte";
+    import { accountsStore } from "$lib/stores/accounts.svelte";
     import { t } from "svelte-i18n";
     import { untrack } from "svelte";
-    import { Input } from "$lib/components/ui/input";
-    import { Button } from "$lib/components/ui/button";
-    import { Badge } from "$lib/components/ui/badge";
     import { tradesStore } from "$lib/stores/trades.svelte";
-    import { appStore } from "$lib/stores/app.svelte";
     import { workspaceStore } from "$lib/stores/workspace.svelte";
     import { riskStore } from "$lib/stores/riskStore.svelte";
     import { getLiveIntervention } from "$lib/domain/insights/insights-engine";
-    import type { LiveIntervention } from "$lib/domain/insights/insights-engine";
     import { toLocalDateStr } from "$lib/domain/risk/risk-utils";
-    import { Zap, TrendingUp, TrendingDown, CheckSquare, Loader2, AlertCircle, AlertTriangle, Plus } from "lucide-svelte";
+    import {
+        Zap,
+        TrendingUp,
+        TrendingDown,
+        Loader2,
+        AlertCircle,
+        Plus,
+    } from "lucide-svelte";
     import { toast } from "svelte-sonner";
 
-    let intervention = $derived.by(() => {
-        return getLiveIntervention(
-            tradesStore.trades,
-            new Date(),
-            (trade) => parseFloat(trade.result?.toString() || "0"),
-            riskStore.riskCockpitState
-        );
-    });
-
-    // O Quick Log preenche o mínimo e deduz o máximo
+    let dateInput = $state(toLocalDateStr(new Date()) + "T" + `${String(new Date().getHours()).padStart(2, "0")}:${String(new Date().getMinutes()).padStart(2, "0")}`);
+    let selectedAssetTypeId = $state("");
     let asset = $state("");
     let direction = $state<"Buy" | "Sell">("Buy");
     let resultInput = $state("");
     let quantityInput = $state("1");
+    let entryPriceInput = $state("");
     let isSubmitting = $state(false);
-
-    // Refs for keyboard nav
-    let assetInputRef = $state<HTMLInputElement | null>(null);
     let resultInputRef = $state<HTMLInputElement | null>(null);
-    
-    let inlineFeedback = $state<{ message: string, type: 'success' | 'error' } | null>(null);
 
-    // Smart Auto-focus and Last Asset memory
-    $effect(() => {
-        untrack(() => {
-            const last = localStorage.getItem("quicklog_last_asset");
-            if (last && !asset) {
-                asset = last;
-                // If we remembered the asset, jump straight to the result input
-                setTimeout(() => { if (resultInputRef) resultInputRef.focus(); }, 150);
-            } else if (!asset) {
-                setTimeout(() => { if (assetInputRef) assetInputRef.focus(); }, 150);
-            }
-        });
+    // Auto-calculate exit price from entry price + result
+    let computedExitPrice = $derived.by(() => {
+        const entry = parseFloat(entryPriceInput.replace(",", "."));
+        const result = parseFloat(resultInput.replace(",", "."));
+        const qty = parseInt(quantityInput) || 1;
+        if (isNaN(entry) || entry <= 0 || isNaN(result) || qty <= 0) return null;
+        const perUnit = result / qty;
+        return direction === "Buy" ? entry + perUnit : entry - perUnit;
+    });
+
+    let filteredAssets = $derived.by(() => {
+        if (!selectedAssetTypeId) return assetsStore.assets;
+        return assetsStore.assets.filter(a => a.asset_type_id === selectedAssetTypeId);
+    });
+
+    let intervention = $derived.by(() => {
+        const trades = tradesStore.trades;
+        const cockpit = untrack(() => riskStore.riskCockpitState);
+        return getLiveIntervention(trades, new Date(), (trade) => parseFloat(trade.result?.toString() || "0"), cockpit);
     });
 
     async function handleQuickSubmit() {
@@ -57,103 +55,43 @@
             toast.error($t("trades.wizard.messages.required_fields"));
             return;
         }
-
         const rawResult = parseFloat(resultInput.replace(",", "."));
         if (isNaN(rawResult)) {
             toast.error($t("trades.messages.invalid_result"));
             return;
         }
-
-        const rawQty = parseInt(quantityInput) || 1;
-
         isSubmitting = true;
-
         try {
-            // Memory Context (The System guesses the environment to bypass heavy selects)
-            // Local Context: Use local date to avoid shifting to tomorrow at night in UTC
-            const now = new Date();
-            const localDate = toLocalDateStr(now);
-            const localTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            const today = `${localDate}T${localTime}`;
-            const defaultAccount = accountsStore.accounts[0]?.id || "";
-            const defaultStrategy = workspaceStore.strategies[0]?.id || "";
-            
-            // Find Asset Type silently
-            let assetTypeId = "rtd";
-            const upperAsset = asset.toUpperCase();
-            if (upperAsset.startsWith("WDO") || upperAsset.startsWith("WIN")) {
-                const futType = assetTypesStore.assetTypes.find(t => t.name.toLowerCase().includes("future") || t.name.toLowerCase().includes("futuro"));
-                if (futType) assetTypeId = futType.id;
-            } else if (upperAsset.length >= 4) {
-                const stockType = assetTypesStore.assetTypes.find(t => t.name.toLowerCase().includes("stock") || t.name.toLowerCase().includes("aç"));
-                if (stockType) assetTypeId = stockType.id;
-            }
-
-            // Fire
+            const entryPrice = parseFloat(entryPriceInput.replace(",", ".")) || 0;
+            const exitPrice = computedExitPrice || 0;
             const res = await tradesStore.addTrade({
-                date: today,
-                asset_symbol: upperAsset,
-                asset_type_id: assetTypeId,
-                strategy_id: defaultStrategy,
-                account_id: defaultAccount,
+                date: dateInput,
+                asset_symbol: asset.toUpperCase(),
+                asset_type_id: selectedAssetTypeId || "",
+                strategy_id: workspaceStore.strategies[0]?.id || "",
+                account_id: accountsStore.accounts[0]?.id || "",
                 result: rawResult,
-                quantity: rawQty,
+                quantity: parseInt(quantityInput) || 1,
                 direction,
-                modality_id: null,
-                stop_loss: null,
-                take_profit: null,
+                entry_price: entryPrice > 0 ? entryPrice : undefined,
+                exit_price: exitPrice > 0 ? exitPrice : undefined,
+                exit_date: dateInput,
                 intensity: 10,
-                entry_price: 0,
-                exit_price: 0,
-                exit_date: today,
-                fee_total: 0,
-                followed_plan: true,
-                notes: "",
-                timeframe: "",
-                volatility: "",
-                entry_emotional_state_id: null,
-                entry_emotional_state_name: null,
-                exit_reason: null,
-                exit_emotional_state_id: null,
-                exit_emotional_state_name: null,
-                entry_rationale: "",
-                confirmation_signals: "",
-                market_context: "",
-                relevant_news: "",
-                psychology_analysis_during: "",
-                what_worked: "",
-                mistakes_improvements: "",
-                lessons_learned: "",
-                images: [],
-                partial_exits: []
+                followed_plan: true
             });
-
             if (res.success) {
-                const signal = rawResult >= 0 ? '+' : '';
-                const style = rawResult >= 0 ? 'success' : 'error';
-                inlineFeedback = { message: `${$t("trades.messages.registered")}: ${upperAsset} ${signal}${rawResult.toFixed(2)}`, type: style };
-                setTimeout(() => inlineFeedback = null, 4000);
-
-                localStorage.setItem("quicklog_last_asset", upperAsset);
-                
-                // Ultra-fast clean state
+                toast.success(`${asset.toUpperCase()} ${rawResult >= 0 ? "+" : ""}${rawResult.toFixed(2)}`);
                 resultInput = "";
                 quantityInput = "1";
-                // Keep asset populated and jump focal point to result again
-                setTimeout(() => { if (resultInputRef) resultInputRef.focus(); }, 50);
-            } else {
-                inlineFeedback = { message: `${$t("common.error")}: ${res.error}`, type: 'error' };
-                setTimeout(() => inlineFeedback = null, 5000);
+                entryPriceInput = "";
             }
         } catch (e) {
-            inlineFeedback = { message: $t("trades.messages.submission_fail"), type: 'error' };
-            setTimeout(() => inlineFeedback = null, 5000);
+            toast.error($t("trades.messages.submission_fail"));
         } finally {
             isSubmitting = false;
         }
     }
 
-    // Keyboard Accessibility
     function handleKeydown(e: KeyboardEvent) {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -162,111 +100,121 @@
     }
 </script>
 
-<div class="w-full flex flex-col gap-2">
-    {#if intervention}
-        <div class="flex items-center gap-2 p-2 rounded-lg text-xs font-bold border animate-in fade-in slide-in-from-top-2 {intervention.type === 'danger' ? 'bg-rose-500/10 border-rose-500/20 text-rose-500' : 'bg-amber-500/10 border-amber-500/20 text-amber-500'}">
-            {#if intervention.type === 'danger'}
-                <AlertCircle class="w-4 h-4 shrink-0" />
-            {:else}
-                <AlertTriangle class="w-4 h-4 shrink-0" />
-            {/if}
-            <div class="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-1 md:gap-2">
-                <span>{intervention.message}</span>
-                {#if intervention.action}
-                    <span class="opacity-70 font-mono tracking-widest text-[9px] uppercase border px-1.5 py-0.5 rounded {intervention.type === 'danger' ? 'border-rose-500/30' : 'border-amber-500/30'}">{intervention.action}</span>
-                {/if}
+<div class="w-full bg-background/20 border-l-4 border-l-emerald-500 border-y border-r border-border/40 rounded-r-xl h-14 flex items-center px-4 gap-4 group/card transition-all hover:bg-background/40 relative overflow-hidden shadow-2xl backdrop-blur-xl">
+    <!-- Identity Section (Integrated Inline) -->
+    <div class="flex items-center gap-2 shrink-0 border-r border-border/20 pr-4 h-8">
+        <div class="w-7 h-7 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+            <Zap class="w-3.5 h-3.5 text-emerald-500 fill-emerald-500/10" />
+        </div>
+        <div class="flex flex-col justify-center">
+            <h3 class="text-[9px] font-black tracking-[0.15em] text-foreground uppercase leading-none">REGISTRO</h3>
+            <p class="text-[7px] font-bold text-muted-foreground/40 uppercase tracking-widest leading-none mt-0.5">TERMINAL</p>
+        </div>
+    </div>
+
+    <!-- Inputs Strip (SINGLE ROW FLOW) -->
+    <div class="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
+        <!-- Date/Time Pill -->
+        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[130px] relative hover:border-primary/40 transition-all">
+            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">DATA/HORA</span>
+            <input type="datetime-local" bind:value={dateInput} class="bg-transparent border-none p-0 mt-3 text-[9px] font-black uppercase outline-none focus:ring-0 w-full text-foreground/70 cursor-pointer inv-input" />
+        </div>
+
+        <!-- Asset Type Pill -->
+        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[100px] relative hover:border-primary/40 transition-all cursor-pointer">
+            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">TIPO</span>
+            <select bind:value={selectedAssetTypeId} class="bg-transparent border-none p-0 mt-3 text-[9px] font-black uppercase outline-none focus:ring-0 cursor-pointer w-full appearance-none pr-4 text-foreground/70">
+                <option value="" class="bg-slate-900">TODOS</option>
+                {#each assetTypesStore.assetTypes as type}
+                    <option value={type.id} class="bg-slate-900">{type.name}</option>
+                {/each}
+            </select>
+        </div>
+
+        <!-- Asset Pill -->
+        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[100px] relative hover:border-primary/40 transition-all">
+            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">ATIVO</span>
+            <select bind:value={asset} class="bg-transparent border-none p-0 mt-3 text-[9px] font-black uppercase outline-none focus:ring-0 cursor-pointer w-full appearance-none pr-4 text-foreground/70 uppercase">
+                <option value="" class="bg-slate-900">SELEC</option>
+                {#each filteredAssets as a}
+                    <option value={a.symbol} class="bg-slate-900">{a.symbol}</option>
+                {/each}
+            </select>
+        </div>
+
+        <!-- Direction Toggle (Ultra Compact) -->
+        <div class="h-9 p-0.5 bg-black/40 border border-border/40 rounded-lg flex items-center gap-0.5 shrink-0">
+            <button onclick={() => (direction = "Buy")} class="h-full px-2.5 rounded flex items-center gap-1.5 transition-all {direction === 'Buy' ? 'bg-emerald-500 text-[#064e3b] font-black shadow-lg shadow-emerald-500/20' : 'text-muted-foreground/30 hover:text-emerald-400'}">
+                <TrendingUp class="w-3 h-3" />
+                <span class="text-[8px] font-black">COMPRA</span>
+            </button>
+            <button onclick={() => (direction = "Sell")} class="h-full px-2.5 rounded flex items-center gap-1.5 transition-all {direction === 'Sell' ? 'bg-rose-500 text-[#4c0519] font-black shadow-lg shadow-rose-500/20' : 'text-muted-foreground/30 hover:text-rose-400'}">
+                <TrendingDown class="w-3 h-3" />
+                <span class="text-[8px] font-black">VENDA</span>
+            </button>
+        </div>
+
+        <!-- Qty Pill -->
+        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[60px] relative hover:border-primary/40 transition-all">
+            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">QTD</span>
+            <input type="number" bind:value={quantityInput} min="1" class="bg-transparent border-none p-0 mt-3 text-[9px] font-black outline-none focus:ring-0 w-full text-foreground/70" />
+        </div>
+
+        <!-- Entry Price Pill -->
+        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[90px] relative hover:border-primary/40 transition-all">
+            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">ENTRADA</span>
+            <input bind:value={entryPriceInput} placeholder="0.00" class="bg-transparent border-none p-0 mt-3 text-[9px] font-black tabular-nums outline-none focus:ring-0 w-full text-foreground/70" onkeydown={handleKeydown} />
+        </div>
+
+        <!-- PL Pill -->
+        <div class="h-9 px-2.5 bg-black/40 border border-border/40 rounded-lg flex flex-col justify-center min-w-[110px] relative hover:border-emerald-500/40 transition-all">
+            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/40 absolute top-1 left-2.5">RESULTADO</span>
+            <div class="flex items-center gap-1 mt-3">
+                <span class="text-[8px] font-black opacity-20">R$</span>
+                <input bind:value={resultInput} bind:this={resultInputRef} placeholder="0.00" class="bg-transparent border-none p-0 text-[9px] font-black tabular-nums outline-none focus:ring-0 w-full {resultInput.startsWith('-') ? 'text-rose-400' : 'text-emerald-400'}" onkeydown={handleKeydown} />
             </div>
         </div>
-    {/if}
 
-    <div class="flex flex-col md:flex-row items-center gap-3 p-3 bg-secondary/30 border-y md:border border-border/50 md:rounded-xl shadow-inner w-full">
-    <div class="flex items-center gap-1.5 pr-3 border-r border-border/10 justify-center min-w-max hidden md:flex">
-        <Zap class="w-3.5 h-3.5 text-emerald-500 fill-emerald-500/20" />
-        <span class="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">{$t("trades.quick_edit.title")}</span>
-    </div>
-
-    <!-- Active Flow Container -->
-    <div class="flex flex-wrap items-center gap-3 w-full flex-1 min-w-0">
-        
-        <!-- Asset -->
-        <div class="flex-1 min-w-[80px] md:flex-none md:w-28 relative">
-            <span class="absolute -top-2 left-2 px-1 bg-background text-[9px] font-bold text-muted-foreground uppercase tracking-widest z-10 whitespace-nowrap">{$t("trades.list.table.asset")}</span>
-            <Input 
-                bind:ref={assetInputRef}
-                bind:value={asset}
-                placeholder={$t("trades.placeholders.quick_asset")}
-                class="uppercase bg-transparent border-dashed border-border/30 h-10 text-xs font-bold font-mono px-3"
-                onkeydown={handleKeydown}
-            />
+        <!-- Computed Exit Price (Read-only indicator) -->
+        {#if computedExitPrice !== null}
+        <div class="h-9 px-2.5 bg-black/20 border border-dashed border-border/30 rounded-lg flex flex-col justify-center min-w-[80px] relative shrink-0">
+            <span class="text-[7px] font-black uppercase tracking-widest text-muted-foreground/30 absolute top-1 left-2.5">SAÍDA</span>
+            <span class="mt-3 text-[9px] font-black tabular-nums {computedExitPrice > parseFloat(entryPriceInput.replace(',','.')) ? 'text-emerald-400' : 'text-rose-400'}">{computedExitPrice.toFixed(2)}</span>
         </div>
-
-        <!-- Direction Toggle -->
-        <div class="flex items-center bg-secondary/20 p-1 rounded-lg border border-border/10 h-10 min-w-max">
-            <button 
-                onclick={() => direction = "Buy"}
-                class="flex items-center justify-center gap-1 h-8 px-2.5 rounded-md transition-all {direction === 'Buy' ? 'bg-emerald-500/10 text-emerald-500 shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
-            >
-                <TrendingUp class="w-3 h-3" />
-                <span class="text-[10px] font-black uppercase">{$t("trades.enums.direction.Buy")}</span>
-            </button>
-            <button 
-                onclick={() => direction = "Sell"}
-                class="flex items-center justify-center gap-1 h-8 px-2.5 rounded-md transition-all {direction === 'Sell' ? 'bg-rose-500/10 text-rose-500 shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
-            >
-                <TrendingDown class="w-3 h-3" />
-                <span class="text-[10px] font-black uppercase">{$t("trades.enums.direction.Sell")}</span>
-            </button>
-        </div>
-
-        <!-- Quantity -->
-        <div class="w-16 relative">
-            <span class="absolute -top-2 left-2 px-1 bg-background text-[9px] font-bold text-muted-foreground uppercase tracking-widest z-10 whitespace-nowrap">{$t("trades.wizard.fields.quantity")}</span>
-            <Input 
-                type="number"
-                bind:value={quantityInput}
-                min="1"
-                class="bg-transparent border-dashed border-border/30 h-10 text-xs font-bold font-mono text-center"
-                onkeydown={handleKeydown}
-            />
-        </div>
-
-        <!-- Result -->
-        <div class="flex-1 min-w-[120px] md:flex-none md:w-32 relative">
-            <span class="absolute -top-2 left-2 px-1 bg-background text-[9px] font-bold text-muted-foreground uppercase tracking-widest z-10 whitespace-nowrap">
-                {$t("trades.list.table.pl")} ({accountsStore.accounts.find(a => a.id === (accountsStore.accounts[0]?.id))?.currency || "R$"})
-            </span>
-            <Input 
-                bind:ref={resultInputRef}
-                bind:value={resultInput}
-                placeholder={$t("trades.placeholders.quick_result")}
-                class="bg-transparent border-solid border-border/20 h-10 text-sm font-black tabular-nums {resultInput.startsWith('-') ? 'text-rose-400 focus-visible:ring-rose-500' : 'text-emerald-400 focus-visible:ring-emerald-500'}"
-                onkeydown={handleKeydown}
-            />
-        </div>
-
-    </div>
-
-    <!-- Submit Action -->
-    <div class="w-full md:w-auto flex flex-col items-center justify-center relative min-w-max">
-        {#if inlineFeedback}
-            <span class="absolute -top-7 right-0 text-[10px] font-black tracking-widest uppercase animate-in fade-in slide-in-from-bottom-2 {inlineFeedback.type === 'success' ? 'text-emerald-500' : 'text-rose-500'}">
-                {inlineFeedback.message}
-            </span>
         {/if}
-        <Button 
-            disabled={isSubmitting || !asset || !resultInput}
-            onclick={handleQuickSubmit}
-            size="sm"
-            variant="outline"
-            class="h-10 px-5 md:h-10 text-[10px] font-bold uppercase tracking-tight w-full md:w-auto shadow-sm border-border/50"
-        >
-            {#if isSubmitting}
-                <Loader2 class="w-3.5 h-3.5 animate-spin mr-2" />
-            {:else}
-                <Plus class="w-3.5 h-3.5 mr-2" />
-            {/if}
-            {$t("common.add")}
-        </Button>
     </div>
+
+    <!-- Submit Button (Fixed at right) -->
+    <button disabled={isSubmitting || !asset || !resultInput} onclick={handleQuickSubmit} class="h-9 px-5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-20 text-[#064e3b] rounded-lg font-black uppercase text-[9px] tracking-widest transition-all active:scale-[0.98] flex items-center gap-2 shadow-lg shadow-emerald-500/20 shrink-0">
+        {#if isSubmitting}
+            <Loader2 class="w-3.5 h-3.5 animate-spin" />
+        {:else}
+            <Plus class="w-3.5 h-3.5" />
+            ADICIONAR
+        {/if}
+    </button>
 </div>
-</div>
+
+{#if intervention}
+    <div class="mt-2 flex items-center gap-2 px-3 py-1 bg-rose-500/5 border-l-2 border-rose-500 rounded-r text-rose-500 animate-in fade-in slide-in-from-top-1">
+        <AlertCircle class="w-3 h-3 shrink-0" />
+        <span class="text-[8px] font-black uppercase tracking-widest">{intervention.message}</span>
+    </div>
+{/if}
+
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .inv-input::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 0.1;
+        cursor: pointer;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+</style>

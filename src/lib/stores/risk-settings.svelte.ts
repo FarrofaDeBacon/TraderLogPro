@@ -23,11 +23,39 @@ export class RiskSettingsStore {
     async loadData() {
         try {
             console.log("[RiskSettingsStore] Loading all risk data...");
-            this.riskProfiles = await safeInvoke<RiskProfile[]>("get_risk_profiles") || [];
-            this.assetRiskProfiles = await safeInvoke<AssetRiskProfile[]>("get_asset_risk_profiles") || [];
-            this.growthPlans = await safeInvoke<GrowthPlan[]>("get_growth_plans") || [];
+            const profilesRes = await safeInvoke<RiskProfile[]>("get_risk_profiles");
+            if (profilesRes) {
+                this.riskProfiles = profilesRes.map(p => ({
+                    ...p,
+                    account_ids: p.account_ids || [],
+                    risk_rules: p.risk_rules || [],
+                    linked_asset_risk_profile_ids: p.linked_asset_risk_profile_ids || []
+                }));
+            }
+
+            const assetProfilesRes = await safeInvoke<AssetRiskProfile[]>("get_asset_risk_profiles");
+            if (assetProfilesRes) {
+                this.assetRiskProfiles = assetProfilesRes.map(p => ({
+                    ...p,
+                    asset_ids: p.asset_ids || [],
+                    growth_phases_override: p.growth_phases_override || []
+                }));
+            }
+
+            const plansRes = await safeInvoke<GrowthPlan[]>("get_growth_plans");
+            if (plansRes) {
+                this.growthPlans = plansRes.map(p => ({
+                    ...p,
+                    current_phase_index: p.current_phase_index || 0,
+                    phases: (p.phases || []).map(ph => ({
+                        ...ph,
+                        conditions_to_advance: ph.conditions_to_advance || [],
+                        conditions_to_demote: ph.conditions_to_demote || []
+                    }))
+                }));
+            }
             
-            console.log("[RiskSettingsStore] Data loaded: ", {
+            console.log("[RiskSettingsStore] Data loaded and normalized: ", {
                 profiles: this.riskProfiles.length,
                 assets: this.assetRiskProfiles.length,
                 plans: this.growthPlans.length
@@ -77,7 +105,8 @@ export class RiskSettingsStore {
 
     // --- Risk Profiles CRUD ---
     addRiskProfile(item: Omit<RiskProfile, "id">) {
-        this.riskProfiles.push({ ...item, id: crypto.randomUUID() });
+        const id = crypto.randomUUID();
+        this.riskProfiles.push({ ...item, id });
         this.saveRiskProfiles();
     }
     
@@ -134,10 +163,8 @@ export class RiskSettingsStore {
 
     async setActiveRiskProfile(id: string) {
         try {
-            // Hard reset active states in DB to prevent conflicts (Ghost active profiles)
-            await safeInvoke("db_query", { 
-                query: "UPDATE risk_profile SET active = false WHERE active = true" 
-            });
+            // Memory state is already updated below, saveRiskProfiles() will persist everything correctly
+            // Removal of raw db_query to avoid Serialization error: Invalid type: enum
             
             this.riskProfiles = this.riskProfiles.map(r => ({
                 ...r,
@@ -155,9 +182,10 @@ export class RiskSettingsStore {
     // --- Asset Risk Profiles CRUD ---
     addAssetRiskProfile(item: Omit<AssetRiskProfile, "id">) {
         // Garantir que asset_ids existe
+        const id = crypto.randomUUID();
         const newItem = { 
             ...item, 
-            id: crypto.randomUUID(),
+            id,
             asset_ids: item.asset_ids || []
         };
         this.assetRiskProfiles.push(newItem);
@@ -205,9 +233,10 @@ export class RiskSettingsStore {
 
     // --- Growth Plans CRUD ---
     addGrowthPlan(item: Omit<GrowthPlan, "id">) {
+        const id = crypto.randomUUID();
         const plan: GrowthPlan = { 
             ...item, 
-            id: crypto.randomUUID(),
+            id,
             current_phase_index: 0,
             enabled: true,
             currentPhaseStartedAt: new Date().toISOString()
@@ -521,13 +550,12 @@ export class RiskSettingsStore {
                 }
                 
                 // Operacional
-                if (formData.max_daily_loss <= 0) errs.push({ message: "Perda máxima diária deve ser maior que zero.", section: "operational" });
-                if (formData.daily_target <= 0) errs.push({ message: "Meta de lucro diária deve ser maior que zero.", section: "operational" });
-
-                // Ecossistema
-                if (!formData.linked_asset_risk_profile_ids || formData.linked_asset_risk_profile_ids.length === 0) {
-                    errs.push({ message: "risk.validation.error.no_assets_linked", section: "ecosystem" });
+                if (!formData.growth_plan_id) {
+                    if (formData.max_daily_loss <= 0) errs.push({ message: "risk.validation.error.daily_loss_invalid", section: "operational" });
+                    if (formData.daily_target <= 0) errs.push({ message: "risk.validation.error.daily_target_invalid", section: "operational" });
                 }
+
+                // Ecossistema (Removed blocking check for asset mapping to reduce friction)
 
                 if (formData.growth_plan_id) {
                     const plan = self.growthPlans.find(p => p.id === formData.growth_plan_id);
@@ -556,6 +584,10 @@ export class RiskSettingsStore {
                     warns.push({ message: "risk.validation.warning.meta_disproportionate", section: "operational" });
                 }
                 
+                if (!formData.linked_asset_risk_profile_ids || formData.linked_asset_risk_profile_ids.length === 0) {
+                    warns.push({ message: "risk.validation.error.no_assets_linked", section: "ecosystem" });
+                }
+
                 if (!formData.psychological_coupling_enabled) {
                     warns.push({ message: "risk.validation.warning.no_psych_filters", section: "intelligence" });
                 }

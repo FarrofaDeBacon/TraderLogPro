@@ -127,10 +127,12 @@
         }
     },
     "general": {
+        "asset": "Asset",
         "add": "Add",
         "all": "General",
         "back": "Back",
         "cancel": "Cancel",
+        "next": "Next",
         "confirmDeleteDescription": "Are you sure you want to delete? This action cannot be undone.",
         "confirmDeleteTitle": "Confirm Deletion",
         "custom": "Custom",
@@ -152,7 +154,8 @@
         "success": "Success",
         "unknown": "Unknown",
         "yes": "Yes",
-        "operator": "Operator"
+        "operator": "Operator",
+        "reload": "Reload"
     },
     "help": {
         "emptyState": "No results found",

@@ -16,28 +16,23 @@
         Download,
         Upload,
         Trash2,
+        Zap,
     } from "lucide-svelte";
     import { userProfileStore } from "$lib/stores/user-profile.svelte";
     import {
         validateLicenseKey,
-        computeDeviceIdentity,
+        activateLicenseOnline,
         type LicenseData,
     } from "$lib/utils/license";
     import { open } from "@tauri-apps/plugin-dialog";
     import { readFile } from "@tauri-apps/plugin-fs";
 
-    let isActivating = $state(false);
-    let customerPin = $state("");
+    // Machine PIN comes directly from backend v2
+    const customerPin = $derived(userProfileStore.hardwareId);
 
-    // Calculate Machine Code based on hardware
-    $effect(() => {
-        const hwid = userProfileStore.hardwareId;
-        if (hwid) {
-            computeDeviceIdentity(hwid).then((id) => {
-                customerPin = id;
-            });
-        }
-    });
+    let activationEmail = $state(userProfileStore.userProfile.email || "");
+    let isActivating = $state(false);
+    let isOnlineActivating = $state(false);
 
     // Diagnostic trace for license state
     $effect(() => {
@@ -97,6 +92,42 @@
         if (confirmed) {
             await userProfileStore.deactivateLicense();
             toast.success("Licença removida com sucesso.");
+        }
+    }
+
+    async function handleOnlineActivation() {
+        if (!activationEmail || !activationEmail.includes("@")) {
+            toast.error("Por favor, informe um e-mail de compra válido.");
+            return;
+        }
+
+        try {
+            isOnlineActivating = true;
+            toast.info("Conectando ao servidor de licenças...");
+            
+            const result = await activateLicenseOnline(activationEmail, customerPin);
+            
+            if (result.success && result.license) {
+                // Now validate the result locally to ensure it matches this machine
+                const validation = await validateLicenseKey(result.license, customerPin);
+                
+                if (validation.valid) {
+                    await userProfileStore.updateUserProfile({
+                        email: activationEmail,
+                        license_key: result.license
+                    });
+                    toast.success(`Licença ${validation.plan} ativada com sucesso! Aproveite o ${validation.plan}.`);
+                } else {
+                    toast.error(validation.error || "A licença gerada não é válida para este dispositivo.");
+                }
+            } else {
+                toast.error(result.error || "Não encontramos uma licença ativa para este e-mail.");
+            }
+        } catch (e) {
+            console.error(e);
+            toast.error("Erro na comunicação com o servidor.");
+        } finally {
+            isOnlineActivating = false;
         }
     }
 </script>
@@ -241,6 +272,46 @@
         </div>
     {/if}
 
+    <Card.Root class="bg-primary/5 border-primary/20 shadow-lg shadow-primary/5 overflow-hidden">
+        <Card.Header class="pb-2">
+            <Card.Title class="text-sm flex items-center gap-2">
+                <Zap class="w-4 h-4 text-primary" />
+                Ativação Expressa (Recomendado)
+            </Card.Title>
+            <Card.Description class="text-xs">
+                Se você já adquiriu o TraderLog Pro, basta informar seu e-mail abaixo para ativar instantaneamente.
+            </Card.Description>
+        </Card.Header>
+        <Card.Content class="flex flex-col md:flex-row gap-4 items-end pb-4">
+            <div class="flex-1 space-y-1.5">
+                <label for="email" class="text-[10px] uppercase font-bold text-primary tracking-widest pl-1">E-mail da Compra</label>
+                <div class="relative">
+                    <input 
+                        id="email"
+                        type="email" 
+                        bind:value={activationEmail}
+                        placeholder="exemplo@email.com"
+                        class="w-full h-10 px-4 bg-background/50 border border-primary/20 rounded-lg text-sm focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-muted-foreground/30"
+                    />
+                </div>
+            </div>
+            <Button 
+                class="h-10 px-8 font-black uppercase tracking-wider text-[11px] shadow-lg shadow-primary/10"
+                disabled={isOnlineActivating || !customerPin}
+                onclick={handleOnlineActivation}
+            >
+                {#if isOnlineActivating}
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Ativando...
+                    </div>
+                {:else}
+                    Ativar Agora
+                {/if}
+            </Button>
+        </Card.Content>
+    </Card.Root>
+
     <Separator class="bg-border/40" />
 
     <div class="grid gap-6 md:grid-cols-2">
@@ -267,9 +338,9 @@
                             class="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter"
                             >{$t("settings.license.pinLabel")}</span
                         >
-                        <div class="flex items-center justify-between gap-2">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                             <code
-                                class="text-xl font-mono text-primary font-bold tracking-widest bg-primary/5 px-2 rounded"
+                                class="text-lg md:text-xl font-mono text-primary font-bold tracking-widest bg-primary/5 px-3 py-1 rounded-lg border border-primary/10 break-all"
                             >
                                 {customerPin ||
                                     $t("settings.license.incompleteData")}

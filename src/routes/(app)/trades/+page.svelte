@@ -628,10 +628,10 @@
             />
         </SystemCard>
 
-        <!-- Secundário: Registro Ultra Rápido (Fase 2) -->
+        <!-- Registro Quick (Single Line Action Bar) -->
         <QuickLog />
 
-        <!-- KPI Row -->
+        <!-- KPI Row (Restored Original 5-Card Grid) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-2">
             <SystemCard status={kpis.profitTotal >= 0 ? 'success' : 'danger'} class="p-3">
                 <SystemMetric 
@@ -650,7 +650,7 @@
                     weight="black"
                     subvalue={$t("trades.kpi.winRateDesc", {
                         values: { winners: kpis.winners, total: kpis.total }
-                    })}
+                     })}
                 />
             </SystemCard>
 
@@ -848,9 +848,9 @@
         {/if}
 
         <!-- Main Split Content -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
             <!-- Left: Month/Week/Day Trade Hierarchy (MAIN LIST) -->
-            <div class="lg:col-span-9 space-y-4">
+            <div class="lg:col-span-10 space-y-4">
                 {#if hierarchicalTradesData.length === 0}
                     <div
                         class="mt-8 flex flex-1 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-muted-foreground/20 p-12 text-center bg-accent/5"
@@ -1204,7 +1204,7 @@
             </div>
 
             <!-- Right Sidebar: Interactive Metrics & Charts -->
-            <div class="lg:col-span-3 space-y-4 self-start sticky top-4">
+            <div class="lg:col-span-2 space-y-4 self-start sticky top-4">
                 <div class="flex items-center justify-between px-2 h-9">
                     <h3
                         class="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-2"
@@ -1463,7 +1463,7 @@
 <!-- Wizard Modal (New/Edit) -->
 <Dialog.Root bind:open={isEditOpen}>
     <Dialog.Content
-        class="max-w-4xl max-h-[95vh] h-[850px] overflow-hidden p-0 flex flex-col border-white/10 glass text-white"
+        class="max-w-3xl max-h-[85vh] overflow-hidden p-0 flex flex-col border-0 bg-transparent shadow-none"
     >
         {#key selectedTrade?.id}
             <NewTradeWizard

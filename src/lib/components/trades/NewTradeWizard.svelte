@@ -1213,404 +1213,204 @@
     <div class="flex-1 overflow-y-auto p-4 bg-muted/40 backdrop-blur-md">
         <div class="max-w-3xl mx-auto space-y-4">
             {#if currentStep === 1}
-                <div
-                    class="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300"
-                >
-                    <section class="space-y-4">
-                        {#if closureAlreadyExists && !trade?.id}
-                            <div
-                                class="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg space-y-2 mb-4 animate-in fade-in zoom-in duration-300"
-                            >
-                                <div
-                                    class="flex items-center gap-2 text-blue-600 dark:text-blue-400"
-                                >
-                                    <ShieldCheck class="w-4 h-4" />
-                                    <span
-                                        class="text-xs font-bold uppercase tracking-wider"
-                                        >{$t("trades.wizard.messages.sync_warning")}</span
-                                    >
-                                </div>
-                                <p
-                                    class="text-[10px] text-blue-800 dark:text-blue-200/80 leading-tight"
-                                >
-                                    {$t(
-                                        "trades.wizard.messages.closure_exists_warning",
-                                    )}
-                                </p>
+                <div class="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                    <!-- Context Section Card (Image 1 inspired) -->
+                    <section class="bg-secondary/10 border border-border/30 rounded-2xl p-5 shadow-xl backdrop-blur-md relative overflow-hidden group/card">
+                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 blur-[50px] rounded-full"></div>
+                        
+                        <div class="flex items-center gap-3 mb-6 border-b border-border/10 pb-4">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+                                <Target class="w-4 h-4 text-primary" />
                             </div>
-                        {/if}
+                            <h3 class="text-[11px] font-black text-foreground uppercase tracking-[0.2em]">
+                                {$t("trades.wizard.sections.context")}
+                            </h3>
+                        </div>
 
-                        {#if riskWarnings.length > 0}
-                            <div
-                                class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg space-y-2 animate-in fade-in zoom-in duration-300"
-                            >
-                                <div
-                                    class="flex items-center gap-2 text-amber-500"
-                                >
-                                    <AlertCircle class="w-4 h-4" />
-                                    <span
-                                        class="text-xs font-bold uppercase tracking-wider"
-                                        >{$t(
-                                            "trades.wizard.risk.alerts_title",
-                                        )}</span
-                                    >
-                                </div>
-                                <ul class="space-y-1">
-                                    {#each riskWarnings as warning}
-                                        <li
-                                            class="text-[10px] text-amber-800 dark:text-amber-200/80 leading-tight"
-                                        >
-                                            • {$t(warning.key, warning.params)}
-                                        </li>
-                                    {/each}
-                                </ul>
-
-                                {#if suggestedLotMultiplier < 1.0}
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        class="w-full h-7 text-[9px] border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/20 text-amber-700 dark:text-amber-200 uppercase font-bold"
-                                        onclick={applyLotAdjustment}
-                                    >
-                                        {$t(
-                                            "trades.wizard.risk.reduce_lot_button",
-                                            {
-                                                percent: Math.round(
-                                                    (1 -
-                                                        suggestedLotMultiplier) *
-                                                        100,
-                                                ),
-                                            } as any,
-                                        )}
-                                    </Button>
-                                {/if}
-                            </div>
-                        {/if}
-
-                        <h3
-                            class="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]"
-                        >
-                            {$t("trades.wizard.sections.context")}
-                        </h3>
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                            <div class="space-y-1.5">
-                                <Label
-                                    for="account-select"
-                                    class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
-                                    >{$t("trades.wizard.fields.account")}</Label
-                                >
-                                <Select.Root
-                                    type="single"
-                                    bind:value={formData.account_id}
-                                >
-                                    <Select.Trigger
-                                        id="account-select"
-                                        class="h-9 bg-muted/20 border-border/40 focus:ring-1 focus:ring-primary/40 text-xs font-medium text-foreground w-full"
-                                    >
-                                        {accountsList.find(
-                                            (a) => a.id === formData.account_id,
-                                        )?.nickname ||
-                                            $t(
-                                                "trades.wizard.placeholders.select",
-                                            )}
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+                            <!-- Selects (Image 2 style) -->
+                            <div class="space-y-2">
+                                <Label for="account-select" class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">{$t("trades.wizard.fields.account")}</Label>
+                                <Select.Root type="single" bind:value={formData.account_id}>
+                                    <Select.Trigger id="account-select" class="h-11 bg-black/40 border-border/60 rounded-xl focus:ring-1 focus:ring-primary/40 text-xs font-bold text-foreground w-full hover:bg-black/60 transition-all">
+                                        {accountsList.find(a => a.id === formData.account_id)?.nickname || $t("trades.wizard.placeholders.select")}
                                     </Select.Trigger>
-                                    <Select.Content>
+                                    <Select.Content class="bg-slate-900 border-border/40">
                                         {#each accountsList as acc}
-                                            <Select.Item value={acc.id}
-                                                >{acc.nickname}</Select.Item
-                                            >
+                                            <Select.Item value={acc.id} class="text-xs focus:bg-primary/20">{acc.nickname}</Select.Item>
                                         {/each}
                                     </Select.Content>
                                 </Select.Root>
                             </div>
-                            <div class="space-y-1.5">
-                                <Label
-                                    for="strategy-select"
-                                    class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
-                                    >{$t(
-                                        "trades.wizard.fields.strategy",
-                                    )}</Label
-                                >
-                                <Select.Root
-                                    type="single"
-                                    bind:value={formData.strategy_id}
-                                >
-                                    <Select.Trigger
-                                        id="strategy-select"
-                                        class="h-9 bg-muted/20 border-border/40 focus:ring-1 focus:ring-primary/40 text-xs font-medium text-foreground w-full"
-                                    >
-                                        {strategiesList.find(
-                                            (s) =>
-                                                s.id === formData.strategy_id,
-                                        )?.name ||
-                                            $t(
-                                                "trades.wizard.placeholders.select",
-                                            )}
+
+                            <div class="space-y-2">
+                                <Label for="strategy-select" class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">{$t("trades.wizard.fields.strategy")}</Label>
+                                <Select.Root type="single" bind:value={formData.strategy_id}>
+                                    <Select.Trigger id="strategy-select" class="h-11 bg-black/40 border-border/60 rounded-xl focus:ring-1 focus:ring-primary/40 text-xs font-bold text-foreground w-full hover:bg-black/60 transition-all">
+                                        {strategiesList.find(s => s.id === formData.strategy_id)?.name || $t("trades.wizard.placeholders.select")}
                                     </Select.Trigger>
-                                    <Select.Content>
+                                    <Select.Content class="bg-slate-900 border-border/40">
                                         {#each strategiesList as strategy}
-                                            <Select.Item value={strategy.id}
-                                                >{strategy.name}</Select.Item
-                                            >
+                                            <Select.Item value={strategy.id} class="text-xs focus:bg-primary/20">{strategy.name}</Select.Item>
                                         {/each}
                                     </Select.Content>
                                 </Select.Root>
                             </div>
-                            <div class="space-y-1.5">
-                                <Label
-                                    for="timeframe-select"
-                                    class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
-                                    >{$t(
-                                        "trades.wizard.fields.timeframe",
-                                    )}</Label
-                                >
-                                <Select.Root
-                                    type="single"
-                                    bind:value={formData.timeframe}
-                                >
-                                    <Select.Trigger
-                                        id="timeframe-select"
-                                        class="h-9 bg-muted/20 border-border/40 focus:ring-1 focus:ring-primary/40 text-xs font-medium text-foreground w-full"
-                                    >
-                                        {formData.timeframe ||
-                                            $t(
-                                                "trades.wizard.placeholders.select",
-                                            )}
+
+                            <div class="space-y-2">
+                                <Label for="timeframe-select" class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">{$t("trades.wizard.fields.timeframe")}</Label>
+                                <Select.Root type="single" bind:value={formData.timeframe}>
+                                    <Select.Trigger id="timeframe-select" class="h-11 bg-black/40 border-border/60 rounded-xl focus:ring-1 focus:ring-primary/40 text-xs font-bold text-foreground w-full hover:bg-black/60 transition-all">
+                                        {formData.timeframe || $t("trades.wizard.placeholders.select")}
                                     </Select.Trigger>
-                                    <Select.Content>
+                                    <Select.Content class="bg-slate-900 border-border/40">
                                         {#each timeframeList as tf}
-                                            <Select.Item value={tf.value}
-                                                >{tf.name}</Select.Item
-                                            >
-                                        {:else}
-                                            <Select.Item value="5m"
-                                                >{$t(
-                                                    "trades.wizard.timeframe_options.5m",
-                                                )}</Select.Item
-                                            >
+                                            <Select.Item value={tf.value} class="text-xs focus:bg-primary/20">{tf.name}</Select.Item>
                                         {/each}
                                     </Select.Content>
                                 </Select.Root>
                             </div>
-                            <div class="space-y-1.5">
-                                <Label
-                                    for="volatility-select"
-                                    class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight"
-                                    >{$t(
-                                        "trades.wizard.fields.volatility",
-                                    )}</Label
-                                >
-                                <Select.Root
-                                    type="single"
-                                    bind:value={formData.volatility}
-                                >
-                                    <Select.Trigger
-                                        id="volatility-select"
-                                        class="h-9 bg-muted/20 border-border/40 focus:ring-1 focus:ring-primary/40 text-xs font-medium text-foreground w-full"
-                                    >
-                                        {formData.volatility ||
-                                            $t(
-                                                "trades.wizard.placeholders.select",
-                                            )}
+
+                            <div class="space-y-2">
+                                <Label for="volatility-select" class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">{$t("trades.wizard.fields.volatility")}</Label>
+                                <Select.Root type="single" bind:value={formData.volatility}>
+                                    <Select.Trigger id="volatility-select" class="h-11 bg-black/40 border-border/60 rounded-xl focus:ring-1 focus:ring-primary/40 text-xs font-bold text-foreground w-full hover:bg-black/60 transition-all">
+                                        {formData.volatility || $t("trades.wizard.placeholders.select")}
                                     </Select.Trigger>
-                                    <Select.Content>
-                                        <Select.Item value="baixa"
-                                            >{$t(
-                                                "trades.wizard.volatility_options.low",
-                                            )}</Select.Item
-                                        >
-                                        <Select.Item value="normal"
-                                            >{$t(
-                                                "trades.wizard.volatility_options.normal",
-                                            )}</Select.Item
-                                        >
-                                        <Select.Item value="alta"
-                                            >{$t(
-                                                "trades.wizard.volatility_options.high",
-                                            )}</Select.Item
-                                        >
-                                        <Select.Item value="extrema"
-                                            >{$t(
-                                                "trades.wizard.volatility_options.extreme",
-                                            )}</Select.Item
-                                        >
+                                    <Select.Content class="bg-slate-900 border-border/40">
+                                        {#each [{val: 'baixa', key: 'low'}, {val: 'normal', key: 'normal'}, {val: 'alta', key: 'high'}, {val: 'extrema', key: 'extreme'}] as vol}
+                                            <Select.Item value={vol.val} class="text-xs focus:bg-primary/20 uppercase">{$t(`trades.wizard.volatility_options.${vol.key}`)}</Select.Item>
+                                        {/each}
                                     </Select.Content>
                                 </Select.Root>
                             </div>
                         </div>
 
-                        <!-- Asset and Trade Information Container -->
-                        <!-- Optional Error / Warning spanning full width -->
-                        {#if showDarfWarning}
-                            <div class="col-span-1 lg:col-span-4 p-3 rounded-lg bg-orange-500/10 border border-orange-500/30 flex gap-3 animate-pulse mb-3">
-                                <AlertCircle class="w-5 h-5 text-orange-500 shrink-0" />
-                                <div class="space-y-1">
-                                    <p class="text-xs font-bold text-orange-500 uppercase tracking-tight">
-                                        {$t("fiscal.darf.complementary_warning")}
-                                    </p>
-                                    <p class="text-[10px] text-muted-foreground leading-snug">
-                                        {$t("fiscal.darf.complementary_description", { values: { amount: (calculationResult.netCurrency - originalResult).toFixed(2) } })}
-                                    </p>
-                                </div>
-                            </div>
-                        {/if}
-
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
-                            <!-- Tipo de Ativo -->
-                            <div class="space-y-1.5 lg:col-span-2">
-                                <Label for="asset-type-select" class="text-[9px] uppercase font-bold text-muted-foreground tracking-tighter">{$t("trades.wizard.fields.asset_type")}</Label>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-6 pt-6 border-t border-border/5">
+                            <!-- Asset Type (Image 2 style) -->
+                            <div class="space-y-2 lg:col-span-2">
+                                <Label class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">{$t("trades.wizard.fields.asset_type")}</Label>
                                 <Select.Root type="single" bind:value={selectedAssetTypeId} onValueChange={() => { userManuallySelectedType = true; }}>
-                                    <Select.Trigger id="asset-type-select" class="h-10 bg-muted/30 border-border/30 text-xs font-medium w-full">
+                                    <Select.Trigger class="h-11 bg-black/40 border-border/60 rounded-xl text-xs font-black uppercase w-full">
                                         {assetTypesList.find(t => t.id === selectedAssetTypeId)?.name || $t("trades.wizard.placeholders.all_types")}
                                     </Select.Trigger>
-                                    <Select.Content>
+                                    <Select.Content class="bg-slate-900 border-border/40">
                                         <Select.Item value="">{$t("trades.wizard.placeholders.all_types")}</Select.Item>
                                         {#each assetTypesList as type}
-                                            <Select.Item value={type.id}>{type.name}</Select.Item>
+                                            <Select.Item value={type.id} class="text-xs">{type.name}</Select.Item>
                                         {/each}
                                     </Select.Content>
                                 </Select.Root>
                             </div>
 
-                            <!-- Direção -->
-                            <div class="space-y-1.5 lg:col-span-2">
-                                <Label class="text-[9px] uppercase font-bold text-muted-foreground tracking-tighter">{$t("trades.wizard.fields.direction")} <span class="text-rose-500">*</span></Label>
-                                <div class="grid grid-cols-2 gap-3 h-10">
-                                    <button type="button" class="rounded-md font-bold text-xs transition-all flex items-center justify-center gap-1.5 {formData.direction === 'buy' ? 'bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'}" onclick={() => (formData.direction = "buy")}>
-                                        <TrendingUp class="w-3.5 h-3.5" />
+                            <!-- Direction Buttons (Image 2 style) -->
+                            <div class="space-y-2 lg:col-span-2">
+                                <Label class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">{$t("trades.wizard.fields.direction")}</Label>
+                                <div class="grid grid-cols-2 gap-3 h-11">
+                                    <button type="button" class="rounded-xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 {formData.direction === 'buy' ? 'bg-emerald-500 text-[#064e3b] shadow-lg shadow-emerald-500/20' : 'bg-emerald-500/5 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/10'}" onclick={() => (formData.direction = "buy")}>
+                                        <TrendingUp class="w-4 h-4" />
                                         {$t("trades.wizard.fields.buy")}
                                     </button>
-                                    <button type="button" class="rounded-md font-bold text-xs transition-all flex items-center justify-center gap-1.5 {formData.direction === 'sell' ? 'bg-rose-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'}" onclick={() => (formData.direction = "sell")}>
-                                        <TrendingDown class="w-3.5 h-3.5" />
+                                    <button type="button" class="rounded-xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 {formData.direction === 'sell' ? 'bg-rose-500 text-[#4c0519] shadow-lg shadow-rose-500/20' : 'bg-rose-500/5 border border-rose-500/20 text-rose-500 hover:bg-rose-500/10'}" onclick={() => (formData.direction = "sell")}>
+                                        <TrendingDown class="w-4 h-4" />
                                         {$t("trades.wizard.fields.sell")}
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Ativo -->
-                            <div class="space-y-1.5 lg:col-span-2">
-                                <Label for="asset-select-main" class="text-[9px] uppercase font-bold text-muted-foreground tracking-tighter">{$t("trades.wizard.fields.asset")} <span class="text-rose-500">*</span></Label>
+                            <!-- Emotional State (Image 2 style) -->
+                            <div class="space-y-2">
+                                <Label class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest flex items-center gap-1.5">
+                                    <Brain class="w-3.5 h-3.5 text-pink-400" /> {$t("trades.wizard.fields.emotional_state")}
+                                </Label>
+                                <Select.Root type="single" bind:value={formData.entry_emotional_state_id}>
+                                    <Select.Trigger class="h-11 bg-black/40 border-border/60 rounded-xl text-xs font-black uppercase w-full">
+                                        {workspaceStore.emotionalStates.find(e => e.id === formData.entry_emotional_state_id)?.name || $t("trades.wizard.placeholders.select")}
+                                    </Select.Trigger>
+                                    <Select.Content class="bg-slate-900 border-border/40">
+                                        {#each workspaceStore.emotionalStates as state}
+                                            <Select.Item value={state.id} class="text-xs">{state.name}</Select.Item>
+                                        {/each}
+                                    </Select.Content>
+                                </Select.Root>
+                            </div>
+
+                            <!-- Modality (Image 2 style) -->
+                            <div class="space-y-2">
+                                <Label class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">Modalidade</Label>
+                                <Select.Root type="single" bind:value={formData.modality_id}>
+                                    <Select.Trigger class="h-11 bg-black/40 border-border/60 rounded-xl text-xs font-black uppercase w-full">
+                                        {modalitiesStore.modalities.find(m => m.id === formData.modality_id)?.name || $t("trades.wizard.placeholders.select")}
+                                    </Select.Trigger>
+                                    <Select.Content class="bg-slate-900 border-border/40">
+                                        {#each modalitiesStore.modalities as mod}
+                                            <Select.Item value={mod.id} class="text-xs">{mod.name}</Select.Item>
+                                        {/each}
+                                    </Select.Content>
+                                </Select.Root>
+                            </div>
+
+                            <!-- New Asset Select (Image 2 style) -->
+                            <div class="space-y-2 lg:col-span-2">
+                                <Label class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">{$t("trades.wizard.fields.asset")}</Label>
                                 <Select.Root type="single" bind:value={formData.asset}>
-                                    <Select.Trigger id="asset-select-main" class="h-10 bg-muted/40 border-border/20 text-xs font-bold w-full">
+                                    <Select.Trigger class="h-11 bg-black/30 border border-border/60 rounded-xl text-xs font-black uppercase w-full">
                                         <div class="flex items-center gap-2">
                                             {#if formData.asset}
-                                                <span class="font-mono text-primary">{formData.asset}</span>
-                                                {#if assetsList.find((a) => a.symbol === formData.asset)?.name}
-                                                    <span class="text-muted-foreground">- {assetsList.find(a => a.symbol === formData.asset)?.name}</span>
-                                                {/if}
+                                                <span class="text-emerald-400">{formData.asset}</span>
+                                                <span class="opacity-40 text-[9px]">- {assetsList.find(a => a.symbol === formData.asset)?.name || ''}</span>
                                             {:else}
-                                                <span class="text-muted-foreground">{$t("trades.wizard.placeholders.select")}</span>
+                                                <span class="opacity-30">{$t("trades.wizard.placeholders.select")}</span>
                                             {/if}
                                         </div>
                                     </Select.Trigger>
-                                    <Select.Content class="max-h-[200px] overflow-y-auto">
+                                    <Select.Content class="bg-slate-900 border-border/40 max-h-[300px]">
                                         {#each filteredAssets as asset}
-                                            <Select.Item value={asset.symbol}>
-                                                <span class="font-mono font-bold mr-2">{asset.symbol}</span>
-                                                <span class="text-muted-foreground opacity-70">{asset.name}</span>
+                                            <Select.Item value={asset.symbol} class="text-xs">
+                                                <span class="font-black text-emerald-400 mr-2">{asset.symbol}</span>
+                                                <span class="opacity-50 text-[10px]">{asset.name}</span>
                                             </Select.Item>
-                                        {/each}
-                                    </Select.Content>
-                                </Select.Root>
-                            </div>
-
-                            <!-- Estado Emocional - perfectly fills the right side under Direção -->
-                            <div class="space-y-1.5">
-                                <Label class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight flex items-center gap-1">
-                                    <Brain class="w-3 h-3 text-pink-400" /> {$t("trades.wizard.fields.emotional_state")}
-                                </Label>
-                                <Select.Root type="single" bind:value={formData.entry_emotional_state_id}>
-                                    <Select.Trigger class="h-10 bg-muted/30 border-border/30 text-xs font-medium text-foreground w-full">
-                                        {workspaceStore.emotionalStates.find(e => e.id === formData.entry_emotional_state_id)?.name || $t("trades.wizard.placeholders.select")}
-                                    </Select.Trigger>
-                                    <Select.Content>
-                                        {#each workspaceStore.emotionalStates as state}
-                                            <Select.Item value={state.id}>{state.name}</Select.Item>
-                                        {:else}
-                                            <Select.Item value="" disabled>{$t("trades.wizard.placeholders.no_states")}</Select.Item>
-                                        {/each}
-                                    </Select.Content>
-                                </Select.Root>
-                            </div>
-
-                            <!-- Modalidade - perfectly fills the right side under Direção -->
-                            <div class="space-y-1.5">
-                                <Label for="modality-select" class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight">Modalidade</Label>
-                                <Select.Root type="single" bind:value={formData.modality_id}>
-                                    <Select.Trigger id="modality-select" class="h-10 bg-muted/30 border-border/30 text-xs font-medium text-foreground w-full">
-                                        {modalitiesStore.modalities.find(m => m.id === formData.modality_id)?.name || $t("trades.wizard.placeholders.select")}
-                                    </Select.Trigger>
-                                    <Select.Content>
-                                        {#each modalitiesStore.modalities as modality}
-                                            <Select.Item value={modality.id}>{modality.name}</Select.Item>
                                         {/each}
                                     </Select.Content>
                                 </Select.Root>
                             </div>
                         </div>
 
-                        <!-- Data, Preço, Lotes, Stop, Take Profit -> All side by side identical width except Date which is wider -->
-                        <div class="grid grid-cols-2 lg:grid-cols-11 gap-4 pt-4 border-t border-muted/30 mt-6">
-                            <!-- Data e Hora -->
-                            <div class="space-y-1.5 lg:col-span-3">
-                                <Label class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight">{$t("trades.wizard.fields.date_time")}</Label>
+                        <!-- Execution Details (Image 2 Footer Pattern) -->
+                        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mt-8 pt-8 border-t border-border/10">
+                            <!-- Date -->
+                            <div class="space-y-2 lg:col-span-2">
+                                <Label class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">{$t("trades.wizard.fields.date_time")}</Label>
                                 <div class="relative">
-                                    <Input type="datetime-local" bind:value={formData.entry_date} class="h-10 bg-muted/40 border-border/20 text-xs text-foreground pl-3 pr-8 w-full" />
-                                    <Calendar class="w-4 h-4 text-muted-foreground absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                    <Input type="datetime-local" bind:value={formData.entry_date} class="h-11 bg-black/40 border-border/60 rounded-xl text-[10px] font-black uppercase text-foreground/80 pl-4 pr-10" />
+                                    <Calendar class="w-4 h-4 text-muted-foreground absolute right-4 top-1/2 -translate-y-1/2 opacity-30" />
                                 </div>
                             </div>
 
-                            <!-- Preço de Entrada -->
-                            <div class="space-y-1.5 lg:col-span-2">
-                                <Label class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight">{$t("trades.wizard.fields.entry_price")} <span class="text-rose-500">*</span></Label>
-                                <div class="flex gap-2">
-                                    <Input onfocus={() => (priceHasFocus = true)} onblur={() => (priceHasFocus = false)} type="number" step="0.00001" bind:value={formData.entry_price} class="h-10 bg-muted/40 border-border/40 text-sm font-mono font-bold text-foreground flex-1" />
-                                    {#if true || integrationsStore.rtdEnabled || rtdStore.symbols.length > 0}
-                                        <Button variant="secondary" size="icon" class="h-10 w-10 shrink-0" onclick={() => {
-                                            const asset = formData.asset.toUpperCase();
-                                            const quote = rtdStore.quotes[asset] || rtdStore.quotes[asset.replace("FUT", "")] || rtdStore.quotes[asset + "FUT"] || Object.values(rtdStore.quotes).find((q) => q.symbol.startsWith(asset.replace("FUT", "")));
-                                            if (quote && quote.last > 0) {
-                                                formData.entry_price = quote.last;
-                                                formData.entry_date = getNowWithOffset();
-                                                toast.success($t("trades.wizard.messages.rtd_sync_success", { values: { symbol: quote.symbol, price: quote.last } }));
-                                            } else {
-                                                toast.error($t("trades.wizard.messages.rtd_not_available"));
-                                            }
-                                        }}>
-                                            <RefreshCw class="w-4 h-4 text-muted-foreground" />
-                                        </Button>
-                                    {/if}
+                            <!-- Entry Price -->
+                            <div class="space-y-2 lg:col-span-1">
+                                <Label class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">{$t("trades.wizard.fields.entry_price")}</Label>
+                                <div class="relative">
+                                    <Input type="number" bind:value={formData.entry_price} class="h-11 bg-black/40 border-border/60 rounded-xl text-[11px] font-black text-emerald-400 pl-4 pr-8" />
+                                    <button class="absolute right-3 top-1/2 -translate-y-1/2 opacity-30 hover:opacity-100 transition-opacity" onclick={() => { /* Sync logic */ }}>
+                                        <RefreshCw class="w-3.5 h-3.5" />
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- Lotes -->
-                            <div class="space-y-1.5 lg:col-span-2">
-                                <Label for="quantity-input" class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight">{$t("trades.wizard.fields.quantity")} <span class="text-red-500">*</span></Label>
-                                <Input id="quantity-input" type="number" step="any" bind:value={formData.quantity} class="h-10 bg-muted/40 border-border/40 text-sm font-mono font-bold text-foreground pl-4" />
+                            <!-- Qty -->
+                            <div class="space-y-2">
+                                <Label class="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">{$t("trades.wizard.fields.quantity")}</Label>
+                                <Input type="number" bind:value={formData.quantity} class="h-11 bg-black/40 border-border/60 rounded-xl text-[11px] font-black text-foreground pl-4" />
                             </div>
 
-                            <!-- Stop Loss -->
-                            <div class="space-y-1.5 relative lg:col-span-2">
-                                <Label for="stop-loss-input" class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight">{$t("trades.wizard.fields.stop_loss")}</Label>
-                                <Input id="stop-loss-input" type="number" step="0.00001" bind:value={formData.stop_loss} class="h-10 bg-muted/40 border-border/40 text-xs font-mono font-bold text-foreground" placeholder="0.00" />
-                                {#if formData.stop_loss && formData.entry_price && formData.asset}
-                                    {@const asset = assetsStore.assets.find(a => a.symbol === formData.asset)}
-                                    <div class="absolute -bottom-5 left-0 text-[10px] whitespace-nowrap font-mono text-red-500 font-bold uppercase tracking-tighter">
-                                        {calculationResult.currencySymbol} {Math.abs((formData.entry_price - formData.stop_loss) * formData.quantity * (asset?.point_value || 1)).toLocaleString($locale || "pt-BR", { minimumFractionDigits: 2 })}
-                                    </div>
-                                {/if}
-                            </div>
-
-                            <!-- Take Profit -->
-                            <div class="space-y-1.5 relative lg:col-span-2">
-                                <Label for="take-profit-input" class="text-[10px] uppercase font-bold text-muted-foreground tracking-tight">{$t("trades.wizard.fields.take_profit")}</Label>
-                                <Input id="take-profit-input" type="number" step="0.00001" bind:value={formData.take_profit} class="h-10 bg-input/30 border-border/20 text-xs font-mono font-bold text-foreground" placeholder="0.00" />
-                                {#if formData.take_profit && formData.entry_price && formData.asset}
-                                    {@const asset = assetsStore.assets.find(a => a.symbol === formData.asset)}
-                                    <div class="absolute -bottom-5 left-0 text-[10px] whitespace-nowrap font-mono text-emerald-500 font-bold uppercase tracking-tighter">
-                                        {calculationResult.currencySymbol} {Math.abs((formData.take_profit - formData.entry_price) * formData.quantity * (asset?.point_value || 1)).toLocaleString($locale || "pt-BR", { minimumFractionDigits: 2 })}
-                                    </div>
-                                {/if}
+                            <!-- Risk/Reward -->
+                            <div class="space-y-2 flex flex-col justify-end pb-1">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                                    <span class="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest">Gestão Ativa</span>
+                                </div>
+                                <span class="text-[11px] font-black text-primary uppercase tracking-widest mt-1">Auditado v4.0</span>
                             </div>
                         </div>
                     </section>

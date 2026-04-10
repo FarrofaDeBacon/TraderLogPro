@@ -469,6 +469,7 @@
         "ruleBuilder": {
             "title": "Regras Adicionais",
             "addRule": "Criar Nova Regra Adicional",
+            "noRules": "Nenhuma regra adicional configurada.",
             "presets": {
                 "maxDailyLoss": "Perda Máxima Diária",
                 "profitTarget": "Meta de Lucro",
@@ -481,7 +482,18 @@
             },
             "groups": {
                 "global": "Regras Globais",
-                "asset": "Regras de Ativos"
+                "asset": "Regras de Ativos",
+                "combined": "Regras Combinadas"
+            },
+            "targetType": {
+                "max_daily_loss": "Limite Diário de Perda",
+                "profit_target": "Meta de Lucro Diária",
+                "max_trades_per_day": "Limite de Trades",
+                "sum_contracts": "Soma de Contratos",
+                "day_trade_only": "Apenas Day Trade",
+                "consistency": "Consistência",
+                "rule_50_percent": "Regra dos 50%",
+                "close_before_close": "Zelagem Automática"
             }
         },
         "form": {
@@ -516,7 +528,9 @@
                 "account_not_linked": "Selecione uma conta para vincular o capital.",
                 "no_assets_linked": "Adicione pelo menos um perfil de ativo ao escopo.",
                 "growth_plan_not_found": "O plano de crescimento selecionado não existe.",
-                "orphan_asset_reference": "Existem referências a ativos que foram excluídos."
+                "orphan_asset_reference": "Existem referências a ativos que foram excluídos.",
+                "daily_loss_invalid": "A perda máxima diária deve ser maior que zero (ou governada por um plano).",
+                "daily_target_invalid": "A meta de lucro diária deve ser maior que zero (ou governada por um plano)."
             },
             "warning": {
                 "high_risk": "O risco diário está acima de 10% do capital. Considere reduzir.",
