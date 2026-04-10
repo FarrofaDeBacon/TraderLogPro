@@ -202,6 +202,8 @@ export type UserProfile = {
     password_hash?: string;
     recovery_hash?: string;
     utc_offset: number;
+    in_guarantee: boolean;
+    guarantee_days_left: number;
 };
 
 export type EmotionalState = {

@@ -80,31 +80,27 @@
 </script>
 
 <div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div class="space-y-0.5">
-            <h3 class="text-lg font-medium">
-                {$t("settings.nav.growthPlans") || "Planos de Crescimento"}
-            </h3>
-            <p class="text-sm text-muted-foreground">
-                Crie planos com progressão e regressão automática de fases.
-            </p>
+    <div class="flex items-center justify-between gap-6 mb-8">
+        <div class="flex flex-col">
+            <span class="text-[10px] text-primary/60 font-black uppercase tracking-[0.3em] mb-1">EVOLUÇÃO E ESCALABILIDADE</span>
+            <h1 class="text-4xl font-black uppercase tracking-tighter text-white">
+                PLANOS DE CRESCIMENTO
+            </h1>
         </div>
-        <Button onclick={openNew}>
+        <Button onclick={openNew} class="rounded-full px-6 bg-indigo-500 hover:bg-indigo-400 font-black uppercase text-[11px] tracking-widest shadow-xl shadow-indigo-500/10 transition-all active:scale-95">
             <Plus class="w-4 h-4 mr-2" />
             {$t("general.add")}
         </Button>
     </div>
-    
-    <Separator />
 
     <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {#each riskSettingsStore.growthPlans as plan}
+        {#each riskSettingsStore.growthPlans as plan (plan.id)}
             <div
-                class="group relative overflow-hidden rounded-[24px] border border-white/5 bg-gradient-to-br from-card/40 to-muted/10 backdrop-blur-xl transition-all duration-300 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 cursor-pointer flex flex-col min-h-[220px]"
+                class="group relative bg-[#0a0a0c]/80 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 transition-all duration-300 hover:border-indigo-500/30 hover:bg-[#0c0c0e]/90 hover:shadow-2xl hover:shadow-indigo-500/5 cursor-pointer ring-1 ring-white/5 overflow-hidden flex flex-col min-h-[220px]"
                 onclick={() => openEdit(plan)}
                 role="button"
-                tabindex={0}
-                onkeydown={(e) => e.key === "Enter" && openEdit(plan)}
+                tabindex="0"
+                onkeydown={(e) => e.key === 'Enter' && openEdit(plan)}
             >
                 <!-- Glowing Accent -->
                 <div class="absolute -top-12 -right-12 w-24 h-24 bg-primary/10 blur-[40px] rounded-full group-hover:bg-primary/20 transition-all"></div>
@@ -208,14 +204,14 @@
                 <!-- Footer Actions -->
                 <div class="px-5 py-4 flex justify-end gap-3 border-t border-white/5 bg-white/[0.02]">
                     <button
-                        class="p-2 rounded-lg text-muted-foreground/40 hover:text-foreground hover:bg-white/5 transition-colors"
+                        class="p-2 rounded-full text-muted-foreground/40 hover:text-foreground hover:bg-white/5 transition-colors"
                         onclick={(e) => { e.stopPropagation(); openEdit(plan); }}
                         title="Configurar Plano"
                     >
                         <Pencil class="w-4 h-4" />
                     </button>
                     <button
-                        class="p-2 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        class="p-2 rounded-full text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-colors"
                         onclick={(e) => { e.stopPropagation(); requestDelete(plan.id); }}
                         title="Excluir Permanente"
                     >

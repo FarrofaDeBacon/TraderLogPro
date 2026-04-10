@@ -132,7 +132,7 @@
     }
 </script>
 
-<div class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+<div class="max-w-7xl mx-auto w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
     <div class="flex items-center justify-between">
         <div>
             <h3
@@ -185,7 +185,7 @@
     </div>
 
     {#if userProfileStore.licenseStatus === "active" && userProfileStore.licenseDetails}
-        <div class="grid gap-4 md:grid-cols-3">
+        <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <div
                 class="bg-card/50 backdrop-blur-md border border-border rounded-xl p-4 flex items-center gap-4"
             >
@@ -314,7 +314,7 @@
 
     <Separator class="bg-border/40" />
 
-    <div class="grid gap-6 md:grid-cols-2">
+    <div class="grid gap-6 grid-cols-1 lg:grid-cols-2">
         <!-- Passo 1: PIN -->
         <Card.Root class="bg-card/50 backdrop-blur-sm border-border">
             <Card.Header>
@@ -340,7 +340,7 @@
                         >
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                             <code
-                                class="text-lg md:text-xl font-mono text-primary font-bold tracking-widest bg-primary/5 px-3 py-1 rounded-lg border border-primary/10 break-all"
+                                class="text-sm md:text-base font-mono text-primary font-bold tracking-tight bg-primary/5 px-3 py-1.5 rounded-lg border border-primary/20 whitespace-nowrap overflow-hidden text-ellipsis max-w-full"
                             >
                                 {customerPin ||
                                     $t("settings.license.incompleteData")}

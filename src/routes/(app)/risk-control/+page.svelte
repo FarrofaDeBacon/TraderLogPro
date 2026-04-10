@@ -155,87 +155,127 @@
 
 </script>
 
-<div class="flex-1 flex flex-col space-y-3 p-3 md:p-4 animate-in fade-in duration-500 min-h-screen">
+<div class="flex-1 flex flex-col space-y-8 p-4 md:p-8 animate-in fade-in duration-500 min-h-screen">
   
-  <!-- TOP NAVIGATION (ULTRA COMPACT COCKPIT) -->
-  <SystemCard status="primary" class="flex flex-col md:flex-row justify-between items-center gap-4 p-2 shadow-2xl bg-primary/5">
-    <div class="flex items-center gap-4">
-      <SystemHeader 
-        title={$t('risk.cockpit.title')}
-        subtitle={$t('risk.cockpit.subtitle')}
-        icon={Shield}
-        variant="compact"
-        class="mb-0 scale-90 origin-left"
-      />
-      
-      <Separator orientation="vertical" class="h-10 opacity-10" />
-      
-      {#if activeProfile}
-        <div class="flex items-center gap-3">
-          <div class="px-3 py-1.5 bg-white/5 rounded-lg border border-white/5 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 group hover:border-indigo-500/30 transition-all whitespace-nowrap">
-            <Shield class="w-3 h-3 text-indigo-400 group-hover:scale-110 transition-transform" />
-            <span class="text-foreground/90">{activeProfile?.name}</span>
-          </div>
-          {#if growthContext?.resolution}
-            {@const res = growthContext.resolution}
-            <div class={cn(
-                "px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-4 transition-all whitespace-nowrap",
-                res.source === 'scope' 
-                    ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400" 
-                    : "bg-indigo-500/5 border-indigo-500/10 text-indigo-400/80"
-            )}>
-              <div class="flex items-center gap-2">
-                <Layers class="w-3 h-3 shrink-0" />
-                <span class="whitespace-nowrap">
-                    {res.source === 'scope' ? `${$t('risk.cockpit.group').toUpperCase()}: ${res.scopeName}` : `${$t('risk.cockpit.globalMode').toUpperCase()}: ${res.currentPhaseName}`}
-                </span>
-              </div>
-              
-              {#if res.source === 'scope' && res.assetIds.length > 0}
-                <Separator orientation="vertical" class="h-3 opacity-20 bg-emerald-500" />
-                <div class="flex items-center gap-1.5 overflow-hidden max-w-[200px]">
-                  <span class="text-[8px] opacity-60">{$t('risk.cockpit.assetsInScope').toUpperCase()}:</span>
-                  {#each res.assetIds as aid}
-                    <span class="text-[8px] font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/10">
-                      {assetsStore.assets.find(a => a.id === aid)?.symbol}
-                    </span>
-                  {/each}
-                </div>
-              {/if}
+  <!-- TOP NAVIGATION (INSTITUTIONAL STANDARD) -->
+  <SystemCard status="primary" class="p-4 shadow-2xl bg-primary/5">
+    <div class="flex items-center justify-between w-full">
+      <div class="flex items-center gap-6">
+        <SystemHeader 
+          title={$t('risk.cockpit.title')}
+          subtitle={$t('risk.cockpit.subtitle')}
+          icon={Shield}
+          variant="page"
+          class="mb-0"
+        />
+        
+        <Separator orientation="vertical" class="h-10 opacity-10" />
+        
+        {#if activeProfile}
+          <div class="flex items-center gap-3">
+            <div class="px-3 py-1.5 bg-white/5 rounded-lg border border-white/5 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 group hover:border-indigo-500/30 transition-all whitespace-nowrap">
+              <Shield class="w-3 h-3 text-indigo-400 group-hover:scale-110 transition-transform" />
+              <span class="text-foreground/90">{activeProfile?.name}</span>
             </div>
-          {/if}
-        </div>
-      {/if}
+            {#if growthContext?.resolution}
+              {@const res = growthContext.resolution}
+              <div class={cn(
+                  "px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-4 transition-all whitespace-nowrap",
+                  res.source === 'scope' 
+                      ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400" 
+                      : "bg-indigo-500/5 border-indigo-500/10 text-indigo-400/80"
+              )}>
+                <div class="flex items-center gap-2">
+                  <Layers class="w-3 h-3 shrink-0" />
+                  <span class="whitespace-nowrap">
+                      {res.source === 'scope' ? `${$t('risk.cockpit.group').toUpperCase()}: ${res.scopeName}` : `${$t('risk.cockpit.globalMode').toUpperCase()}: ${res.currentPhaseName}`}
+                  </span>
+                </div>
+                
+                {#if res.source === 'scope' && res.assetIds.length > 0}
+                  <Separator orientation="vertical" class="h-3 opacity-20 bg-emerald-500" />
+                  <div class="flex items-center gap-1.5 overflow-hidden max-w-[200px]">
+                    <span class="text-[8px] opacity-60">{$t('risk.cockpit.assetsInScope').toUpperCase()}:</span>
+                    {#each res.assetIds as aid}
+                      <span class="text-[8px] font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/10">
+                        {assetsStore.assets.find(a => a.id === aid)?.symbol}
+                      </span>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+            {/if}
+          </div>
+        {/if}
+      </div>
     </div>
-
-    </SystemCard>
+  </SystemCard>
 
   {#if !activeProfile}
-    <SystemCard class="flex-1 flex items-center justify-center p-12 border-dashed border-white/10">
-      <div class="text-center max-w-sm">
-        <div class="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-6 border border-white/10 transform rotate-3 hover:rotate-0 transition-transform duration-500">
-          <Lock class="w-10 h-10 text-muted-foreground/30" />
+    <div class="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative overflow-hidden group">
+      <!-- Technical Background Overlay -->
+      <div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:30px_30px] animate-pulse"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-indigo-500/5 via-transparent to-transparent opacity-50"></div>
+      
+      <div class="relative z-10 text-center max-w-lg">
+        <!-- Technical Label -->
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
+          <div class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></div>
+          <span class="text-[9px] font-black uppercase tracking-[0.3em] text-rose-500/70">Terminal Offline</span>
         </div>
-        <h2 class="text-2xl font-black tracking-tighter uppercase mb-2 text-white/90">{$t('risk.cockpit.noProfile')}</h2>
-        <p class="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60">{$t('risk.cockpit.noProfileDesc')}</p>
+
+        <div class="w-24 h-24 rounded-full bg-gradient-to-br from-white/[0.08] to-white/[0.02] flex items-center justify-center mx-auto mb-8 border border-white/10 shadow-2xl relative transition-all duration-700 group-hover:scale-110 group-hover:border-rose-500/30">
+          <div class="absolute inset-0 rounded-full bg-rose-500/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <Lock class="w-10 h-10 text-muted-foreground/40 group-hover:text-rose-400 transition-colors" />
+        </div>
+
+        <h2 class="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-4 text-white leading-none animate-in fade-in slide-in-from-bottom-2 duration-500">
+          {$t('risk.cockpit.noProfile')}
+        </h2>
+        
+        <div class="flex flex-col items-center gap-6">
+          <p class="text-[11px] text-muted-foreground font-black uppercase tracking-[0.5em] opacity-40 max-w-xs mx-auto leading-relaxed">
+            {$t('risk.cockpit.noProfileDesc')}
+          </p>
+
+          <Button 
+            variant="default" 
+            class="rounded-full h-11 px-8 bg-indigo-500 hover:bg-indigo-400 text-white font-black uppercase text-[11px] tracking-[0.2em] shadow-[0_0_30px_rgba(99,102,241,0.3)] transition-all hover:scale-105 active:scale-95"
+            onclick={() => {
+              // Redirect to settings or open profile selector if we had one
+              window.location.hash = "#/settings/risk"; 
+              // Alternatively, if we had a quick selector modal
+            }}
+          >
+            <Shield class="w-4 h-4 mr-2" />
+            {$t('risk.plan.activate')}
+          </Button>
+        </div>
+
+        <!-- Terminal Decorator -->
+        <div class="mt-12 flex items-center justify-center gap-12 text-[8px] font-black uppercase tracking-[0.4em] text-muted-foreground/20">
+          <span class="flex items-center gap-1.5"><Activity class="w-3 h-3" /> ENGINE_V4.1</span>
+          <span class="flex items-center gap-1.5"><Globe class="w-3 h-3" /> NETWORK_READY</span>
+        </div>
       </div>
-    </SystemCard>
+    </div>
   {:else}
     <!-- OPERATIONAL STATUS BAR -->
     <SystemCard 
       status={mainStatus === 'blocked' ? 'danger' : mainStatus === 'caution' ? 'warning' : 'success'}
-      class="relative overflow-hidden p-3 transition-all duration-700 shadow-2xl group"
+      class="relative overflow-hidden p-3 transition-all duration-700 shadow-2xl group flex items-center"
     >
       <!-- Technical Grid Overlay -->
       <div class="absolute inset-0 opacity-[0.02] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]"></div>
 
-      <div class="relative z-10 flex flex-col lg:flex-row items-center gap-4">
+      <div class="relative z-10 flex flex-col lg:flex-row items-center gap-6 w-full">
+
         <div class="flex items-center gap-6 shrink-0">
           <div class={cn(
             "w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-500 group-hover:scale-110 shadow-inner",
-            mainStatus === 'blocked' ? "bg-rose-500/10 border-rose-500/20 text-rose-400" : 
-            mainStatus === 'caution' ? "bg-amber-500/10 border-amber-500/20 text-amber-400" : 
-            "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+            mainStatus === 'blocked' ? "bg-rose-500/10 border-rose-500/20 text-rose-400 shadow-rose-500/10" : 
+            mainStatus === 'caution' ? "bg-amber-500/10 border-amber-500/20 text-amber-400 shadow-amber-500/10" : 
+            "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-emerald-500/10"
           )}>
             {#if mainStatus === 'blocked'} <ShieldAlert class="w-6 h-6" />
             {:else if mainStatus === 'caution'} <AlertTriangle class="w-6 h-6" />

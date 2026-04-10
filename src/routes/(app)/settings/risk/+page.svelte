@@ -142,181 +142,175 @@ import type { RiskProfile } from "$lib/types";
 </script>
 
 <div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div class="space-y-0.5">
-            <h3 class="text-lg font-medium">
+    <div class="flex items-center justify-between gap-6 mb-8">
+        <div class="flex flex-col">
+            <span class="text-[10px] text-primary/60 font-black uppercase tracking-[0.3em] mb-1">{$t("risk.description").toUpperCase()}</span>
+            <h1 class="text-4xl font-black uppercase tracking-tighter text-white">
                 {$t("risk.title")}
-            </h3>
-            <p class="text-sm text-muted-foreground">
-                {$t("risk.description")}
-            </p>
+            </h1>
         </div>
-        <Button onclick={openNew}>
-            <Plus class="w-4 h-4 mr-2" />
-            {$t("risk.new")}
-        </Button>
+        <div class="flex items-center gap-3">
+            <Button onclick={openNew} class="rounded-full px-6 bg-indigo-500 hover:bg-indigo-400 font-black uppercase text-[11px] tracking-widest shadow-xl shadow-indigo-500/10 transition-all active:scale-95">
+                <Plus class="w-4 h-4 mr-2" />
+                {$t("risk.new")}
+            </Button>
+        </div>
     </div>
-    <Separator />
 
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {#each riskSettingsStore.riskProfiles as profile}
-            <Card.Root
-                class="border-l-4 {profile.active
-                    ? 'border-l-green-500 shadow-lg'
-                    : 'border-l-primary'} hover:border-primary/50 transition-all cursor-pointer hover:shadow-md"
+            <div
+                class="group relative bg-[#0a0a0c]/80 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 transition-all duration-300 hover:border-indigo-500/30 hover:bg-[#0c0c0e]/90 hover:shadow-2xl hover:shadow-indigo-500/5 cursor-pointer ring-1 ring-white/5 overflow-hidden"
                 onclick={() => openDetails(profile)}
                 role="button"
                 tabindex={0}
                 onkeydown={(e) => e.key === "Enter" && openDetails(profile)}
             >
-                <Card.Header class="pb-2">
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-center gap-2">
-                            <div class="p-2 bg-primary/10 rounded-lg">
-                                <ShieldAlert class="w-5 h-5 text-primary" />
+                <!-- Selection State Indicator -->
+                <div class="absolute inset-x-0 top-0 h-1 transition-all duration-500 {profile.active ? 'bg-emerald-500' : 'bg-transparent group-hover:bg-white/10'}"></div>
+                
+                <div class="flex justify-between items-start mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center transition-transform group-hover:rotate-3">
+                            <ShieldAlert class="w-6 h-6 {profile.active ? 'text-emerald-400' : 'text-muted-foreground/40'}" />
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="text-lg font-black uppercase tracking-tight text-white/90 group-hover:text-white transition-colors">{profile.name}</h4>
+                                {#if profile.active}
+                                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                                {/if}
                             </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <Card.Title class="text-base"
-                                        >{profile.name}</Card.Title
-                                    >
-                                    {#if profile.active}
-                                        <Badge
-                                            class="bg-green-500/20 text-green-500 hover:bg-green-500/30 border-green-500/50 text-[10px] py-0 h-4"
-                                        >
-                                            {$t(
-                                                "risk.profiles.active",
-                                            )}
-                                        </Badge>
-                                    {/if}
-                                </div>
-                                <Card.Description>
-                                    {#if profile.account_type_applicability === "All"}
-                                        {$t("risk.accountTypes.All")}
-                                    {:else}
-                                        {$t(
-                                            `risk.accountTypes.${profile.account_type_applicability}`,
-                                        )}
-                                    {/if}
-                                </Card.Description>
-                            </div>
+                            <span class="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-40">
+                                {#if profile.account_type_applicability === "All"}
+                                    {$t("risk.accountTypes.All")}
+                                {:else}
+                                    {$t(`risk.accountTypes.${profile.account_type_applicability}`)}
+                                {/if}
+                            </span>
                         </div>
                     </div>
-                </Card.Header>
-                <Card.Content class="text-sm space-y-2 pb-2">
+
+                    {#if profile.active}
+                        <Badge class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">
+                            {$t("risk.profiles.active")}
+                        </Badge>
+                    {/if}
+                </div>
+
+                <div class="space-y-4 mb-6">
                     {@const limits = getEffectiveLimits(profile)}
                     {@const riskVal = getRiskValue(profile)}
                     {@const planInfo = getPlanInfo(profile)}
 
-                    <div class="flex justify-between items-center text-red-400">
-                        <span>{$t("risk.profiles.dailyLoss")}:</span>
-                        <span class="font-bold">
-                            {limits.lossUnit === '$' ? 'R$ ' : ''}{limits.dailyLoss.toLocaleString('pt-BR', { minimumFractionDigits: limits.lossUnit === '$' ? 2 : 0 })}{limits.lossUnit === 'pts' ? ' pts' : ''}
-                        </span>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <p class="text-[8px] font-black text-rose-500/60 uppercase tracking-widest leading-none">{$t("risk.profiles.dailyLoss")}</p>
+                            <p class="text-lg font-black font-mono text-rose-500 tracking-tighter">
+                                {limits.lossUnit === '$' ? 'R$ ' : ''}{limits.dailyLoss.toLocaleString('pt-BR', { minimumFractionDigits: limits.lossUnit === '$' ? 2 : 0 })}{limits.lossUnit === 'pts' ? ' pts' : ''}
+                            </p>
+                        </div>
+                        <div class="space-y-1 text-right">
+                            <p class="text-[8px] font-black text-emerald-500/60 uppercase tracking-widest leading-none">{$t("risk.profiles.dailyTarget")}</p>
+                            <p class="text-lg font-black font-mono text-emerald-500 tracking-tighter">
+                                {limits.targetUnit === '$' ? 'R$ ' : ''}{limits.dailyTarget.toLocaleString('pt-BR', { minimumFractionDigits: limits.targetUnit === '$' ? 2 : 0 })}{limits.targetUnit === 'pts' ? ' pts' : ''}
+                            </p>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center text-green-400">
-                        <span>{$t("risk.profiles.dailyTarget")}:</span>
-                        <span class="font-bold">
-                            {limits.targetUnit === '$' ? 'R$ ' : ''}{limits.dailyTarget.toLocaleString('pt-BR', { minimumFractionDigits: limits.targetUnit === '$' ? 2 : 0 })}{limits.targetUnit === 'pts' ? ' pts' : ''}
-                        </span>
-                    </div>
-                    
-                    <Separator class="my-2" />
-                    
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between items-center text-xs text-muted-foreground">
-                            <span>{$t("risk.management.capitalSource")}:</span>
-                            <span class="text-foreground">
+
+                    <div class="h-px bg-white/5 w-full"></div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-black uppercase text-muted-foreground/30 tracking-widest mb-1">{$t("risk.management.capitalSource")}</span>
+                            <span class="text-[10px] font-bold text-white/50 truncate">
                                 {profile.capital_source === 'Fixed' ? $t("risk.plan.finance.fixedValue") : $t("risk.plan.finance.money")} (R$ {profile.capital_source === 'Fixed' ? profile.fixed_capital : (accountsStore.accounts.find(a => a.id === profile.linked_account_id)?.balance || 0)})
                             </span>
                         </div>
-                        <div class="flex justify-between items-center text-xs text-muted-foreground">
-                            <span>{$t("risk.plan.labels.maxRiskPerTrade")}:</span>
-                            <span class="font-medium text-foreground">
-                                {profile.max_risk_per_trade_percent}% <span class="text-[10px] opacity-70">(R$ {riskVal.toFixed(2)})</span>
+                        <div class="flex flex-col text-right">
+                            <span class="text-[7px] font-black uppercase text-muted-foreground/30 tracking-widest mb-1">{$t("risk.plan.labels.maxRiskPerTrade")}</span>
+                            <span class="text-[10px] font-bold text-white/50">
+                                {profile.max_risk_per_trade_percent}% <span class="opacity-40">(R$ {riskVal.toFixed(2)})</span>
                             </span>
                         </div>
                     </div>
 
                     {#if planInfo}
-                        <div class="mt-3 p-2 rounded bg-primary/5 border border-primary/10">
-                            <div class="flex justify-between items-center text-[10px] mb-1">
-                                <span class="uppercase font-bold text-primary">{$t("risk.management.activePlan")}</span>
-                                <span class="text-muted-foreground">{$t("risk.management.phase")} {planInfo.current}/{planInfo.total}</span>
+                        <div class="p-3 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 relative overflow-hidden">
+                            <div class="absolute right-0 top-0 opacity-10 rotate-12 -mr-2 -mt-2">
+                                <TrendingUp class="w-12 h-12 text-indigo-400" />
                             </div>
-                            <div class="text-[11px] font-medium truncate">{planInfo.name}</div>
-                            <div class="mt-1.5 h-1 w-full bg-primary/10 rounded-full overflow-hidden">
-                                <div class="h-full bg-primary" style="width: {(planInfo.current / planInfo.total) * 100}%"></div>
+                            <div class="flex justify-between items-center mb-1.5">
+                                <span class="text-[8px] font-black uppercase text-indigo-400 tracking-widest leading-none">{$t("risk.management.activePlan")}</span>
+                                <span class="text-[9px] font-black text-indigo-300">PHASE {planInfo.current}/{planInfo.total}</span>
+                            </div>
+                            <div class="text-[10px] font-black uppercase tracking-tight text-white/80 mb-2 truncate">{planInfo.name}</div>
+                            <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-indigo-500 rounded-full" style="width: {(planInfo.current / planInfo.total) * 100}% transition: width 1s"></div>
                             </div>
                         </div>
                     {/if}
+                </div>
 
-                    <div class="flex justify-between items-center text-muted-foreground text-[10px] pt-2">
-                        <span>{$t("risk.management.maxTrades")}: {profile.max_trades_per_day}</span>
-                        <span>{$t("risk.management.lockOnLoss")}: {profile.lock_on_loss ? $t("general.yes") : $t("general.no")}</span>
+                <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                    <div class="flex gap-4">
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-black text-muted-foreground/40 uppercase mb-0.5">ORDENS DIÁRIAS</span>
+                            <span class="text-[10px] font-bold text-white/70">{profile.max_trades_per_day}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-black text-muted-foreground/40 uppercase mb-0.5">TRAVA LOSS</span>
+                            <span class="text-[10px] font-bold {profile.lock_on_loss ? 'text-emerald-400' : 'text-rose-400/60'} uppercase">{profile.lock_on_loss ? $t("general.yes") : $t("general.no")}</span>
+                        </div>
                     </div>
-                </Card.Content>
-                <Card.Footer class="justify-between items-center pt-2">
-                    <div>
+
+                    <div class="flex items-center gap-1">
                         {#if !profile.active || riskSettingsStore.riskProfiles.filter(p => p.active).length > 1}
                             <Button
-                                variant={riskSettingsStore.riskProfiles.filter(p => p.active).length > 1 ? "destructive" : "outline"}
+                                variant="ghost"
                                 size="sm"
-                                class="h-8 text-xs px-3"
+                                class="h-8 rounded-full px-4 text-[9px] font-black uppercase tracking-widest {riskSettingsStore.riskProfiles.filter(p => p.active).length > 1 ? 'bg-rose-500/20 text-rose-500 hover:bg-rose-500/30' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'}"
                                 onclick={(e) => {
                                     e.stopPropagation();
-                                    riskSettingsStore.setActiveRiskProfile(
-                                        profile.id,
-                                    );
+                                    riskSettingsStore.setActiveRiskProfile(profile.id);
                                 }}
                             >
-                                {riskSettingsStore.riskProfiles.filter(p => p.active).length > 1 ? "Resolver Conflito (Ativar)" : $t("risk.profiles.activate")}
+                                {riskSettingsStore.riskProfiles.filter(p => p.active).length > 1 ? "Fix Conflict" : $t("risk.profiles.activate")}
                             </Button>
                         {/if}
+                        
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            class="h-8 w-8 rounded-full text-muted-foreground hover:bg-white/5 hover:text-white transition-all"
+                            onclick={(e) => { e.stopPropagation(); riskSettingsStore.duplicateRiskProfile(profile.id); toast.success($t("risk.messages.saveSuccess")); }}
+                        >
+                            <Copy class="w-3.5 h-3.5" />
+                        </Button>
+                        
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            class="h-8 w-8 rounded-full text-muted-foreground hover:bg-white/5 hover:text-indigo-400 transition-all"
+                            onclick={(e) => { e.stopPropagation(); openEdit(profile); }}
+                        >
+                            <Pencil class="w-3.5 h-3.5" />
+                        </Button>
+                        
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            class="h-8 w-8 rounded-full text-muted-foreground hover:bg-rose-500/10 hover:text-rose-500 transition-all"
+                            onclick={(e) => { e.stopPropagation(); requestDelete(profile.id); }}
+                        >
+                            <Trash2 class="w-3.5 h-3.5" />
+                        </Button>
                     </div>
-                    <div class="flex gap-2">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            class="h-8 w-8 hover:bg-muted text-muted-foreground"
-                            title={$t("risk.management.duplicate")}
-                            onclick={async (e) => {
-                                e.stopPropagation();
-                                const newId = await riskSettingsStore.duplicateRiskProfile(profile.id);
-                                if (newId) toast.success($t("risk.messages.saveSuccess"));
-                            }}
-                        >
-                            <Copy class="w-4 h-4" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            class="h-8 w-8 hover:bg-muted"
-                            title={$t("risk.edit")}
-                            onclick={(e) => {
-                                e.stopPropagation();
-                                openEdit(profile);
-                            }}
-                        >
-                            <Pencil class="w-4 h-4" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            class="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                            title={$t("general.delete")}
-                            onclick={(e) => {
-                                e.stopPropagation();
-                                requestDelete(profile.id);
-                            }}
-                        >
-                            <Trash2 class="w-4 h-4" />
-                        </Button>
-                    </div></Card.Footer
-                >
-            </Card.Root>
+                </div>
+            </div>
         {/each}
     </div>
+
 </div>
 
 <DeleteConfirmationModal bind:open={isDeleteOpen} onConfirm={confirmDelete} />

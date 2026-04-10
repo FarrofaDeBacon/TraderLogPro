@@ -7,6 +7,7 @@
     import { tradesStore } from "$lib/stores/trades.svelte";
     import OnboardingWizard from "$lib/components/setup/OnboardingWizard.svelte";
     import LicenseBanner from "$lib/components/layout/LicenseBanner.svelte";
+    import TrialBlocker from "$lib/components/layout/TrialBlocker.svelte";
     import AutoTradeDetectionDialog from "$lib/components/trades/AutoTradeDetectionDialog.svelte";
     import { ScrollArea } from "$lib/components/ui/scroll-area";
     import { safeInvoke } from "$lib/services/tauri";
@@ -38,6 +39,10 @@
 </script>
 
 {#if dataLoaded}
+    {#if userProfileStore.licenseStatus === 'expired'}
+        <TrialBlocker />
+    {/if}
+
     {#if !userProfileStore.userProfile.onboarding_completed}
         <OnboardingWizard onComplete={handleOnboardingComplete} />
     {:else}

@@ -116,7 +116,9 @@
         "period": {
             "allTime": "Todo o Período"
         },
-        "select_ellipsis": "Selecionar..."
+        "select_ellipsis": "Selecionar...",
+        "email": "E-mail",
+        "processing": "Processando..."
     },
     "filters": {
         "date": {

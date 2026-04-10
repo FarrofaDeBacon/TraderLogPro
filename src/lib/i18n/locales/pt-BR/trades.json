@@ -348,6 +348,13 @@
         "table": {
             "buy": "Compra",
             "sell": "Venda"
+        },
+        "quicklog": {
+            "registry_upper": "REGISTRO",
+            "terminal_upper": "TERMINAL",
+            "buy_upper": "COMPRA",
+            "sell_upper": "VENDA",
+            "add_upper": "ADICIONAR"
         }
     }
 }

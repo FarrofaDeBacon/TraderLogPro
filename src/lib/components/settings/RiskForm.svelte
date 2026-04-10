@@ -609,7 +609,7 @@
     <footer class="p-4 border-t border-white/5 bg-black/40 flex items-center justify-between shrink-0 backdrop-blur-xl">
       <Button 
         variant="ghost" 
-        class="h-9 px-5 font-black uppercase text-[10px] tracking-[0.1em] text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-xl border border-transparent hover:border-white/10 transition-all" 
+        class="h-9 px-5 font-black uppercase text-[10px] tracking-[0.1em] text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-full border border-transparent hover:border-white/10 transition-all" 
         onclick={onCancel}
       >
         {$t("risk.actions.cancel")}
@@ -626,7 +626,7 @@
         {/if}
 
         <Button
-          class="h-9 px-10 font-black uppercase text-[11px] tracking-[0.2em] shadow-xl transition-all duration-300 rounded-xl active:scale-[0.97]
+          class="h-9 px-10 font-black uppercase text-[11px] tracking-[0.2em] shadow-xl transition-all duration-300 rounded-full active:scale-[0.97]
             {validation.isValid ? 'bg-[#10b981] hover:bg-[#059669] text-black shadow-emerald-500/20' : 'bg-white/5 text-muted-foreground/30 border border-white/5 cursor-not-allowed shadow-none'}"
           disabled={!validation.isValid}
           onclick={save}

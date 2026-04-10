@@ -117,8 +117,8 @@
             <Zap class="w-3.5 h-3.5 text-emerald-500 fill-emerald-500/10" />
         </div>
         <div class="flex flex-col justify-center">
-            <h3 class="text-[9px] font-black tracking-[0.15em] text-foreground uppercase leading-none">REGISTRO</h3>
-            <p class="text-[7px] font-bold text-muted-foreground/40 uppercase tracking-widest leading-none mt-0.5">TERMINAL</p>
+            <h3 class="text-[9px] font-black tracking-[0.15em] text-foreground uppercase leading-none">{$t('trades.quicklog.registry_upper')}</h3>
+            <p class="text-[7px] font-bold text-muted-foreground/40 uppercase tracking-widest leading-none mt-0.5">{$t('trades.quicklog.terminal_upper')}</p>
         </div>
     </div>
 
@@ -152,10 +152,10 @@
             <span class="text-[9px] font-black uppercase tracking-widest text-muted-foreground/30 px-1">{$t("common.type")}</span>
             <Select.Root type="single" bind:value={selectedAssetTypeId}>
                 <Select.Trigger class="h-8 px-4 bg-white/[0.03] border border-white/5 rounded-full hover:border-white/20 transition-all text-[9px] font-black shadow-inner flex items-center justify-between gap-1 w-full text-foreground/70 ring-0 focus:ring-0">
-                    <span class="truncate">{assetTypesStore.assetTypes.find(t => t.id === selectedAssetTypeId)?.name ?? "Todos"}</span>
+                    <span class="truncate">{assetTypesStore.assetTypes.find(t => t.id === selectedAssetTypeId)?.name ?? $t("common.all")}</span>
                 </Select.Trigger>
                 <Select.Content class="bg-[#0c0d10] border-white/5 backdrop-blur-xl">
-                    <Select.Item value="" class="text-[9px] font-black">Todos</Select.Item>
+                    <Select.Item value="" class="text-[9px] font-black">{$t("common.all")}</Select.Item>
                     {#each assetTypesStore.assetTypes as type}
                         <Select.Item value={type.id} class="text-[9px] font-black">{type.name}</Select.Item>
                     {/each}
@@ -171,7 +171,7 @@
                     <span class="truncate">{asset || $t('common.select_ellipsis')}</span>
                 </Select.Trigger>
                 <Select.Content class="bg-[#0c0d10] border-white/5 backdrop-blur-xl max-h-[300px] overflow-y-auto">
-                    <Select.Item value="" class="text-[10px] font-black">Selecionar</Select.Item>
+                    <Select.Item value="" class="text-[10px] font-black">{$t('common.select_ellipsis')}</Select.Item>
                     {#each filteredAssets as a}
                         <Select.Item value={a.symbol} class="text-[10px] font-black">{a.symbol}</Select.Item>
                     {/each}
@@ -185,11 +185,11 @@
             <div class="h-8 p-1 bg-white/[0.02] border border-white/5 rounded-full flex items-center gap-1 shadow-inner">
                 <button onclick={() => (direction = "Buy")} class="h-full px-4 rounded-full flex items-center gap-2 transition-all {direction === 'Buy' ? 'bg-emerald-500 text-[#064e3b]' : 'text-muted-foreground/20 hover:text-emerald-400'}">
                     <TrendingUp class="w-3.5 h-3.5" />
-                    <span class="text-[10px] font-black uppercase">COMPRA</span>
+                    <span class="text-[10px] font-black uppercase">{$t('trades.quicklog.buy_upper')}</span>
                 </button>
                 <button onclick={() => (direction = "Sell")} class="h-full px-4 rounded-full flex items-center gap-2 transition-all {direction === 'Sell' ? 'bg-rose-500 text-[#4c0519]' : 'text-muted-foreground/20 hover:text-rose-400'}">
                     <TrendingDown class="w-3.5 h-3.5" />
-                    <span class="text-[10px] font-black uppercase">VENDA</span>
+                    <span class="text-[10px] font-black uppercase">{$t('trades.quicklog.sell_upper')}</span>
                 </button>
             </div>
         </div>
@@ -220,7 +220,7 @@
             <Loader2 class="w-3.5 h-3.5 animate-spin" />
         {:else}
             <Plus class="w-3.5 h-3.5" />
-            ADICIONAR
+            {$t('trades.quicklog.add_upper')}
         {/if}
     </button>
 </SystemCard>

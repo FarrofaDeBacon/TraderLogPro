@@ -204,12 +204,25 @@
         }
     },
     "license": {
+        "blocker": {
+            "title": "Acesso Bloqueado",
+            "description": "Seu período de teste de 7 dias expirou. Para continuar utilizando o Institutional Terminal com todas as funcionalidades, você precisa de uma licença ativa.",
+            "buyTitle": "Ainda não tem licença?",
+            "buyDesc": "Escolha o plano que melhor se adapta ao seu perfil e receba acesso instantâneo.",
+            "buyButton": "Ver Planos na Hotmart",
+            "activateTitle": "Já possui uma licença?",
+            "activateDesc": "Insira o e-mail utilizado na compra para ativar seu terminal automaticamente.",
+            "activateButton": "Ativar Terminal",
+            "invalidEmail": "Por favor, insira um e-mail válido.",
+            "activatedSuccess": "Terminal ativado com sucesso! Bem-vindo ao TraderLog Pro.",
+            "activatedError": "Erro na ativação. Verifique seu e-mail ou status da compra."
+        },
         "banner": {
             "activateNow": "Ativar Agora",
-            "expired": "Seu período de trial expirou. Renove sua licença.",
-            "getLicenseNow": "Obter Licença",
-            "getLicensePrompt": "Garanta seu acesso.",
-            "trialActive": "Você tem {days} dias restantes no período de trial."
+            "expired": "PERÍODO DE TESTE EXPIRADO",
+            "getLicenseNow": "Comprar Agora",
+            "getLicensePrompt": "Garanta seu acesso vitalício agora.",
+            "trialActive": "Período de Teste: {days} dias restantes"
         }
     },
     "settings": {

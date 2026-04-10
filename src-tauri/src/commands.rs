@@ -1928,6 +1928,7 @@ pub struct LicenseResult {
     pub valid: bool,
     pub plan: String,
     pub expiration: Option<String>,
+    pub real_expiration: Option<String>,
     pub error: Option<String>,
 }
 
@@ -1980,6 +1981,7 @@ pub async fn validate_license_cmd(
                 valid: false,
                 plan: "Trial".into(),
                 expiration: None,
+                real_expiration: None,
                 error: Some(obfstr::obfstr!("Ambiente de depuração detectado. Falha de integridade.").into()),
             });
         }
@@ -1997,6 +1999,7 @@ pub async fn validate_license_cmd(
                             valid: false,
                             plan: "Trial".into(),
                             expiration: None,
+                            real_expiration: None,
                             error: Some(obfstr::obfstr!("Anomalia de tempo detectada (Relógio atrasado ou manipulado).").into()),
                         });
                     }
@@ -2017,6 +2020,7 @@ pub async fn validate_license_cmd(
             valid: false,
             plan: "Trial".into(),
             expiration: None,
+            real_expiration: None,
             error: Some(obfstr::obfstr!("Formato de chave inválido.").into()),
         });
     }
@@ -2037,6 +2041,7 @@ pub async fn validate_license_cmd(
                 valid: false,
                 plan: "Trial".into(),
                 expiration: None,
+                real_expiration: None,
                 error: Some(obfstr::obfstr!("Assinatura inválida (Hex decode failed).").into()),
             })
         }
@@ -2047,6 +2052,7 @@ pub async fn validate_license_cmd(
             valid: false,
             plan: "Trial".into(),
             expiration: None,
+            real_expiration: None,
             error: Some(obfstr::obfstr!("Assinatura da chave inválida (Chave adulterada).").into()),
         });
     }
@@ -2059,6 +2065,7 @@ pub async fn validate_license_cmd(
                 valid: false,
                 plan: "Trial".into(),
                 expiration: None,
+                real_expiration: None,
                 error: Some(obfstr::obfstr!("Falha ao decodificar payload (Base64).").into()),
             })
         }
@@ -2072,6 +2079,7 @@ pub async fn validate_license_cmd(
                 valid: false,
                 plan: "Trial".into(),
                 expiration: None,
+                real_expiration: None,
                 error: Some(obfstr::obfstr!("Payload corrompido (JSON).").into()),
             })
         }
@@ -2088,6 +2096,7 @@ pub async fn validate_license_cmd(
                 valid: false,
                 plan: payload["plan"].as_str().unwrap_or("Pro").into(),
                 expiration: payload["exp"].as_str().map(|s| s.into()),
+                real_expiration: payload["real_exp"].as_str().map(|s| s.into()),
                 error: Some(obfstr::obfstr!("Licença vinculada a outra identidade (ID incorreto).").into()),
             });
         }
@@ -2098,6 +2107,7 @@ pub async fn validate_license_cmd(
         valid: true,
         plan: payload["plan"].as_str().unwrap_or("Pro").into(),
         expiration: payload["exp"].as_str().map(|s| s.into()),
+        real_expiration: payload["real_exp"].as_str().map(|s| s.into()),
         error: None,
     })
 }
@@ -2117,6 +2127,23 @@ pub async fn activate_license_online_cmd(
         .send()
         .await
         .map_err(|e| format!("Falha na conexão: {}", e))?;
+    
+    let data = res.json::<serde_json::Value>().await.map_err(|e| format!("Falha no JSON: {}", e))?;
+    Ok(data)
+}
+
+#[tauri::command]
+pub async fn verify_license_online_cmd(
+    email: String,
+) -> Result<serde_json::Value, String> {
+    let client = reqwest::Client::new();
+    let res = client.post("https://plain-morning-1ef7.djreinaldodepaulabr.workers.dev/verify")
+        .json(&serde_json::json!({
+            "email": email
+        }))
+        .send()
+        .await
+        .map_err(|e| format!("Falha na verificação: {}", e))?;
     
     let data = res.json::<serde_json::Value>().await.map_err(|e| format!("Falha no JSON: {}", e))?;
     Ok(data)

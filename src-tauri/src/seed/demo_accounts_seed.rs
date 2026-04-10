@@ -10,8 +10,8 @@ pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Res
     let accounts = vec![
         (
             "sim_toro",
-            "Simulador TORO",
-            "TORO",
+            "Simulador",
+            "Geral",
             "Demo",
             "brl",
             "99999-9",
@@ -20,8 +20,8 @@ pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Res
         ),
         (
             "real_toro",
-            "Conta Real TORO",
-            "TORO",
+            "Real",
+            "Geral",
             "Real",
             "brl",
             "12345-6",

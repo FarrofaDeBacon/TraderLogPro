@@ -1,6 +1,6 @@
 import { safeInvoke, isTauri } from "$lib/services/tauri";
 import { type UserProfile } from "$lib/types";
-import { validateLicenseKey, type LicenseData } from "$lib/utils/license";
+import { validateLicenseKey, activateLicenseOnline, verifyLicenseOnline, type LicenseData } from "$lib/utils/license";
 
 export class UserProfileStore {
     userProfile = $state<UserProfile>({
@@ -21,6 +21,8 @@ export class UserProfileStore {
         trial_start_date: null,
         license_key: null,
         utc_offset: -180, // Default to Brasilia
+        in_guarantee: false,
+        guarantee_days_left: 0,
     });
 
     hardwareId = $state<string>("");
@@ -57,17 +59,22 @@ export class UserProfileStore {
 
     licenseTotalDays = $derived.by(() => {
         if (this.licensePlanName === "Lifetime") return null;
-        if (!this.licenseDetails?.expiration || !this.licenseDetails?.createdAt) return null;
-        const start = new Date(this.licenseDetails.createdAt);
-        const end = new Date(this.licenseDetails.expiration);
+        const expDate = this.licenseDetails?.realExpiration || this.licenseDetails?.expiration;
+        // Se temos a data real mas não o createdAt (v5), usamos o purchase_date do perfil como fallback para o cálculo total
+        const startDate = this.licenseDetails?.createdAt || this.userProfile.trial_start_date; 
+        
+        if (!expDate || !startDate) return null;
+        const start = new Date(startDate);
+        const end = new Date(expDate);
         const diffTime = end.getTime() - start.getTime();
-        return Math.round(diffTime / (1000 * 60 * 60 * 24));
+        return Math.max(0, Math.round(diffTime / (1000 * 60 * 60 * 24)));
     });
 
     licenseDaysRemaining = $derived.by(() => {
         if (this.licensePlanName === "Lifetime") return null;
-        if (!this.licenseDetails?.expiration) return null;
-        const end = new Date(this.licenseDetails.expiration);
+        const expDate = this.licenseDetails?.realExpiration || this.licenseDetails?.expiration;
+        if (!expDate) return null;
+        const end = new Date(expDate);
         const now = new Date();
         const diffTime = end.getTime() - now.getTime();
         return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
@@ -79,17 +86,29 @@ export class UserProfileStore {
             return;
         }
 
-        console.log("[UserProfileStore] Refreshing license status for key:", this.userProfile.license_key.substring(0, 10) + "...");
-
         try {
-            console.log("[UserProfileStore] Validating license for machine PIN:", this.hardwareId);
-
             let result = await validateLicenseKey(this.userProfile.license_key, this.hardwareId);
-            
-            console.log("[UserProfileStore] License Validation Result:", result);
             this.licenseDetails = result;
+
+            // Se a licença local for válida, faz um check-in online silencioso (Heartbeat)
+            if (result.valid && this.userProfile.email) {
+                this.performOnlineHeartbeat();
+            }
         } catch (e) {
             console.error("[UserProfileStore] Error refreshing license:", e);
+        }
+    }
+
+    async performOnlineHeartbeat() {
+        if (!this.userProfile.email) return;
+        try {
+            const res = await verifyLicenseOnline(this.userProfile.email);
+            if (!res.valid) {
+                console.warn("[Security] License revoked online! Deactivating...");
+                this.deactivateLicense();
+            }
+        } catch (e) {
+            console.error("[Security] Online heartbeat failed (Offline?)", e);
         }
     }
 
@@ -98,6 +117,26 @@ export class UserProfileStore {
         this.licenseDetails = null;
         await this.saveUserProfile();
         console.log("[UserProfileStore] License deactivated.");
+    }
+
+    async activateOnline(email: string) {
+        try {
+            const res = await activateLicenseOnline(email, this.hardwareId);
+            if (res.success && res.license) {
+                this.userProfile.license_key = res.license;
+                this.userProfile.in_guarantee = res.inGuarantee || false;
+                this.userProfile.guarantee_days_left = res.daysLeft || 0;
+                this.userProfile.email = email; // Garante que o email está salvo
+
+                await this.saveUserProfile();
+                await this.refreshLicenseStatus();
+                return { success: true };
+            }
+            return { success: false, error: res.error || "Código de erro desconhecido." };
+        } catch (e: any) {
+            console.error("[UserProfileStore] Activation error:", e);
+            return { success: false, error: e.toString() };
+        }
     }
 
     async saveUserProfile() {
@@ -150,6 +189,15 @@ export class UserProfileStore {
             if (hwid) this.hardwareId = hwid;
             if (profile) {
                 this.userProfile = { ...this.userProfile, ...profile };
+                
+                // --- TRIAL INITIALIZATION ---
+                // If onboarding is done but trial_start_date is missing, set it now
+                if (this.userProfile.onboarding_completed && !this.userProfile.trial_start_date) {
+                    console.log("[UserProfileStore] First run detected, initializing trial start date.");
+                    this.userProfile.trial_start_date = new Date().toISOString();
+                    await this.saveUserProfile();
+                }
+                
                 console.log("[UserProfileStore] User Profile loaded and processed.");
             } else {
                 console.warn("[UserProfileStore] No profile found, using defaults.");
