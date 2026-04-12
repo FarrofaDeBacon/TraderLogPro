@@ -449,6 +449,9 @@
                 "title": "Import Assets from Profit RTD",
                 "type": "Type"
             },
+            "buttons": {
+                "syncRTD": "Sync RTD"
+            },
             "importRTD": "Import from RTD",
             "labels": {
                 "invalid": "Invalid",
@@ -820,6 +823,7 @@
                 "risk": "Configure limits and protections",
                 "risk-management": "Global risk management.",
                 "strategies": "Document your setups and rules",
+                "sectors": "Manage economic sectors.",
                 "tags": "Custom tags for trades",
                 "timeframes": "Configure operational intervals"
             },
@@ -852,6 +856,7 @@
                 "system": "System"
             },
             "strategies": "Strategies",
+            "sectors": "Sectors",
             "tags": "Tags",
             "timeframes": "Timeframes"
         },

@@ -1,7 +1,7 @@
 use crate::db::DbState;
 use crate::models::{
     Account, ApiConfig, Asset, AssetRiskProfile, AssetType, CashTransaction, ChartType, Currency, EmotionalState,
-    FeeProfile, GrowthPlan, Indicator, JournalEntry, Market, Modality, RiskProfile, Strategy, Tag,
+    FeeProfile, GrowthPlan, Indicator, JournalEntry, Market, Modality, RiskProfile, Sector, Strategy, Tag,
     Timeframe, Trade, UserProfile,
 };
 use crate::models::dto::AssetRiskProfileDto;
@@ -498,6 +498,60 @@ pub async fn delete_asset_type(db: State<'_, DbState>, id: String) -> Result<(),
     delete_record(&db.0, "asset_type", &clean_id).await
 }
 
+// --- Sectors ---
+
+#[tauri::command]
+pub async fn get_sectors(db: State<'_, DbState>) -> Result<Vec<Sector>, String> {
+    let mut result =
+        db.0.query("SELECT *, type::string(id) as id FROM sector")
+            .await
+            .map_err(|e| e.to_string())?;
+    let sectors: Vec<Sector> = match result.take(0) {
+        Ok(s) => s,
+        Err(e) => {
+            println!("[WARN] get_sectors deserialization failure: {}", e);
+            Vec::new()
+        }
+    };
+    Ok(sectors)
+}
+
+#[tauri::command]
+pub async fn save_sector(db: State<'_, DbState>, sector: Sector) -> Result<(), String> {
+    let mut json = serde_json::to_value(&sector).map_err(|e| e.to_string())?;
+    if let Some(obj) = json.as_object_mut() {
+        obj.remove("id");
+    }
+    let id_str = sector.id.clone().unwrap_or_else(|| format!("sector:{}", uuid::Uuid::new_v4()));
+    let clean_id = id_str
+        .split(':')
+        .last()
+        .unwrap_or(&id_str)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    upsert_record(&db.0, "sector", &clean_id, json).await?;
+
+    // Relational field conversion
+    let full_id = format!("sector:⟨{}⟩", clean_id);
+    let sql = format!("
+        UPDATE {} SET 
+            market_id = (IF market_id THEN type::thing(market_id) ELSE null END)
+        WHERE id = {};
+    ", full_id, full_id);
+
+    db.0.query(&sql).await.map_err(|e| e.to_string())?;
+    
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn delete_sector(db: State<'_, DbState>, id: String) -> Result<(), String> {
+    let clean_id = id.split(':').last().unwrap_or(&id)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    delete_record(&db.0, "sector", &clean_id).await
+}
+
 // --- Assets ---
 
 #[tauri::command]
@@ -544,7 +598,8 @@ pub async fn save_asset(db: State<'_, DbState>, asset: Asset) -> Result<(), Stri
             asset_type_id = type::thing(asset_type_id),
             default_fee_id = (IF default_fee_id THEN type::thing(default_fee_id) ELSE null END),
             tax_profile_id = (IF tax_profile_id THEN type::thing(tax_profile_id) ELSE null END),
-            root_id = (IF root_id THEN type::thing(root_id) ELSE null END)
+            root_id = (IF root_id THEN type::thing(root_id) ELSE null END),
+            sector_id = (IF sector_id THEN type::thing(sector_id) ELSE null END)
         WHERE id = {};
     ", full_id, full_id);
 

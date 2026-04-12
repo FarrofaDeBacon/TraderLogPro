@@ -90,7 +90,6 @@ impl<'de> Visitor<'de> for UniversalVisitor {
     {
         use serde::de::VariantAccess;
         let (tag, variant) = data.variant::<String>()?;
-        println!("[DEBUG] UniversalVisitor::visit_enum tag: {}", tag);
         match tag.as_str() {
             "Thing" => {
                 let t: Thing = variant.newtype_variant()?;
@@ -111,7 +110,6 @@ impl<'de> Visitor<'de> for UniversalVisitor {
                 Ok(serde_json::Value::Null)
             }
             _ => {
-                println!("[DEBUG] UniversalVisitor::visit_enum UNKNOWN tag: {}", tag);
                 // For other enums, we assume they are simple unit variants (like categories).
                 // If they carry data, we might miss it here, but this prevents "moved value" errors.
                 match variant.unit_variant() {
@@ -516,6 +514,31 @@ impl ToDto for AssetType {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Sector {
+    #[serde(
+        default,
+        deserialize_with = "deserialize_id_opt",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub id: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_string_opt")]
+    pub name: String,
+    #[serde(default, deserialize_with = "deserialize_id_opt")]
+    pub market_id: Option<String>,
+}
+
+impl ToDto for Sector {
+    type Dto = dto::SectorDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::SectorDto {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            market_id: self.market_id.clone(),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Asset {
     #[serde(
         default,
@@ -538,6 +561,8 @@ pub struct Asset {
     pub is_root: bool,
     #[serde(default, deserialize_with = "deserialize_id_opt")]
     pub root_id: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_id_opt")]
+    pub sector_id: Option<String>,
     // Position Sizing Engine Configurations
     #[serde(default)]
     pub contract_size: Option<f64>,
@@ -555,6 +580,7 @@ impl ToDto for Asset {
             tax_profile_id: self.tax_profile_id.clone(),
             is_root: self.is_root,
             root_id: self.root_id.clone(),
+            sector_id: self.sector_id.clone(),
             contract_size: self.contract_size,
         }
     }

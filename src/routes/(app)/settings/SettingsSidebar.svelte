@@ -25,7 +25,8 @@
         Crown,
         Scale,
         ChevronDown,
-        ChevronRight
+        ChevronRight,
+        Building2
     } from "lucide-svelte";
 
     import { t } from "svelte-i18n";
@@ -50,6 +51,7 @@
                 { href: "/settings/markets", title: $t("settings.nav.markets"), icon: Globe },
                 { href: "/settings/asset-types", title: $t("settings.nav.assetTypes"), icon: Layers },
                 { href: "/settings/assets", title: $t("settings.nav.assets"), icon: Bitcoin },
+                { href: "/settings/sectors", title: $t("settings.nav.sectors"), icon: Building2 },
             ]
         },
         {

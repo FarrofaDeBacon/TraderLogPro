@@ -77,7 +77,14 @@ export type Asset = {
     tax_profile_id?: string;
     is_root: boolean;
     root_id?: string;
+    sector_id?: string;
 };
+
+export interface Sector {
+    id: string;
+    name: string;
+    market_id?: string;
+}
 
 export type Currency = {
     id: string;

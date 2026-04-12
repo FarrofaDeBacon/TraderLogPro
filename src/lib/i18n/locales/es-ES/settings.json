@@ -448,6 +448,9 @@
                 "alreadyRegistered": "Ya Registrado",
                 "success": "¡{count} activos importados con éxito!"
             },
+            "buttons": {
+                "syncRTD": "Sincronizar RTD"
+            },
             "importRTD": "Importar do RTD",
             "labels": {
                 "invalid": "Inválido",

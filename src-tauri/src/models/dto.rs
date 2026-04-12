@@ -85,6 +85,24 @@ pub struct AccountDto {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AssetTypeDto {
+    pub id: Option<String>,
+    pub name: String,
+    pub code: String,
+    pub market_id: Option<String>,
+    pub unit_label: String,
+    pub result_type: String,
+    pub tax_profile_id: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct SectorDto {
+    pub id: Option<String>,
+    pub name: String,
+    pub market_id: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AssetDto {
     pub id: Option<String>,
     pub symbol: String,
@@ -94,6 +112,7 @@ pub struct AssetDto {
     pub tax_profile_id: Option<String>,
     pub is_root: bool,
     pub root_id: Option<String>,
+    pub sector_id: Option<String>,
     pub contract_size: Option<f64>,
 }
 
@@ -108,16 +127,6 @@ pub struct AssetRiskProfileDto {
     pub notes: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct AssetTypeDto {
-    pub id: Option<String>,
-    pub name: String,
-    pub code: String,
-    pub market_id: Option<String>,
-    pub unit_label: String,
-    pub result_type: String,
-    pub tax_profile_id: Option<String>,
-}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MarketDto {

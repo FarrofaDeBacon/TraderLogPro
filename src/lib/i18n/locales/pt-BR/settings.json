@@ -441,6 +441,8 @@
                 "specificFeePlaceholder": "Usar do Tipo de Ativo",
                 "symbol": "Símbolo",
                 "symbolPlaceholder": "WIN",
+                "sector": "Setor",
+                "sectorPlaceholder": "Selecione o Setor",
                 "type": "Tipo",
                 "typePlaceholder": "Selecione",
                 "useTypeDefault": "Usar do Tipo de Ativo"
@@ -460,7 +462,11 @@
                 "suggestedName": "Nome Sugerido",
                 "symbol": "Símbolo",
                 "title": "Importar Ativos do Profit RTD",
-                "type": "Tipo"
+                "type": "Tipo",
+                "sector": "Setor"
+            },
+            "buttons": {
+                "syncRTD": "Sincronizar RTD"
             },
             "importRTD": "Importar do RTD",
             "labels": {
@@ -798,6 +804,19 @@
             "searchPlaceholder": "Buscar modalidade...",
             "title": "Modalidades"
         },
+        "sectors": {
+            "description": "Categorize seus ativos por setores da economia (Financeiro, Energia, Tech...).",
+            "edit": "Editar Setor",
+            "empty": "Nenhum setor cadastrado.",
+            "form": {
+                "name": "Nome do Setor",
+                "namePlaceholder": "Ex: Financeiro, Tecnologia...",
+                "save": "Salvar Setor"
+            },
+            "new": "Novo Setor",
+            "searchPlaceholder": "Buscar setor...",
+            "title": "Setores"
+        },
         "nav": {
             "accounts": "Contas",
             "asset-profiles": "Perfis de Ativo",
@@ -833,6 +852,7 @@
                 "risk": "Configure limites e proteções",
                 "risk-management": "Gerenciamento de risco global.",
                 "strategies": "Documente seus setups e regras",
+                "sectors": "Gerencie os setores da economia.",
                 "tags": "Etiquetas personalizadas para trades",
                 "timeframes": "Configure intervalos operacionais"
             },
@@ -865,6 +885,7 @@
                 "system": "Sistema"
             },
             "strategies": "Estratégias",
+            "sectors": "Setores",
             "tags": "Tags",
             "timeframes": "Timeframes"
         },
