@@ -2172,18 +2172,49 @@ pub async fn activate_license_online_cmd(
     email: String,
     pin: String,
 ) -> Result<serde_json::Value, String> {
-    println!("[LICENSE] Backend activating online for: {}", email);
+    let email_raw = email.trim().to_lowercase();
     let client = reqwest::Client::new();
+    
+    // 1. Primeira tentativa (E-mail como digitado/normalizado para lowercase)
     let res = client.post("https://plain-morning-1ef7.djreinaldodepaulabr.workers.dev/activate")
         .json(&serde_json::json!({
-            "email": email,
+            "email": email_raw,
             "hwid": pin
         }))
         .send()
         .await
         .map_err(|e| format!("Falha na conexão: {}", e))?;
     
-    let data = res.json::<serde_json::Value>().await.map_err(|e| format!("Falha no JSON: {}", e))?;
+    let body_text = res.text().await.map_err(|e| format!("Falha ao ler corpo: {}", e))?;
+    let mut data: serde_json::Value = serde_json::from_str(&body_text).unwrap_or(serde_json::json!({ "success": false, "error": body_text }));
+
+    // 2. Se falhar e for GMAIL, tentar sem pontos (Estratégia fallback Google)
+    if !data["success"].as_bool().unwrap_or(false) && email_raw.contains("@gmail.com") {
+        let parts: Vec<&str> = email_raw.split('@').collect();
+        if parts.len() == 2 {
+            let username_no_dots = parts[0].replace(".", "");
+            let email_no_dots = format!("{}@{}", username_no_dots, parts[1]);
+            
+            if email_no_dots != email_raw {
+                let res2 = client.post("https://plain-morning-1ef7.djreinaldodepaulabr.workers.dev/activate")
+                    .json(&serde_json::json!({
+                        "email": email_no_dots,
+                        "hwid": pin
+                    }))
+                    .send()
+                    .await
+                    .map_err(|e| format!("Falha na conexão (Retry): {}", e))?;
+                
+                let body_text2 = res2.text().await.map_err(|e| format!("Falha ao ler corpo (Retry): {}", e))?;
+                let data2: serde_json::Value = serde_json::from_str(&body_text2).unwrap_or(serde_json::json!({ "success": false, "error": body_text2 }));
+                
+                if data2["success"].as_bool().unwrap_or(false) {
+                    return Ok(data2);
+                }
+            }
+        }
+    }
+
     Ok(data)
 }
 
@@ -2191,10 +2222,11 @@ pub async fn activate_license_online_cmd(
 pub async fn verify_license_online_cmd(
     email: String,
 ) -> Result<serde_json::Value, String> {
+    let clean_email = email.trim().to_lowercase();
     let client = reqwest::Client::new();
     let res = client.post("https://plain-morning-1ef7.djreinaldodepaulabr.workers.dev/verify")
         .json(&serde_json::json!({
-            "email": email
+            "email": clean_email
         }))
         .send()
         .await

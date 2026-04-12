@@ -19,6 +19,7 @@
         Zap,
     } from "lucide-svelte";
     import { userProfileStore } from "$lib/stores/user-profile.svelte";
+    import * as AlertDialog from "$lib/components/ui/alert-dialog";
     import {
         validateLicenseKey,
         activateLicenseOnline,
@@ -33,6 +34,17 @@
     let activationEmail = $state(userProfileStore.userProfile.email || "");
     let isActivating = $state(false);
     let isOnlineActivating = $state(false);
+
+    // Links de Checkout Reais (Fornecidos pelo usuário)
+    const CHECKOUT_ANNUAL = "https://pay.hotmart.com/J105321674U?bid=1776001106781";
+    const CHECKOUT_LIFETIME = "https://pay.hotmart.com/U105324624J?bid=1776001128443";
+
+    function getCheckoutUrl(baseUrl: string) {
+        const cleanEmail = activationEmail.trim();
+        if (!cleanEmail) return baseUrl;
+        const separator = baseUrl.includes("?") ? "&" : "?";
+        return `${baseUrl}${separator}email=${encodeURIComponent(cleanEmail)}`;
+    }
 
     // Diagnostic trace for license state
     $effect(() => {
@@ -85,13 +97,20 @@
             isActivating = false;
         }
     }
+    let isDeactivateDialogOpen = $state(false);
+
     async function handleDeactivate() {
-        const confirmed = confirm(
-            "Tem certeza que deseja remover esta licença? Você voltará para o período trial ou ficará sem acesso se ele já tiver expirado.",
-        );
-        if (confirmed) {
+        isDeactivateDialogOpen = true;
+    }
+
+    async function confirmDeactivate() {
+        try {
             await userProfileStore.deactivateLicense();
             toast.success("Licença removida com sucesso.");
+        } catch (e) {
+            toast.error("Erro ao remover licença.");
+        } finally {
+            isDeactivateDialogOpen = false;
         }
     }
 
@@ -124,7 +143,7 @@
                 toast.error(result.error || "Não encontramos uma licença ativa para este e-mail.");
             }
         } catch (e) {
-            console.error(e);
+            console.error("[License] Activation Exception:", e);
             toast.error("Erro na comunicação com o servidor.");
         } finally {
             isOnlineActivating = false;
@@ -272,6 +291,51 @@
         </div>
     {/if}
 
+    <!-- Seção de Planos e Aquisição (Restauração Hotmart) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a 
+            href={getCheckoutUrl(CHECKOUT_ANNUAL)} 
+            target="_blank"
+            class="group relative flex flex-col p-6 rounded-[2rem] bg-card border border-border hover:border-emerald-500/50 transition-all overflow-hidden shadow-sm"
+        >
+            <div class="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex justify-between items-start relative z-10">
+                <div>
+                    <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Tradicional</p>
+                    <h4 class="text-xl font-black uppercase tracking-tighter">Faturamento Anual</h4>
+                </div>
+                <Zap class="w-5 h-5 text-emerald-500" />
+            </div>
+            <p class="text-[11px] text-muted-foreground mt-2 relative z-10">{$t("settings.license.perk1")}</p>
+            <div class="mt-4 flex items-baseline gap-1 relative z-10">
+                <span class="text-xs font-bold text-muted-foreground">R$</span>
+                <span class="text-2xl font-black tracking-tighter">99</span>
+                <span class="text-[10px] font-bold text-muted-foreground">/ano</span>
+            </div>
+        </a>
+
+        <a 
+            href={getCheckoutUrl(CHECKOUT_LIFETIME)} 
+            target="_blank"
+            class="group relative flex flex-col p-6 rounded-[2rem] bg-card border border-border hover:border-blue-500/50 transition-all overflow-hidden shadow-sm"
+        >
+            <div class="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex justify-between items-start relative z-10">
+                <div>
+                    <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">Legacy</p>
+                    <h4 class="text-xl font-black uppercase tracking-tighter">Acesso Vitalício</h4>
+                </div>
+                <Crown class="w-5 h-5 text-blue-500" />
+            </div>
+            <p class="text-[11px] text-muted-foreground mt-2 relative z-10">{$t("settings.license.perk2")}</p>
+            <div class="mt-4 flex items-baseline gap-1 relative z-10">
+                <span class="text-xs font-bold text-muted-foreground">R$</span>
+                <span class="text-2xl font-black tracking-tighter">499</span>
+                <span class="text-[10px] font-bold text-muted-foreground">/único</span>
+            </div>
+        </a>
+    </div>
+
     <Card.Root class="bg-primary/5 border-primary/20 shadow-lg shadow-primary/5 overflow-hidden">
         <Card.Header class="pb-2">
             <Card.Title class="text-sm flex items-center gap-2">
@@ -418,3 +482,30 @@
     </div>
 
 </div>
+
+<AlertDialog.Root bind:open={isDeactivateDialogOpen}>
+    <AlertDialog.Content class="bg-black/90 border-white/5 backdrop-blur-xl rounded-[2.5rem] p-8">
+        <AlertDialog.Header>
+            <AlertDialog.Title class="text-[14px] font-black uppercase tracking-[0.2em] text-rose-500 flex items-center gap-3">
+                <AlertCircle class="w-5 h-5" />
+                Remover Licença Atual?
+            </AlertDialog.Title>
+            <AlertDialog.Description class="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-widest leading-relaxed pt-4">
+                Esta ação removerá o acesso premium deste terminal imediatamente. Você voltará para o período de avaliação ou ficará sem acesso caso o mesmo já tenha expirado.
+            </AlertDialog.Description>
+        </AlertDialog.Header>
+        <AlertDialog.Footer class="gap-3 mt-8">
+            <AlertDialog.Cancel class="rounded-full bg-white/5 border-white/5 text-[9px] font-black uppercase tracking-widest hover:bg-white/10 h-12 px-8">
+                {$t("general.cancel")}
+            </AlertDialog.Cancel>
+            <AlertDialog.Action 
+                onclick={confirmDeactivate}
+                class="rounded-full bg-rose-500 text-white hover:bg-rose-600 h-12 px-10 text-[9px] font-black uppercase tracking-widest shadow-lg shadow-rose-500/20 border-none"
+            >
+                Confirmar Remoção
+            </AlertDialog.Action>
+        </AlertDialog.Footer>
+    </AlertDialog.Content>
+</AlertDialog.Root>
+
+

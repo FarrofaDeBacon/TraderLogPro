@@ -243,6 +243,7 @@ async fn get_or_create_asset(db: &Surreal<Db>, symbol: &str) -> Result<String, S
         tax_profile_id: None,
         is_root: false,
         root_id,
+        sector_id: None,
         contract_size: None,
     };
 

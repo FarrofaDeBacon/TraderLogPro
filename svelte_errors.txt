@@ -1,0 +1,198 @@
+﻿Loading svelte-check in workspace: c:\PROJETOS\TraderLogPro
+Getting Svelte diagnostics...
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\ui\system\SystemInput.svelte[39m:11:16
+[31mError[39m: Cannot find name 'Snippet'. (ts)
+[36m        ref?: HTMLInputElement | null;
+        icon?: [35mSnippet[36m;
+        containerClass?: string;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\ui\system\SystemInput.svelte[39m:41:14
+[31mError[39m: Expression produces a union type that is too complex to represent. (ts)
+[36m        {/if}
+        <Inpu[35mt
+            bind:ref={ref}
+            bind:value={value}
+            class={cn(
+                "h-11 w-full bg-white/5 border-white/5 text-foreground rounded-full px-6 text-[11px] font-bold tracking-tight focus-visible:ring-emerald-500/20 transition-all hover:bg-white/10 placeholder:text-muted-foreground/20",
+                icon && "pl-12",
+                className
+            )}
+            {...rest[36m}
+        />[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\ui\system\SystemInput.svelte[39m:41:14
+[31mError[39m: Type '{ accept?: string | undefined | null; alt?: string | undefined | null; autocomplete?: FullAutoFill | undefined | null; autocorrect?: "on" | "off" | "" | undefined | null; ... 477 more ...; class: string; }' is not assignable to type 'Props | undefined'.
+  Type '{ accept?: string | undefined | null; alt?: string | undefined | null; autocomplete?: FullAutoFill | undefined | null; autocorrect?: "on" | "off" | "" | undefined | null; ... 477 more ...; class: string; }' is not assignable to type '(Omit<HTMLInputAttributes, "type"> & { type: "file"; files?: FileList | undefined; } & { ref?: HTMLElement | null | undefined; }) | (Omit<...> & ... 1 more ... & { ...; })'. (ts)
+[36m        {/if}
+        <Inpu[35m[36mt
+            bind:ref={ref}[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\app.test.ts[39m:80:52
+[31mError[39m: Property 'asset_ids' is missing in type '{ id: `${string}-${string}-${string}-${string}-${string}`; asset_id: string; name: string; default_stop_points: number; min_contracts: number; max_contracts: number; growth_override_enabled: false; }' but required in type 'RiskScopeProfile'. 
+[36m
+            riskSettingsStore.assetRiskProfiles = [[35m{
+                id: originalAssetProfileId,
+                asset_id: 'asset1',
+                name: 'Original Asset Profile',
+                default_stop_points: 100,
+                min_contracts: 1,
+                max_contracts: 10,
+                growth_override_enabled: false
+            }[36m];[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\app.test.ts[39m:236:52
+[31mError[39m: Property 'asset_ids' is missing in type '{ id: `${string}-${string}-${string}-${string}-${string}`; asset_id: string; name: string; default_stop_points: number; min_contracts: number; max_contracts: number; growth_override_enabled: false; }' but required in type 'RiskScopeProfile'. 
+[36m            
+            riskSettingsStore.assetRiskProfiles = [[35m{
+                id: sharedAssetProfileId,
+                asset_id: 'asset1',
+                name: 'Shared Profile',
+                default_stop_points: 100,
+                min_contracts: 1,
+                max_contracts: 10,
+                growth_override_enabled: false
+            }[36m];[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\fiscalStore.svelte.ts[39m:145:37
+[31mError[39m: Type 'null' cannot be used as an index type. 
+[36m
+                if (!monthlyBuckets[[35mkey[36m]) {
+                    monthlyBuckets[key] = {[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\fiscalStore.svelte.ts[39m:146:36
+[31mError[39m: Type 'null' cannot be used as an index type. 
+[36m                if (!monthlyBuckets[key]) {
+                    monthlyBuckets[[35mkey[36m] = {
+                        rule, // Store first found rule for metadata[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\fiscalStore.svelte.ts[39m:157:32
+[31mError[39m: Type 'null' cannot be used as an index type. 
+[36m                const netTrade = t.result - t.fee_total;
+                monthlyBuckets[[35mkey[36m].gross_profit += netTrade;
+                monthlyBuckets[key].trades.push(t);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\fiscalStore.svelte.ts[39m:158:32
+[31mError[39m: Type 'null' cannot be used as an index type. 
+[36m                monthlyBuckets[key].gross_profit += netTrade;
+                monthlyBuckets[[35mkey[36m].trades.push(t);[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\stores\fiscalStore.svelte.ts[39m:164:32
+[31mError[39m: Type 'null' cannot be used as an index type. 
+[36m                // Exemption usually checks TOTAL sales of the modality (Swing Trade).
+                monthlyBuckets[[35mkey[36m].sales += (exitPrice * t.quantity);
+            });[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\utils\license.test.ts[39m:2:10
+[31mError[39m: Module '"./license"' has no exported member 'computeDeviceIdentity'. 
+[36mimport { describe, it, expect, vi, beforeEach } from 'vitest';
+import { [35mcomputeDeviceIdentity[36m, computeLegacyCustomerId, validateLicenseKey } from './license';[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\utils\license.test.ts[39m:2:33
+[31mError[39m: Module '"./license"' has no exported member 'computeLegacyCustomerId'. 
+[36mimport { describe, it, expect, vi, beforeEach } from 'vitest';
+import { computeDeviceIdentity, [35mcomputeLegacyCustomerId[36m, validateLicenseKey } from './license';[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\trades\QuickLog.svelte[39m:102:17
+[31mError[39m: Type 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'. (ts)
+[36m                direction,
+                [35mentry_price[36m: entryPrice > 0 ? entryPrice : undefined,
+                exit_price: exitPrice > 0 ? exitPrice : undefined,[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\trades\QuickLog.svelte[39m:103:17
+[31mError[39m: Type 'number | undefined' is not assignable to type 'number | null'.
+  Type 'undefined' is not assignable to type 'number | null'. (ts)
+[36m                entry_price: entryPrice > 0 ? entryPrice : undefined,
+                [35mexit_price[36m: exitPrice > 0 ? exitPrice : undefined,
+                exit_date: dateInput,[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\finance\DarfDetailsDialog.svelte[39m:14:16
+[31mError[39m: `$state(...)` can only be used as a variable declaration initializer, a class field declaration, or the first assignment to a class field at the top level of the constructor.
+https://svelte.dev/e/state_invalid_placement (svelte)
+[36m        appraisalId = "",
+        darf = [35m$state<TaxDarf | null>(null)[36m,
+        open = $bindable(false),[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\finance\TransferDialog.svelte[39m:81:19
+[31mError[39m: `$snippet` is an illegal variable name. To reference a global variable called `$snippet`, use `globalThis.$snippet`
+https://svelte.dev/e/global_reference_invalid (svelte)
+[36m
+  const Content = [35m$snippet[36m(() => {
+    return `[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\finance\TransferDialog.svelte[39m:48:49
+[31mError[39m: Property 'addCashTransfer' does not exist on type 'FinancialConfigStore'. (ts)
+[36m    try {
+      const result = await financialConfigStore.[35maddCashTransfer[36m({
+        date: new Date(formData.date).toISOString(),[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\finance\TransferDialog.svelte[39m:81:19
+[31mError[39m: Cannot find name '$snippet'. (ts)
+[36m
+  const Content = [35m$snippet[36m(() => {
+    return `[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\finance\TransferDialog.svelte[39m:173:67
+[31mError[39m: Property 'name' does not exist on type 'Account'. (ts)
+[36m              placeholder={$t("finance.transfer_dialog.select_account")}
+              options={accounts.map(a => ({ value: a.id, label: a.[35mname[36m }))}
+            />[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\finance\TransferDialog.svelte[39m:181:67
+[31mError[39m: Property 'name' does not exist on type 'Account'. (ts)
+[36m              placeholder={$t("finance.transfer_dialog.select_account")}
+              options={accounts.map(a => ({ value: a.id, label: a.[35mname[36m }))}
+            />[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\finance\TransferDialog.svelte[39m:225:63
+[31mError[39m: Property 'name' does not exist on type 'Account'. (ts)
+[36m          placeholder={$t("finance.transfer_dialog.select_account")}
+          options={accounts.map(a => ({ value: a.id, label: a.[35mname[36m }))}
+        />[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\finance\TransferDialog.svelte[39m:233:63
+[31mError[39m: Property 'name' does not exist on type 'Account'. (ts)
+[36m          placeholder={$t("finance.transfer_dialog.select_account")}
+          options={accounts.map(a => ({ value: a.id, label: a.[35mname[36m }))}
+        />[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\finance\TransactionDialog.svelte[39m:145:67
+[31mError[39m: Property 'name' does not exist on type 'Account'. (ts)
+[36m              placeholder={$t("finance.transaction_dialog.select_account")}
+              options={accounts.map(a => ({ value: a.id, label: a.[35mname[36m }))}
+            />[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\finance\TransactionDialog.svelte[39m:193:67
+[31mError[39m: Property 'name' does not exist on type 'Account'. (ts)
+[36m              placeholder={$t("finance.transaction_dialog.select_account")}
+              options={accounts.map(a => ({ value: a.id, label: a.[35mname[36m }))}
+            />[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\RiskForm.svelte[39m:88:49
+[31mError[39m: Property 'daily_loss_limit' does not exist on type 'GrowthPhase'. (ts)
+[36m            if (phase) {
+                formData.max_daily_loss = phase.[35mdaily_loss_limit[36m;
+                formData.daily_target = phase.daily_profit_target;[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\lib\components\settings\RiskForm.svelte[39m:89:47
+[31mError[39m: Property 'daily_profit_target' does not exist on type 'GrowthPhase'. (ts)
+[36m                formData.max_daily_loss = phase.daily_loss_limit;
+                formData.daily_target = phase.[35mdaily_profit_target[36m;
+            }[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\routes\(app)\fiscal\irpf\+page.svelte[39m:1073:9
+[31mError[39m: Object literal may only specify known properties, and '"appraisal"' does not exist in type '$$ComponentProps'. (ts)
+[36m        bind:open={isViewModalOpen}
+        [35mappraisal[36m={selectedAppraisal}
+        onclose={() => {[39m
+
+c:\PROJETOS\TraderLogPro\[32msrc\routes\(app)\fiscal\irpf\darf\+page.svelte[39m:400:91
+[31mError[39m: Property 'name' does not exist on type 'Account'. (ts)
+[36m                        placeholder={$t("finance.transaction_dialog.select_account")}
+                        options={accountsStore.accounts.map(a => ({ value: a.id, label: a.[35mname[36m }))}
+                    />[39m
+
+====================================
+[31msvelte-check found 28 errors and 76 warnings in 20 files
+[39m

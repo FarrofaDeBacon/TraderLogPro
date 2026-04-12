@@ -26,6 +26,7 @@ pub async fn seed_assets(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Resul
             tax_profile_id: None,
             is_root,
             root_id: None,
+            sector_id: None,
             contract_size: None,
         };
 
