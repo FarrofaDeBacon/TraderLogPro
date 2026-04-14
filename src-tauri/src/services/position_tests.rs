@@ -42,6 +42,9 @@ mod tests {
             stop_loss: None,
             take_profit: None,
             intensity: 0.0,
+            tax_profile_id: None,
+            effective_tax_profile_id: None,
+            effective_fee_profile_id: None,
         }
     }
 

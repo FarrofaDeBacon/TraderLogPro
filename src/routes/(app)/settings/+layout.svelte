@@ -25,22 +25,27 @@
                 ? "emotionalStates"
                 : section === "chart-types"
                   ? "chartTypes"
-                  : section === "api-integrations"
-                    ? "integrations"
-                    : section,
+            : section === "api-integrations"
+              ? "integrations"
+              : section,
     );
+
+    const HIDDEN_HEADER_ROUTES = ["sectors", "fees", "assets"];
+    let shouldHideHeader = $derived(HIDDEN_HEADER_ROUTES.includes(section));
 </script>
 
 <div class="hidden space-y-6 p-10 pb-16 md:block">
-    <div class="space-y-0.5">
-        <h2 class="text-2xl font-bold tracking-tight capitalize">
-            {$t(`settings.nav.${navKey}`)}
-        </h2>
-        <p class="text-muted-foreground">
-            {$t(`settings.nav.descriptions.${navKey}`)}
-        </p>
-    </div>
-    <Separator class="my-6" />
+    {#if !shouldHideHeader}
+        <div class="space-y-0.5">
+            <h2 class="text-2xl font-bold tracking-tight capitalize">
+                {$t(`settings.nav.${navKey}`)}
+            </h2>
+            <p class="text-muted-foreground">
+                {$t(`settings.nav.descriptions.${navKey}`)}
+            </p>
+        </div>
+        <Separator class="my-6" />
+    {/if}
     <div class="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
         <aside class="lg:w-64 overflow-visible shrink-0">
             <SettingsSidebar />

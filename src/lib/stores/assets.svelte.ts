@@ -20,20 +20,21 @@ export class AssetsStore {
     }
 
     async saveAssets() {
-        console.log(`[AssetsStore] saveAssets: Saving ${this.assets.length} assets...`);
-        let successCount = 0;
-        let failCount = 0;
-
-        for (const asset of this.assets) {
-            try {
-                await safeInvoke("save_asset", { asset: $state.snapshot(asset) });
-                successCount++;
-            } catch (e) {
-                failCount++;
-                console.error(`[AssetsStore] FATAL Error saving asset ${asset.symbol}:`, e);
+        console.log(`[AssetsStore] saveAssets: Saving ${this.assets.length} assets in bulk...`);
+        try {
+            await safeInvoke("save_assets", { assets: $state.snapshot(this.assets) });
+            console.log(`[AssetsStore] saveAssets bulk complete.`);
+        } catch (e) {
+            console.error(`[AssetsStore] FATAL Error saving assets in bulk:`, e);
+            // Fallback to individual save only if bulk fails (resilience)
+            for (const asset of this.assets) {
+                try {
+                    await safeInvoke("save_asset", { asset: $state.snapshot(asset) });
+                } catch (err) {
+                    console.error(`[AssetsStore] Fallback save failed for ${asset.symbol}:`, err);
+                }
             }
         }
-        console.log(`[AssetsStore] saveAssets complete. Success: ${successCount}, Failed: ${failCount}`);
     }
 
     async addAsset(item: Omit<Asset, "id">, autoSave: boolean = true) {

@@ -28,3 +28,18 @@ pub async fn init_db(app_handle: &AppHandle) -> Result<Surreal<Db>, surrealdb::E
 
     Ok(db)
 }
+
+/// Normalizes SurrealDB IDs by extracting the actual ID part from Thing objects or prefixed strings.
+/// Logic migrated from irpf.rs for system-wide consistency.
+pub fn normalize_id(label: &str, s: &str) -> String {
+    let mut clean = s.to_string();
+    if clean.contains("String:") {
+        clean = clean.split("String:").last().unwrap_or(&clean).to_string();
+    }
+    clean = clean.replace(['{', '}', '"', '\'', ' ', '`'], "");
+    let res = clean.split(':').last().unwrap_or(clean.as_str()).to_string();
+    if !s.is_empty() && !label.is_empty() {
+        println!("[DB] normalize_id({}): '{}' -> '{}'", label, s, res);
+    }
+    res
+}

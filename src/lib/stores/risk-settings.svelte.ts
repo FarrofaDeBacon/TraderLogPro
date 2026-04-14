@@ -60,10 +60,6 @@ export class RiskSettingsStore {
                 assets: this.assetRiskProfiles.length,
                 plans: this.growthPlans.length
             });
-            
-            // Auto-migrações redundantes para garantir integridade
-            await this.migrateLegacyRiskRules();
-            await this.migrateAssetScopes();
         } catch (e) {
             console.error("[RiskSettingsStore] Error loading risk data:", e);
         }

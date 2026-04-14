@@ -77,13 +77,24 @@ export type Asset = {
     tax_profile_id?: string;
     is_root: boolean;
     root_id?: string;
-    sector_id?: string;
+    sector_id: string;
+    subsector_id?: string;
 };
 
 export interface Sector {
     id: string;
     name: string;
-    market_id?: string;
+    macro_sector?: string;
+    icon?: string;
+    color?: string;
+    description?: string;
+}
+
+export interface Subsector {
+    id: string;
+    name: string;
+    sector_id: string;
+    segment?: string;
 }
 
 export type Currency = {
@@ -104,6 +115,7 @@ export type Account = {
     currency_id?: string;
     balance: number;
     custom_logo: string | null;
+    default_fee_id?: string;
 };
 
 export type JournalEntry = {
@@ -166,6 +178,8 @@ export type Trade = {
     take_profit: number | null;
     intensity: number;
     asset_id?: string;
+    tax_profile_id?: string;
+    effective_tax_profile_id?: string;
     
     // Processed fields for high-performance dashboard calculations
     processed_timestamp?: number;
@@ -292,6 +306,13 @@ export type FeeProfile = {
     name: string;
     broker: string;
     account_id?: string;
+    notes: string;
+};
+
+export type FeeProfileEntry = {
+    id: string;
+    fee_profile_id: string;
+    modality_id: string;
     fixed_fee: number;
     percentage_fee: number;
     exchange_fee: number;
@@ -299,9 +320,6 @@ export type FeeProfile = {
     currency_spread: number;
     withholding_tax: number;
     income_tax_rate: number;
-    custom_items: FeeCustomItem[];
-    tax_rule_id?: string;
-    notes: string;
 };
 
 export type TaxAppraisal = {

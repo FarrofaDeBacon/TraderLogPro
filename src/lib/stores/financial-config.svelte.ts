@@ -1,13 +1,14 @@
 import { safeInvoke } from "$lib/services/tauri";
 import { getLocalDatePart } from "$lib/utils";
 import type {
-    FeeProfile, TaxRule, TaxMapping, TaxProfile, TaxProfileEntry, CashTransaction
+    FeeProfile, FeeProfileEntry, TaxRule, TaxMapping, TaxProfile, TaxProfileEntry, CashTransaction
 } from "$lib/types";
 import { accountsStore } from "./accounts.svelte";
 import { assetsStore } from "./assets.svelte";
 
 export class FinancialConfigStore {
     fees = $state<FeeProfile[]>([]);
+    feeProfileEntries = $state<FeeProfileEntry[]>([]);
     taxRules = $state<TaxRule[]>([]);
     taxMappings = $state<TaxMapping[]>([]);
     taxProfiles = $state<TaxProfile[]>([]);
@@ -22,6 +23,7 @@ export class FinancialConfigStore {
         try {
             const [
                 feesRes,
+                feeProfileEntriesRes,
                 taxRulesRes,
                 taxMappingsRes,
                 taxProfilesRes,
@@ -29,6 +31,7 @@ export class FinancialConfigStore {
                 transactionsRes
             ] = await Promise.all([
                 safeInvoke<FeeProfile[]>("get_fees", "Fees"),
+                safeInvoke<FeeProfileEntry[]>("get_fee_profile_entries", "Fee Entries"),
                 safeInvoke<TaxRule[]>("get_tax_rules", "Tax Rules"),
                 safeInvoke<TaxMapping[]>("get_tax_mappings", "Tax Mappings"),
                 safeInvoke<TaxProfile[]>("get_tax_profiles", "Tax Profiles"),
@@ -37,6 +40,7 @@ export class FinancialConfigStore {
             ]);
 
             if (feesRes) this.fees = feesRes;
+            if (feeProfileEntriesRes) this.feeProfileEntries = feeProfileEntriesRes;
             if (taxRulesRes) this.taxRules = taxRulesRes;
             if (taxMappingsRes) this.taxMappings = taxMappingsRes;
             if (taxProfilesRes) this.taxProfiles = taxProfilesRes;
@@ -61,8 +65,10 @@ export class FinancialConfigStore {
     }
 
     addFeeProfile(item: Omit<FeeProfile, "id">) {
-        this.fees.push({ ...item, id: crypto.randomUUID() });
+        const id = crypto.randomUUID();
+        this.fees.push({ ...item, id });
         this.saveFees();
+        return id;
     }
 
     updateFeeProfile(id: string, item: Partial<FeeProfile>) {
@@ -74,7 +80,39 @@ export class FinancialConfigStore {
         if (assetsStore.assets.some(a => a.default_fee_id === id)) return { success: false, error: "This Fee Profile is used by Assets." };
         await safeInvoke("delete_fee", { id });
         this.fees = this.fees.filter(f => f.id !== id);
+        this.feeProfileEntries = this.feeProfileEntries.filter(e => e.fee_profile_id !== id);
         return { success: true };
+    }
+
+    async saveFeeProfileEntry(entry: Omit<FeeProfileEntry, "id"> & { id?: string }) {
+        try {
+            const id = entry.id || crypto.randomUUID();
+            const finalEntry = { ...entry, id } as FeeProfileEntry;
+            await safeInvoke("save_fee_profile_entry", { entry: $state.snapshot(finalEntry) });
+            
+            const index = this.feeProfileEntries.findIndex(e => e.id === id);
+            if (index >= 0) {
+                this.feeProfileEntries[index] = finalEntry;
+            } else {
+                this.feeProfileEntries.push(finalEntry);
+            }
+            return { success: true };
+        } catch (e) {
+            return { success: false, error: String(e) };
+        }
+    }
+
+    async deleteFeeProfileEntry(id: string) {
+        try {
+            await safeInvoke("delete_fee_profile_entry", { id });
+            this.feeProfileEntries = this.feeProfileEntries.filter(e => e.id !== id);
+        } catch (e) {
+            console.error("Failed to delete fee profile entry", e);
+        }
+    }
+
+    getEntriesForFeeProfile(profileId: string) {
+        return this.feeProfileEntries.filter(e => e.fee_profile_id === profileId);
     }
 
     // --- Tax Rules ---

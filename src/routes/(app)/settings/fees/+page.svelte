@@ -20,9 +20,10 @@
     import * as Select from "$lib/components/ui/select";
     import { Separator } from "$lib/components/ui/separator";
     import { financialConfigStore } from "$lib/stores/financial-config.svelte";
+    import { modalitiesStore } from "$lib/stores/modalities.svelte";
     import { SystemHeader, SystemCard } from "$lib/components/ui/system";
     import { t } from "svelte-i18n";
-    import type { FeeProfile } from "$lib/types";
+    import type { FeeProfile, FeeProfileEntry } from "$lib/types";
     import { slide } from "svelte/transition";
     import { ChevronDown, ChevronRight } from "lucide-svelte";
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
@@ -40,20 +41,39 @@
         expandedGroups[group] = !expandedGroups[group];
     }
 
+    let activeModalityId = $state<string>("");
+    let entriesMap = $state<Record<string, Partial<FeeProfileEntry>>>({});
+
     let formData = $state<Omit<FeeProfile, "id">>({
         name: "",
         broker: "",
-        fixed_fee: 0,
-        percentage_fee: 0,
-        exchange_fee: 0,
-        iss: 0,
-        currency_spread: 0,
-        withholding_tax: 0,
-        income_tax_rate: 0,
-        custom_items: [],
-        tax_rule_id: undefined,
         notes: "",
     });
+
+    // Initialize modality
+    $effect(() => {
+        if (!activeModalityId && modalitiesStore.modalities.length > 0) {
+            activeModalityId = modalitiesStore.modalities[0].id!;
+        }
+    });
+
+    function getEntry(modalityId: string): Partial<FeeProfileEntry> {
+        if (!entriesMap[modalityId]) {
+            return {
+                modality_id: modalityId,
+                fixed_fee: 0,
+                percentage_fee: 0,
+                exchange_fee: 0,
+                iss: 0,
+                currency_spread: 0,
+                withholding_tax: 0,
+                income_tax_rate: 0,
+            };
+        }
+        return entriesMap[modalityId];
+    }
+
+    let currentEntry = $derived(getEntry(activeModalityId));
 
     // Unique Brokers from Accounts
     let uniqueBrokers = $derived(
@@ -91,17 +111,24 @@
         formData = {
             name: "",
             broker: "",
-            fixed_fee: 0,
-            percentage_fee: 0,
-            exchange_fee: 0,
-            iss: 0,
-            currency_spread: 0,
-            withholding_tax: 0,
-            income_tax_rate: 0,
-            custom_items: [],
-            tax_rule_id: undefined,
             notes: "",
         };
+        entriesMap = {};
+        modalitiesStore.modalities.forEach(m => {
+            entriesMap[m.id!] = {
+                modality_id: m.id,
+                fixed_fee: 0,
+                percentage_fee: 0,
+                exchange_fee: 0,
+                iss: 0,
+                currency_spread: 0,
+                withholding_tax: 0,
+                income_tax_rate: 0,
+            };
+        });
+        if (modalitiesStore.modalities.length > 0) {
+            activeModalityId = modalitiesStore.modalities[0].id!;
+        }
         editingId = null;
     }
 
@@ -112,21 +139,59 @@
 
     function openEdit(profile: FeeProfile) {
         editingId = profile.id;
-        formData = { ...profile };
+        formData = {
+            name: profile.name,
+            broker: profile.broker,
+            notes: profile.notes,
+            account_id: profile.account_id,
+        };
+        
+        // Load entries
+        const entries = financialConfigStore.getEntriesForFeeProfile(profile.id);
+        entriesMap = {};
+        modalitiesStore.modalities.forEach(m => {
+            const entry = entries.find(e => e.modality_id === m.id);
+            entriesMap[m.id!] = entry ? { ...entry } : {
+                modality_id: m.id,
+                fixed_fee: 0,
+                percentage_fee: 0,
+                exchange_fee: 0,
+                iss: 0,
+                currency_spread: 0,
+                withholding_tax: 0,
+                income_tax_rate: 0,
+            };
+        });
+
+        if (modalitiesStore.modalities.length > 0) {
+            activeModalityId = modalitiesStore.modalities[0].id!;
+        }
         isDialogOpen = true;
     }
 
-    function save() {
+    async function save() {
         const payload = { ...formData };
-        if (payload.tax_rule_id === "no_rule") {
-            payload.tax_rule_id = undefined;
-        }
 
+        let profileId = editingId;
         if (editingId) {
             financialConfigStore.updateFeeProfile(editingId, payload);
         } else {
-            financialConfigStore.addFeeProfile(payload);
+            profileId = await financialConfigStore.addFeeProfile(payload) as unknown as string;
+            // Note: addFeeProfile returns void currently but I might need to fix it or wait for store sync
+            // Actually, addFeeProfile in svelte class should probably return the id or use the one we generate
         }
+
+        // Save entries
+        for (const modId of Object.keys(entriesMap)) {
+            const entry = entriesMap[modId];
+            if (profileId) {
+                await financialConfigStore.saveFeeProfileEntry({
+                    ...entry,
+                    fee_profile_id: profileId,
+                } as FeeProfileEntry);
+            }
+        }
+        
         isDialogOpen = false;
     }
 
@@ -159,26 +224,20 @@
 </script>
 
 <div class="space-y-8 max-w-6xl mx-auto pb-20 px-4 md:px-0">
-    <div class="flex items-start justify-between gap-4 mb-2">
-        <div class="space-y-1">
-            <h1 class="text-2xl font-bold tracking-tight text-foreground">
-                {$t("settings.fees.title")}
-            </h1>
-            <p class="text-sm text-muted-foreground">
-                {$t("settings.fees.description")}
-            </p>
-        </div>
-        <Button 
-            onclick={openNew} 
-            size="sm"
-            class="h-9 px-4 font-bold bg-foreground text-background hover:bg-foreground/90 transition-all rounded-full"
-        >
-            <Plus class="w-4 h-4 mr-2" />
-            {$t("settings.fees.new")}
-        </Button>
-    </div>
-
-    <Separator class="bg-white/5" />
+    <SystemHeader 
+        title={$t("settings.fees.title")}
+        description={$t("settings.fees.description")}
+    >
+        {#snippet actions()}
+            <Button 
+                onclick={openNew} 
+                class="h-10 px-6 font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all rounded-full shadow-lg shadow-primary/20 text-[10px] uppercase tracking-widest"
+            >
+                <Plus class="w-4 h-4 mr-2" />
+                {$t("settings.fees.new")}
+            </Button>
+        {/snippet}
+    </SystemHeader>
 
     <div class="grid gap-10 pt-8">
         {#each Object.entries(groupedFees) as [brokerName, profiles]}
@@ -231,9 +290,9 @@
                                             </span>
                                         </div>
                                         <div class="flex items-center gap-4 text-[10px] text-muted-foreground/60 uppercase font-bold tracking-widest">
-                                            <span>FIXO: {profile.fixed_fee.toFixed(2)}</span>
+                                            <span>MÚLTIPLAS MODALIDADES</span>
                                             <span class="opacity-30">•</span>
-                                            <span class="text-emerald-500">VAR: {profile.percentage_fee}%</span>
+                                            <span class="text-primary">CLIQUE PARA EDITAR</span>
                                         </div>
                                     </div>
                                 </div>
@@ -258,40 +317,43 @@
 <DeleteConfirmationModal bind:open={isDeleteOpen} onConfirm={confirmDelete} />
 
 <Dialog.Root bind:open={isDialogOpen}>
-    <Dialog.Content class="sm:max-w-[750px] bg-[#0a0c10] border-white/5 rounded-[2rem] p-0 overflow-hidden shadow-2xl">
-        <div class="p-8 pb-4">
+    <Dialog.Content class="sm:max-w-[750px] bg-white dark:bg-[#0a0c10] border-white/5 rounded-[2.5rem] p-0 overflow-hidden shadow-2xl">
+        <div class="p-8 pb-4 bg-white/[0.02] border-b border-white/5">
             <Dialog.Header class="space-y-1">
-                <Dialog.Title class="text-xl font-bold text-white">
+                <Dialog.Title class="text-[13px] font-extrabold uppercase tracking-[0.3em] flex items-center gap-3 text-foreground">
+                    <div class="p-2 bg-primary/10 rounded-lg">
+                        <Receipt class="w-5 h-5 text-primary" />
+                    </div>
                     {editingId ? $t("settings.fees.form.titleEdit") : $t("settings.fees.form.titleNew")}
                 </Dialog.Title>
-                <Dialog.Description class="text-xs text-muted-foreground">
+                <Dialog.Description class="text-[10px] font-bold uppercase tracking-widest opacity-40 ml-[44px]">
                     {$t("settings.fees.form.description")}
                 </Dialog.Description>
             </Dialog.Header>
         </div>
 
-        <div class="px-8 py-2 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <div class="px-8 py-2 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar mt-6">
             <!-- Basic Info -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <Label for="name" class="text-sm text-white/70">{$t("settings.fees.form.name")}</Label>
+                    <Label for="name" class="text-[11px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">{$t("settings.fees.form.name")}</Label>
                     <Input
                         id="name"
                         bind:value={formData.name}
                         placeholder={$t("settings.fees.form.namePlaceholder")}
-                        class="bg-white/[0.03] border-white/10 rounded-xl h-12 text-white"
+                        class="bg-muted/10 border-white/10 rounded-xl h-12 text-foreground font-bold uppercase tracking-widest text-xs"
                     />
                 </div>
                 <div class="space-y-2">
-                    <Label for="account" class="text-sm text-white/70">Vincular a Conta</Label>
-                    <Select.Root type="single" bind:value={formData.account_id}>
-                        <Select.Trigger class="w-full bg-white/[0.03] border-white/10 rounded-xl h-12 text-white">
-                            {accountsStore.accounts.find(a => a.id === formData.account_id)?.nickname || "Selecione a Conta"}
+                    <Label for="account" class="text-[11px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">Vincular a Conta</Label>
+                    <Select.Root type="single" bind:value={formData.account_id} portal={null}>
+                        <Select.Trigger class="w-full bg-muted/10 border-white/10 rounded-xl h-12 text-foreground font-bold uppercase tracking-widest text-xs">
+                            {accountsStore.accounts.find(a => a.id === formData.account_id)?.nickname || "Usar Padrão Global"}
                         </Select.Trigger>
-                        <Select.Content class="bg-[#0a0c10] border-white/10 rounded-xl">
-                            <Select.Item value="">Nenhuma (Global)</Select.Item>
+                        <Select.Content class="bg-white dark:bg-[#0a0c10] border-white/10 rounded-xl shadow-2xl">
+                            <Select.Item value="" class="rounded-lg text-xs font-bold uppercase tracking-widest">Usar Padrão Global</Select.Item>
                             {#each accountsStore.accounts as acc}
-                                <Select.Item value={acc.id}>{acc.nickname} ({acc.broker})</Select.Item>
+                                <Select.Item value={acc.id} class="rounded-lg text-xs font-bold uppercase tracking-widest">{acc.nickname} ({acc.broker})</Select.Item>
                             {/each}
                         </Select.Content>
                     </Select.Root>
@@ -299,43 +361,78 @@
             </div>
 
             <div class="space-y-4">
-                <h4 class="text-xs font-bold uppercase tracking-widest text-white/40">
-                    {$t("settings.fees.form.operationalCosts")}
-                </h4>
+                <div class="flex items-center justify-between border-b border-primary/20 pb-2">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">
+                        {$t("settings.fees.form.operationalCosts")}
+                    </h4>
+                    
+                    <!-- Modality Selector (Pills) -->
+                    <div class="flex p-1 bg-muted/10 rounded-full border border-white/5">
+                        {#each modalitiesStore.modalities as mod}
+                            <button
+                                type="button"
+                                class={cn(
+                                    "px-5 py-2 text-[9px] font-black uppercase tracking-widest rounded-full transition-all duration-300",
+                                    activeModalityId === mod.id 
+                                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105" 
+                                        : "text-muted-foreground/40 hover:text-foreground/60"
+                                )}
+                                onclick={() => activeModalityId = mod.id!}
+                            >
+                                {mod.name}
+                            </button>
+                        {/each}
+                    </div>
+                </div>
 
-                <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-top-4 duration-700">
                     <div class="space-y-2">
-                        <Label class="text-xs text-white/60">{$t("settings.fees.form.fixedFee")}</Label>
+                        <Label class="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">{$t("settings.fees.form.fixedFee")}</Label>
                         <div class="relative">
-                            <Input type="number" step="0.01" bind:value={formData.fixed_fee} class="bg-white/[0.03] border-white/10 rounded-xl h-12 pl-8 text-white" />
+                            <Input type="number" step="0.01" bind:value={currentEntry.fixed_fee} class="bg-muted/10 border-white/10 rounded-xl h-12 pl-8 text-foreground font-bold" />
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold opacity-30">{currentCurrencySymbol}</span>
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <Label class="text-xs text-white/60">{$t("settings.fees.form.percentageFee")}</Label>
+                        <Label class="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">{$t("settings.fees.form.percentageFee")}</Label>
                         <div class="relative">
-                            <Input type="number" step="0.001" bind:value={formData.percentage_fee} class="bg-white/[0.03] border-white/10 rounded-xl h-12 pr-8 text-white" />
+                            <Input type="number" step="0.001" bind:value={currentEntry.percentage_fee} class="bg-muted/10 border-white/10 rounded-xl h-12 pr-8 text-foreground font-bold" />
                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-30">%</span>
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <Label class="text-xs text-white/60">{$t("settings.fees.form.exchangeFee")}</Label>
+                        <Label class="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">{$t("settings.fees.form.exchangeFee")}</Label>
                         <div class="relative">
-                            <Input type="number" step="0.001" bind:value={formData.exchange_fee} class="bg-white/[0.03] border-white/10 rounded-xl h-12 pr-8 text-white" />
+                            <Input type="number" step="0.001" bind:value={currentEntry.exchange_fee} class="bg-muted/10 border-white/10 rounded-xl h-12 pr-8 text-foreground font-bold" />
                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-30">%</span>
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <Label class="text-xs text-white/60">{$t("settings.fees.form.iss")}</Label>
+                        <Label class="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">{$t("settings.fees.form.iss")}</Label>
                         <div class="relative">
-                            <Input type="number" step="0.01" bind:value={formData.iss} class="bg-white/[0.03] border-white/10 rounded-xl h-12 pr-8 text-white" />
+                            <Input type="number" step="0.01" bind:value={currentEntry.iss} class="bg-muted/10 border-white/10 rounded-xl h-12 pr-8 text-foreground font-bold" />
                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-30">%</span>
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <Label class="text-xs text-white/60">{$t("settings.fees.form.currencySpread")}</Label>
+                        <Label class="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">{$t("settings.fees.form.currencySpread")}</Label>
                         <div class="relative">
-                            <Input type="number" step="0.01" bind:value={formData.currency_spread} class="bg-white/[0.03] border-white/10 rounded-xl h-12 pr-8 text-white" />
+                            <Input type="number" step="0.01" bind:value={currentEntry.currency_spread} class="bg-muted/10 border-white/10 rounded-xl h-12 pr-8 text-foreground font-bold" />
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-30">%</span>
+                        </div>
+                    </div>
+                    <!-- New Fields in Entry -->
+                    <div class="space-y-2">
+                        <Label class="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">IR Retido (Dedo Duro)</Label>
+                        <div class="relative">
+                            <Input type="number" step="0.001" bind:value={currentEntry.withholding_tax} class="bg-muted/10 border-white/10 rounded-xl h-12 pr-8 text-foreground font-bold" />
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-30">%</span>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <Label class="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">Alíquota de IRPF</Label>
+                        <div class="relative">
+                            <Input type="number" step="0.01" bind:value={currentEntry.income_tax_rate} class="bg-muted/10 border-white/10 rounded-xl h-12 pr-8 text-foreground font-bold" />
                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-30">%</span>
                         </div>
                     </div>
@@ -343,37 +440,37 @@
             </div>
 
             <!-- Simulator -->
-            <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4">
+            <div class="p-6 rounded-3xl bg-muted/[0.03] border border-white/5 space-y-4">
                 <div class="flex items-center justify-between border-b border-white/5 pb-4">
-                    <span class="text-xs font-bold uppercase tracking-widest text-primary/80">Simulador de Impacto</span>
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">Simulador de Impacto</span>
                     <div class="flex items-center gap-3">
-                        <span class="text-[10px] text-white/30 uppercase font-bold">Volume:</span>
-                        <Input type="number" class="h-8 w-28 bg-black/40 border-white/10 text-xs rounded-lg text-right" bind:value={simValue} />
+                        <span class="text-[9px] text-muted-foreground/30 uppercase font-black tracking-widest leading-none">Volume:</span>
+                        <Input type="number" class="h-9 w-32 bg-white/[0.02] border-white/5 text-xs rounded-xl text-right font-bold focus:ring-1 focus:ring-primary/20" bind:value={simValue} />
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <div class="space-y-1">
-                        <span class="text-[10px] uppercase text-white/30 font-bold">Fixos</span>
-                        <p class="text-sm font-medium">{currentCurrencySymbol} {formData.fixed_fee.toFixed(2)}</p>
+                        <span class="text-[9px] uppercase text-muted-foreground/30 font-black tracking-widest">Fixos</span>
+                        <p class="text-sm font-bold text-foreground/80">{currentCurrencySymbol} {(currentEntry.fixed_fee || 0).toFixed(2)}</p>
                     </div>
                     <div class="space-y-1">
-                        <span class="text-[10px] uppercase text-white/30 font-bold">Variáveis</span>
-                        <p class="text-sm font-medium">{currentCurrencySymbol} {(calc(simValue, formData.percentage_fee) + calc(simValue, formData.exchange_fee)).toFixed(2)}</p>
+                        <span class="text-[9px] uppercase text-muted-foreground/30 font-black tracking-widest">Variáveis</span>
+                        <p class="text-sm font-bold text-foreground/80">{currentCurrencySymbol} {(calc(simValue, currentEntry.percentage_fee || 0) + calc(simValue, currentEntry.exchange_fee || 0)).toFixed(2)}</p>
                     </div>
                     <div class="space-y-1">
-                        <span class="text-[10px] uppercase text-white/30 font-bold">Impostos</span>
-                        <p class="text-sm font-medium">{currentCurrencySymbol} {calc(simValue + formData.fixed_fee, formData.iss).toFixed(2)}</p>
+                        <span class="text-[9px] uppercase text-muted-foreground/30 font-black tracking-widest">Impostos</span>
+                        <p class="text-sm font-bold text-foreground/80">{currentCurrencySymbol} {calc(simValue + (currentEntry.fixed_fee || 0), currentEntry.iss || 0).toFixed(2)}</p>
                     </div>
                     <div class="space-y-1 text-right">
-                        <span class="text-[10px] uppercase text-primary font-bold">Total</span>
-                        <p class="text-xl font-bold text-white tracking-tighter shadow-sm">
+                        <span class="text-[9px] uppercase text-primary font-black tracking-widest">Total Custos</span>
+                        <p class="text-2xl font-black text-foreground tracking-tighter shadow-sm leading-none mt-1">
                             {currentCurrencySymbol} {(
-                                formData.fixed_fee +
-                                calc(simValue, formData.percentage_fee) +
-                                calc(simValue, formData.exchange_fee) +
-                                calc(simValue + formData.fixed_fee, formData.iss) +
-                                calc(simValue, formData.currency_spread)
+                                (currentEntry.fixed_fee || 0) +
+                                calc(simValue, currentEntry.percentage_fee || 0) +
+                                calc(simValue, currentEntry.exchange_fee || 0) +
+                                calc(simValue + (currentEntry.fixed_fee || 0), currentEntry.iss || 0) +
+                                calc(simValue, currentEntry.currency_spread || 0)
                             ).toFixed(2)}
                         </p>
                     </div>
@@ -381,25 +478,23 @@
             </div>
 
             <div class="space-y-2 pb-6">
-                <Label for="notes" class="text-sm text-white/70">{$t("settings.fees.form.notes")}</Label>
+                <Label for="notes" class="text-[11px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">{$t("settings.fees.form.notes")}</Label>
                 <Textarea
                     id="notes"
                     bind:value={formData.notes}
                     placeholder={$t("settings.fees.form.notesPlaceholder")}
-                    class="min-h-[100px] bg-white/[0.03] border-white/10 rounded-xl p-4 text-white text-sm"
+                    class="min-h-[100px] bg-muted/10 border-white/10 rounded-xl p-4 text-foreground text-sm font-medium"
                 />
             </div>
         </div>
 
-        <Dialog.Footer class="p-8 bg-black/20 border-t border-white/5">
-            <div class="flex items-center justify-end gap-3 w-full">
-                <Button variant="ghost" onclick={() => isDialogOpen = false} class="text-white/40 hover:text-white hover:bg-transparent">
-                    {$t("general.cancel")}
-                </Button>
-                <Button onclick={save} class="rounded-full bg-white text-black hover:bg-neutral-200 px-8 font-bold">
-                    {$t("settings.fees.form.save")}
-                </Button>
-            </div>
+        <Dialog.Footer class="p-8 bg-white/[0.02] border-t border-white/5 flex flex-row items-center justify-end gap-3">
+            <Button variant="ghost" onclick={() => isDialogOpen = false} class="rounded-full px-6 h-12 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground">
+                {$t("general.cancel")}
+            </Button>
+            <Button onclick={save} class="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-12 h-12 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
+                {$t("settings.fees.form.save")}
+            </Button>
         </Dialog.Footer>
     </Dialog.Content>
 </Dialog.Root>

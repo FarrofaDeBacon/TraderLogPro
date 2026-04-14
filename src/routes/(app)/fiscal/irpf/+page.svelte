@@ -225,12 +225,7 @@
         isViewModalOpen = true;
     }
 
-    function formatCurrency(val: number) {
-        return new Intl.NumberFormat("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-        }).format(val || 0);
-    }
+    import { cn, parseSafeDate, formatCurrency } from "$lib/utils";
 
     async function calculateAppraisal() {
         try {

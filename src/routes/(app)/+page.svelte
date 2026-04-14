@@ -51,7 +51,7 @@
     ChevronRight,
     Globe
   } from "lucide-svelte";
-  import { cn, parseSafeDate } from "$lib/utils";
+  import { cn, parseSafeDate, formatCurrency } from "$lib/utils";
   import {
     Select,
     SelectContent,
@@ -138,13 +138,6 @@
     return Math.min(Math.max((stats.net / (target || 1)) * 100, 0), 100);
   });
 
-  function formatCurrency(val: number) {
-    const mainCurrency = userProfileStore.userProfile.main_currency || "BRL";
-    return new Intl.NumberFormat($locale || "pt-BR", {
-      style: "currency",
-      currency: mainCurrency,
-    }).format(val);
-  }
 
   const todayStr = $derived(new Date().toISOString().split('T')[0]);
   const hasReviewedToday = $derived(!!dailyReviewsStore.getReviewForDate(todayStr));

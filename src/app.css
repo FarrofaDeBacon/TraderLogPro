@@ -22,8 +22,8 @@
   --secondary: oklch(0.94 0.02 250);
   --secondary-foreground: oklch(0.25 0.05 260);
   --muted: oklch(0.94 0.02 250);
-  --muted-foreground: oklch(0.4 0.05 260);
-  /* Darkened from 0.5 for better readability in light mode */
+  --muted-foreground: oklch(0.35 0.05 260);
+  /* Darkened from 0.4 for peak institutional legibility in light mode */
   --accent: oklch(0.94 0.02 250);
   --accent-foreground: oklch(0.4 0.15 250);
   /* Darkened for better readability as text */
@@ -218,7 +218,7 @@
 
     /* Bordas "brancas" viram bordas sutis e visíveis */
     [class*="border-white/"] {
-      border-color: oklch(0.85 0.02 260 / 80%) !important;
+      border-color: oklch(0.60 0.02 250 / 25%) !important;
     }
 
     /* Sombra de elevação para botões */
@@ -251,9 +251,9 @@
       background-color: oklch(0.55 0.18 250 / 12%) !important;
     }
 
-    /* Texto muted — mais escuro para legibilidade */
+    /* Texto muted — Peak legibility */
     .text-muted-foreground {
-      color: oklch(0.45 0.05 260) !important;
+      color: oklch(0.35 0.05 260) !important;
     }
   }
 

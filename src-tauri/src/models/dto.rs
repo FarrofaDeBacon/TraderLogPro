@@ -79,9 +79,10 @@ pub struct AccountDto {
     pub account_type: String,
     pub broker: String,
     pub account_number: String,
-    pub currency: String,
+    pub currency_id: Option<String>,
     pub balance: f64,
     pub custom_logo: Option<String>,
+    pub default_fee_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -93,13 +94,25 @@ pub struct AssetTypeDto {
     pub unit_label: String,
     pub result_type: String,
     pub tax_profile_id: Option<String>,
+    pub default_fee_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SectorDto {
     pub id: Option<String>,
     pub name: String,
-    pub market_id: Option<String>,
+    pub macro_sector: String,
+    pub icon: String,
+    pub color: String,
+    pub description: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct SubsectorDto {
+    pub id: Option<String>,
+    pub name: String,
+    pub sector_id: Option<String>,
+    pub segment: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -110,9 +123,11 @@ pub struct AssetDto {
     pub asset_type_id: Option<String>,
     pub point_value: f64,
     pub tax_profile_id: Option<String>,
+    pub default_fee_id: Option<String>,
     pub is_root: bool,
     pub root_id: Option<String>,
     pub sector_id: Option<String>,
+    pub subsector_id: Option<String>,
     pub contract_size: Option<f64>,
 }
 
@@ -179,6 +194,9 @@ pub struct TradeDto {
     pub partial_exits: crate::models::SurrealJson,
     pub asset_id: Option<String>,
     pub modality_id: Option<String>,
+    pub tax_profile_id: Option<String>,
+    pub effective_tax_profile_id: Option<String>,
+    pub effective_fee_profile_id: Option<String>,
     pub stop_loss: Option<f64>,
     pub take_profit: Option<f64>,
     pub intensity: f64,
@@ -216,13 +234,6 @@ pub struct TaxRuleDto {
     pub revenue_code: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct TaxMappingDto {
-    pub id: Option<String>,
-    pub asset_type_id: Option<String>,
-    pub modality_id: Option<String>,
-    pub tax_rule_id: Option<String>,
-}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TaxProfileDto {
@@ -237,4 +248,26 @@ pub struct TaxProfileEntryDto {
     pub tax_profile_id: Option<String>,
     pub modality_id: Option<String>,
     pub tax_rule_id: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FeeProfileEntryDto {
+    pub id: Option<String>,
+    pub fee_profile_id: Option<String>,
+    pub modality_id: Option<String>,
+    pub fixed_fee: f64,
+    pub percentage_fee: f64,
+    pub exchange_fee: f64,
+    pub iss: f64,
+    pub currency_spread: f64,
+    pub withholding_tax: f64,
+    pub income_tax_rate: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct TaxMappingDto {
+    pub id: Option<String>,
+    pub asset_type_id: String,
+    pub modality_id: String,
+    pub tax_rule_id: String,
 }

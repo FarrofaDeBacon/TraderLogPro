@@ -788,6 +788,25 @@
             "searchPlaceholder": "Search modality...",
             "title": "Modalities"
         },
+        "sectors": {
+            "description": "Categorize your assets by economic sectors (Finance, Energy, Tech...).",
+            "edit": "Edit Sector",
+            "empty": "No economic vertical mapped.",
+            "form": {
+                "name": "Sector Name",
+                "namePlaceholder": "Ex: Finance, Technology...",
+                "macroSector": "Macro Sector (B3)",
+                "macroSectorPlaceholder": "Ex: Cyclical Consumption, Finance...",
+                "segment": "Operational Segment",
+                "segmentPlaceholder": "Ex: Banks, Construction...",
+                "icon": "Operational Icon",
+                "color": "Identification Color",
+                "save": "Save Sector"
+            },
+            "new": "New Sector",
+            "searchPlaceholder": "Filter by sector name...",
+            "title": "Operation Sectors"
+        },
         "nav": {
             "accounts": "Accounts",
             "asset-profiles": "Asset Profiles",

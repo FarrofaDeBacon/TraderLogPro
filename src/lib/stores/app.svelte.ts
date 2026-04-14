@@ -25,6 +25,7 @@ import { userProfileStore } from "./user-profile.svelte";
 import { workspaceStore } from "./workspace.svelte";
 import { integrationsStore } from "./integrations.svelte";
 import { tradesStore } from "./trades.svelte";
+import { sectorsStore } from "./sectors.svelte";
 import { invokeWithTimeout } from "../utils";
 
 
@@ -98,7 +99,8 @@ class AppFacadeStore {
                     timeframesRes,
                     chartTypesRes,
                     _workspaceSignal,
-                    _integrationsSignal
+                    _integrationsSignal,
+                    _sectorsSignal
                 ] = await Promise.all([
                     safeInvoke<Market[]>("get_markets", "Markets"),
                     safeInvoke<AssetType[]>("get_asset_types", "Asset Types"),
@@ -107,7 +109,8 @@ class AppFacadeStore {
                     safeInvoke<Timeframe[]>("get_timeframes", "Timeframes"),
                     safeInvoke<ChartType[]>("get_chart_types", "Chart Types"),
                     workspaceStore.loadData().catch(() => null),
-                    integrationsStore.loadData().catch(() => null)
+                    integrationsStore.loadData().catch(() => null),
+                    sectorsStore.loadData().catch(() => null)
                 ]);
 
                 if (marketsRes) marketsStore.markets = marketsRes;

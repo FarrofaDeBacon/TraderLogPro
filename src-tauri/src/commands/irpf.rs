@@ -2,12 +2,13 @@ use crate::db::DbState;
 use std::collections::HashMap;
 use crate::logic::RuleBucket;
 use crate::models::irpf::{TaxAppraisal, TaxDarf, TaxLoss};
-use crate::models::{Asset, AssetType, TaxMapping, TaxProfile, TaxProfileEntry, TaxRule, SurrealJson};
+use crate::models::{Asset, AssetType, TaxProfile, TaxProfileEntry, TaxRule, SurrealJson};
 use chrono::{Datelike, NaiveDate};
 use serde_json;
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
 use crate::services::position_service::{PositionService, Position};
+use crate::services::asset_service::AssetService;
 use tauri::State;
 
 
@@ -17,6 +18,7 @@ pub async fn calculate_monthly_tax(db: State<'_, DbState>, month: u8, year: u16)
     println!(">>> ENTRY: calculate_monthly_tax(month={}, year={})", month, year);
 
     // 0. Load reference data first so we can use it during normalization
+    // 0. Load reference data
     let mut asset_res = db.0.query("SELECT id, symbol, name, asset_type_id, type::float(point_value) as point_value, default_fee_id, tax_profile_id FROM asset").await.map_err(|e| e.to_string())?;
     let assets_json: Vec<SurrealJson> = asset_res.take(0).map_err(|e| e.to_string())?;
     let assets: Vec<Asset> = assets_json.into_iter().filter_map(|sj| serde_json::from_value(sj.0).ok()).collect();
@@ -25,13 +27,12 @@ pub async fn calculate_monthly_tax(db: State<'_, DbState>, month: u8, year: u16)
     let at_json: Vec<SurrealJson> = at_res.take(0).map_err(|e| e.to_string())?;
     let mut asset_types: Vec<AssetType> = at_json.into_iter().filter_map(|sj| serde_json::from_value(sj.0).ok()).collect();
 
-    // Auto-heal missing tax profiles for standard asset types
+    // Auto-heal missing tax profiles for standard asset types using centralized logic
     for at in asset_types.iter_mut() {
         if at.tax_profile_id.is_none() {
-            let id_str = at.id.as_deref().unwrap_or("");
-            let clean = id_str.split(':').last().unwrap_or(id_str);
-            if clean == "at1" { at.tax_profile_id = Some("tax_profile:tp_acoes".to_string()); }
-            else if clean == "at2" { at.tax_profile_id = Some("tax_profile:tp_futuros".to_string()); }
+            if let Some(at_id) = &at.id {
+                at.tax_profile_id = AssetService::get_default_tax_profile_by_asset_type(at_id);
+            }
         }
     }
 
@@ -98,10 +99,6 @@ pub async fn calculate_monthly_tax(db: State<'_, DbState>, month: u8, year: u16)
         return Ok(vec![]);
     }
 
-    let mut entry_res = db.0.query("SELECT id, tax_profile_id, modality_id, tax_rule_id FROM tax_profile_entry").await.map_err(|e| e.to_string())?;
-    let entries_json: Vec<SurrealJson> = entry_res.take(0).map_err(|e| e.to_string())?;
-    let profile_entries: Vec<TaxProfileEntry> = entries_json.into_iter().filter_map(|sj| serde_json::from_value(sj.0).ok()).collect();
-
     let mut rule_res = db.0.query("SELECT id, name, trade_type, revenue_code, tax_rate, withholding_rate, withholding_basis, exemption_threshold, cumulative_losses, basis FROM tax_rule").await.map_err(|e| e.to_string())?;
     let rules_json: Vec<SurrealJson> = rule_res.take(0).map_err(|e| e.to_string())?;
     let rules: Vec<TaxRule> = rules_json.into_iter().filter_map(|sj| serde_json::from_value(sj.0).ok()).collect();
@@ -110,7 +107,7 @@ pub async fn calculate_monthly_tax(db: State<'_, DbState>, month: u8, year: u16)
     let losses_json: Vec<SurrealJson> = loss_res.take(0).map_err(|e| e.to_string())?;
     let losses: Vec<TaxLoss> = losses_json.into_iter().filter_map(|sj| serde_json::from_value(sj.0).ok()).collect();
 
-    println!("[IRPF] Loaded: {} assets, {} types, {} profile_entries, {} rules", assets.len(), asset_types.len(), profile_entries.len(), rules.len());
+    println!("[IRPF] Loaded: {} assets, {} types, {} rules, {} losses", assets.len(), asset_types.len(), rules.len(), losses.len());
 
     // 6. Normalize IDs and Symbols
     let normalize_id = |label: &str, s: &str| -> String {
@@ -137,22 +134,6 @@ pub async fn calculate_monthly_tax(db: State<'_, DbState>, month: u8, year: u16)
         s.to_string()
     };
 
-    // 7. Find tax rule for (profile, modality) pair
-    let find_rule = |profile_id: &str, target_mod_id: &str| -> Option<TaxRule> {
-        let clean_pid = normalize_id("ProfileParam", profile_id);
-        let clean_mid = normalize_id("ModalityParam", target_mod_id);
-        let entry = profile_entries.iter().find(|e| {
-            normalize_id("EntryProfile", e.tax_profile_id.as_deref().unwrap_or("")) == clean_pid &&
-            normalize_id("EntryModality", e.modality_id.as_deref().unwrap_or("")) == clean_mid
-        });
-        if let Some(e) = entry {
-            let clean_rid = normalize_id("EntryRule", e.tax_rule_id.as_deref().unwrap_or(""));
-            rules.iter().find(|r| normalize_id("RuleId", r.id.as_deref().unwrap_or("")) == clean_rid).cloned()
-        } else {
-            println!("[IRPF] No entry for profile={} modality={}", clean_pid, clean_mid);
-            None
-        }
-    };
 
     // 8. Group trades into rule buckets using PM from PositionService
     let mut positions: HashMap<String, Position> = HashMap::new();
@@ -193,8 +174,7 @@ pub async fn calculate_monthly_tax(db: State<'_, DbState>, month: u8, year: u16)
             
             println!("[IRPF] Trade {} result calculated: symbol={}, basis={}, point_value={}, result={}", trade.id, symbol, basis, point_value, real_result);
 
-            // Find tax profile
-            let mut final_profile_id: Option<String> = None;
+            // 200. Resolve Fiscal Context (Tax Rule) via AssetService
             let asset_match = assets.iter().find(|a| {
                 if let Some(aid) = &trade.asset_id {
                     let clean_aid = normalize_id("AssetId", aid);
@@ -204,39 +184,42 @@ pub async fn calculate_monthly_tax(db: State<'_, DbState>, month: u8, year: u16)
                 }
             });
 
-            if let Some(asset) = asset_match {
-                if let Some(pid) = &asset.tax_profile_id { final_profile_id = Some(pid.clone()); }
-            }
-            if final_profile_id.is_none() {
-                if let Some(atid) = &trade.asset_type_id {
-                    let clean_atid = normalize_id("AssetTypeId", atid);
-                    if let Some(at) = asset_types.iter().find(|t| normalize_id("AssetTypeTblId", t.id.as_deref().unwrap_or("")) == clean_atid) {
-                        final_profile_id = at.tax_profile_id.clone();
+            let asset_type_match = if let Some(atid) = &trade.asset_type_id {
+                let clean_atid = normalize_id("AssetTypeId", atid);
+                asset_types.iter().find(|t| normalize_id("AssetTypeTblId", t.id.as_deref().unwrap_or("")) == clean_atid)
+            } else {
+                None
+            };
+
+            let tax_rule = AssetService::resolve_tax_rule(
+                &db.0,
+                &trade.effective_tax_profile_id,
+                &asset_match.and_then(|a| a.tax_profile_id.clone()),
+                &asset_type_match.and_then(|at| at.tax_profile_id.clone()),
+                &trade_mod_id
+            ).await.map_err(|e| format!("Fiscal Resolution Error: {}", e))?;
+
+            if let Some(rule) = tax_rule {
+                let bucket_key = format!("{}:{}", rule.id.as_deref().unwrap_or(""), trade_mod_id);
+                let entry = buckets.entry(bucket_key).or_insert(RuleBucket {
+                    rule: rule.clone(),
+                    gross_profit: 0.0,
+                    gross_loss: 0.0,
+                    sales_total: 0.0,
+                    trade_ids: Vec::new(),
+                });
+
+                if real_result > 0.0 { entry.gross_profit += real_result; }
+                else { entry.gross_loss += real_result.abs(); }
+
+                if rule.trade_type != "DayTrade" {
+                    if let Some(price) = trade.exit_price {
+                        entry.sales_total += price * trade.quantity * point_value;
                     }
                 }
-            }
-
-            if let Some(profile_id) = final_profile_id {
-                if let Some(rule) = find_rule(&profile_id, &trade_mod_id) {
-                    let bucket_key = format!("{}:{}", rule.id.as_deref().unwrap_or(""), trade_mod_id);
-                    let entry = buckets.entry(bucket_key).or_insert(RuleBucket {
-                        rule: rule.clone(),
-                        gross_profit: 0.0,
-                        gross_loss: 0.0,
-                        sales_total: 0.0,
-                        trade_ids: Vec::new(),
-                    });
-
-                    if real_result > 0.0 { entry.gross_profit += real_result; }
-                    else { entry.gross_loss += real_result.abs(); }
-
-                    if rule.trade_type != "DayTrade" {
-                        if let Some(price) = trade.exit_price {
-                             entry.sales_total += price * trade.quantity * point_value;
-                        }
-                    }
-                    entry.trade_ids.push(trade.id.clone());
-                }
+                entry.trade_ids.push(trade.id.clone());
+            } else {
+                println!("[IRPF] WARNING: No TaxRule found for trade {} (symbol={})", trade.id, symbol);
             }
         }
 
@@ -350,8 +333,8 @@ where
         }
     }
 
-    // Strategy 2: Query by field (handles both string and thing types in DB)
-    let q = format!("SELECT * FROM {} WHERE type::string({}) = $val OR {} = type::thing($val)", table, field, field);
+    // Strategy 2: Query by field
+    let q = format!("SELECT * FROM {} WHERE type::string({}) = $val", table, field);
     let mut result = db.query(q).bind(("val", clean_value.clone())).await.map_err(|e| e.to_string())?;
     let list: Vec<SurrealJson> = result.take(0).map_err(|e| e.to_string())?;
     
@@ -1405,54 +1388,6 @@ pub async fn delete_tax_rule(db: State<'_, DbState>, id: String) -> Result<(), S
     Ok(())
 }
 
-#[tauri::command]
-pub async fn get_tax_mappings(db: State<'_, DbState>) -> Result<Vec<crate::models::dto::TaxMappingDto>, String> {
-    let mut result = db.0.query("SELECT * FROM tax_mapping").await.map_err(|e| e.to_string())?;
-    let mappings_sj: Vec<SurrealJson> = result.take(0).map_err(|e| e.to_string())?;
-    let mappings: Vec<TaxMapping> = mappings_sj.into_iter().filter_map(|sj| serde_json::from_value(sj.0).ok()).collect();
-    Ok(mappings.into_iter().map(|m| crate::models::ToDto::to_dto(&m)).collect())
-}
-
-#[tauri::command]
-pub async fn save_tax_mapping(
-    db: State<'_, DbState>,
-    mapping: TaxMapping,
-) -> Result<crate::models::dto::TaxMappingDto, String> {
-    let mut json = serde_json::to_value(&mapping).map_err(|e| e.to_string())?;
-
-    let id_str = mapping.id.as_deref().unwrap_or("");
-    let clean_id = id_str.split(':').last().unwrap_or(id_str).to_string();
-
-    if let Some(obj) = json.as_object_mut() {
-        obj.remove("id");
-    }
-
-    // Use raw query for robust serialization with custom IdVisitor
-    let mut response =
-        db.0.query("UPSERT type::thing('tax_mapping', $id) CONTENT $data RETURN *")
-            .bind(("id", clean_id))
-            .bind(("data", json))
-            .await
-            .map_err(|e| e.to_string())?;
-
-    let saved_sj: Option<SurrealJson> = response.take(0).map_err(|e| e.to_string())?;
-    let sj = saved_sj.ok_or_else(|| "Failed to save tax mapping".to_string())?;
-    let saved: TaxMapping = serde_json::from_value(sj.0).map_err(|e| {
-        println!("[ERROR] save_tax_mapping deserialization failed: {}", e);
-        e.to_string()
-    })?;
-    Ok(crate::models::ToDto::to_dto(&saved))
-}
-
-#[tauri::command]
-pub async fn delete_tax_mapping(db: State<'_, DbState>, id: String) -> Result<(), String> {
-    let clean_id = id.split(':').last().unwrap_or(&id);
-    let _ =
-        db.0.query("DELETE type::thing('tax_mapping', $id)")
-            .bind(("id", clean_id.to_string()))
-            .await;
-    Ok(())
-}
 
 // --- TAX PROFILES & ENTRIES (New Option B) ---
 

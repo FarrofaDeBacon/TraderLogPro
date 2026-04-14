@@ -31,7 +31,8 @@ export const formatCurrency = (amount: number, currency: string = "BRL", locale:
 	try {
 		// Handle null/undefined values early
 		const safeAmount = amount ?? 0;
-		const safeCurrency = currency || "BRL";
+		// Normalize currency ID (e.g. "currency:brl" -> "BRL")
+		const safeCurrency = (currency || "BRL").split(':').at(-1) || "BRL";
 		const isoCurrency = safeCurrency.toUpperCase();
 
 		if (isoCurrency === "USDT") {
@@ -48,7 +49,7 @@ export const formatCurrency = (amount: number, currency: string = "BRL", locale:
 
 		return new Intl.NumberFormat(locale, {
 			style: "currency",
-			currency: safeCurrency,
+			currency: isoCurrency,
 		}).format(safeAmount);
 	} catch (e) {
 		// Fallback for any other invalid currency codes that might slip through

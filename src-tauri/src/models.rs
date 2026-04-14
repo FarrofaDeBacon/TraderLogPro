@@ -329,7 +329,7 @@ pub struct UserProfile {
     pub language: String, // "pt-BR" | "en"
     #[serde(default = "default_timezone")]
     pub timezone: String,
-    pub main_currency: String,
+    pub main_currency: String, // Relational Context: ID da Moeda (ex: currency:brl)
     pub avatar: Option<String>,
     #[serde(default)]
     pub convert_all_to_main: bool,
@@ -405,11 +405,11 @@ pub struct Account {
     pub account_number: String,
     #[serde(default, deserialize_with = "deserialize_id_opt")]
     pub currency_id: Option<String>,
-    #[serde(default)]
-    pub currency: Option<String>, // Virtual field for code during reads
     pub balance: f64,
     #[serde(default, deserialize_with = "deserialize_id_opt")]
     pub custom_logo: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_id_opt")]
+    pub default_fee_id: Option<String>,
 }
 
 impl ToDto for Account {
@@ -421,9 +421,10 @@ impl ToDto for Account {
             account_type: self.account_type.clone(),
             broker: self.broker.clone(),
             account_number: self.account_number.clone(),
-            currency: self.currency.clone().unwrap_or_default(),
+            currency_id: self.currency_id.clone(),
             balance: self.balance,
             custom_logo: self.custom_logo.clone(),
+            default_fee_id: self.default_fee_id.clone(),
         }
     }
 }
@@ -509,6 +510,7 @@ impl ToDto for AssetType {
             unit_label: self.unit_label.clone(),
             result_type: self.result_type.clone(),
             tax_profile_id: self.tax_profile_id.clone(),
+            default_fee_id: self.default_fee_id.clone(),
         }
     }
 }
@@ -523,8 +525,14 @@ pub struct Sector {
     pub id: Option<String>,
     #[serde(default, deserialize_with = "deserialize_string_opt")]
     pub name: String,
-    #[serde(default, deserialize_with = "deserialize_id_opt")]
-    pub market_id: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_string_opt")]
+    pub macro_sector: String,
+    #[serde(default, deserialize_with = "deserialize_string_opt")]
+    pub icon: String,
+    #[serde(default, deserialize_with = "deserialize_string_opt")]
+    pub color: String,
+    #[serde(default, deserialize_with = "deserialize_string_opt")]
+    pub description: String,
 }
 
 impl ToDto for Sector {
@@ -533,7 +541,38 @@ impl ToDto for Sector {
         dto::SectorDto {
             id: self.id.clone(),
             name: self.name.clone(),
-            market_id: self.market_id.clone(),
+            macro_sector: self.macro_sector.clone(),
+            icon: self.icon.clone(),
+            color: self.color.clone(),
+            description: self.description.clone(),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Subsector {
+    #[serde(
+        default,
+        deserialize_with = "deserialize_id_opt",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub id: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_string_opt")]
+    pub name: String,
+    #[serde(default, deserialize_with = "deserialize_id_opt")]
+    pub sector_id: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_string_opt")]
+    pub segment: String,
+}
+
+impl ToDto for Subsector {
+    type Dto = dto::SubsectorDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::SubsectorDto {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            sector_id: self.sector_id.clone(),
+            segment: self.segment.clone(),
         }
     }
 }
@@ -563,6 +602,8 @@ pub struct Asset {
     pub root_id: Option<String>,
     #[serde(default, deserialize_with = "deserialize_id_opt")]
     pub sector_id: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_id_opt")]
+    pub subsector_id: Option<String>,
     // Position Sizing Engine Configurations
     #[serde(default)]
     pub contract_size: Option<f64>,
@@ -578,9 +619,11 @@ impl ToDto for Asset {
             asset_type_id: self.asset_type_id.clone(),
             point_value: self.point_value,
             tax_profile_id: self.tax_profile_id.clone(),
+            default_fee_id: self.default_fee_id.clone(),
             is_root: self.is_root,
             root_id: self.root_id.clone(),
             sector_id: self.sector_id.clone(),
+            subsector_id: self.subsector_id.clone(),
             contract_size: self.contract_size,
         }
     }
@@ -818,6 +861,12 @@ pub struct Trade {
     pub asset_id: Option<String>,
     #[serde(default, deserialize_with = "crate::models::deserialize_id_opt")]
     pub modality_id: Option<String>,
+    #[serde(default, deserialize_with = "crate::models::deserialize_id_opt")]
+    pub tax_profile_id: Option<String>,
+    #[serde(default, deserialize_with = "crate::models::deserialize_id_opt")]
+    pub effective_tax_profile_id: Option<String>,
+    #[serde(default, deserialize_with = "crate::models::deserialize_id_opt")]
+    pub effective_fee_profile_id: Option<String>,
     #[serde(default)]
     pub stop_loss: Option<f64>,
     #[serde(default)]
@@ -864,9 +913,12 @@ impl ToDto for Trade {
             partial_exits: self.partial_exits.clone(),
             asset_id: self.asset_id.clone(),
             modality_id: self.modality_id.clone(),
+            tax_profile_id: self.tax_profile_id.clone(),
+            effective_tax_profile_id: self.effective_tax_profile_id.clone(),
             stop_loss: self.stop_loss,
             take_profit: self.take_profit,
             intensity: self.intensity,
+            effective_fee_profile_id: self.effective_fee_profile_id.clone(),
         }
     }
 }
@@ -887,6 +939,43 @@ pub struct FeeProfile {
     pub id: String,
     pub name: String,
     pub broker: String,
+    
+    /// [DEPRECATED] Values moved to FeeProfileEntry
+    pub fixed_fee: f64,
+    /// [DEPRECATED] Values moved to FeeProfileEntry
+    pub percentage_fee: f64,
+    /// [DEPRECATED] Values moved to FeeProfileEntry
+    pub exchange_fee: f64,
+    /// [DEPRECATED] Values moved to FeeProfileEntry
+    pub iss: f64,
+    /// [DEPRECATED] Values moved to FeeProfileEntry
+    pub currency_spread: f64,
+    /// [DEPRECATED] Values moved to FeeProfileEntry
+    pub withholding_tax: f64,
+    /// [DEPRECATED] Values moved to FeeProfileEntry
+    pub income_tax_rate: f64,
+    
+    #[serde(default)]
+    pub custom_items: Vec<FeeCustomItem>,
+    #[serde(default, deserialize_with = "deserialize_id_opt")]
+    pub tax_rule_id: Option<String>,
+    #[serde(default)]
+    pub notes: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FeeProfileEntry {
+    #[serde(
+        default,
+        deserialize_with = "deserialize_id_opt",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub id: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_id_opt")]
+    pub fee_profile_id: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_id_opt")]
+    pub modality_id: Option<String>,
+    
     pub fixed_fee: f64,
     pub percentage_fee: f64,
     pub exchange_fee: f64,
@@ -894,12 +983,27 @@ pub struct FeeProfile {
     pub currency_spread: f64,
     pub withholding_tax: f64,
     pub income_tax_rate: f64,
-    #[serde(default)]
-    pub custom_items: Vec<FeeCustomItem>,
-    #[serde(default, deserialize_with = "deserialize_id_opt")]
-    pub tax_rule_id: Option<String>,
-    #[serde(default)]
-    pub notes: String,
+    
+    #[serde(flatten)]
+    pub metadata: std::collections::HashMap<String, serde_json::Value>,
+}
+
+impl ToDto for FeeProfileEntry {
+    type Dto = dto::FeeProfileEntryDto;
+    fn to_dto(&self) -> Self::Dto {
+        dto::FeeProfileEntryDto {
+            id: self.id.clone(),
+            fee_profile_id: self.fee_profile_id.clone(),
+            modality_id: self.modality_id.clone(),
+            fixed_fee: self.fixed_fee,
+            percentage_fee: self.percentage_fee,
+            exchange_fee: self.exchange_fee,
+            iss: self.iss,
+            currency_spread: self.currency_spread,
+            withholding_tax: self.withholding_tax,
+            income_tax_rate: self.income_tax_rate,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -1231,35 +1335,6 @@ fn default_withholding_basis() -> String {
     "Profit".to_string()
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct TaxMapping {
-    #[serde(
-        default,
-        deserialize_with = "deserialize_id_opt",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub id: Option<String>,
-    #[serde(default, deserialize_with = "deserialize_id_opt")]
-    pub asset_type_id: Option<String>,
-    #[serde(default, deserialize_with = "deserialize_id_opt")]
-    pub modality_id: Option<String>,
-    #[serde(default, deserialize_with = "deserialize_id_opt")]
-    pub tax_rule_id: Option<String>,
-    #[serde(flatten)]
-    pub metadata: std::collections::HashMap<String, serde_json::Value>,
-}
-
-impl ToDto for TaxMapping {
-    type Dto = dto::TaxMappingDto;
-    fn to_dto(&self) -> Self::Dto {
-        dto::TaxMappingDto {
-            id: self.id.clone(),
-            asset_type_id: self.asset_type_id.clone(),
-            modality_id: self.modality_id.clone(),
-            tax_rule_id: self.tax_rule_id.clone(),
-        }
-    }
-}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TaxProfile {
@@ -1301,6 +1376,24 @@ pub struct TaxProfileEntry {
     #[serde(default, deserialize_with = "deserialize_id_opt")]
     pub tax_rule_id: Option<String>,
     #[serde(flatten)]
+    pub metadata: std::collections::HashMap<String, serde_json::Value>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct TaxMapping {
+    #[serde(
+        default,
+        deserialize_with = "crate::models::deserialize_id_opt",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub id: Option<String>,
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
+    pub asset_type_id: String,
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
+    pub modality_id: String,
+    #[serde(default, deserialize_with = "crate::models::deserialize_string_opt")]
+    pub tax_rule_id: String,
+    #[serde(default)]
     pub metadata: std::collections::HashMap<String, serde_json::Value>,
 }
 

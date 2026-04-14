@@ -72,9 +72,22 @@ export class CurrenciesStore {
         }
     }
 
-    getCurrencySymbol(code: string): string {
-        const currency = this.currencies.find(c => c.code.toUpperCase() === (code || "BRL").toUpperCase());
+    getCurrencySymbol(idOrCode: string): string {
+        const currency = this.resolveById(idOrCode) || this.resolveByCode(idOrCode);
         return currency?.symbol || "R$";
+    }
+
+    resolveById(id: string): Currency | undefined {
+        if (!id) return undefined;
+        // Normalize id for lookup (handle both raw 'brl' and 'currency:brl')
+        const cleanId = id.includes(':') ? id : `currency:${id.toLowerCase()}`;
+        return this.currencies.find(c => c.id === cleanId);
+    }
+
+    resolveByCode(code: string): Currency | undefined {
+        if (!code) return undefined;
+        const searchCode = code.toUpperCase();
+        return this.currencies.find(c => c.code.toUpperCase() === searchCode);
     }
 
     clearCurrencies() {

@@ -133,12 +133,16 @@ export async function safeInvoke<T>(
         // Importação dinâmica para evitar quebra de parse em navegadores comuns
         const { invoke } = await import("@tauri-apps/api/core");
         
+        // Data Sanitization: CRITICAL to solve "Serialization error: invalid type: enum"
+        // and deep Proxy recursion in Svelte 5.
+        const sanitizedArgs = args ? JSON.parse(JSON.stringify(args)) : undefined;
+
         const timeoutPromise = new Promise<never>((_, reject) => {
             setTimeout(() => reject(new Error(`Timeout invoking '${command}' after ${timeoutMs}ms`)), timeoutMs);
         });
 
         const result = await Promise.race([
-            invoke(command, args) as Promise<T>,
+            invoke(command, sanitizedArgs) as Promise<T>,
             timeoutPromise
         ]);
 

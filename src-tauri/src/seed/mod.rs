@@ -20,6 +20,7 @@ pub mod tags_seed;
 pub mod tax_seed;
 pub mod timeframes_seed;
 pub mod user_profile_seed;
+pub mod sectors_seed;
 
 // Expõe publicamente as funções que serão chamadas de fora
 #[allow(unused_imports)]

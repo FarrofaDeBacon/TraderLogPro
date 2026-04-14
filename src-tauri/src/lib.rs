@@ -182,6 +182,20 @@ pub fn run() {
                         if let Err(e) = seed::run_base_seeds(&db).await {
                             println!("[STARTUP] SEED ERROR: {}", e);
                         }
+                        
+                        // Force B3 Structure population ONLY if table is empty (Respect manual deletions)
+                        let count_sectors: Option<i64> = db.query("SELECT count() FROM sector GROUP ALL")
+                            .await.ok().and_then(|mut r| r.take(0).ok())
+                            .and_then(|v: Vec<serde_json::Value>| v.first()?.get("count")?.as_i64());
+
+                        if count_sectors.unwrap_or(0) == 0 {
+                            println!("[STARTUP] Sector table empty. Seeding B3 Structure...");
+                            if let Err(e) = seed::sectors_seed::seed_sectors(&db).await {
+                                println!("[STARTUP] B3 SEED ERROR: {}", e);
+                            }
+                        } else {
+                            println!("[STARTUP] Sector table already has data. Skipping auto-seed to respect user deletions.");
+                        }
 
                         println!("[STARTUP] Registering Database state.");
                         db_handle.manage(DbState(db));
@@ -216,6 +230,7 @@ pub fn run() {
             commands::save_asset_type,
             commands::get_assets,
             commands::save_asset,
+            commands::save_assets,
             commands::get_emotional_states,
             commands::save_emotional_state,
             commands::seed_emotional_states,
@@ -234,6 +249,7 @@ pub fn run() {
             commands::delete_journal_entry,
             commands::get_fees,
             commands::save_fee,
+            commands::save_fees,
             commands::delete_fee,
             commands::get_risk_profiles,
             commands::save_risk_profile,
@@ -255,10 +271,16 @@ pub fn run() {
             commands::delete_indicator,
             commands::get_timeframes,
             commands::save_timeframe,
-            commands::delete_timeframe,
             commands::get_chart_types,
             commands::save_chart_type,
             commands::delete_chart_type,
+            commands::get_sectors,
+            commands::save_sector,
+            commands::delete_sector,
+            commands::get_subsectors,
+            commands::save_subsector,
+            commands::delete_subsector,
+            commands::seed_b3_economic_structure,
             commands::delete_market,
             commands::delete_asset_type,
             commands::delete_asset,
@@ -267,6 +289,12 @@ pub fn run() {
             commands::delete_emotional_state,
             commands::force_reseed,
             commands::ensure_defaults,
+            commands::get_fee_profile_entries,
+            commands::save_fee_profile_entry,
+            commands::delete_fee_profile_entry,
+            commands::get_tax_mappings,
+            commands::save_tax_mapping,
+            commands::delete_tax_mapping,
             commands::check_database_status,
             commands::seed_demo_account,
             commands::delete_demo_account_data,
@@ -303,9 +331,6 @@ pub fn run() {
             commands::irpf::get_tax_rules,
             commands::irpf::save_tax_rule,
             commands::irpf::delete_tax_rule,
-            commands::irpf::get_tax_mappings,
-            commands::irpf::save_tax_mapping,
-            commands::irpf::delete_tax_mapping,
             // Tax Profiles
             commands::irpf::get_tax_profiles,
             commands::irpf::save_tax_profile,

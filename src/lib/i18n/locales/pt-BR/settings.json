@@ -807,15 +807,21 @@
         "sectors": {
             "description": "Categorize seus ativos por setores da economia (Financeiro, Energia, Tech...).",
             "edit": "Editar Setor",
-            "empty": "Nenhum setor cadastrado.",
+            "empty": "Nenhuma vertical econômica mapeada.",
             "form": {
                 "name": "Nome do Setor",
                 "namePlaceholder": "Ex: Financeiro, Tecnologia...",
+                "macroSector": "Macro Setor (B3)",
+                "macroSectorPlaceholder": "Ex: Consumo Cíclico, Financeiro...",
+                "segment": "Segmento Operacional",
+                "segmentPlaceholder": "Ex: Bancos, Construção Civil...",
+                "icon": "Ícone Operacional",
+                "color": "Cor de Identificação",
                 "save": "Salvar Setor"
             },
             "new": "Novo Setor",
-            "searchPlaceholder": "Buscar setor...",
-            "title": "Setores"
+            "searchPlaceholder": "Filtrar por nome do setor...",
+            "title": "Setores de Atuação"
         },
         "nav": {
             "accounts": "Contas",

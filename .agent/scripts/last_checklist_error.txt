@@ -1,0 +1,19 @@
+﻿
+[1m[96m============================================================[0m
+python : Traceback (most recent call last):
+No linha:1 caractere:1
++ python .agent/scripts/checklist.py . 2>&1 | Out-File -FilePath .agent ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\PROJETOS\TraderLogPro\.agent\scripts\checklist.py", line 217, in <module>
+    main()
+  File "C:\PROJETOS\TraderLogPro\.agent\scripts\checklist.py", line 184, in main
+    print_header("\U0001f680 ANTIGRAVITY KIT - MASTER CHECKLIST")
+  File "C:\PROJETOS\TraderLogPro\.agent\scripts\checklist.py", line 42, in print_header
+    print(f"{Colors.BOLD}{Colors.CYAN}{text.center(60)}{Colors.ENDC}")
+  File "C:\Users\Farrofa DeBacon\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f680' in position 21: character maps to <undefined>

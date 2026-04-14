@@ -1,17 +1,20 @@
 <script lang="ts">
-    import { Plus, Pencil, Trash2, Scale } from "lucide-svelte";
+    import { Plus, Pencil, Trash2, Scale, Info, ShieldAlert } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
     import * as Dialog from "$lib/components/ui/dialog";
     import * as Select from "$lib/components/ui/select";
     import { Switch } from "$lib/components/ui/switch";
+    import { Separator } from "$lib/components/ui/separator";
     import { appStore } from "$lib/stores/app.svelte";
-import type { TaxRule } from "$lib/types";
+    import type { TaxRule } from "$lib/types";
+    import { cn } from "$lib/utils";
+    import { SystemHeader } from "$lib/components/ui/system";
     import { financialConfigStore } from "$lib/stores/financial-config.svelte";
-    import { t } from "svelte-i18n";
-    import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
+    import { t, locale } from "svelte-i18n";
     import { toast } from "svelte-sonner";
+    import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
 
     let isDialogOpen = $state(false);
     let editingId = $state<string | null>(null);
@@ -107,150 +110,116 @@ import type { TaxRule } from "$lib/types";
     }
 </script>
 
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div class="space-y-0.5">
-            <h3 class="text-lg font-medium">
-                {$t("fiscal.settings.rules.title")}
-            </h3>
-            <p class="text-sm text-muted-foreground">
-                {$t("fiscal.settings.rules.description")}
-            </p>
-        </div>
-        <Button onclick={openNew}>
-            <Plus class="w-4 h-4 mr-2" />
-            {$t("fiscal.settings.rules.new")}
-        </Button>
-    </div>
+<div class="space-y-8 max-w-6xl mx-auto pb-20 px-4 md:px-0">
+    <SystemHeader 
+        title={$t("fiscal.settings.rules.title")}
+        description={$t("fiscal.settings.rules.description")}
+    >
+        {#snippet actions()}
+            <Button 
+                onclick={openNew} 
+                class="h-10 px-6 font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all rounded-full shadow-lg shadow-primary/20 text-[10px] uppercase tracking-widest"
+            >
+                <Plus class="w-4 h-4 mr-2" />
+                {$t("fiscal.settings.rules.new")}
+            </Button>
+        {/snippet}
+    </SystemHeader>
 
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <div class="grid gap-6 pt-4 md:grid-cols-2 lg:grid-cols-3">
         {#each financialConfigStore.taxRules as rule}
             <div
-                class="flex flex-col p-4 rounded-lg border bg-card hover:border-primary/50 transition-all shadow-sm group relative overflow-hidden"
+                class="group flex flex-col p-5 rounded-[1.5rem] border bg-card/40 border-white/5 hover:border-emerald-500/50 transition-all shadow-sm relative overflow-hidden"
             >
-                <!-- Header -->
-                <div class="flex items-start justify-between mb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-primary/10 rounded-lg text-primary">
+                <!-- Background Glow -->
+                <div class="absolute -right-12 -top-12 w-24 h-24 bg-emerald-500/5 rounded-full blur-3xl group-hover:bg-emerald-500/10 transition-all"></div>
+
+                <div class="flex items-start justify-between mb-5 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div class="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-500 border border-emerald-500/10">
                             <Scale class="w-5 h-5" />
                         </div>
                         <div>
-                            <h4 class="font-bold text-base">
+                            <h4 class="font-bold text-base tracking-tight text-white group-hover:text-emerald-400 transition-colors">
                                 {rule.name}
                             </h4>
-                            <span
-                                class="text-[10px] uppercase text-muted-foreground tracking-wider"
-                            >
-                                {rule.basis === "NetProfit"
-                                    ? $t(
-                                          "fiscal.settings.rules.form.basisOptions.netProfit",
-                                      )
-                                    : $t(
-                                          "fiscal.settings.rules.form.basisOptions.saleAmount",
-                                      )}
-                            </span>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span class="text-[9px] font-bold uppercase tracking-widest text-emerald-500/80 bg-emerald-500/5 px-1.5 py-0.5 rounded-md border border-emerald-500/10">
+                                    {rule.trade_type === 'DayTrade' ? 'Day Trade' : 'Swing Trade'}
+                                </span>
+                                <span class="text-[9px] font-bold uppercase tracking-widest text-white/30">
+                                    {rule.basis === "NetProfit" ? "LUCRO LÍQUIDO" : "VOLUME VENDAS"}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Stats -->
-                <div class="space-y-2 mb-4 flex-1">
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-muted-foreground"
-                            >{$t("fiscal.settings.rules.form.rate")}:</span
-                        >
-                        <span class="font-mono font-bold">{rule.tax_rate}%</span
-                        >
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 gap-4 mb-6 relative z-10">
+                    <div class="p-3 bg-white/[0.02] rounded-xl border border-white/5">
+                        <span class="text-[9px] font-bold text-white/30 uppercase tracking-widest block mb-1">Alíquota IR</span>
+                        <p class="text-lg font-bold text-white leading-none tracking-tight">
+                            {rule.tax_rate}<span class="text-xs opacity-50 ml-0.5">%</span>
+                        </p>
                     </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-muted-foreground"
-                            >{$t(
-                                "fiscal.settings.rules.form.withholding",
-                            )}:</span
-                        >
-                        <span class="font-mono">{rule.withholding_rate}%</span>
+                    <div class="p-3 bg-white/[0.02] rounded-xl border border-white/5">
+                        <span class="text-[9px] font-bold text-white/30 uppercase tracking-widest block mb-1">Retido (DD)</span>
+                        <p class="text-lg font-bold text-white leading-none tracking-tight">
+                            {rule.withholding_rate}<span class="text-xs opacity-50 ml-0.5">%</span>
+                        </p>
                     </div>
-                    <div class="flex justify-between items-center text-[10px] italic -mt-1 mb-2">
-                        <span class="text-muted-foreground"
-                            >{$t("fiscal.settings.rules.form.withholdingBasis")}:</span
-                        >
-                        <span class="text-primary/70">
-                            {rule.withholding_basis === "Profit"
-                                ? $t("fiscal.settings.rules.form.withholdingBasisOptions.profit")
-                                : $t("fiscal.settings.rules.form.withholdingBasisOptions.sales")}
+                </div>
+
+                <div class="space-y-2.5 mb-6 flex-1 relative z-10">
+                    <div class="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-white/40">
+                        <span>Prejuízos Acumuláveis</span>
+                        <span class={rule.cumulative_losses ? "text-emerald-400" : "text-rose-400"}>
+                            {rule.cumulative_losses ? "SIM" : "NÃO"}
                         </span>
                     </div>
+                    
                     {#if rule.exemption_threshold > 0}
-                        <div
-                            class="flex justify-between items-center text-sm text-green-500"
-                        >
-                            <span
-                                >{$t(
-                                    "fiscal.settings.rules.form.exemption",
-                                )}:</span
-                            >
-                            <span class="font-mono"
-                                >R$ {rule.exemption_threshold.toLocaleString()}</span
-                            >
+                        <div class="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-emerald-400">
+                            <span>Isenção Mensal</span>
+                            <span>R$ {rule.exemption_threshold.toLocaleString()}</span>
                         </div>
                     {/if}
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-muted-foreground"
-                            >{$t(
-                                "fiscal.settings.rules.form.cumulative",
-                            )}:</span
-                        >
-                        <span
-                            class={rule.cumulative_losses
-                                ? "text-green-500"
-                                : "text-rose-500"}
-                        >
-                            {rule.cumulative_losses
-                                ? $t("general.yes")
-                                : $t("general.no")}
-                        </span>
-                    </div>
+
                     {#if rule.revenue_code}
-                        <div class="flex justify-between items-center text-sm pt-2 border-t border-dashed mt-2">
-                            <span class="text-muted-foreground"
-                                >{$t("fiscal.settings.rules.form.revenueCode")}:</span
-                            >
-                            <span class="font-mono font-bold bg-primary/5 px-1.5 rounded">{rule.revenue_code}</span>
+                        <div class="flex justify-between items-center pt-2 border-t border-white/5">
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-white/20">Código DARF</span>
+                            <span class="text-[10px] font-mono font-bold bg-white/5 px-1.5 py-0.5 rounded text-white/70">{rule.revenue_code}</span>
                         </div>
                     {/if}
                 </div>
 
-                <!-- Actions -->
-                <div
-                    class="flex items-center justify-end gap-2 pt-2 border-t mt-auto"
-                >
+                <div class="flex items-center justify-end gap-1 pt-4 border-t border-white/5 relative z-10 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
                         variant="ghost"
-                        size="sm"
-                        class="h-8"
-                        onclick={() => openEdit(rule)}
+                        size="icon"
+                        class="h-8 w-8 rounded-full text-white/40 hover:bg-destructive hover:text-white"
+                        onclick={() => requestDelete(rule.id)}
                     >
-                        <Pencil class="w-3.5 h-3.5 mr-1" />
-                        {$t("general.edit")}
+                        <Trash2 class="w-3.5 h-3.5" />
                     </Button>
                     <Button
                         variant="ghost"
-                        size="sm"
-                        class="h-8 text-destructive hover:text-destructive"
-                        onclick={() => requestDelete(rule.id)}
+                        size="icon"
+                        class="h-8 w-8 rounded-full text-white/40 hover:bg-emerald-500/10 hover:text-emerald-400"
+                        onclick={() => openEdit(rule)}
                     >
-                        <Trash2 class="w-3.5 h-3.5 mr-1" />
-                        {$t("general.delete")}
+                        <Pencil class="w-3.5 h-3.5" />
                     </Button>
                 </div>
             </div>
         {:else}
             <div
-                class="col-span-full flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg text-muted-foreground h-[200px]"
+                class="col-span-full flex flex-col items-center justify-center p-12 border border-dashed border-white/5 rounded-[2rem] text-muted-foreground/30 h-[300px] bg-white/[0.01]"
             >
-                <Scale class="w-8 h-8 mb-2 opacity-20" />
-                <span>{$t("fiscal.settings.rules.empty")}</span>
-                <Button variant="link" onclick={openNew}
+                <Scale class="w-12 h-12 mb-4 opacity-10" />
+                <span class="text-sm font-bold uppercase tracking-widest">{$t("fiscal.settings.rules.empty")}</span>
+                <Button variant="link" onclick={openNew} class="text-emerald-500 font-bold uppercase text-[10px] tracking-widest mt-2"
                     >{$t("fiscal.settings.rules.new")}</Button
                 >
             </div>
@@ -260,186 +229,125 @@ import type { TaxRule } from "$lib/types";
 
 <!-- Rule Dialog -->
 <Dialog.Root bind:open={isDialogOpen}>
-    <Dialog.Content class="sm:max-w-[500px]">
-        <Dialog.Header>
-            <Dialog.Title
-                >{editingId
-                    ? $t("fiscal.settings.rules.form.titleEdit")
-                    : $t("fiscal.settings.rules.form.titleNew")}</Dialog.Title
-            >
-        </Dialog.Header>
-
-        <div class="grid gap-4 py-4">
-            <div class="space-y-2">
-                <Label>{$t("fiscal.settings.rules.form.name")}</Label>
-                <Input
-                    bind:value={formData.name}
-                    placeholder={$t(
-                        "fiscal.settings.rules.form.namePlaceholder",
-                    )}
-                />
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-2">
-                    <Label>{$t("fiscal.settings.rules.form.rate")}</Label>
-                    <div class="relative">
-                        <Input
-                            type="number"
-                            step="0.1"
-                            bind:value={formData.tax_rate}
-                        />
-                        <span
-                            class="absolute right-3 top-2.5 text-xs text-muted-foreground"
-                            >%</span
-                        >
+    <Dialog.Content class="sm:max-w-[550px] bg-white dark:bg-[#0a0c10] border-white/5 rounded-[2.5rem] p-0 overflow-hidden shadow-2xl">
+        <div class="p-8 pb-4">
+            <Dialog.Header class="space-y-1">
+                <Dialog.Title class="text-xl font-bold text-white flex items-center gap-3">
+                    <div class="p-2 bg-emerald-500/10 rounded-xl text-emerald-500 border border-emerald-500/10">
+                        <Scale class="w-5 h-5" />
                     </div>
-                    <p class="text-[10px] text-muted-foreground">
-                        {$t("fiscal.settings.rules.form.rateHint")}
-                    </p>
-                </div>
-                <div class="space-y-2">
-                    <Label>{$t("fiscal.settings.rules.form.withholding")}</Label
-                    >
-                    <div class="relative">
-                        <Input
-                            type="number"
-                            step="0.001"
-                            bind:value={formData.withholding_rate}
-                        />
-                        <span
-                            class="absolute right-3 top-2.5 text-xs text-muted-foreground"
-                            >%</span
-                        >
-                    </div>
-                    <p class="text-[10px] text-muted-foreground">
-                        {$t("fiscal.settings.rules.form.withholdingHint")}
-                    </p>
-                </div>
-            </div>
-
-            {#if formData.withholding_rate > 0}
-                <div class="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                    <Label>{$t("fiscal.settings.rules.form.withholdingBasis")}</Label>
-                    <Select.Root type="single" bind:value={formData.withholding_basis}>
-                        <Select.Trigger>
-                            {formData.withholding_basis === "Profit"
-                                ? $t("fiscal.settings.rules.form.withholdingBasisOptions.profit")
-                                : $t("fiscal.settings.rules.form.withholdingBasisOptions.sales")}
-                        </Select.Trigger>
-                        <Select.Content>
-                            <Select.Item value="Profit"
-                                >{$t("fiscal.settings.rules.form.withholdingBasisOptions.profit")}</Select.Item>
-                            <Select.Item value="SalesVolume"
-                                >{$t("fiscal.settings.rules.form.withholdingBasisOptions.sales")}</Select.Item>
-                        </Select.Content>
-                    </Select.Root>
-                    <p class="text-[10px] text-muted-foreground">
-                        {$t("fiscal.settings.rules.form.withholdingBasisHint")}
-                    </p>
-                </div>
-            {/if}
-
-            <div class="space-y-2">
-                <Label>{$t("fiscal.settings.rules.form.basis")}</Label>
-                <Select.Root type="single" bind:value={formData.basis}>
-                    <Select.Trigger>
-                        {formData.basis === "NetProfit"
-                            ? $t(
-                                  "fiscal.settings.rules.form.basisOptions.netProfit",
-                              )
-                            : $t(
-                                  "fiscal.settings.rules.form.basisOptions.saleAmount",
-                              )}
-                    </Select.Trigger>
-                    <Select.Content>
-                        <Select.Item value="NetProfit"
-                            >{$t(
-                                "fiscal.settings.rules.form.basisOptions.netProfit",
-                            )}</Select.Item
-                        >
-                        <Select.Item value="GrossProfit"
-                            >{$t(
-                                "fiscal.settings.rules.form.basisOptions.saleAmount",
-                            )}</Select.Item
-                        >
-                    </Select.Content>
-                </Select.Root>
-                <p class="text-[10px] text-muted-foreground">
-                    {$t("fiscal.settings.rules.form.basisHint")}
-                </p>
-            </div>
-
-            <div class="space-y-2">
-                <Label>{$t("fiscal.settings.rules.form.exemption")}</Label>
-                <div class="relative">
-                    <span
-                        class="absolute left-3 top-2.5 text-xs text-muted-foreground"
-                        >R$</span
-                    >
-                    <Input
-                        type="number"
-                        step="1000"
-                        class="pl-8"
-                        bind:value={formData.exemption_threshold}
-                    />
-                </div>
-                <p class="text-[10px] text-muted-foreground">
-                    {$t("fiscal.settings.rules.form.exemptionHint")}
-                </p>
-            </div>
-
-            <div class="space-y-2">
-                <Label>{$t("fiscal.settings.rules.form.modality")}</Label>
-                <Select.Root type="single" bind:value={formData.trade_type}>
-                    <Select.Trigger>
-                        {formData.trade_type === "DayTrade" ? "Day Trade" : "Swing Trade"}
-                    </Select.Trigger>
-                    <Select.Content>
-                        <Select.Item value="DayTrade">Day Trade</Select.Item>
-                        <Select.Item value="SwingTrade">Swing Trade</Select.Item>
-                    </Select.Content>
-                </Select.Root>
-            </div>
-
-            <div class="space-y-2">
-                <Label>{$t("fiscal.settings.rules.form.revenueCode")}</Label>
-                <Input
-                    bind:value={formData.revenue_code}
-                    placeholder={$t("fiscal.settings.rules.form.revenueCodePlaceholder")}
-                />
-                <p class="text-[10px] text-muted-foreground">
-                    {$t("fiscal.settings.rules.form.revenueCodeHint")}
-                </p>
-            </div>
-
-            <div
-                class="flex items-center justify-between p-3 border rounded bg-muted/20"
-            >
-                <div class="space-y-0.5">
-                    <Label class="text-base"
-                        >{$t("fiscal.settings.rules.form.cumulative")}</Label
-                    >
-                    <p class="text-[10px] text-muted-foreground">
-                        {$t("fiscal.settings.rules.form.cumulativeHint")}
-                    </p>
-                </div>
-                <Switch bind:checked={formData.cumulative_losses} />
-            </div>
+                    {editingId ? "Editar Regra Fiscal" : "Nova Regra Fiscal"}
+                </Dialog.Title>
+                <Dialog.Description class="text-xs text-muted-foreground">
+                    Define os parâmetros de alíquota e retenção para uma modalidade específica.
+                </Dialog.Description>
+            </Dialog.Header>
         </div>
 
-        <Dialog.Footer>
-            <Button onclick={saveRule} disabled={isSubmittingRule}>
-                {#if isSubmittingRule}
-                    <span class="loading loading-spinner loading-xs"></span>
-                    {$t("general.saving")}
-                {:else}
-                    {$t("fiscal.settings.rules.form.save")}
-                {/if}
-            </Button>
+        <div class="px-8 py-2 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <!-- Basic Info -->
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <Label for="name" class="text-[10px] uppercase font-bold tracking-widest text-white/40">Nome da Regra</Label>
+                    <Input
+                        id="name"
+                        bind:value={formData.name}
+                        placeholder="Ex: Swing Trade Ações 15%"
+                        class="bg-white/[0.03] border-white/10 rounded-xl h-12 text-white"
+                    />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <Label class="text-[10px] uppercase font-bold tracking-widest text-white/40">Alíquota IR</Label>
+                        <div class="relative">
+                            <Input type="number" step="0.1" bind:value={formData.tax_rate} class="bg-white/[0.03] border-white/10 rounded-xl h-12 pr-8 text-white" />
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-30">%</span>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <Label class="text-[10px] uppercase font-bold tracking-widest text-white/40">Retenção (Dedo Duro)</Label>
+                        <div class="relative">
+                            <Input type="number" step="0.001" bind:value={formData.withholding_rate} class="bg-white/[0.03] border-white/10 rounded-xl h-12 pr-8 text-white" />
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-30">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <Label class="text-[10px] uppercase font-bold tracking-widest text-white/40">Base de Cálculo</Label>
+                        <Select.Root type="single" bind:value={formData.basis} portal={null}>
+                            <Select.Trigger class="bg-white/[0.03] border-white/10 rounded-xl h-12 text-white">
+                                {formData.basis === "NetProfit" ? "Lucro Líquido" : "Volume de Vendas"}
+                            </Select.Trigger>
+                            <Select.Content class="bg-white dark:bg-[#0a0c10] border-white/10 rounded-xl">
+                                <Select.Item value="NetProfit">Lucro Líquido</Select.Item>
+                                <Select.Item value="GrossProfit">Volume de Vendas</Select.Item>
+                            </Select.Content>
+                        </Select.Root>
+                    </div>
+                    <div class="space-y-2">
+                        <Label class="text-[10px] uppercase font-bold tracking-widest text-white/40">Modalidade</Label>
+                        <Select.Root type="single" bind:value={formData.trade_type} portal={null}>
+                            <Select.Trigger class="bg-white/[0.03] border-white/10 rounded-xl h-12 text-white">
+                                {formData.trade_type === "DayTrade" ? "Day Trade" : "Swing Trade"}
+                            </Select.Trigger>
+                            <Select.Content class="bg-[#0a0c10] border-white/10 rounded-xl">
+                                <Select.Item value="DayTrade">Day Trade</Select.Item>
+                                <Select.Item value="SwingTrade">Swing Trade</Select.Item>
+                            </Select.Content>
+                        </Select.Root>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div class="space-y-2 text-emerald-500">
+                    <Label class="text-[10px] uppercase font-bold tracking-widest text-white/40">Limite Isenção Mensal</Label>
+                    <div class="relative">
+                        <Input type="number" step="1000" bind:value={formData.exemption_threshold} class="bg-emerald-500/5 border-emerald-500/20 rounded-xl h-12 pl-8 text-white" />
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold opacity-30">R$</span>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <Label class="text-[10px] uppercase font-bold tracking-widest text-white/40">Código DARF</Label>
+                    <Input bind:value={formData.revenue_code} placeholder="Ex: 5602" class="bg-white/[0.03] border-white/10 rounded-xl h-12 text-white" />
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+                    <div class="space-y-0.5">
+                        <Label class="text-xs font-bold text-white uppercase tracking-widest">Prejuízos Acumuláveis</Label>
+                        <p class="text-[10px] text-white/30 font-medium">Permite abater prejuízos passados nesta regra</p>
+                    </div>
+                    <Switch bind:checked={formData.cumulative_losses} />
+                </div>
+            </div>
+            
+            <div class="pb-10"></div>
+        </div>
+
+        <Dialog.Footer class="p-8 bg-black/20 border-t border-white/5">
+            <div class="flex items-center justify-end gap-3 w-full">
+                <Button variant="ghost" onclick={() => isDialogOpen = false} class="text-white/40 hover:text-white hover:bg-transparent uppercase text-[10px] font-bold tracking-widest">
+                    {$t("general.cancel")}
+                </Button>
+                <Button onclick={saveRule} class="rounded-full bg-emerald-500 text-black hover:bg-emerald-400 px-8 font-bold uppercase text-[10px] tracking-widest">
+                    {isSubmittingRule ? "Salvando..." : $t("fiscal.settings.rules.form.save")}
+                </Button>
+            </div>
         </Dialog.Footer>
     </Dialog.Content>
 </Dialog.Root>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.1); border-radius: 20px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(16, 185, 129, 0.2); }
+</style>
 
 <DeleteConfirmationModal bind:open={isDeleteOpen} onConfirm={confirmDelete} />
 

@@ -208,14 +208,20 @@
                                                     {type.name}
                                                 </span>
                                             </div>
-                                            <div class="flex items-center gap-4 text-[10px] text-muted-foreground/60 uppercase font-bold tracking-widest">
-                                                <span>
-                                                    {financialConfigStore.fees.find(f => f.id === type.default_fee_id)?.name || 'FEES: ISENTO/CUSTOM'}
-                                                </span>
-                                                <span class="opacity-30">•</span>
-                                                <span>
-                                                    {financialConfigStore.taxProfiles.find(p => p.id === type.tax_profile_id)?.name || 'TAX: PADRÃO BR'}
-                                                </span>
+                                             <div class="flex items-center gap-4 text-[10px] text-muted-foreground/60 uppercase font-bold tracking-widest leading-none">
+                                                <div class="flex items-center gap-1.5">
+                                                    <span class={cn(type.default_fee_id ? "text-blue-500" : "text-white/20")}>
+                                                        {financialConfigStore.fees.find(f => f.id === type.default_fee_id)?.name || 'PADRÃO GLOBAL'}
+                                                    </span>
+                                                    <span class="text-[8px] opacity-30 tracking-tighter">TAXAS</span>
+                                                </div>
+                                                <div class="h-2 w-[1px] bg-white/5 mx-1"></div>
+                                                <div class="flex items-center gap-1.5">
+                                                    <span class={cn(type.tax_profile_id ? "text-emerald-500" : "text-white/20")}>
+                                                        {financialConfigStore.taxProfiles.find(p => p.id === type.tax_profile_id)?.name || 'PADRÃO GLOBAL'}
+                                                    </span>
+                                                    <span class="text-[8px] opacity-30 tracking-tighter">FISCAL</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -249,39 +255,39 @@
 <DeleteConfirmationModal bind:open={isDeleteOpen} onConfirm={confirmDelete} />
 
 <Dialog.Root bind:open={isDialogOpen}>
-    <Dialog.Content class="sm:max-w-[500px] bg-[#0a0c10] border-white/5 rounded-[2rem] p-0 overflow-hidden shadow-2xl">
-        <div class="p-8 pb-4">
+    <Dialog.Content class="sm:max-w-[500px] bg-white dark:bg-[#0a0c10] border-white/5 rounded-[2.5rem] p-0 overflow-hidden shadow-2xl">
+        <div class="px-8 py-6 bg-white/[0.02] border-b border-white/5">
             <Dialog.Header class="space-y-1">
-                <Dialog.Title class="text-xl font-bold text-white">
+                <Dialog.Title class="text-xl font-bold text-foreground">
                     {editingId ? "Editar Classe de Ativo" : "Nova Classe de Ativo"}
                 </Dialog.Title>
-                <Dialog.Description class="text-xs text-muted-foreground">
+                <Dialog.Description class="text-xs text-muted-foreground/60 font-medium tracking-wide">
                     {$t("settings.assetTypes.description")}
                 </Dialog.Description>
             </Dialog.Header>
         </div>
 
-        <div class="px-8 py-2 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <div class="px-8 py-2 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar mt-6">
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <Label for="code" class="text-sm text-white/70">Código da Classe</Label>
-                    <Input id="code" bind:value={formData.code} placeholder="Ex: STK" class="bg-white/[0.03] border-white/10 rounded-xl h-12 uppercase text-white focus:ring-1 focus:ring-white/20" />
+                    <Label for="code" class="text-[11px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">Código da Classe</Label>
+                    <Input id="code" bind:value={formData.code} placeholder="Ex: STK" class="bg-muted/10 border-white/10 rounded-xl h-12 uppercase text-foreground focus:ring-1 focus:ring-primary/20" />
                 </div>
                 <div class="space-y-2">
-                    <Label for="name" class="text-sm text-white/70">Nome Descritivo</Label>
-                    <Input id="name" bind:value={formData.name} placeholder="Ex: Ações Brasileiras" class="bg-white/[0.03] border-white/10 rounded-xl h-12 text-white focus:ring-1 focus:ring-white/20" />
+                    <Label for="name" class="text-[11px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">Nome Descritivo</Label>
+                    <Input id="name" bind:value={formData.name} placeholder="Ex: Ações Brasileiras" class="bg-muted/10 border-white/10 rounded-xl h-12 text-foreground focus:ring-1 focus:ring-primary/20" />
                 </div>
             </div>
 
             <div class="space-y-2">
-                <Label for="market" class="text-sm text-white/70">Mercado de Atuação</Label>
-                <Select.Root type="single" bind:value={formData.market_id}>
-                    <Select.Trigger class="w-full bg-white/[0.03] border-white/10 rounded-xl h-12 text-white">
+                <Label for="market" class="text-[11px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">Mercado de Atuação</Label>
+                <Select.Root type="single" bind:value={formData.market_id} portal={null}>
+                    <Select.Trigger class="w-full bg-muted/10 border-white/10 rounded-xl h-12 text-foreground">
                         {marketsStore.markets.find(m => m.id === formData.market_id)?.name || "Selecione o Mercado"}
                     </Select.Trigger>
-                    <Select.Content class="bg-[#0a0c10] border-white/10 rounded-xl">
+                    <Select.Content class="bg-white dark:bg-[#0a0c10] border-white/10 rounded-xl shadow-2xl">
                         {#each marketsStore.markets as m}
-                            <Select.Item value={m.id}>{m.name} ({m.code})</Select.Item>
+                            <Select.Item value={m.id} class="rounded-lg">{m.name} ({m.code})</Select.Item>
                         {/each}
                     </Select.Content>
                 </Select.Root>
@@ -289,27 +295,29 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <Label for="fees" class="text-sm text-white/70">Perfil de Taxas</Label>
-                    <Select.Root type="single" bind:value={formData.default_fee_id}>
-                        <Select.Trigger class="w-full bg-white/[0.03] border-white/10 rounded-xl h-12 text-white">
-                            {financialConfigStore.fees.find(f => f.id === formData.default_fee_id)?.name || "Selecione"}
+                    <Label for="fees" class="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/30 mb-2 block px-1 leading-none">Perfil de Taxas (Padrão)</Label>
+                    <Select.Root type="single" bind:value={formData.default_fee_id} portal={null}>
+                        <Select.Trigger class="w-full bg-muted/10 border-white/10 rounded-xl h-12 text-foreground">
+                            {financialConfigStore.fees.find(f => f.id === formData.default_fee_id)?.name || "Usar Padrão Global"}
                         </Select.Trigger>
-                        <Select.Content class="bg-[#0a0c10] border-white/10 rounded-xl">
+                        <Select.Content class="bg-white dark:bg-[#0a0c10] border-white/10 rounded-xl shadow-2xl">
+                            <Select.Item value="" class="rounded-lg">Usar Padrão Global</Select.Item>
                             {#each financialConfigStore.fees as f}
-                                <Select.Item value={f.id}>{f.name}</Select.Item>
+                                <Select.Item value={f.id} class="rounded-lg">{f.name}</Select.Item>
                             {/each}
                         </Select.Content>
                     </Select.Root>
                 </div>
                 <div class="space-y-2">
-                    <Label for="tax" class="text-sm text-white/70">Perfil Fiscal</Label>
-                    <Select.Root type="single" bind:value={formData.tax_profile_id}>
-                        <Select.Trigger class="w-full bg-white/[0.03] border-white/10 rounded-xl h-12 text-white">
-                            {financialConfigStore.taxProfiles.find(p => p.id === formData.tax_profile_id)?.name || "Selecione"}
+                    <Label for="tax" class="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/30 mb-2 block px-1 leading-none">Perfil Fiscal (Padrão)</Label>
+                    <Select.Root type="single" bind:value={formData.tax_profile_id} portal={null}>
+                        <Select.Trigger class="w-full bg-muted/10 border-white/10 rounded-xl h-12 text-foreground text-left truncate overflow-hidden">
+                            {financialConfigStore.taxProfiles.find(p => p.id === formData.tax_profile_id)?.name || "Usar Padrão Global"}
                         </Select.Trigger>
-                        <Select.Content class="bg-[#0a0c10] border-white/10 rounded-xl">
+                        <Select.Content class="bg-white dark:bg-[#0a0c10] border-white/10 rounded-xl shadow-2xl">
+                            <Select.Item value="" class="rounded-lg">Usar Padrão Global</Select.Item>
                             {#each financialConfigStore.taxProfiles as p}
-                                <Select.Item value={p.id}>{p.name}</Select.Item>
+                                <Select.Item value={p.id} class="rounded-lg">{p.name}</Select.Item>
                             {/each}
                         </Select.Content>
                     </Select.Root>
@@ -318,30 +326,30 @@
 
             <div class="grid grid-cols-2 gap-4 pb-4">
                 <div class="space-y-2">
-                    <Label for="unit" class="text-sm text-white/70">Unidade (Tag)</Label>
-                    <Input id="unit" bind:value={formData.unit_label} placeholder="Ex: un, lot" class="bg-white/[0.03] border-white/10 rounded-xl h-12 text-white" />
+                    <Label for="unit" class="text-[11px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">Unidade (Tag)</Label>
+                    <Input id="unit" bind:value={formData.unit_label} placeholder="Ex: un, lot" class="bg-muted/10 border-white/10 rounded-xl h-12 text-foreground" />
                 </div>
                 <div class="space-y-2">
-                    <Label for="result" class="text-sm text-white/70">Cálculo de Resultado</Label>
-                    <Select.Root type="single" bind:value={formData.result_type}>
-                        <Select.Trigger class="w-full bg-white/[0.03] border-white/10 rounded-xl h-12 text-white">
+                    <Label for="result" class="text-[11px] uppercase font-bold tracking-widest text-muted-foreground/40 px-1">Cálculo de Resultado</Label>
+                    <Select.Root type="single" bind:value={formData.result_type} portal={null}>
+                        <Select.Trigger class="w-full bg-muted/10 border-white/10 rounded-xl h-12 text-foreground">
                             {formData.result_type === "currency" ? "Monetário" : "Pontos"}
                         </Select.Trigger>
-                        <Select.Content class="bg-[#0a0c10] border-white/10 rounded-xl">
-                            <Select.Item value="currency">Monetário</Select.Item>
-                            <Select.Item value="points">Pontos</Select.Item>
+                        <Select.Content class="bg-white dark:bg-[#0a0c10] border-white/10 rounded-xl shadow-2xl">
+                            <Select.Item value="currency" class="rounded-lg">Monetário</Select.Item>
+                            <Select.Item value="points" class="rounded-lg">Pontos</Select.Item>
                         </Select.Content>
                     </Select.Root>
                 </div>
             </div>
         </div>
 
-        <Dialog.Footer class="p-8 bg-black/20 border-t border-white/5">
+        <Dialog.Footer class="p-8 bg-white/[0.02] border-t border-white/5">
             <div class="flex items-center justify-end gap-3 w-full">
-                <Button variant="ghost" onclick={() => isDialogOpen = false} class="text-white/40 hover:text-white hover:bg-transparent">
+                <Button variant="ghost" onclick={() => isDialogOpen = false} class="text-muted-foreground hover:text-foreground hover:bg-transparent font-bold uppercase tracking-widest text-[10px]">
                     {$t("general.cancel")}
                 </Button>
-                <Button onclick={save} class="rounded-full bg-white text-black hover:bg-neutral-200 px-8 font-bold">
+                <Button onclick={save} class="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-10 h-12 font-black uppercase tracking-tight shadow-xl shadow-primary/5 transition-all hover:scale-[1.02] active:scale-[0.98]">
                     {$t("general.save")}
                 </Button>
             </div>

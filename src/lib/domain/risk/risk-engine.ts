@@ -62,13 +62,29 @@ export function calculateDailyRiskStatus(
     const isCurrencyLoss = profile.maxDailyLossType === 'currency';
     const isCurrencyTarget = profile.dailyTargetType === 'currency';
 
-    // Resolver limites efetivos (Fase de Crescimento > Modo Avançado > Modo Simples)
-    let effectiveMaxDailyLoss = profile.maxDailyLossValue;
-    let effectiveDailyTarget = profile.dailyTargetValue;
+    // Resolver limites efetivos via RiskRules (Fonte de Verdade Única)
+    let effectiveMaxDailyLoss = 0.0;
+    let effectiveDailyTarget = 0.0;
 
-    // Prioridade 1: Fase de Crescimento (Extração de Condições Dinâmicas)
+    // 1. Extração de Regras Ativas do Perfil
+    if (profile.riskRules && profile.riskRules.length > 0) {
+        const lossRule = profile.riskRules.find(r => r.targetType === 'max_daily_loss' && r.enabled);
+        if (lossRule) effectiveMaxDailyLoss = Number(lossRule.value);
+
+        const targetRule = profile.riskRules.find(r => r.targetType === 'profit_target' && r.enabled);
+        if (targetRule) effectiveDailyTarget = Number(targetRule.value);
+    } 
+    
+    // Fallback de segurança apenas se as regras estiverem vazias (Compatibilidade Transicional)
+    if (effectiveMaxDailyLoss === 0 && profile.maxDailyLossValue) {
+        effectiveMaxDailyLoss = profile.maxDailyLossValue;
+    }
+    if (effectiveDailyTarget === 0 && profile.dailyTargetValue) {
+        effectiveDailyTarget = profile.dailyTargetValue;
+    }
+
+    // 2. Prioridade Máxima: Fase de Crescimento (Sobrescrita Dinâmica)
     if (growthPhase) {
-        // Tenta encontrar uma regra de perda diária/limite nas condições de regressão da fase
         const lossCondition = growthPhase.conditionsToDemote.find(c => {
             const canonical = c.metric.toLowerCase().trim();
             return canonical.includes('perda_diaria') || 
@@ -84,14 +100,6 @@ export function calculateDailyRiskStatus(
         } else if (growthPhase.maxDailyLoss !== undefined && growthPhase.maxDailyLoss > 0) {
             effectiveMaxDailyLoss = growthPhase.maxDailyLoss;
         }
-    } 
-    // Prioridade 2: Regras Avançadas do Perfil
-    else if (profile.useAdvancedRules && profile.riskRules) {
-        const lossRule = profile.riskRules.find(r => r.targetType === 'max_daily_loss' && r.enabled);
-        if (lossRule) effectiveMaxDailyLoss = Number(lossRule.value);
-
-        const targetRule = profile.riskRules.find(r => r.targetType === 'profit_target' && r.enabled);
-        if (targetRule) effectiveDailyTarget = Number(targetRule.value);
     }
 
     const currentLossMetric = isCurrencyLoss ? dailyPnL : dailyPnLPoints;

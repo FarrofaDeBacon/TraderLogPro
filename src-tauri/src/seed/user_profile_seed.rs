@@ -27,7 +27,7 @@ pub async fn seed_user_profile(db: &Surreal<Db>) -> Result<(), String> {
         theme: "dark".into(),
         language: "pt-BR".into(),
         timezone: "America/Sao_Paulo".into(),
-        main_currency: "BRL".into(),
+        main_currency: "currency:brl".into(),
         avatar: None,
         convert_all_to_main: false,
         onboarding_completed: false,

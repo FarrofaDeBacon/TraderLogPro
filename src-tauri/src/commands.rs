@@ -1,10 +1,12 @@
 use crate::db::DbState;
+use crate::services::currency_service::CurrencyService;
+use crate::services::asset_service::AssetService;
 use crate::models::{
     Account, ApiConfig, Asset, AssetRiskProfile, AssetType, CashTransaction, ChartType, Currency, EmotionalState,
-    FeeProfile, GrowthPlan, Indicator, JournalEntry, Market, Modality, RiskProfile, Sector, Strategy, Tag,
-    Timeframe, Trade, UserProfile,
+    FeeProfile, FeeProfileEntry, GrowthPlan, Indicator, JournalEntry, Market, Modality, RiskProfile, Sector, Subsector, Strategy, Tag,
+    Timeframe, Trade, UserProfile, TaxRule, TaxProfile, TaxProfileEntry, TaxMapping,
 };
-use crate::models::dto::AssetRiskProfileDto;
+use crate::models::dto::{SectorDto, SubsectorDto, AccountDto, MarketDto, AssetTypeDto, TaxMappingDto};
 use bcrypt::{hash, verify, DEFAULT_COST};
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
@@ -39,7 +41,7 @@ async fn upsert_record(
     let full_id = format!("{}:⟨{}⟩", table, clean_id);
     let query = format!("UPSERT {} CONTENT $data RETURN NONE", full_id);
 
-    let mut response = db.query(&query).bind(("data", data)).await.map_err(|e| {
+    let response = db.query(&query).bind(("data", data)).await.map_err(|e| {
         println!("[DB] SDK Upsert QUERY ERROR for {}. Error: {}", full_id, e);
         e.to_string()
     })?;
@@ -56,15 +58,35 @@ async fn upsert_record(
 
 /// Helper: DELETE a record by table:id using ⟨UUID⟩ angle-bracket notation.
 async fn delete_record(db: &Surreal<Db>, table: &str, id: &str) -> Result<(), String> {
-    let clean_id = id.replace("⟨", "").replace("⟩", "").replace("`", "");
-    let query = format!("DELETE FROM {}:⟨{}⟩ RETURN NONE", table, clean_id);
+    // 1. Normalize ID carefully
+    let clean_id = id.replace("⟨", "").replace("⟩", "").replace("`", "").trim().to_string();
+    let full_id = format!("{}:{}", table, clean_id);
     
-    let mut response = db.query(&query).await.map_err(|e| {
-        e.to_string()
-    })?;
+    println!("[DB] Resilient Delete attempt for {}", full_id);
+
+    // Technique 1: Standard SDK delete (fastest)
+    let sdk_res: Result<Option<serde_json::Value>, _> = db.delete((table, &clean_id)).await;
     
-    response.check().map_err(|e| e.to_string())?;
-    
+    if sdk_res.is_ok() {
+        println!("[DB] SDK Delete Success for {}", full_id);
+        return Ok(());
+    }
+
+    // Technique 2: SurrealQL DELETE WHERE (most resilient for weird IDs)
+    // We compare type::string(id) to catch any escaping mismatches (⟨⟩, etc)
+    let query = format!("DELETE {} WHERE type::string(id) = $id OR type::string(id) = $full_id", table);
+    let q_res = db.query(&query)
+        .bind(("id", clean_id.clone()))
+        .bind(("full_id", full_id.clone()))
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if let Err(e) = q_res.check() {
+        println!("[DB] Resilient Delete QUERY ERROR for {}. Error: {}", full_id, e);
+        return Err(e.to_string());
+    }
+
+    println!("[DB] Resilient Delete process finished for {}", full_id);
     Ok(())
 }
 
@@ -82,7 +104,7 @@ pub async fn get_user_profile(db: State<'_, DbState>) -> Result<Option<UserProfi
     // RESILIENCE: If deserialization fails (e.g. Invalid revision after DB reset), 
     // we return None so the UI can proceed with onboarding/clean state.
     let profile: Option<UserProfile> = match result.take(0) {
-        Ok(mut profiles) => {
+        Ok(profiles) => {
             let p: Vec<UserProfile> = profiles;
             p.into_iter().next()
         },
@@ -97,6 +119,11 @@ pub async fn get_user_profile(db: State<'_, DbState>) -> Result<Option<UserProfi
         profile.is_some()
     );
     Ok(profile)
+}
+
+#[tauri::command]
+pub async fn seed_b3_economic_structure(db: tauri::State<'_, DbState>) -> Result<(), String> {
+    crate::seed::sectors_seed::seed_sectors(&db.0).await
 }
 
 #[tauri::command]
@@ -127,6 +154,9 @@ pub async fn save_user_profile(
             }
         }
     }
+
+    // Normalização Canônica de Moeda
+    profile.main_currency = CurrencyService::normalize_id(&profile.main_currency);
 
     let mut profile_json = serde_json::to_value(&profile).map_err(|e| e.to_string())?;
     println!("[DEBUG] Incoming Profile JSON to Save: {:?}", profile_json);
@@ -315,7 +345,7 @@ pub async fn get_accounts(db: State<'_, DbState>) -> Result<Vec<Account>, String
 }
 
 #[tauri::command]
-pub async fn save_account(db: State<'_, DbState>, mut account: Account) -> Result<(), String> {
+pub async fn save_account(db: State<'_, DbState>, account: AccountDto) -> Result<(), String> {
     println!("[COMMAND] save_account called: {:?}", account);
 
     let id = if let Some(ref id_str) = account.id {
@@ -324,17 +354,15 @@ pub async fn save_account(db: State<'_, DbState>, mut account: Account) -> Resul
         format!("account:{}", uuid::Uuid::new_v4())
     };
 
-    // Normalize currency_id: if it's a 3-letter code, prefix with 'currency:'
-    if let Some(ref curr) = account.currency_id {
-        if curr.len() == 3 && !curr.contains(':') {
-            account.currency_id = Some(format!("currency:{}", curr));
-        }
+    // Normalização Canônica de Moeda
+    let mut account_data = account.clone();
+    if let Some(curr) = &account.currency_id {
+        account_data.currency_id = Some(CurrencyService::normalize_id(curr));
     }
 
-    let mut json = serde_json::to_value(&account).map_err(|e| e.to_string())?;
+    let mut json = serde_json::to_value(&account_data).map_err(|e| e.to_string())?;
     if let Some(obj) = json.as_object_mut() {
         obj.remove("id");
-        obj.remove("currency"); // Don't persist virtual field
     }
 
     let clean_id = id.split(':').last().unwrap_or(&id)
@@ -346,7 +374,8 @@ pub async fn save_account(db: State<'_, DbState>, mut account: Account) -> Resul
     let full_id = format!("account:⟨{}⟩", clean_id);
     let sql = format!("
         UPDATE {} SET 
-            currency_id = (IF type::string(currency_id) != \"\" AND currency_id != null THEN type::thing(currency_id) ELSE null END)
+            currency_id = (IF type::string(currency_id) != \"\" AND currency_id != null THEN type::thing(currency_id) ELSE null END),
+            default_fee_id = (IF type::string(default_fee_id) != \"\" AND default_fee_id != null THEN type::thing(default_fee_id) ELSE null END)
         WHERE id = {};
     ", full_id, full_id);
 
@@ -421,7 +450,7 @@ pub async fn get_markets(db: State<'_, DbState>) -> Result<Vec<Market>, String> 
 }
 
 #[tauri::command]
-pub async fn save_market(db: State<'_, DbState>, market: Market) -> Result<(), String> {
+pub async fn save_market(db: State<'_, DbState>, market: MarketDto) -> Result<(), String> {
     let id = market.id.clone();
     let mut json = serde_json::to_value(&market).map_err(|e| e.to_string())?;
     if let Some(obj) = json.as_object_mut() {
@@ -467,21 +496,27 @@ pub async fn get_asset_types(db: State<'_, DbState>) -> Result<Vec<AssetType>, S
 }
 
 #[tauri::command]
-pub async fn save_asset_type(db: State<'_, DbState>, asset_type: AssetType) -> Result<(), String> {
+pub async fn save_asset_type(db: State<'_, DbState>, asset_type: AssetTypeDto) -> Result<(), String> {
     let mut json = serde_json::to_value(&asset_type).map_err(|e| e.to_string())?;
     if let Some(obj) = json.as_object_mut() {
         obj.remove("id");
     }
     let id_str = asset_type.id.clone().unwrap_or_default();
-    let clean_id = id_str.split(':').last().unwrap_or(&id_str);
-    upsert_record(&db.0, "asset_type", clean_id, json).await?;
+    let clean_id = id_str
+        .split(':')
+        .last()
+        .unwrap_or(&id_str)
+        .replace("⟨", "")
+        .replace("⟩", "");
+        
+    upsert_record(&db.0, "asset_type", &clean_id, json).await?;
 
     let full_id = format!("asset_type:⟨{}⟩", clean_id);
     let sql = format!("
         UPDATE {} SET 
-            market_id = (IF type::string(market_id) != \"\" AND market_id != null THEN type::thing(market_id) ELSE null END),
-            default_fee_id = (IF type::string(default_fee_id) != \"\" AND default_fee_id != null THEN type::thing(default_fee_id) ELSE null END),
-            tax_profile_id = (IF type::string(tax_profile_id) != \"\" AND tax_profile_id != null THEN type::thing(tax_profile_id) ELSE null END)
+            market_id = (IF type::string(market_id) != \"\" AND market_id != null THEN type::thing(market_id) ELSE market_id END),
+            default_fee_id = (IF type::string(default_fee_id) != \"\" AND default_fee_id != null THEN type::thing(default_fee_id) ELSE default_fee_id END),
+            tax_profile_id = (IF type::string(tax_profile_id) != \"\" AND tax_profile_id != null THEN type::thing(tax_profile_id) ELSE tax_profile_id END)
         WHERE id = {};
     ", full_id, full_id);
 
@@ -517,11 +552,8 @@ pub async fn get_sectors(db: State<'_, DbState>) -> Result<Vec<Sector>, String> 
 }
 
 #[tauri::command]
-pub async fn save_sector(db: State<'_, DbState>, sector: Sector) -> Result<(), String> {
-    let mut json = serde_json::to_value(&sector).map_err(|e| e.to_string())?;
-    if let Some(obj) = json.as_object_mut() {
-        obj.remove("id");
-    }
+pub async fn save_sector(db: State<'_, DbState>, sector: SectorDto) -> Result<(), String> {
+    // 1. Unicidade Case-Insensitive (Global)
     let id_str = sector.id.clone().unwrap_or_else(|| format!("sector:{}", uuid::Uuid::new_v4()));
     let clean_id = id_str
         .split(':')
@@ -529,27 +561,105 @@ pub async fn save_sector(db: State<'_, DbState>, sector: Sector) -> Result<(), S
         .unwrap_or(&id_str)
         .replace("⟨", "")
         .replace("⟩", "");
-    upsert_record(&db.0, "sector", &clean_id, json).await?;
 
-    // Relational field conversion
-    let full_id = format!("sector:⟨{}⟩", clean_id);
+    let check_sql = "SELECT id FROM sector WHERE string::lowercase(name) = string::lowercase($name) AND id != type::thing('sector', $id) LIMIT 1";
+    let mut check_res = db.0.query(check_sql)
+        .bind(("name", sector.name.clone()))
+        .bind(("id", clean_id.clone()))
+        .await
+        .map_err(|e| e.to_string())?;
+
+    let existing: Vec<serde_json::Value> = check_res.take(0).map_err(|e| e.to_string())?;
+    if !existing.is_empty() {
+        return Err(format!("Já existe um setor cadastrado com o nome '{}'.", sector.name));
+    }
+
+    // 2. Persistência
+    let mut json = serde_json::to_value(&sector).map_err(|e| e.to_string())?;
+    if let Some(obj) = json.as_object_mut() {
+        obj.remove("id");
+    }
+    
+    upsert_record(&db.0, "sector", &clean_id, json).await?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn delete_sector(db: State<'_, DbState>, id: String) -> Result<(), String> {
+    println!("[COMMAND] delete_sector called with id: '{}'", id);
+    let clean_id = id.split(':').last().unwrap_or(&id)
+        .replace("⟨", "")
+        .replace("⟩", "");
+    delete_record(&db.0, "sector", &clean_id).await
+}
+
+// --- Subsectors ---
+
+#[tauri::command]
+pub async fn get_subsectors(db: State<'_, DbState>) -> Result<Vec<Subsector>, String> {
+    let mut result =
+        db.0.query("SELECT *, type::string(id) as id, type::string(sector_id) as sector_id FROM subsector")
+            .await
+            .map_err(|e| e.to_string())?;
+    let subsectors: Vec<Subsector> = result.take(0).map_err(|e| e.to_string())?;
+    Ok(subsectors)
+}
+
+#[tauri::command]
+pub async fn save_subsector(db: State<'_, DbState>, subsector: SubsectorDto) -> Result<(), String> {
+    let id_str = subsector.id.clone().unwrap_or_else(|| format!("subsector:{}", uuid::Uuid::new_v4()));
+    let clean_id = id_str
+        .split(':')
+        .last()
+        .unwrap_or(&id_str)
+        .replace("⟨", "")
+        .replace("⟩", "");
+
+    // 1. Unicidade Case-Insensitive (Dentro do mesmo Setor)
+    if let Some(ref sid) = subsector.sector_id {
+        let clean_sid = sid.split(':').last().unwrap_or(sid)
+            .replace("⟨", "").replace("⟩", "");
+            
+        let check_sql = "SELECT id FROM subsector WHERE sector_id = type::thing('sector', $sid) AND string::lowercase(name) = string::lowercase($name) AND id != type::thing('subsector', $id) LIMIT 1";
+        let mut check_res = db.0.query(check_sql)
+            .bind(("sid", clean_sid))
+            .bind(("name", subsector.name.clone()))
+            .bind(("id", clean_id.clone()))
+            .await
+            .map_err(|e| e.to_string())?;
+
+        let existing: Vec<serde_json::Value> = check_res.take(0).map_err(|e| e.to_string())?;
+        if !existing.is_empty() {
+            return Err(format!("Já existe um subsetor com o nome '{}' vinculado a este setor.", subsector.name));
+        }
+    }
+
+    // 2. Persistência Base
+    let mut json = serde_json::to_value(&subsector).map_err(|e| e.to_string())?;
+    if let Some(obj) = json.as_object_mut() {
+        obj.remove("id");
+    }
+    
+    upsert_record(&db.0, "subsector", &clean_id, json).await?;
+
+    // 3. Conversão Relacional (Garante que sector_id seja um Thing no DB)
+    let full_id = format!("subsector:⟨{}⟩", clean_id);
     let sql = format!("
         UPDATE {} SET 
-            market_id = (IF market_id THEN type::thing(market_id) ELSE null END)
+            sector_id = (IF type::string(sector_id) != \"\" AND sector_id != null THEN type::thing(sector_id) ELSE sector_id END)
         WHERE id = {};
     ", full_id, full_id);
-
     db.0.query(&sql).await.map_err(|e| e.to_string())?;
     
     Ok(())
 }
 
 #[tauri::command]
-pub async fn delete_sector(db: State<'_, DbState>, id: String) -> Result<(), String> {
+pub async fn delete_subsector(db: State<'_, DbState>, id: String) -> Result<(), String> {
     let clean_id = id.split(':').last().unwrap_or(&id)
         .replace("⟨", "")
         .replace("⟩", "");
-    delete_record(&db.0, "sector", &clean_id).await
+    delete_record(&db.0, "subsector", &clean_id).await
 }
 
 // --- Assets ---
@@ -572,12 +682,28 @@ pub async fn get_assets(db: State<'_, DbState>) -> Result<Vec<Asset>, String> {
 
 #[tauri::command]
 pub async fn save_asset(db: State<'_, DbState>, asset: Asset) -> Result<(), String> {
+    internal_save_asset(&db.0, asset).await
+}
+
+#[tauri::command]
+pub async fn save_assets(db: State<'_, DbState>, assets: Vec<Asset>) -> Result<(), String> {
+    println!("[COMMAND] save_assets bulk: count={}", assets.len());
+    for asset in assets {
+        internal_save_asset(&db.0, asset).await?;
+    }
+    Ok(())
+}
+
+async fn internal_save_asset(db: &Surreal<Db>, mut asset: Asset) -> Result<(), String> {
+    // 1. Validação e Inferência Econômica (Setor/Subsetor)
+    AssetService::validate_and_infer_economic_context(db, &mut asset.sector_id, &asset.subsector_id).await?;
+
     let id = asset.id.clone();
     let mut json = serde_json::to_value(&asset).map_err(|e| e.to_string())?;
     if let Some(obj) = json.as_object_mut() {
         obj.remove("id");
     }
-    let id_str = id.unwrap_or_default();
+    let id_str = id.unwrap_or_else(|| format!("asset:{}", uuid::Uuid::new_v4()));
     let clean_id = id_str
         .split(':')
         .last()
@@ -589,21 +715,22 @@ pub async fn save_asset(db: State<'_, DbState>, asset: Asset) -> Result<(), Stri
         .to_string();
 
     // Standard upsert
-    upsert_record(&db.0, "asset", &clean_id, json).await?;
+    upsert_record(db, "asset", &clean_id, json).await?;
 
     // Relational field conversion (ensures they are Things, not Strings)
     let full_id = format!("asset:⟨{}⟩", clean_id);
     let sql = format!("
         UPDATE {} SET 
-            asset_type_id = type::thing(asset_type_id),
-            default_fee_id = (IF default_fee_id THEN type::thing(default_fee_id) ELSE null END),
-            tax_profile_id = (IF tax_profile_id THEN type::thing(tax_profile_id) ELSE null END),
-            root_id = (IF root_id THEN type::thing(root_id) ELSE null END),
-            sector_id = (IF sector_id THEN type::thing(sector_id) ELSE null END)
+            asset_type_id = (IF type::string(asset_type_id) != \"\" AND asset_type_id != null THEN type::thing(asset_type_id) ELSE asset_type_id END),
+            default_fee_id = (IF type::string(default_fee_id) != \"\" AND default_fee_id != null THEN type::thing(default_fee_id) ELSE default_fee_id END),
+            tax_profile_id = (IF type::string(tax_profile_id) != \"\" AND tax_profile_id != null THEN type::thing(tax_profile_id) ELSE tax_profile_id END),
+            root_id = (IF type::string(root_id) != \"\" AND root_id != null THEN type::thing(root_id) ELSE root_id END),
+            sector_id = (IF type::string(sector_id) != \"\" AND sector_id != null THEN type::thing(sector_id) ELSE sector_id END),
+            subsector_id = (IF type::string(subsector_id) != \"\" AND subsector_id != null THEN type::thing(subsector_id) ELSE subsector_id END)
         WHERE id = {};
     ", full_id, full_id);
 
-    db.0.query(&sql).await.map_err(|e| e.to_string())?;
+    db.query(sql).await.map_err(|e| e.to_string())?;
     
     Ok(())
 }
@@ -754,9 +881,8 @@ pub async fn get_trades(db: State<'_, DbState>) -> Result<Vec<Trade>, String> {
 }
 
 #[tauri::command]
-pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), String> {
-    // Robust ID extraction: handles table prefix, angle brackets, and backticks
-    let raw_id = &trade.id;
+pub async fn save_trade(db: State<'_, DbState>, mut trade: Trade) -> Result<(), String> {
+    let raw_id = trade.id.clone();
     let clean_id = raw_id
         .replace("trade:", "")
         .replace("⟨", "")
@@ -766,45 +892,50 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
         .to_string();
 
     println!(
-        "[COMMAND] save_trade START: clean_id='{}' (raw_id='{}') asset='{}' result='{}'",
-        clean_id, raw_id, trade.asset_symbol, trade.result
+        "[COMMAND] save_trade START: clean_id='{}' asset='{}'",
+        clean_id, trade.asset_symbol
     );
 
-    // Diagnostic check for existence BEFORE upserting
-    let check_sql = format!("SELECT id FROM trade:⟨{}⟩ LIMIT 1", clean_id);
-    if let Ok(mut res) = db.0.query(&check_sql).await {
-        if let Ok(existing) = res.take::<Vec<crate::models::SurrealJson>>(0) {
-            if !existing.is_empty() {
-                println!("[DEBUG] save_trade: Record trade:⟨{}⟩ already exists. Performing UPDATE.", clean_id);
-            } else {
-                println!("[DEBUG] save_trade: Record trade:⟨{}⟩ NOT found. Performing INSERT.", clean_id);
-                // Log all IDs in the table to find potential mismatches
-                if let Ok(mut all_res) = db.0.query("SELECT type::string(id) as id FROM trade LIMIT 5").await {
-                   if let Ok(ids) = all_res.take::<Vec<crate::models::SurrealJson>>(0) {
-                        println!("[DEBUG] save_trade: Sample existing IDs in 'trade' table: {:?}", ids);
-                   }
-                }
-            }
-        }
-    }
+    // Snapshot values before any awaits to avoid borrow/move issues
+    let tax_profile_input = trade.effective_tax_profile_id.clone();
+    let fee_profile_input = trade.effective_fee_profile_id.clone();
+    let asset_id_input = trade.asset_id.clone();
+    let asset_type_id_input = trade.asset_type_id.clone();
+    let account_id_input = trade.account_id.clone();
 
+    // 1. Resolve Fiscal Snapshot
+    trade.effective_tax_profile_id = AssetService::resolve_trade_tax_profile_id(
+        &db.0,
+        &tax_profile_input,
+        &asset_id_input,
+        &asset_type_id_input
+    ).await;
+
+    // 2. Resolve Fee Snapshot
+    trade.effective_fee_profile_id = AssetService::resolve_trade_fee_profile_id(
+        &db.0,
+        &fee_profile_input,
+        &asset_id_input,
+        &asset_type_id_input,
+        &account_id_input
+    ).await;
+
+    println!("[COMMAND] save_trade: Profiles Resolved (Tax={:?}, Fee={:?})", 
+        trade.effective_tax_profile_id, trade.effective_fee_profile_id);
+
+    // 3. Prepare Payload
     let mut data = serde_json::to_value(&trade).map_err(|e| {
         println!("[COMMAND] save_trade SERIALIZATION ERROR: {}", e);
         e.to_string()
     })?;
 
-    // Content should NOT include the ID as it is the primary key and immutable in SurrealDB
     if let Some(obj) = data.as_object_mut() {
         obj.remove("id");
     }
 
-    println!("[DEBUG] save_trade: Payload prepared (minus ID). Invoking upsert_record...");
-    // First, standard upsert using string-interpolated Record ID
+    // 4. Persistence
     upsert_record(&db.0, "trade", &clean_id, data).await?;
 
-    println!("[DEBUG] save_trade: Initial UPSERT finished. Updating relational fields...");
-
-    // Then explicit UPDATE for relational fields using ⟨UUID⟩ Record ID
     let full_trade_id = format!("trade:⟨{}⟩", clean_id);
     let sql = format!("
         UPDATE {} SET 
@@ -814,55 +945,36 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
             strategy_id = (IF strategy_id THEN type::thing(strategy_id) ELSE null END),
             modality_id = (IF modality_id THEN type::thing(modality_id) ELSE null END),
             entry_emotional_state_id = (IF entry_emotional_state_id THEN type::thing(entry_emotional_state_id) ELSE null END),
-            exit_emotional_state_id = (IF exit_emotional_state_id THEN type::thing(exit_emotional_state_id) ELSE null END)
+            exit_emotional_state_id = (IF exit_emotional_state_id THEN type::thing(exit_emotional_state_id) ELSE null END),
+            effective_tax_profile_id = (IF effective_tax_profile_id THEN type::thing(effective_tax_profile_id) ELSE null END),
+            effective_fee_profile_id = (IF effective_fee_profile_id THEN type::thing(effective_fee_profile_id) ELSE null END)
         WHERE id = {};
     ", full_trade_id, full_trade_id);
 
-    db.0.query(&sql).await.map_err(|e| {
-        println!("[COMMAND] save_trade RELATIONAL UPDATE ERROR: {}", e);
-        e.to_string()
-    })?.check().map_err(|e| {
-        println!("[COMMAND] save_trade RELATIONAL UPDATE CHECK ERROR: {}", e);
-        e.to_string()
-    })?;
+    db.0.query(&sql).await.map_err(|e| e.to_string())?.check().map_err(|e| e.to_string())?;
 
-    println!("[COMMAND] save_trade SUCCESS for trade:{}", clean_id);
+    let trade_result = trade.result;
 
-    // --- AUTO-SYNC DAILY CLOSURE (EXTRATO) ---
+    // --- AUTO-SYNC DAILY CLOSURE ---
     let date_only = if let Some(ref ed) = trade.exit_date {
         ed.split('T').next().unwrap_or(ed).split(' ').next().unwrap_or(ed).to_string()
     } else {
         trade.date.split('T').next().unwrap_or(&trade.date).split(' ').next().unwrap_or(&trade.date).to_string()
     };
 
-    let acc_clean_current = trade
-        .account_id
-        .as_deref()
-        .unwrap_or("")
-        .split(':')
-        .last()
-        .unwrap_or(trade.account_id.as_deref().unwrap_or(""))
-        .replace("⟨", "")
-        .replace("⟩", "")
-        .replace("`", "")
-        .trim()
-        .to_string();
+    let acc_clean_current = trade.account_id.as_deref().unwrap_or("")
+        .split(':').last().unwrap_or(trade.account_id.as_deref().unwrap_or(""))
+        .replace("⟨", "").replace("⟩", "").replace("`", "").trim().to_string();
 
-    // 1. Find ALL closures that currently contain this trade ID
-    // and ALSO find the "target" closure for the trade's current date/account
-    let find_sync_sql = format!(
-        "SELECT *, type::string(id) as id, type::string(account_id) as account_id FROM cash_transaction WHERE system_linked = true AND category = 'Trading'"
-    );
-
-    if let Ok(mut find_res) = db.0.query(&find_sync_sql).await {
+    let find_sync_sql = "SELECT *, type::string(id) as id, type::string(account_id) as account_id FROM cash_transaction WHERE system_linked = true AND category = 'Trading'";
+    if let Ok(mut find_res) = db.0.query(find_sync_sql).await {
         if let Ok(all_system_closures) = find_res.take::<Vec<crate::models::CashTransaction>>(0) {
             
-            // A. Identify closures to update
             let mut closures_to_process = Vec::new();
             let mut target_closure_found = false;
 
             for c in all_system_closures {
-            let c_acc_clean = c.account_id.as_deref().unwrap_or("")
+                let c_acc_clean = c.account_id.as_deref().unwrap_or("")
                     .split(':').last().unwrap_or(c.account_id.as_deref().unwrap_or(""))
                     .replace("⟨", "").replace("⟩", "").replace("`", "").trim().to_string();
                 let c_date_only = c.date.split('T').next().unwrap_or(&c.date).split(' ').next().unwrap_or(&c.date);
@@ -880,16 +992,14 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
 
                 if is_target {
                     target_closure_found = true;
-                    closures_to_process.push((c, true)); // (Closure, is_target)
+                    closures_to_process.push((c, true));
                 } else if contains_trade {
-                    closures_to_process.push((c, false)); // It's an orphan! (Moved trade)
+                    closures_to_process.push((c, false));
                 }
             }
 
-            // B. If target closure wasn't found in system closures (maybe newly created or trade just moved), 
-            // we should try specifically finding it even if it doesn't have the trade yet.
             if !target_closure_found {
-                 let find_target_sql = format!(
+                let find_target_sql = format!(
                     "SELECT *, type::string(id) as id, type::string(account_id) as account_id FROM cash_transaction WHERE system_linked = true AND category = 'Trading' AND string::startsWith(type::string(date), '{}')",
                     date_only
                 );
@@ -908,7 +1018,6 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
                 }
             }
 
-            // C. Process updates
             for (closure, is_target) in closures_to_process {
                 let ct_clean = closure.id.split(':').last().unwrap_or(&closure.id)
                     .replace("⟨", "").replace("⟩", "").replace("`", "").to_string();
@@ -923,7 +1032,6 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
                 let mut changed = false;
 
                 if is_target {
-                    // Ensure linked
                     let already_linked = trade_ids.iter().any(|tid| {
                         let tid_clean = tid.as_str().split(':').last().unwrap_or(tid.as_str())
                             .replace("⟨", "").replace("⟩", "").replace("`", "");
@@ -934,11 +1042,9 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
                         changed = true;
                     }
                 } else {
-                    // Remove from old closure
                     let original_len = trade_ids.len();
                     trade_ids.retain(|tid| {
-                        let tid_clean = tid.as_str()
-                            .split(':').last().unwrap_or(tid.as_str())
+                        let tid_clean = tid.as_str().split(':').last().unwrap_or(tid.as_str())
                             .replace("⟨", "").replace("⟩", "").replace("`", "");
                         tid_clean != clean_id
                     });
@@ -948,14 +1054,13 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
                 }
 
                 if changed || is_target {
-                    // Recalculate Total
                     let mut new_total = 0.0_f64;
                     for tid in &trade_ids {
                         let tid_clean_loop = tid.as_str().split(':').last().unwrap_or(tid.as_str())
                             .replace("⟨", "").replace("⟩", "").replace("`", "").trim().to_string();
                         
                         if tid_clean_loop == clean_id {
-                            new_total += trade.result;
+                            new_total += trade_result;
                         } else {
                             let sql_res = format!("SELECT result FROM trade:⟨{}⟩ LIMIT 1", tid_clean_loop);
                             if let Ok(mut res_query) = db.0.query(&sql_res).await {
@@ -970,8 +1075,6 @@ pub async fn save_trade(db: State<'_, DbState>, trade: Trade) -> Result<(), Stri
 
                     let amount_diff = new_total - closure.amount;
                     if amount_diff != 0.0 || changed {
-                        println!("[COMMAND] save_trade sync: {} is_target={} amount {} -> {} (diff: {})", ct_full, is_target, closure.amount, new_total, amount_diff);
-                        
                         let tx_type = if new_total >= 0.0 { "Deposit" } else { "Withdraw" };
                         let _ = db.0.query(format!("UPDATE {} SET amount = $amount, trade_ids = $t_ids, type = $tx_type", ct_full))
                             .bind(("amount", new_total))
@@ -1159,6 +1262,85 @@ async fn internal_delete_trade(db: &Surreal<Db>, id: String) -> Result<(), Strin
     println!("[COMMAND] internal_delete_trade: deleting trade {}", full_id);
     delete_record(db, "trade", &clean_id).await
 }
+
+#[tauri::command]
+pub async fn get_fees(db: State<'_, DbState>) -> Result<Vec<FeeProfile>, String> {
+    let mut result = db.0.query("SELECT *, type::string(id) as id FROM fee_profile")
+        .await.map_err(|e| e.to_string())?;
+    let fees: Vec<FeeProfile> = result.take(0).map_err(|e| e.to_string())?;
+    Ok(fees)
+}
+
+#[tauri::command]
+pub async fn save_fees(db: State<'_, DbState>, fees: Vec<crate::models::FeeProfile>) -> Result<(), String> {
+    for fee in fees {
+        let id_str = fee.id.clone();
+        let clean_id = id_str.split(':').last().unwrap_or(&id_str).replace("⟨", "").replace("⟩", "");
+        let mut json = serde_json::to_value(&fee).map_err(|e| e.to_string())?;
+        if let Some(obj) = json.as_object_mut() { obj.remove("id"); }
+        upsert_record(&db.0, "fee_profile", &clean_id, json).await?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn save_fee(db: State<'_, DbState>, fee: crate::models::FeeProfile) -> Result<(), String> {
+    let id_str = fee.id.clone();
+    let clean_id = id_str.split(':').last().unwrap_or(&id_str).replace("⟨", "").replace("⟩", "");
+    let mut json = serde_json::to_value(&fee).map_err(|e| e.to_string())?;
+    if let Some(obj) = json.as_object_mut() { obj.remove("id"); }
+    upsert_record(&db.0, "fee_profile", &clean_id, json).await
+}
+
+#[tauri::command]
+pub async fn delete_fee(db: State<'_, DbState>, id: String) -> Result<(), String> {
+    delete_record(&db.0, "fee_profile", &id).await
+}
+
+#[tauri::command]
+pub async fn get_fee_profile_entries(db: State<'_, DbState>) -> Result<Vec<crate::models::FeeProfileEntry>, String> {
+    let mut result = db.0.query("SELECT *, type::string(id) as id, type::string(fee_profile_id) as fee_profile_id FROM fee_profile_entry")
+        .await.map_err(|e| e.to_string())?;
+    let entries: Vec<crate::models::FeeProfileEntry> = result.take(0).map_err(|e| e.to_string())?;
+    Ok(entries)
+}
+
+#[tauri::command]
+pub async fn save_fee_profile_entry(db: State<'_, DbState>, entry: crate::models::FeeProfileEntry) -> Result<(), String> {
+    let id_str = entry.id.clone().unwrap_or_else(|| format!("fee_profile_entry:{}", uuid::Uuid::new_v4()));
+    let clean_id = id_str.split(':').last().unwrap_or(&id_str).replace("⟨", "").replace("⟩", "");
+    let mut json = serde_json::to_value(&entry).map_err(|e| e.to_string())?;
+    if let Some(obj) = json.as_object_mut() { obj.remove("id"); }
+    upsert_record(&db.0, "fee_profile_entry", &clean_id, json).await
+}
+
+#[tauri::command]
+pub async fn delete_fee_profile_entry(db: State<'_, DbState>, id: String) -> Result<(), String> {
+    delete_record(&db.0, "fee_profile_entry", &id).await
+}
+
+#[tauri::command]
+pub async fn get_tax_mappings(db: State<'_, DbState>) -> Result<Vec<crate::models::TaxMapping>, String> {
+    let mut result = db.0.query("SELECT *, type::string(id) as id FROM tax_mapping")
+        .await.map_err(|e| e.to_string())?;
+    let mappings: Vec<crate::models::TaxMapping> = result.take(0).map_err(|e| e.to_string())?;
+    Ok(mappings)
+}
+
+#[tauri::command]
+pub async fn save_tax_mapping(db: State<'_, DbState>, mapping: crate::models::TaxMapping) -> Result<(), String> {
+    let id_str = mapping.id.clone().unwrap_or_else(|| format!("tax_mapping:{}", uuid::Uuid::new_v4()));
+    let clean_id = id_str.split(':').last().unwrap_or(&id_str).replace("⟨", "").replace("⟩", "");
+    let mut json = serde_json::to_value(&mapping).map_err(|e| e.to_string())?;
+    if let Some(obj) = json.as_object_mut() { obj.remove("id"); }
+    upsert_record(&db.0, "tax_mapping", &clean_id, json).await
+}
+
+#[tauri::command]
+pub async fn delete_tax_mapping(db: State<'_, DbState>, id: String) -> Result<(), String> {
+    delete_record(&db.0, "tax_mapping", &id).await
+}
+
 
 #[tauri::command]
 pub async fn delete_trade(db: State<'_, DbState>, id: String) -> Result<(), String> {
@@ -1362,22 +1544,6 @@ pub async fn delete_journal_entry(db: State<'_, DbState>, id: String) -> Result<
     delete_record(&db.0, "journal_entry", &clean_id).await
 }
 
-// --- Fee Profiles ---
-
-#[tauri::command]
-pub async fn get_fees(db: State<'_, DbState>) -> Result<Vec<FeeProfile>, String> {
-    println!("[COMMAND] get_fees called");
-    let mut result =
-        db.0.query("SELECT *, type::string(id) as id FROM fee_profile")
-            .await
-            .map_err(|e| e.to_string())?;
-    let fees: Vec<FeeProfile> = result.take(0).map_err(|e| {
-        println!("[ERROR] get_fees deserialization failure: {}", e);
-        e.to_string()
-    })?;
-    println!("[COMMAND] get_fees returning {} items", fees.len());
-    Ok(fees)
-}
 
 // --- Diagnostic Commands ---
 
@@ -1417,24 +1583,7 @@ pub async fn diagnostic_dump_users(db: State<'_, DbState>) -> Result<(), String>
     Ok(())
 }
 
-#[tauri::command]
-pub async fn save_fee(db: State<'_, DbState>, fee: FeeProfile) -> Result<(), String> {
-    let id = fee.id.clone();
-    let mut json = serde_json::to_value(&fee).map_err(|e| e.to_string())?;
-    if let Some(obj) = json.as_object_mut() {
-        obj.remove("id");
-    }
-    let clean_id = id.split(':').last().unwrap_or(id.as_str());
-    upsert_record(&db.0, "fee_profile", clean_id, json).await
-}
 
-#[tauri::command]
-pub async fn delete_fee(db: State<'_, DbState>, id: String) -> Result<(), String> {
-    let clean_id = id.split(':').last().unwrap_or(&id)
-        .replace("⟨", "")
-        .replace("⟩", "");
-    delete_record(&db.0, "fee_profile", &clean_id).await
-}
 
 // --- Risk Profiles ---
 
@@ -1989,6 +2138,7 @@ pub struct LicenseResult {
 
 // --- Licensing & Machine ID ---
 
+
 fn compute_machine_pin(hwid: &str) -> String {
     let salt = "TLP-DEVICE-v2-";
     let mut hasher = Sha256::new();
@@ -2186,7 +2336,7 @@ pub async fn activate_license_online_cmd(
         .map_err(|e| format!("Falha na conexão: {}", e))?;
     
     let body_text = res.text().await.map_err(|e| format!("Falha ao ler corpo: {}", e))?;
-    let mut data: serde_json::Value = serde_json::from_str(&body_text).unwrap_or(serde_json::json!({ "success": false, "error": body_text }));
+    let data: serde_json::Value = serde_json::from_str(&body_text).unwrap_or(serde_json::json!({ "success": false, "error": body_text }));
 
     // 2. Se falhar e for GMAIL, tentar sem pontos (Estratégia fallback Google)
     if !data["success"].as_bool().unwrap_or(false) && email_raw.contains("@gmail.com") {

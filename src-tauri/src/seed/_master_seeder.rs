@@ -6,7 +6,7 @@ use super::{
     asset_types_seed, assets_seed, chart_types_seed, currencies_seed, demo_accounts_seed,
     demo_trades_seed, emotional_states_seed, fees_seed, indicators_seed, markets_seed,
     modalities_seed, risk_seed, strategies_seed, tags_seed, tax_seed, timeframes_seed,
-    user_profile_seed,
+    user_profile_seed, sectors_seed,
 };
 
 /// Executa todos os seeds na ordem correta (respeitando dependências)

@@ -787,6 +787,25 @@
             "searchPlaceholder": "Rechercher modalité...",
             "title": "Modalités"
         },
+        "sectors": {
+            "description": "Catégorisez vos actifs par secteurs économiques (Finance, Énergie, Tech...).",
+            "edit": "Modifier Secteur",
+            "empty": "Aucune verticale économique cartographiée.",
+            "form": {
+                "name": "Nom du Secteur",
+                "namePlaceholder": "Ex : Finance, Technologie...",
+                "macroSector": "Macro Secteur (B3)",
+                "macroSectorPlaceholder": "Ex : Consommation Cyclique, Finance...",
+                "segment": "Segment Opérationnel",
+                "segmentPlaceholder": "Ex : Banques, Construction...",
+                "icon": "Icône Opérationnelle",
+                "color": "Couleur d'Identification",
+                "save": "Enregistrer Secteur"
+            },
+            "new": "Nouveau Secteur",
+            "searchPlaceholder": "Filtrar por nome do setor...",
+            "title": "Secteurs d'Opération"
+        },
         "nav": {
             "accounts": "Comptes",
             "assetTypes": "Types d'Actifs",

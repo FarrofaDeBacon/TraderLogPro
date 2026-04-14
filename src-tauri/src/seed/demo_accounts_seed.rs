@@ -13,7 +13,7 @@ pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Res
             "Simulador",
             "Geral",
             "Demo",
-            "brl",
+            "currency:brl",
             "99999-9",
             100000.0,
             Some("chart_pie"),
@@ -23,7 +23,7 @@ pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Res
             "Real",
             "Geral",
             "Real",
-            "brl",
+            "currency:brl",
             "12345-6",
             0.0,
             Some("landmark"),
@@ -53,10 +53,10 @@ pub async fn seed_accounts(db: &Surreal<Db>, filter: Option<Vec<String>>) -> Res
             account_type: account_type.into(),
             broker: broker.into(),
             account_number: account_number.into(),
-            currency_id: Some(format!("currency:{}", currency)),
-            currency: None,
+            currency_id: Some(currency.to_string()),
             balance: balance,
             custom_logo: logo.map(|s| s.into()),
+            default_fee_id: None,
         };
 
         let mut account_json = serde_json::to_value(&account).unwrap();

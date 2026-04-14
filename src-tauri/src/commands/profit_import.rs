@@ -1,10 +1,11 @@
-use crate::db::DbState;
 use crate::models::{Asset, Trade};
+use crate::services::asset_service::AssetService;
 use chrono::{NaiveDateTime, TimeZone, Utc};
 use serde_json::Value;
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
 use tauri::State;
+use crate::db::DbState;
 use std::fs;
 use encoding_rs::WINDOWS_1252;
 use std::collections::HashMap;
@@ -132,17 +133,49 @@ pub async fn import_profit_trades(
             })
             .collect();
 
-        // 1. Get or Create Asset
-        let asset_id = get_or_create_asset(&db.0, &symbol).await
+        // 1. Get or Create Asset with Full Metadata
+        let asset_meta = get_or_create_asset(&db.0, &symbol).await
             .map_err(|e| format!("Erro ao processar ativo {}: {}", symbol, e))?;
+
+        let asset_id = asset_meta.id.clone().unwrap_or_else(|| format!("asset:{}", symbol.to_lowercase()));
+        let asset_type_id = asset_meta.asset_type_id.clone();
+        let mut notes_override: Option<String> = None;
+        
+        // --- RESOLUÇÃO DE MODALIDADE ---
+        let mut modality_id = "modality:m1".to_string(); // Default DayTrade
+        if let Some(exit_dt) = &exit_date {
+            // ISO format: "2024-05-15T09:30:15Z"
+            if entry_date.len() >= 10 && exit_dt.len() >= 10 {
+                let entry_day = &entry_date[..10];
+                let exit_day = &exit_dt[..10];
+                
+                if entry_day != exit_day {
+                    modality_id = "modality:m2".to_string(); // SwingTrade
+                    println!("[IMPORT] Trade em '{}' identificado como SwingTrade ({} != {}).", symbol, entry_day, exit_day);
+                } else {
+                    println!("[IMPORT] Trade em '{}' identificado como DayTrade ({} == {}).", symbol, entry_day, exit_day);
+                }
+            } else {
+                modality_id = "modality:m2".to_string(); // Fallback Seguro
+                notes_override = Some("[REVISÃO REQUERIDA: Falha no cálculo de Modalidade]".to_string());
+                println!("[IMPORT] [ERROR] Falha de parsing de data para modalidade em '{}'. Usando padrão SwingTrade com aviso de revisão. (Entry: {}, Exit: {:?})", symbol, entry_date, exit_date);
+            }
+        } else {
+            println!("[IMPORT] Trade em '{}' sem data de saída. Assumindo DayTrade (m1).", symbol);
+        }
 
         // 2. Create Trade Record
         let trade_id = uuid::Uuid::new_v4().to_string();
-        let trade = Trade {
+        let mut notes = format!("Importado do Profit (Agrupado de {} execuções)", group_lines.len());
+        if let Some(over) = notes_override {
+            notes = format!("{} - {}", over, notes);
+        }
+        
+        let mut trade = Trade {
             id: format!("trade:⟨{}⟩", trade_id),
             date: entry_date,
             asset_symbol: symbol.clone(),
-            asset_type_id: Some("asset_type:at2".to_string()),
+            asset_type_id,
             strategy_id: Some("strategy:manual".to_string()),
             account_id: Some(account_id.clone()),
             result: total_result,
@@ -152,7 +185,7 @@ pub async fn import_profit_trades(
             exit_price: Some(exit_price),
             exit_date,
             fee_total: 0.0,
-            notes: format!("Importado do Profit (Agrupado de {} execuções)", group_lines.len()),
+            notes,
             timeframe: "1m".to_string(),
             volatility: "Medium".to_string(),
             entry_emotional_state_id: None,
@@ -171,12 +204,34 @@ pub async fn import_profit_trades(
             lessons_learned: "".to_string(),
             images: vec![],
             partial_exits: crate::models::SurrealJson(serde_json::Value::Array(partial_exits)),
-            asset_id: Some(asset_id),
-            modality_id: Some("modality:m1".to_string()),
+            asset_id: Some(asset_id.clone()),
+            modality_id: Some(modality_id),
             stop_loss: None,
             take_profit: None,
             intensity: 5.0,
+            tax_profile_id: None,
+            effective_tax_profile_id: None,
+            effective_fee_profile_id: None,
         };
+
+        // --- RESOLUÇÃO CENTRALIZADA (Saneamento) ---
+        let resolved_tax_profile = AssetService::resolve_trade_tax_profile_id(
+            &db.0,
+            &trade.effective_tax_profile_id,
+            &trade.asset_id,
+            &trade.asset_type_id
+        ).await;
+
+        let resolved_fee_profile = AssetService::resolve_trade_fee_profile_id(
+            &db.0,
+            &trade.effective_fee_profile_id,
+            &trade.asset_id,
+            &trade.asset_type_id,
+            &trade.account_id
+        ).await;
+
+        trade.effective_tax_profile_id = resolved_tax_profile;
+        trade.effective_fee_profile_id = resolved_fee_profile;
 
         let mut trade_json = serde_json::to_value(&trade).map_err(|e| e.to_string())?;
         if let Some(obj) = trade_json.as_object_mut() {
@@ -184,7 +239,7 @@ pub async fn import_profit_trades(
         }
 
         let query = format!("UPSERT trade:⟨{}⟩ CONTENT $data RETURN NONE", trade_id);
-        db.0.query(&query).bind(("data", trade_json)).await.map_err(|e| e.to_string())?;
+        let _ = db.0.query(&query).bind(("data", trade_json)).await.map_err(|e| e.to_string())?;
 
         // 3. Relational conversion
         let update_query = format!("
@@ -193,10 +248,12 @@ pub async fn import_profit_trades(
                 asset_type_id = type::thing(asset_type_id),
                 asset_id = type::thing(asset_id),
                 strategy_id = type::thing(strategy_id),
-                modality_id = type::thing(modality_id)
+                modality_id = type::thing(modality_id),
+                effective_tax_profile_id = (IF effective_tax_profile_id THEN type::thing(effective_tax_profile_id) ELSE null END),
+                effective_fee_profile_id = (IF effective_fee_profile_id THEN type::thing(effective_fee_profile_id) ELSE null END)
             WHERE id = trade:⟨{}⟩;
         ", trade_id, trade_id);
-        db.0.query(&update_query).await.map_err(|e| e.to_string())?;
+        let _ = db.0.query(&update_query).await.map_err(|e| e.to_string())?;
 
         imported_count += 1;
     }
@@ -204,46 +261,70 @@ pub async fn import_profit_trades(
     Ok(format!("{} trades importados (agrupados) com sucesso!", imported_count))
 }
 
-async fn get_or_create_asset(db: &Surreal<Db>, symbol: &str) -> Result<String, String> {
-    // 1. Try to find existing asset
-    let mut res = db.query("SELECT type::string(id) as id FROM asset WHERE symbol = $sym LIMIT 1")
-        .bind(("sym", symbol.to_string()))
-        .await
-        .map_err(|e| e.to_string())?;
-        
-    let existing: Vec<Value> = res.take(0).map_err(|e| e.to_string())?;
-    if let Some(asset) = existing.first() {
-        if let Some(id) = asset.get("id").and_then(|v| v.as_str()) {
-            return Ok(id.to_string());
-        }
+async fn get_or_create_asset(db: &Surreal<Db>, symbol: &str) -> Result<Asset, String> {
+    let clean_symbol = symbol.to_uppercase();
+    let id_str = format!("asset:{}", clean_symbol.to_lowercase());
+
+    // 1. Tentar encontrar ativo existente (Cadastro Real)
+    let sql_find = "SELECT * FROM asset WHERE symbol = $sym LIMIT 1";
+    let mut res = db.query(sql_find).bind(("sym", clean_symbol.clone())).await.map_err(|e: surrealdb::Error| e.to_string())?;
+    let mut existing: Vec<Asset> = res.take(0).map_err(|e: surrealdb::Error| e.to_string())?;
+    
+    if let Some(asset) = existing.pop() {
+        println!("[IMPORT] Ativo '{}' encontrado no cadastro real.", clean_symbol);
+        return Ok(asset);
+    }
+    
+
+    // 2. Se não existir, preparar criação com base na Raiz (Root)
+    println!("[IMPORT] Ativo '{}' não encontrado. Iniciando criação automática...", clean_symbol);
+    
+    let mut root_asset: Option<Asset> = None;
+    if clean_symbol.len() >= 3 {
+        let prefix = &clean_symbol[..3];
+        let sql_root = "SELECT * FROM asset WHERE is_root = true AND symbol = $prefix LIMIT 1";
+        let mut root_res = db.query(sql_root).bind(("prefix", prefix.to_string())).await.map_err(|e: surrealdb::Error| e.to_string())?;
+        let mut roots: Vec<Asset> = root_res.take(0).map_err(|e: surrealdb::Error| e.to_string())?;
+        root_asset = roots.pop();
     }
 
-    // 2. If not found, create new one
-    let mut root_id: Option<String> = None;
-    if symbol.len() >= 3 {
-        let prefix = &symbol[..3];
-        let mut root_res = db.query("SELECT type::string(id) as id FROM asset WHERE is_root = true AND symbol = $prefix LIMIT 1")
-            .bind(("prefix", prefix.to_string()))
-            .await
-            .map_err(|e| e.to_string())?;
-            
-        let roots: Vec<Value> = root_res.take(0).map_err(|e| e.to_string())?;
-        if let Some(root) = roots.first() {
-            root_id = root.get("id").and_then(|v| v.as_str()).map(|s| s.to_string());
-        }
-    }
+    // Definir metadados por herança ou fallback
+    let (asset_type_id, point_value, tax_profile_id, root_id, sector_id, subsector_id, origin) = if let Some(root) = root_asset {
+        println!("[IMPORT] Ativo '{}' herdando metadados da Raiz '{}'.", clean_symbol, root.symbol);
+        (
+            root.asset_type_id.clone(),
+            root.point_value,
+            root.tax_profile_id.clone(),
+            root.id.clone(),
+            root.sector_id.clone(),
+            root.subsector_id.clone(),
+            "RAIZ"
+        )
+    } else {
+        // Fallback Failsafe Final (Legado)
+        let (inf_type, inf_point) = if clean_symbol.starts_with("WDO") {
+            ("asset_type:at2", 10.0)
+        } else if clean_symbol.starts_with("WIN") {
+            ("asset_type:at2", 0.2)
+        } else {
+            ("asset_type:at1", 1.0) // Ações fallback
+        };
+        println!("[IMPORT] [FALLBACK] Ativo '{}' sem raiz encontrada. Inferindo: Type={}, Point={}", clean_symbol, inf_type, inf_point);
+        (Some(inf_type.to_string()), inf_point, None, None, Some("sector:others".to_string()), None, "FALLBACK")
+    };
 
     let new_asset = Asset {
-        id: Some(format!("asset:{}", symbol.to_lowercase())),
-        symbol: symbol.to_string(),
-        name: symbol.to_string(),
-        asset_type_id: Some("asset_type:at2".to_string()), // Default
-        point_value: if symbol.starts_with("WDO") { 10.0 } else { 0.2 },
+        id: Some(id_str.clone()),
+        symbol: clean_symbol.clone(),
+        name: clean_symbol.clone(),
+        asset_type_id,
+        point_value,
         default_fee_id: None,
-        tax_profile_id: None,
+        tax_profile_id,
         is_root: false,
         root_id,
-        sector_id: None,
+        sector_id,
+        subsector_id,
         contract_size: None,
     };
 
@@ -253,21 +334,23 @@ async fn get_or_create_asset(db: &Surreal<Db>, symbol: &str) -> Result<String, S
     }
 
     db.query("UPSERT type::thing('asset', $sym) CONTENT $data RETURN NONE")
-        .bind(("sym", symbol.to_lowercase()))
+        .bind(("sym", clean_symbol.to_lowercase()))
         .bind(("data", asset_json))
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(|e: surrealdb::Error| e.to_string())?;
 
-    // 3. Relational conversion
-    let update_query = format!("
-        UPDATE asset:⟨{}⟩ SET 
-            asset_type_id = type::thing(asset_type_id),
-            root_id = (IF root_id THEN type::thing(root_id) ELSE null END)
-        WHERE id = asset:⟨{}⟩;
-    ", symbol.to_lowercase(), symbol.to_lowercase());
-    db.query(&update_query).await.map_err(|e| e.to_string())?;
+    // Relational clean-up (garante que IDs gravados como String virem Thing no Surreal)
+    let update_sql = "
+        UPDATE asset SET 
+            asset_type_id = (IF type::is::string(asset_type_id) THEN type::thing(asset_type_id) ELSE asset_type_id END),
+            root_id = (IF type::is::string(root_id) THEN type::thing(root_id) ELSE root_id END),
+            tax_profile_id = (IF type::is::string(tax_profile_id) THEN type::thing(tax_profile_id) ELSE tax_profile_id END)
+        WHERE symbol = $sym;
+    ";
+    db.query(update_sql).bind(("sym", clean_symbol)).await.map_err(|e: surrealdb::Error| e.to_string())?;
 
-    Ok(format!("asset:{}", symbol.to_lowercase()))
+    println!("[IMPORT] Ativo '{}' criado com sucesso (Origem: {}).", symbol, origin);
+    Ok(new_asset)
 }
 
 fn parse_profit_datetime(datetime_str: &str) -> Result<String, String> {

@@ -138,7 +138,6 @@ fn convert_trade_result(trade: &Trade, accounts: &[Account], currencies: &[Curre
 
     if let Some(acc) = account {
         let currency = currencies.iter().find(|c| {
-            c.code == acc.currency.as_deref().unwrap_or("") || 
             Some(&c.id) == acc.currency_id.as_ref() ||
             Some(format!("currency:{}", c.id)) == acc.currency_id
         });
@@ -171,7 +170,7 @@ pub async fn get_strategy_comprehensive_stats(
     
     // Fetch assets to resolve markets if filter is passed
     let clean_str_id = strategy_id.replace("strategy:", "").replace("⟨", "").replace("⟩", "");
-    let mut trades_query = "SELECT * FROM trade WHERE string::contains(type::string(strategy_id), $clean_id) ORDER BY date ASC".to_string();
+    let trades_query = "SELECT * FROM trade WHERE string::contains(type::string(strategy_id), $clean_id) ORDER BY date ASC".to_string();
     
     let mut response = db.0.query(&trades_query)
         .bind(("clean_id", clean_str_id.clone()))

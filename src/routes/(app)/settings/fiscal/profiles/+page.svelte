@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { modalitiesStore } from "$lib/stores/modalities.svelte";
-    import { Plus, Pencil, Trash2, ArrowRightLeft } from "lucide-svelte";
+    import { modalitiesStore } from "$lib/stores/modalities.svelte";
+    import { Plus, Pencil, Trash2, ShieldAlert, Scale, Info } from "lucide-svelte";
     import { Button } from "$lib/components/ui/button";
     import { Separator } from "$lib/components/ui/separator";
     import { appStore } from "$lib/stores/app.svelte";
@@ -9,6 +9,7 @@
     import DeleteConfirmationModal from "$lib/components/settings/DeleteConfirmationModal.svelte";
     import { toast } from "svelte-sonner";
     import ProfileEditor from "../ProfileEditor.svelte";
+    import { SystemHeader } from "$lib/components/ui/system";
 
     // Profile Editor State
     let isProfileEditorOpen = $state(false);
@@ -47,32 +48,35 @@
     }
 </script>
 
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div class="space-y-0.5">
-            <h3 class="text-lg font-medium">
-                {$t("fiscal.settings.profiles.title")}
-            </h3>
-            <p class="text-sm text-muted-foreground">
-                {$t("fiscal.settings.profiles.description")}
-            </p>
-        </div>
-        <Button onclick={openNewProfile}>
-            <Plus class="w-4 h-4 mr-2" />
-            {$t("fiscal.settings.profiles.new")}
-        </Button>
-    </div>
+<div class="space-y-8 max-w-6xl mx-auto pb-20 px-4 md:px-0">
+    <SystemHeader 
+        title={$t("fiscal.settings.profiles.title")}
+        description={$t("fiscal.settings.profiles.description")}
+    >
+        {#snippet actions()}
+            <Button 
+                onclick={openNewProfile} 
+                class="h-10 px-6 font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all rounded-full shadow-lg shadow-primary/20 text-[10px] uppercase tracking-widest"
+            >
+                <Plus class="w-4 h-4 mr-2" />
+                {$t("fiscal.settings.profiles.new")}
+            </Button>
+        {/snippet}
+    </SystemHeader>
 
-    <div class="grid gap-4 md:grid-cols-2">
+    <div class="grid gap-6 pt-4 md:grid-cols-2">
         {#each financialConfigStore.taxProfiles as profile}
             <div
-                class="flex flex-col p-5 rounded-lg border bg-card hover:border-primary/50 transition-all shadow-sm"
+                class="group flex flex-col p-6 rounded-[2rem] border bg-card/40 border-white/5 hover:border-emerald-500/50 transition-all shadow-xl relative overflow-hidden h-full"
             >
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h4 class="font-bold text-lg">{profile.name}</h4>
+                <!-- Header Section -->
+                <div class="flex justify-between items-start mb-6 relative z-10">
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-xl tracking-tight text-white group-hover:text-emerald-400 transition-colors">
+                            {profile.name}
+                        </h4>
                         {#if profile.description}
-                            <p class="text-sm text-muted-foreground">
+                            <p class="text-xs text-white/40 leading-relaxed max-w-[200px]">
                                 {profile.description}
                             </p>
                         {/if}
@@ -81,7 +85,7 @@
                         <Button
                             variant="ghost"
                             size="icon"
-                            class="h-8 w-8"
+                            class="h-9 w-9 rounded-full text-white/40 hover:bg-emerald-500/10 hover:text-emerald-400"
                             onclick={() => openEditProfile(profile.id)}
                         >
                             <Pencil class="w-4 h-4" />
@@ -89,7 +93,7 @@
                         <Button
                             variant="ghost"
                             size="icon"
-                            class="h-8 w-8 text-destructive"
+                            class="h-9 w-9 rounded-full text-white/40 hover:bg-destructive hover:text-white"
                             onclick={() => requestDelete(profile.id)}
                         >
                             <Trash2 class="w-4 h-4" />
@@ -97,51 +101,64 @@
                     </div>
                 </div>
 
-                <Separator class="my-2" />
+                <!-- Modality Layout Hub -->
+                <div class="mt-auto relative z-10">
+                    <div class="grid grid-cols-2 gap-3 mb-2">
+                        {#each ['DayTrade', 'SwingTrade'] as modType}
+                            {@const entry = financialConfigStore.getEntriesForProfile(profile.id).find(e => {
+                                const m = modalitiesStore.modalities.find(mod => mod.id === e.modality_id);
+                                return m?.id === modType;
+                            })}
+                            {@const rule = entry ? financialConfigStore.taxRules.find(r => r.id === entry.tax_rule_id) : null}
+                            
+                            <div class="flex flex-col p-4 rounded-2xl bg-white/[0.02] border border-white/5 group/mod hover:border-white/10 transition-colors h-full">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-white/20">
+                                        {modType === 'DayTrade' ? 'Day Trade' : 'Swing Trade'}
+                                    </span>
+                                    {#if rule}
+                                        <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                                    {:else}
+                                        <div class="h-1.5 w-1.5 rounded-full bg-white/10"></div>
+                                    {/if}
+                                </div>
 
-                <!-- Linked Rules Summary -->
-                <div class="space-y-2 mt-2">
-                    <h5
-                        class="text-xs font-semibold uppercase text-muted-foreground mb-2"
-                    >
-                        {$t("fiscal.settings.profiles.linkedRules")}
-                    </h5>
-                    {#each financialConfigStore.getEntriesForProfile(profile.id) as entry}
-                        {#if financialConfigStore.taxRules.find((r) => r.id === entry.tax_rule_id)}
-                            <div
-                                class="flex justify-between items-center text-sm p-2 bg-muted/50 rounded border"
-                            >
-                                <div class="flex items-center gap-2">
-                                    <span
-                                        class="w-2 h-2 rounded-full bg-blue-500"
-                                    ></span>
-                                    <span
-                                        >{modalitiesStore.modalities.find(
-                                            (m) => m.id === entry.modality_id,
-                                        )?.name || "M?"}</span
-                                    >
-                                </div>
-                                <div class="font-medium">
-                                    {financialConfigStore.taxRules.find(
-                                        (r) => r.id === entry.tax_rule_id,
-                                    )?.name}
-                                </div>
+                                {#if rule}
+                                    <div class="space-y-1">
+                                        <p class="text-xs font-bold text-white truncate max-w-full">
+                                            {rule.name}
+                                        </p>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-[10px] font-mono font-bold text-emerald-500">{rule.tax_rate}%</span>
+                                            <span class="text-[9px] font-bold text-white/20 uppercase tracking-tight">Alíquota</span>
+                                        </div>
+                                    </div>
+                                {:else}
+                                    <div class="flex flex-col justify-center h-full min-h-[40px]">
+                                        <p class="text-[10px] italic text-white/20 font-medium leading-tight">
+                                            Não configurado
+                                        </p>
+                                    </div>
+                                {/if}
                             </div>
-                        {/if}
-                    {:else}
-                        <div class="text-xs text-muted-foreground italic p-2">
-                            {$t("fiscal.settings.profiles.noLinkedRules")}
-                        </div>
-                    {/each}
+                        {/each}
+                    </div>
+                </div>
+
+                <!-- Decorative Background Element -->
+                <div class="absolute -right-8 -bottom-8 opacity-[0.03] text-white">
+                    <Scale size={120} />
                 </div>
             </div>
         {:else}
             <div
-                class="col-span-full flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg text-muted-foreground h-[200px]"
+                class="col-span-full flex flex-col items-center justify-center p-12 border border-dashed border-white/5 rounded-[2.5rem] text-muted-foreground/30 h-[320px] bg-white/[0.01]"
             >
-                <ArrowRightLeft class="w-8 h-8 mb-2 opacity-20" />
-                <span>{$t("fiscal.settings.profiles.empty")}</span>
-                <Button variant="link" onclick={openNewProfile}
+                <div class="p-4 bg-white/[0.03] rounded-3xl mb-4">
+                    <Scale class="w-12 h-12 opacity-10" />
+                </div>
+                <span class="text-sm font-bold uppercase tracking-widest">{$t("fiscal.settings.profiles.empty")}</span>
+                <Button variant="link" onclick={openNewProfile} class="text-emerald-500 font-bold uppercase text-[10px] tracking-widest mt-2"
                     >{$t("fiscal.settings.profiles.create")}</Button
                 >
             </div>

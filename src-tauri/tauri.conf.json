@@ -5,7 +5,7 @@
   "identifier": "com.traderlog.pro",
   "build": {
     "beforeDevCommand": "npm run dev",
-    "devUrl": "http://localhost:3005",
+    "devUrl": "http://localhost:3020",
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../build"
   },

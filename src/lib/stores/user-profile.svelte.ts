@@ -189,6 +189,10 @@ export class UserProfileStore {
             if (hwid) this.hardwareId = hwid;
             if (profile) {
                 this.userProfile = { ...this.userProfile, ...profile };
+                // Normalize currency ID if it comes as "currency:xxx"
+                if (this.userProfile.main_currency && this.userProfile.main_currency.includes(':')) {
+                    this.userProfile.main_currency = this.userProfile.main_currency.split(':').pop() || "BRL";
+                }
                 
                 // --- TRIAL INITIALIZATION ---
                 // If onboarding is done but trial_start_date is missing, set it now
